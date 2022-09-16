@@ -8,7 +8,6 @@ import { storeToRefs } from "pinia";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { mainStore } from "../store/index";
-import Control from "./Control.vue";
 const props = defineProps(["content"])
 const store = mainStore()
 const { content } = storeToRefs(store);

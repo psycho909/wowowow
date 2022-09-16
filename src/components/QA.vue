@@ -1,12 +1,11 @@
 <script>
 export default {
-    name: "Card"
+    name: "QA"
 }
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
-const props = defineProps(["content"])
 const store = mainStore()
 const { content } = storeToRefs(store);
 onMounted(() => {
@@ -20,8 +19,6 @@ onUnmounted(() => {
 })
 </script>
 <template>
-    <div class="box card" :data-uid="props.content.uid">
-        <div>Card {{props.content.uid}}</div>
-        <Control :uid="props.content.uid" />
+    <div>
     </div>
 </template>

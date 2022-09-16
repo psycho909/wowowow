@@ -14,6 +14,6 @@ const add = (cpt) => {
 </script>
 <template>
     <div>
-        <button type="button" class="add" v-for="m in props.menu" @click="add(m)">Add {{m}}</button>
+        <button type="button" class="add" v-for="m in props.menu" @click="add(m.title)">{{m.label}}</button>
     </div>
 </template>

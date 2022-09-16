@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: "Card"
+    name: ""
 }
 </script>
 <script setup>
@@ -20,8 +20,6 @@ onUnmounted(() => {
 })
 </script>
 <template>
-    <div class="box card" :data-uid="props.content.uid">
-        <div>Card {{props.content.uid}}</div>
-        <Control :uid="props.content.uid" />
+    <div>
     </div>
 </template>

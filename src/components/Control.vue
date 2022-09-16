@@ -2,6 +2,7 @@
 import { mainStore } from "../store/index";
 const props = defineProps(["uid"])
 const store = mainStore()
+console.log(props.uid)
 const remove = () => {
     store.removeCpt(props.uid);
 }

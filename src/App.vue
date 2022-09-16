@@ -6,12 +6,18 @@ export default {
 <script setup>
 import { storeToRefs } from "pinia";
 import components from "./ComponentGroup.js";
-import MenuSlide from "./components/MenuSlide.vue";
+import MenuSlide from "./components/MenuSide.vue";
 import { mainStore } from "./store/index";
 const store = mainStore()
 const { content } = storeToRefs(store);
+console.log(components)
 const menu = computed(() => {
-	return Object.keys(components);
+	return Object.keys(components).map((m, i) => {
+		return {
+			title: m,
+			label: components[m].label
+		}
+	});
 })
 </script>
 

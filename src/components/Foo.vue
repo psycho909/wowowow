@@ -1,12 +1,12 @@
 <script>
 export default {
-    name: "Foo"
+    name: "Foo",
+    label: "Foo"
 }
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
-import Control from "./Control.vue";
 const props = defineProps(["content"])
 const store = mainStore()
 const { content } = storeToRefs(store);
@@ -47,10 +47,16 @@ const handleSubmit = () => {
     <div class="box foo">
         <div>{{props.content.text}}</div>
         <button type="button" class="btn" @click="test">測試</button>
-        <Control :uid="content.uid">
+        <Control :uid="props.content.uid">
             <template #btn-update>
                 <button type="button" class="update" @click="update">update</button>
             </template>
         </Control>
+        <Edit v-model:showEdit="showEdit">
+            <template #edit-content>
+                <input type="text" v-model="text" />
+                <button type="button" class="submit" @click="submit">確定</button>
+            </template>
+        </Edit>
     </div>
 </template>

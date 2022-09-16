@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 export const mainStore = defineStore("main", {
 	state: () => {
 		return {
-			content: { body: [{ component: "Foo", uid: 33, content: { text: "sad" }, update: true }] }
+			content: { body: [] }
 		};
 	},
 	getters: {
@@ -28,6 +28,7 @@ export const mainStore = defineStore("main", {
 			this.content.body[_index].update = true;
 		},
 		upCpt(data) {
+			console.log(data);
 			var _index = this.content.body.findIndex((v, i) => v.uid == data);
 			if (_index - 1 < 0) {
 				return;

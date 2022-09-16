@@ -1,21 +1,16 @@
 <script>
 export default {
-    name: "",
-    label: ""
+    name: "FileUpload"
 }
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
+import Control from "./Control.vue";
 const props = defineProps(["content"])
-let showEdit = ref(false);
 const store = mainStore()
 const { content } = storeToRefs(store);
 onMounted(() => {
-    var _uid = content.value.body.findIndex((v, i) => v.uid == props.content.uid);
-    if (!content.value.body[_uid].update) {
-        showEdit.value = true;
-    }
     console.log("onMounted")
 })
 onUpdated(() => {
@@ -28,11 +23,5 @@ onUnmounted(() => {
 <template>
     <div>
         <Control :uid="props.content.uid" />
-        <Edit v-model:showEdit="showEdit">
-            <template #edit-content>
-                <input type="text" v-model="text" />
-                <button type="button" class="submit" @click="submit">確定</button>
-            </template>
-        </Edit>
     </div>
 </template>

@@ -7,6 +7,46 @@ body {
 	}
 }
 
+.icon {
+	width: 26px;
+	height: 25px;
+	background-size: cover;
+	&-question {
+		width: 18px;
+		height: 18px;
+		background-image: url("../img/icon-question.png");
+	}
+	&-edit {
+		background-image: url("../img/icon-edit.png");
+	}
+	&-add {
+		background-image: url("../img/icon-add.png");
+	}
+	&-remove {
+		background-image: url("../img/icon-remove.png");
+	}
+	&-up {
+		background-image: url("../img/icon-up.png");
+		&.disabled {
+			background-image: url("../img/icon-up-disabled.png");
+		}
+	}
+	&-down {
+		background-image: url("../img/icon-down.png");
+		&.disabled {
+			background-image: url("../img/icon-down-disabled.png");
+		}
+	}
+}
+.edit-btn {
+	width: 66px;
+	height: 64px;
+	background-color: #ff9c00;
+	color: #fff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 #app {
 	position: relative;
 }
