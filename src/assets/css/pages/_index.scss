@@ -1,0 +1,132 @@
+body {
+	position: relative;
+	width: 100%;
+	min-width: 960px;
+	@include media {
+		min-width: auto;
+	}
+}
+
+#app {
+	position: relative;
+}
+.content {
+	text-align: center;
+}
+.control {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+.box {
+	width: 100%;
+	padding: 1rem;
+	position: relative;
+}
+.foo {
+	background-color: rgba(255, 238, 0, 0.3);
+	border: 1px solid rgba(255, 238, 0, 1);
+}
+.heading {
+	background-color: rgba(0, 238, 255, 0.3);
+	border: 1px solid rgba(0, 238, 255, 1);
+}
+.card {
+	background-color: rgba(0, 0, 0, 0.3);
+	border: 1px solid rgba(0, 0, 0, 1);
+}
+.btn-group {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 999;
+}
+.swiper-box {
+	background-color: rgba(81, 255, 125, 0.3);
+	width: calc(768 / 1920 * 100vw);
+	height: calc(200 / 1920 * 100vw);
+	margin: 0 auto;
+	padding: 0;
+	position: relative;
+	overflow: hidden;
+}
+.mySwiper {
+	width: calc(1600 / 1920 * 100vw);
+	height: calc(200 / 1920 * 100vw);
+	overflow: hidden;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.swiper-slide {
+	text-align: center;
+	font-size: 18px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.swiper-slide__content {
+	background: #000;
+	width: 100%;
+	height: 100%;
+	transform: scale(0.9);
+	transition: all 0.3s;
+}
+.swiper-slide-active > .swiper-slide__content {
+	transform: scale(1);
+}
+.fixed {
+	width: 300px;
+	border: 1px solid #000;
+	background-color: #fff;
+	position: fixed;
+}
+.edit {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 9999;
+	overflow-y: auto;
+	/* display: flex;
+	justify-content: center;
+	align-items: center; */
+	background-color: rgba(0, 0, 0, 0.8);
+	text-align: center;
+	white-space: nowrap;
+}
+.edit:before {
+	content: "";
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+}
+.edit-module {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-color: transparent !important;
+	pointer-events: none;
+}
+.edit-close {
+	background-color: #fff;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+.edit-wrap {
+	position: relative;
+	width: 768px;
+	margin: 0 auto;
+	vertical-align: middle;
+	display: inline-block;
+}
+.edit-content {
+	width: 100%;
+	background-color: #fff;
+}
