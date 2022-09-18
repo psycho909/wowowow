@@ -7,6 +7,7 @@ export default {
 <script setup>
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
+import Form from "./Form.vue";
 const props = defineProps(["content"])
 const store = mainStore()
 const { content } = storeToRefs(store);
@@ -54,8 +55,12 @@ const handleSubmit = () => {
         </Control>
         <Edit v-model:showEdit="showEdit">
             <template #edit-content>
-                <input type="text" v-model="text" />
-                <button type="button" class="submit" @click="submit">確定</button>
+                <Form>
+                    <div class="input-group">
+                        <input type="text">
+                    </div>
+                </Form>
+                <!-- <button type="button" class="submit" @click="submit">確定</button> -->
             </template>
         </Edit>
     </div>

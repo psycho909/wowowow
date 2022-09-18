@@ -9,6 +9,9 @@ import { mainStore } from "../store/index";
 const props = defineProps(["content"])
 const store = mainStore()
 const { content } = storeToRefs(store);
+const handleSubmit = () => {
+    console.log("handleSubmit")
+}
 onMounted(() => {
     console.log("onMounted")
 })
@@ -20,6 +23,8 @@ onUnmounted(() => {
 })
 </script>
 <template>
-    <div>
+    <div class="form-wrap">
+        <slot></slot>
+        <button type="button" class="form-btn__submit" @click="handleSubmit">Submit</button>
     </div>
 </template>
