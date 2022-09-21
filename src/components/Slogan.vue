@@ -1,7 +1,7 @@
 <script>
 export default {
-    name: "",
-    label: ""
+    name: "Slogan",
+    label: "主標題圖片"
 }
 </script>
 <script setup>
@@ -31,10 +31,23 @@ onUnmounted(() => {
         <Edit v-model:showEdit="showEdit">
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">浮動式選單</div>
+                    <div class="edit-title__text">背景圖</div>
                     <a href="javascript:;" class="edit-title__q"></a>
                 </div>
-                <input type="text" v-model="text" />
+                <div class="edit-img__box">
+                    <div class="edit-img__title">*圖片網址:</div>
+                    <input type="text" class="edit-img__input" />
+                    <div class="edit-img__preview"></div>
+                </div>
+                <div class="edit-mobile__box">
+                    <div class="edit-img__title">手機版圖片網址:</div>
+                    <input type="text" class="edit-img__input" />
+                    <div class="edit-img__preview"></div>
+                </div>
+                <div class="edit-link__box">
+                    <div class="edit-link__title">主標連結:</div>
+                    <input type="text" class="edit-link__input" />
+                </div>
                 <div class="edit-btn__box">
                     <a href="javascript:;" class="edit-btn__submit" @click="submit">確認送出</a>
                     <a href="javascript:;" class="edit-btn__reset" @click="reset">清除重填</a>

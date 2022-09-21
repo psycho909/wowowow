@@ -6,7 +6,6 @@ export default {
 <script setup>
 import { storeToRefs } from "pinia";
 import components from "./ComponentGroup.js";
-import MenuSlide from "./components/MenuSide.vue";
 import { mainStore } from "./store/index";
 const store = mainStore()
 const { content } = storeToRefs(store);
@@ -23,7 +22,7 @@ const menu = computed(() => {
 
 <template>
 	<MenuSlide :menu="menu"></MenuSlide>
-	<div>Hello</div>
+	<CreateEvent></CreateEvent>
 	<pre>{{content.body}}</pre>
 	<template v-for="block in content.body">
 		<component :is="block.component" :content="block"></component>

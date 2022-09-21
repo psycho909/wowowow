@@ -41,9 +41,9 @@ onUnmounted(() => {
 })
 </script>
 <template>
-    <div class="box fixed" :style="position" :data-uid="content.uid">
-        <div>fixed {{content.uid}} </div>
-        <Control :uid="content.uid" />
+    <div class="box fixed" :style="position" :data-uid="props.content.uid">
+        <div>fixed {{props.content.uid}} </div>
+        <Control :uid="props.content.uid" />
         <Edit v-model:showEdit="showEdit">
             <template #edit-content>
                 <div class="edit-title__box">
@@ -52,43 +52,43 @@ onUnmounted(() => {
                 </div>
                 <div class="edit-radio__box">
                     <div class="edit-radio__title">選擇出現位置:</div>
-                    <label for="" class="edit-radio__label">
+                    <div class="edit-radio__label">
                         <input type="text" class="edit-radio__input">
                         <span class="edit-radio__text">左</span>
                         <span class="edit-radio__style"></span>
-                    </label>
-                    <label for="" class="edit-radio__label">
+                    </div>
+                    <div class="edit-radio__label">
                         <input type="text" class="edit-radio__input">
                         <span class="edit-radio__text">右</span>
                         <span class="edit-radio__style"></span>
-                    </label>
-                    <label for="" class="edit-radio__label">
+                    </div>
+                    <div class="edit-radio__label">
                         <input type="text" class="edit-radio__input">
                         <span class="edit-radio__text">上</span>
                         <span class="edit-radio__style"></span>
-                    </label>
-                    <label for="" class="edit-radio__label">
+                    </div>
+                    <div class="edit-radio__label">
                         <input type="text" class="edit-radio__input">
                         <span class="edit-radio__text">下</span>
                         <span class="edit-radio__style"></span>
-                    </label>
+                    </div>
                 </div>
                 <div class="edit-style__box">
                     <div class="edit-bg__box">
-                        <label for="">
-                            <span @click="showPicker">背景色</span>
+                        <div>
+                            <div @click="showPicker">背景色</div>
                             <div id="picker" ref="picker">
                                 <Chrome v-model="bgColors" />
                             </div>
-                        </label>
+                        </div>
                     </div>
                     <div class="edit-bg__box">
-                        <label for="">
-                            <span @click="showPicker">文字顏色</span>
+                        <div>
+                            <div @click="showPicker">文字顏色</div>
                             <div id="picker" ref="picker">
                                 <Chrome v-model="textColors" />
                             </div>
-                        </label>
+                        </div>
                     </div>
                 </div>
                 <div class="edit-num__box">

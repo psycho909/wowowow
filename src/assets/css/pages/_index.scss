@@ -16,6 +16,16 @@ body {
 		height: 18px;
 		background-image: url("../img/icon-question.png");
 	}
+	&-open {
+		width: 24px;
+		height: 24px;
+		background-image: url("../img/icon-open.png");
+	}
+	&-close {
+		width: 24px;
+		height: 24px;
+		background-image: url("../img/icon-close.png");
+	}
 	&-edit {
 		background-image: url("../img/icon-edit.png");
 	}
