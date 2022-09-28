@@ -4,7 +4,7 @@ import { mainStore } from "../store/index";
 const props = defineProps(["menu"])
 const store = mainStore()
 const { content } = storeToRefs(store);
-
+console.log(props.menu)
 const add = (cpt) => {
     var data = {
         cpt
