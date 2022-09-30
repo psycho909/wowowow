@@ -1,15 +1,24 @@
 <script>
 export default {
-    name: "Lightbox"
+    name: "Lightbox",
+    label: ""
 }
 </script>
 <script setup>
-import { storeToRefs } from "pinia";
-import { mainStore } from "../store/index";
-import Control from "./Control.vue";
-const props = defineProps(["content"])
-const store = mainStore()
-const { content } = storeToRefs(store);
+const props = defineProps({
+    showLightbox: {
+        type: Boolean, default: false
+    }
+})
+const emit = defineEmits(["update:showLightbox"])
+const lightboxRef = ref(null)
+
+defineExpose({
+    lightboxRef
+})
+const closeBtn = () => {
+    emit("update:showLightbox", false)
+}
 onMounted(() => {
     console.log("onMounted")
 })
@@ -19,9 +28,17 @@ onUpdated(() => {
 onUnmounted(() => {
     console.log("destroyed")
 })
+
 </script>
 <template>
-    <div>
-        <Control :uid="props.content.uid" />
+    <div class="edit" v-if="showLightbox" ref="lightboxRef">
+        <div class="edit-module"></div>
+        <div class="edit-wrap">
+            <button type="button" class="edit-close" @click="closeBtn">close</button>
+            <div class="edit-content">
+                <slot name="edit-title"></slot>
+                <slot name="edit-content"></slot>
+            </div>
+        </div>
     </div>
 </template>

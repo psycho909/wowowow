@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps(["text", "modelValue"])
+const props = defineProps(["label", "modelValue"])
 const emit = defineEmits(["update:modelValue"])
 
 const updateValue = (event) => {
@@ -7,9 +7,9 @@ const updateValue = (event) => {
 }
 </script>
 <template>
-    <div class="edit-radio__label">
-        <input type="radio" class="edit-radio__input" :value="props.modelValue" @change="updateValue">
-        <span class="edit-radio__style"></span>
-        <span class="edit-radio__text">{{props.text}}</span>
+    <div class="radio-group">
+        <input type="radio" class="radio-group__control" :value="props.modelValue" @change="updateValue">
+        <span class="radio-group__style"></span>
+        <span class="radio-group__label">{{props.text}}</span>
     </div>
 </template>

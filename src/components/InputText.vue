@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps(["text", "placeholder", "preview", "modelValue"])
+const props = defineProps(["label", "placeholder", "preview", "modelValue"])
 const emit = defineEmits(["update:modelValue"])
 
 const updateValue = (event) => {
@@ -7,9 +7,10 @@ const updateValue = (event) => {
 }
 </script>
 <template>
-    <div class="edit-text__label">
-        <input type="text" class="edit-text__input" :value="props.modelValue" @input="updateValue"
-               :placeholder="props.placeholder">
-        <div v-if="props.preview"><img :src="props.preview" alt="預覽圖"></div>
+    <div class="input-group">
+        <div class="input-group__text">{{label}}</div>
+        <input type="text" class="input-group__control" :value="modelValue" @input="updateValue"
+               :placeholder="placeholder">
+        <div v-if="preview"><img :src="preview" alt="預覽圖"></div>
     </div>
 </template>

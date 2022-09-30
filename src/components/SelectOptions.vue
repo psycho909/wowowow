@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps(["text", "options", "modelValue"])
+const props = defineProps(["label", "options", "modelValue"])
 const emit = defineEmits(["update:modelValue"])
 
 const updateValue = (event) => {
@@ -7,8 +7,11 @@ const updateValue = (event) => {
 }
 </script>
 <template>
-    <select class="edit-select__select" @change="updateValue">
-        <option value="-1">請選擇</option>
-        <option :value="option.value" v-for="option in props.options">{{option.text}}</option>
-    </select>
+    <div class="select-group">
+        <div class="select-group__label">{{label}}</div>
+        <select class="select-group__control" @change="updateValue">
+            <option value="-1">請選擇</option>
+            <option :value="option.value" v-for="option in options">{{option.text}}</option>
+        </select>
+    </div>
 </template>
