@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted, onUpdated } from "vue";
-import GDate from "../components/GDate.vue";
-import GInput from "../components/GInput.vue";
 import GLightbox from "../components/GLightbox.vue";
-import GSelect from "../components/GSelect.vue";
+import GDate from "../elements/GDate.vue";
+import GInput from "../elements/GInput.vue";
+import GSelect from "../elements/GSelect.vue";
 
 let openCheckSubmit = ref(false)
 let openSubmitEvent = ref(false)

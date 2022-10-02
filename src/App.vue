@@ -1,8 +1,8 @@
 
 <script setup>
 import { storeToRefs } from "pinia";
-import GRadio from "./components/GRadio.vue";
-import GSelect from "./components/GSelect.vue";
+import GRadio from "./elements/GRadio.vue";
+import GSelect from "./elements/GSelect.vue";
 import CreateEvent from "./pages/CreateEvent.vue";
 import EventList from "./pages/EventList.vue";
 import Home from "./pages/Home.vue";
