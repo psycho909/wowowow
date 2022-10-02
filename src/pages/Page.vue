@@ -6,7 +6,7 @@ export default {
 <script setup>
 import { storeToRefs } from "pinia";
 import components from "../ComponentGroup.js";
-import MenuSide from "../components/MenuSide.vue";
+import GMenu from "../components/GMenu.vue";
 import { mainStore } from "../store/index";
 const store = mainStore()
 const { content } = storeToRefs(store);
@@ -22,7 +22,7 @@ const menu = computed(() => {
 </script>
 <template>
     <hr>
-    <MenuSide :menu="menu"></MenuSide>
+    <g-menu :menu="menu" />
     <hr>
     <template v-for="block in content.body">
         <component :is="block.component" :content="block"></component>

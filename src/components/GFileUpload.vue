@@ -6,7 +6,7 @@ export default {
 <script setup>
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
-import Control from "./Control.vue";
+import GControl from "./GControl.vue";
 const props = defineProps(["content"])
 const store = mainStore()
 const { content } = storeToRefs(store);
@@ -22,6 +22,6 @@ onUnmounted(() => {
 </script>
 <template>
     <div>
-        <Control :uid="props.content.uid" />
+        <g-control :uid="props.content.uid" />
     </div>
 </template>

@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted, onUpdated } from "vue";
-import DateControl from "../components/DateControl.vue";
-import InputText from "../components/InputText.vue";
-import Lightbox from "../components/Lightbox.vue";
-import SelectOptions from "../components/SelectOptions.vue";
+import GDate from "../components/GDate.vue";
+import GInput from "../components/GInput.vue";
+import GLightbox from "../components/GLightbox.vue";
+import GSelect from "../components/GSelect.vue";
 
 let openCheckSubmit = ref(false)
 let openSubmitEvent = ref(false)
@@ -39,19 +39,19 @@ const search = () => {
 <template>
     <div class="event-list__filter">
         <div class="event-list__filter-name-box">
-            <InputText label="活動名稱" placeholder="輸入內容" v-model="eventName" />
+            <g-input label="活動名稱" placeholder="輸入內容" v-model="eventName" />
         </div>
         <div class="event-list__filter-date-box">
             <div class="date-group">
                 <div class="date-group__label">日期區間</div>
-                <DateControl v-model="startDate" />
+                <g-date v-model="startDate" />
                 <span>~</span>
-                <DateControl v-model="endDate" />
+                <g-date v-model="endDate" />
             </div>
         </div>
         <div class="event-list__filter-game-box">
-            <SelectOptions label="遊戲類別" v-model="gameType" :options="options1" />
-            <SelectOptions label="狀態" v-model="gameStatus" :options="options2" />
+            <g-select label="遊戲類別" v-model="gameType" :options="options1" />
+            <g-select label="狀態" v-model="gameStatus" :options="options2" />
         </div>
         <div class="event-list__filter-btn-box">
             <a href="javascript:;" @click="search">搜尋</a>
@@ -88,20 +88,20 @@ const search = () => {
         <span>5</span>
         <a href="javascript:;" class="event-list__next">下一頁</a>
     </div>
-    <Lightbox v-model:showLightbox="openCheckSubmit">
+    <g-lightbox v-model:showLightbox="openCheckSubmit">
         <template #edit-title>
             <div>是否確定送審活動</div>
         </template>
         <template #edit-content>
             <div>活動名稱</div>
         </template>
-    </Lightbox>
-    <Lightbox v-model:showLightbox="openSubmitEvent">
+    </g-lightbox>
+    <g-lightbox v-model:showLightbox="openSubmitEvent">
         <template #edit-title>
             <div>審核活動</div>
         </template>
         <template #edit-content>
             <div>活動名稱</div>
         </template>
-    </Lightbox>
+    </g-lightbox>
 </template>

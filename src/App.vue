@@ -1,8 +1,8 @@
 
 <script setup>
 import { storeToRefs } from "pinia";
-import InputRadio from "./components/InputRadio.vue";
-import SelectOptions from "./components/SelectOptions.vue";
+import GRadio from "./components/GRadio.vue";
+import GSelect from "./components/GSelect.vue";
 import CreateEvent from "./pages/CreateEvent.vue";
 import EventList from "./pages/EventList.vue";
 import Home from "./pages/Home.vue";
@@ -42,8 +42,8 @@ const options = [{ value: 1, text: "一" }, { value: 2, text: "二" }]
 </script>
     
 <template>
-	<SelectOptions v-model="selected" :options="options"></SelectOptions>
-	<InputRadio></InputRadio>
+	<g-select v-model="selected" :options="options"></g-select>
+	<g-radio></g-radio>
 	<button type="button" @click="getVal">我是按鈕</button>
 	<Home></Home>
 	<SelectType></SelectType>
