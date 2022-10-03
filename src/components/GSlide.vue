@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: "Slide"
+    name: "Slide", label: "輪播區塊"
 }
 </script>
 <script setup>
@@ -18,13 +18,13 @@ const onSlideChange = () => {
     console.log('slide change');
 };
 onMounted(() => {
-    console.log("onMounted")
+
 })
 onUpdated(() => {
-    console.log("onUpdated")
+
 })
 onUnmounted(() => {
-    console.log("destroyed")
+
 })
 </script>
 <template>

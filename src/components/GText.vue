@@ -1,16 +1,18 @@
 <script>
 export default {
-    name: "Slogan",
-    label: "主標題圖片"
+    name: "Background",
+    label: "純文字區塊"
 }
 </script>
 <script setup>
+import { Chrome } from '@ckpack/vue-color';
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
 const props = defineProps(["content"])
 let showEdit = ref(false);
 const store = mainStore()
 const { content } = storeToRefs(store);
+let bgColors = ref("#194D33A8")
 onMounted(() => {
     var _uid = content.value.body.findIndex((v, i) => v.uid == props.content.uid);
     if (content.value.body[_uid].update) {
@@ -44,9 +46,12 @@ onUnmounted(() => {
                     <input type="text" class="edit-img__input" />
                     <div class="edit-img__preview"></div>
                 </div>
-                <div class="edit-link__box">
-                    <div class="edit-link__title">主標連結:</div>
-                    <input type="text" class="edit-link__input" />
+                <div class="edit-bg_color__box">
+                    <div class="edit-bg_color__title">背景底色:</div>
+                    <div class="edit-bg_color__picker">
+                        <Chrome v-model="bgColors" />
+                    </div>
+                    <div class="edit-bgColor__preview"></div>
                 </div>
                 <div class="edit-btn__box">
                     <a href="javascript:;" class="edit-btn__submit" @click="submit">確認送出</a>

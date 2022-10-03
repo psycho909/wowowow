@@ -4,7 +4,6 @@ import { mainStore } from "../store/index";
 const props = defineProps(["menu"])
 const store = mainStore()
 const { content } = storeToRefs(store);
-console.log(props.menu)
 const add = (cpt) => {
     var data = {
         cpt
@@ -13,7 +12,11 @@ const add = (cpt) => {
 }
 </script>
 <template>
-    <div>
-        <button type="button" class="add" v-for="m in props.menu" @click="add(m.title)">{{m.label}}</button>
-    </div>
+    <Teleport to="body">
+        <div class="g-menu open">
+            <a href="javascript:;" class="g-menu__open icon-open"></a>
+            <a href="javascript:;" class="g-menu__close icon-close"></a>
+            <a href="javascript:;" class="g-menu__add" v-for="m in props.menu" @click="add(m.title)">{{m.label}}</a>
+        </div>
+    </Teleport>
 </template>

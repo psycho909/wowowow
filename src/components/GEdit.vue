@@ -15,13 +15,13 @@ const closeBtn = () => {
     emit("update:showEdit", false)
 }
 onMounted(() => {
-    console.log("onMounted")
+
 })
 onUpdated(() => {
-    console.log("onUpdated")
+
 })
 onUnmounted(() => {
-    console.log("destroyed")
+
 })
 </script>
 <template>

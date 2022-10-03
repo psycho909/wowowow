@@ -1,99 +1,137 @@
 <script setup>
-import Datepicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
 import { storeToRefs } from "pinia";
+import GCheckbox from '../elements/GCheckbox.vue';
+import GDate from '../elements/GDate.vue';
+import GInput from '../elements/GInput.vue';
+import GSelect from '../elements/GSelect.vue';
+import GTime from '../elements/GTime.vue';
 import { mainStore } from "../store/index";
 const store = mainStore()
 const { content } = storeToRefs(store);
 
-let date = ref(new Date())
-let time = ref({
-    hours: new Date().getHours(),
-    minutes: new Date().getMinutes()
-});
+let gameOptions = [{ value: 1, text: "一" }, { value: 2, text: "二" }]
+let eventConfig = reactive({
+    gameSelected: "",
+    startDate: new Date(),
+    startTime: {
+        hours: new Date().getHours(),
+        minutes: new Date().getMinutes()
+    },
+    endDate: new Date(),
+    endTime: {
+        hours: new Date().getHours(),
+        minutes: new Date().getMinutes()
+    },
+    eventName: "",
+    cookie: false,
+    header: false,
+    title: "",
+    description: "",
+    fbTitle: "",
+    fbDescription: "",
+    fbImage: "",
+    GA: "",
+    GTM: "",
+})
+const createEvent = () => {
+    store.$patch(state => {
+        state.page = "Page"
+    })
+    store.$patch(state => {
+        state.config = eventConfig
+    })
+    console.log(eventConfig)
+}
+const reset = () => {
+    eventConfig = {
+        gameSelected: "",
+        startDate: new Date(),
+        startTime: {
+            hours: new Date().getHours(),
+            minutes: new Date().getMinutes()
+        },
+        endDate: new Date(),
+        endTime: {
+            hours: new Date().getHours(),
+            minutes: new Date().getMinutes()
+        },
+        eventName: "",
+        cookie: false,
+        header: false,
+        title: "",
+        description: "",
+        fbTitle: "",
+        fbDescription: "",
+        fbImage: "",
+        GA: "",
+        GTM: "",
+    }
+}
 </script>
 <template>
-    <div class="page-title">
-        <span class="page-title--style">網柑達</span>
-        <span>新增活動</span>
-    </div>
-    <div class="create-content">
-        <div class="create-game__box">
-            <div class="create-content__label create-game__label">選擇遊戲</div>
-            <div class="create-content__input">
-                <select name="" id="">
-                    <option value="-1">請選擇遊戲</option>
-                </select>
-            </div>
+    <div class="container">
+        <div class="page-title">
+            <span class="page-title--style">網柑達</span>
+            <span>新增活動</span>
         </div>
-        <div class="create-start__box">
-            <div class="create-content__label create-start__label">上架日期</div>
-            <div class="create-content__input">
-                <Datepicker v-model="date" :enableTimePicker="false" :previewFormat="null" selectText="確認"
-                            cancelText="取消" autoApply>
-                </Datepicker>
+        <div class="create-content">
+            <div class="create-config__box">
+                <g-select label="選擇遊戲" :options="gameOptions" v-model="eventConfig.gameSelected" />
             </div>
-            <div class="create-content__input">
-                <Datepicker v-model="time" :previewFormat="null" selectText="確認" cancelText="取消" timePicker />
+            <div class="create-config__box">
+                <div class="create-config__label">上架日期</div>
+                <div class="create-config__input">
+                    <g-date v-model="eventConfig.startDate" />
+                </div>
+                <div class="create-config__input">
+                    <g-time v-model="eventConfig.startTime" />
+                </div>
             </div>
-        </div>
-        <div class="create-end__box">
-            <div class="create-content__label create-end__label">上架日期</div>
-            <div class="create-content__input">
-                <Datepicker v-model="date" :enableTimePicker="false" :previewFormat="null" selectText="確認"
-                            cancelText="取消" autoApply>
-                </Datepicker>
+            <div class="create-config__box">
+                <div class="create-config__label">下架日期</div>
+                <div class="create-config__input">
+                    <g-date v-model="eventConfig.endDate" />
+                </div>
+                <div class="create-config__input">
+                    <g-time v-model="eventConfig.endTime" />
+                </div>
             </div>
-            <div class="create-content__input">
-                <Datepicker v-model="time" :previewFormat="null" selectText="確認" cancelText="取消" timePicker />
+            <div class="create-config__box">
+                <g-input label="活動名稱" placeholder="輸入內容" v-model="eventConfig.eventName" />
             </div>
-        </div>
-        <div class="create-name__box">
-            <div class="create-content__label create-ga__label">活動名稱</div>
-            <div class="create-content__input"><input type="text"></div>
-        </div>
-        <div class="create-ga__box">
-            <div class="create-content__label create-ga__label">GA</div>
-            <div class="create-content__input">
-                <input type="radio">
-                <span class="create-radio__style"></span>
+
+            <div class="create-config__box">
+                <g-checkbox label="COOKIE政策" v-model="eventConfig.cookie" />
             </div>
-        </div>
-        <div class="create-gtm__box">
-            <div class="create-content__label create-gtm__label">其它行銷script</div>
-            <div class="create-content__input">
-                <input type="radio">
-                <span class="create-radio__style"></span>
+            <div class="create-config__box">
+                <g-checkbox label="HEADER" v-model="eventConfig.header" />
             </div>
-        </div>
-        <div class="create-script__box">
-            <div class="create-content__label create-script__label">COOKIE政策</div>
-            <div class="create-content__input">
-                <input type="radio">
-                <span class="create-radio__style"></span>
+            <div class="create-config__box">
+                <g-input label="網頁標題" placeholder="輸入內容" v-model="eventConfig.title" />
             </div>
-        </div>
-        <div class="create-header__box">
-            <div class="create-content__label create-header__label">HEADER</div>
-            <div class="create-content__input">
-                <input type="radio">
-                <span class="create-radio__style"></span>
+            <div class="create-config__box">
+                <g-input label="網頁說明" placeholder="輸入內容" v-model="eventConfig.description" />
             </div>
-        </div>
-        <div class="create-footer__box">
-            <div class="create-content__label create-gtm__label">FOOTER</div>
-            <div class="create-content__input">
-                <input type="radio">
-                <span class="create-radio__style"></span>
+            <div class="create-config__box">
+                <g-input label="FB標題" placeholder="輸入內容" v-model="eventConfig.fbTitle" />
             </div>
-        </div>
-        <div class="create-meta__box">
-            <div class="create-content__label create-meta__label">網頁META</div>
-            <div class="create-content__input"><input type="text"></div>
-        </div>
-        <div class="create-img__box">
-            <div class="create-content__label create-img__label">縮圖</div>
-            <div class="create-content__input"><input type="text"></div>
+            <div class="create-config__box">
+                <g-input label="FB說明" placeholder="輸入內容" v-model="eventConfig.fbDescription" />
+            </div>
+            <div class="create-config__box">
+                <g-input label="FB縮圖URL" placeholder="輸入內容" v-model="eventConfig.fbImage" preview="true" />
+            </div>
+            <div class="create-config__box">
+                <g-input label="GA" placeholder="輸入內容" v-model="eventConfig.ga" />
+            </div>
+            <div class="create-config__box">
+                <g-input label="GTM" placeholder="輸入內容" v-model="eventConfig.gtm" />
+            </div>
+
+            <div class="create-btn__group">
+                <a href="javascript:;" class="btn btn__submit" @click="createEvent()">確認送出</a>
+                <a href="javascript:;" class="btn btn__reset" @click="reset()">清除重填</a>
+            </div>
         </div>
     </div>
 </template>

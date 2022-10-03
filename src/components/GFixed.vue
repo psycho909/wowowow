@@ -24,26 +24,26 @@ const position = computed(() => {
 
 onMounted(async () => {
     var _uid = content.value.body.findIndex((v, i) => v.uid == props.content.uid);
-    if (!content.value.body[_uid].update) {
+    if (content.value.body[_uid].update) {
         showEdit.value = true;
     }
     await nextTick()
-    console.log("onMounted")
+
 })
 const showPicker = () => {
     console.log("showPicker", colors.value)
 }
 onUpdated(() => {
-    console.log("onUpdated")
+
 })
 onUnmounted(() => {
-    console.log("destroyed")
+
 })
 </script>
 <template>
     <div class="box fixed" :style="position" :data-uid="props.content.uid">
         <div>fixed {{props.content.uid}} </div>
-        <Control :uid="props.content.uid" />
+        <g-modify :uid="props.content.uid" />
         <g-edit v-model:showEdit="showEdit">
             <template #edit-content>
                 <div class="edit-title__box">

@@ -1,0 +1,34 @@
+.g-menu {
+	width: 195px;
+	position: fixed;
+	top: 0;
+	right: 0;
+	background-image: linear-gradient(to bottom, #606060 65%, rgba(#606060, 0.5));
+	min-height: 100vh;
+	padding-top: 52px;
+	transform: translateX(calc(100% - 12px));
+	&.open {
+		transform: translateX(0);
+		.g-menu__open {
+			display: none;
+		}
+	}
+	&__open {
+		position: absolute;
+		top: 50%;
+		left: -16px;
+		transform: translateY(-50%);
+	}
+	&__close {
+		position: absolute;
+		top: 12px;
+		left: 12px;
+	}
+	&__add {
+		display: block;
+		text-decoration: none;
+		color: #fff;
+		padding: 15px 24px;
+		font-size: 16px;
+	}
+}

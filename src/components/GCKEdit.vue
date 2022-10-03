@@ -37,13 +37,13 @@ onMounted(async () => {
         showEdit.value = true;
     }
     await nextTick()
-    console.log("onMounted")
+
 })
 onUpdated(() => {
-    console.log("onUpdated")
+
 })
 onUnmounted(() => {
-    console.log("destroyed")
+
 })
 </script>
     

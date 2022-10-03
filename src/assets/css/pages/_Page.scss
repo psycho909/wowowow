@@ -1,0 +1,8 @@
+.wrap {
+	background-position: center 0;
+	background-image: url(var(--pc));
+	background-color: var(--color);
+	@include media {
+		background-image: url(var(--mb));
+	}
+}

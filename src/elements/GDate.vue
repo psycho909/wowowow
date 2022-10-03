@@ -2,7 +2,7 @@
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
-const props = defineProps(["label", "date"])
+const props = defineProps(["date"])
 const emit = defineEmits(["update:modelValue"])
 
 

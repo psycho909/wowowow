@@ -3,9 +3,15 @@ import { defineStore } from "pinia";
 export const mainStore = defineStore("main", {
 	state: () => {
 		return {
-			page: "SelectType",
+			page: "Page",
 			type: "",
-			content: { body: [] }
+			config: [],
+			content: {
+				body: [
+					{ component: "GBg", uid: 1, content: [{ pc: "", mb: "", color: "#000" }], update: false },
+					{ component: "GSlogan", uid: 2, content: "", update: false }
+				]
+			}
 		};
 	},
 	getters: {
@@ -16,7 +22,7 @@ export const mainStore = defineStore("main", {
 	actions: {
 		addCpt(data) {
 			var uid = Math.floor(Math.random() * 100);
-			this.content.body.push({ component: data.cpt, uid, content: {} });
+			this.content.body.push({ component: data.cpt, uid, content: {}, update: true });
 		},
 		removeCpt(data) {
 			var _index = this.content.body.findIndex((v, i) => v.uid == data);
@@ -50,12 +56,14 @@ export const mainStore = defineStore("main", {
 			this.content.body = _content;
 			this.content.body.splice(_index + 1, 0, _temp);
 		},
-		setText(data) {},
 		setPage(data) {
 			this.page = data;
 		},
 		setType(data) {
 			this.type = data;
+		},
+		setConfig(data) {
+			this.config = data;
 		}
 	}
 });

@@ -4,10 +4,16 @@
 	font-size: 18px;
 	color: #000;
 	text-decoration: none;
-	display: flex;
+	display: inline-flex;
 	justify-content: center;
 	align-items: center;
 	border-radius: 10px;
+	& + .btn {
+		margin-left: 12px;
+	}
+	&__search {
+		background-color: #ff9c00;
+	}
 	&__submit {
 		background-color: #ff9c00;
 	}
@@ -18,12 +24,14 @@
 		background-color: #ff9c00;
 		&.disabled {
 			background-color: #b4b4b4;
+			cursor: default;
 		}
 	}
 	&__next {
 		background-color: #ff9c00;
 		&.disabled {
 			background-color: #b4b4b4;
+			cursor: default;
 		}
 	}
 }

@@ -15,21 +15,21 @@ const { content } = storeToRefs(store);
 let bgColors = ref("#194D33A8")
 onMounted(() => {
     var _uid = content.value.body.findIndex((v, i) => v.uid == props.content.uid);
-    if (!content.value.body[_uid].update) {
+    if (content.value.body[_uid].update) {
         showEdit.value = true;
     }
-    console.log("onMounted")
+
 })
 onUpdated(() => {
-    console.log("onUpdated")
+
 })
 onUnmounted(() => {
-    console.log("destroyed")
+
 })
 </script>
 <template>
     <div>
-        <g-modify :uid="props.content.uid" />
+        <g-modify :uid="content.uid" />
         <g-edit v-model:showEdit="showEdit">
             <template #edit-content>
                 <div class="edit-title__box">

@@ -8,18 +8,36 @@ let types = ref([
     { type: "A", name: "A" }, { type: "A", name: "A" }, { type: "A", name: "A" }, { type: "A", name: "A" }, { type: "A", name: "A" }, { type: "A", name: "A" }
 ])
 
+
+
 const selectType = (type) => {
     store.$patch(state => {
         state.type = type
         state.page = "CreateEvent"
     })
 }
+let totalPage = ref(10)
+let currentPage = ref(1)
 
 const prev = () => {
+    let temp = currentPage.value;
+    temp -= 1;
+    if (temp < 1) {
+        return;
+    }
 
+    currentPage.value = temp;
 }
 const next = () => {
-
+    let temp = currentPage.value;
+    temp += 1;
+    if (temp > totalPage.value) {
+        return;
+    }
+    types.value = [
+        { type: "B", name: "B" }, { type: "B", name: "B" }, { type: "B", name: "B" }, { type: "A", name: "A" }, { type: "A", name: "A" }, { type: "A", name: "A" }
+    ]
+    currentPage.value = temp;
 }
 </script>
 <template>
@@ -35,12 +53,13 @@ const next = () => {
             </div>
         </div>
         <div class="page-pagination__box">
-            <a href="javascript:;" class="btn btn__prev">上一頁</a>
+            <a href="javascript:;" class="btn btn__prev" :class="[currentPage == 1?'disabled':'']" @click="prev">上一頁</a>
             <div class="page-pagination__number">
-                <span class="page-pagination__current">1</span>/
-                <span>5</span>
+                <span class="page-pagination__current">{{currentPage}}</span>/
+                <span>{{totalPage}}</span>
             </div>
-            <a href="javascript:;" class="btn btn__next">下一頁</a>
+            <a href="javascript:;" class="btn btn__next" :class="[currentPage == totalPage?'disabled':'']"
+               @click="next">下一頁</a>
         </div>
     </div>
 </template>

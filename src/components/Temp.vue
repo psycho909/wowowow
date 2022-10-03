@@ -16,13 +16,13 @@ onMounted(() => {
     if (!content.value.body[_uid].update) {
         showEdit.value = true;
     }
-    console.log("onMounted")
+
 })
 onUpdated(() => {
-    console.log("onUpdated")
+
 })
 onUnmounted(() => {
-    console.log("destroyed")
+
 })
 </script>
 <template>

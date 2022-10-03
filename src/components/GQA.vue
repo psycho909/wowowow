@@ -9,13 +9,13 @@ import { mainStore } from "../store/index";
 const store = mainStore()
 const { content } = storeToRefs(store);
 onMounted(() => {
-    console.log("onMounted")
+
 })
 onUpdated(() => {
-    console.log("onUpdated")
+
 })
 onUnmounted(() => {
-    console.log("destroyed")
+
 })
 </script>
 <template>
