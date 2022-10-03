@@ -37,7 +37,7 @@ const menu = computed(() => {
 <template>
     <div class="wrap" data-type="one" :style="bgSetting">
         <template v-for="block in content.body">
-            <component :is="block.component" :content="block"></component>
+            <component :is="block.component" :data="block"></component>
         </template>
     </div>
     <g-menu :menu="menu" />

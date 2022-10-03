@@ -10,7 +10,7 @@ import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
 const store = mainStore()
 const { content } = storeToRefs(store);
-const props = defineProps(["content"])
+const props = defineProps(["data"])
 let showEdit = ref(false);
 let editor = ref(ClassicEditor)
 let editorData = ref("")
@@ -32,7 +32,7 @@ const getEditorData = () => {
     console.log(editorData.value)
 }
 onMounted(async () => {
-    var _uid = content.value.body.findIndex((v, i) => v.uid == props.content.uid);
+    var _uid = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
     if (!content.value.body[_uid].update) {
         showEdit.value = true;
     }
@@ -50,7 +50,7 @@ onUnmounted(() => {
 <template>
     <div>
         <div>{{editorData}}</div>
-        <g-modify :uid="props.content.uid" />
+        <g-modify :uid="props.data.uid" />
 
         <button type="button" class="btn" @click="getEditorData">getter CKEdit</button>
         <g-edit v-model:showEdit="showEdit">

@@ -8,7 +8,7 @@ import { storeToRefs } from "pinia";
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { mainStore } from "../store/index";
-const props = defineProps(["content"])
+const props = defineProps(["data"])
 const store = mainStore()
 const { content } = storeToRefs(store);
 const onSwiper = (swiper) => {
@@ -28,7 +28,7 @@ onUnmounted(() => {
 })
 </script>
 <template>
-    <div class="box swiper-box" :data-uid="content.uid">
+    <div class="box swiper-box" :data-uid="data.uid">
         <swiper
                 :slides-per-view="1"
                 :space-between="50"
@@ -38,6 +38,6 @@ onUnmounted(() => {
             <swiper-slide>Slide 2</swiper-slide>
             <swiper-slide>Slide 3</swiper-slide>
         </swiper>
-        <g-modify :uid="content.uid" />
+        <g-modify :uid="data.uid" />
     </div>
 </template>

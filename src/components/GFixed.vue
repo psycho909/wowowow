@@ -9,7 +9,7 @@ import { Chrome } from '@ckpack/vue-color';
 import { storeToRefs } from "pinia";
 import { nextTick } from 'vue';
 import { mainStore } from "../store/index";
-const props = defineProps(["content"])
+const props = defineProps(["data"])
 const store = mainStore()
 const { content } = storeToRefs(store);
 let showEdit = ref(false);
@@ -23,7 +23,7 @@ const position = computed(() => {
 })
 
 onMounted(async () => {
-    var _uid = content.value.body.findIndex((v, i) => v.uid == props.content.uid);
+    var _uid = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
     if (content.value.body[_uid].update) {
         showEdit.value = true;
     }
@@ -41,9 +41,9 @@ onUnmounted(() => {
 })
 </script>
 <template>
-    <div class="box fixed" :style="position" :data-uid="props.content.uid">
-        <div>fixed {{props.content.uid}} </div>
-        <g-modify :uid="props.content.uid" />
+    <div class="box fixed" :style="position" :data-uid="data.uid">
+        <div>fixed {{data.uid}} </div>
+        <g-modify :uid="data.uid" />
         <g-edit v-model:showEdit="showEdit">
             <template #edit-content>
                 <div class="edit-title__box">

@@ -8,7 +8,7 @@ export const mainStore = defineStore("main", {
 			config: [],
 			content: {
 				body: [
-					{ component: "GBg", uid: 1, content: [{ pc: "", mb: "", color: "#000" }], update: false },
+					{ component: "GBg", uid: 1, content: [{ pc: "", mb: "", color: "#ddd" }], update: false },
 					{ component: "GSlogan", uid: 2, content: "", update: false }
 				]
 			}
@@ -33,6 +33,10 @@ export const mainStore = defineStore("main", {
 		updateCpt(data) {
 			var _index = this.content.body.findIndex((v, i) => v.uid == data.uid);
 			this.content.body[_index].content = data.content;
+			this.content.body[_index].update = true;
+		},
+		editCpt(data) {
+			var _index = this.content.body.findIndex((v, i) => v.uid == data);
 			this.content.body[_index].update = true;
 		},
 		upCpt(data) {

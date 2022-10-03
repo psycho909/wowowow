@@ -7,12 +7,12 @@ export default {
 <script setup>
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
-const props = defineProps(["content"])
+const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
 const { content } = storeToRefs(store);
 onMounted(() => {
-    var _uid = content.value.body.findIndex((v, i) => v.uid == props.content.uid);
+    var _uid = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
     if (!content.value.body[_uid].update) {
         showEdit.value = true;
     }
@@ -27,7 +27,7 @@ onUnmounted(() => {
 </script>
 <template>
     <div>
-        <Control :uid="props.content.uid" />
+        <Control :uid="props.data.uid" />
         <g-edit v-model:showEdit="showEdit">
             <template #edit-content>
                 <div class="edit-title__box">

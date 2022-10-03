@@ -11,12 +11,16 @@ const up = () => {
 const down = () => {
     store.downCpt(props.uid);
 }
+const edit = () => {
+    store.editCpt(props.uid);
+}
 </script>
 <template>
     <div class="btn-group">
-        <button type="button" class="up" @click="up">up</button>
-        <button type="button" class="down" @click="down">down</button>
-        <button type="button" class="remove" @click="remove">remove</button>
+        <button type="button" class="modify-btn__edit" @click="edit">edit</button>
+        <button type="button" class="modify-btn__up" @click="up">up</button>
+        <button type="button" class="modify-btn__down" @click="down">down</button>
+        <button type="button" class="modify-btn__remove" @click="remove">remove</button>
         <slot name="btn-update"></slot>
     </div>
 </template>
