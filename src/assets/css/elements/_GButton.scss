@@ -1,0 +1,29 @@
+.btn {
+	width: 185px;
+	height: 43px;
+	font-size: 18px;
+	color: #000;
+	text-decoration: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 10px;
+	&__submit {
+		background-color: #ff9c00;
+	}
+	&__reset {
+		background-color: #b4b4b4;
+	}
+	&__prev {
+		background-color: #ff9c00;
+		&.disabled {
+			background-color: #b4b4b4;
+		}
+	}
+	&__next {
+		background-color: #ff9c00;
+		&.disabled {
+			background-color: #b4b4b4;
+		}
+	}
+}

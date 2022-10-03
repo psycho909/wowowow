@@ -1,6 +1,10 @@
 <script setup>
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
+import { storeToRefs } from "pinia";
+import { mainStore } from "../store/index";
+const store = mainStore()
+const { content } = storeToRefs(store);
 
 let date = ref(new Date())
 let time = ref({
@@ -9,8 +13,8 @@ let time = ref({
 });
 </script>
 <template>
-    <div class="create-title">
-        <span class="create-title--style">網柑達</span>
+    <div class="page-title">
+        <span class="page-title--style">網柑達</span>
         <span>新增活動</span>
     </div>
     <div class="create-content">

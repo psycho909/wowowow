@@ -43,15 +43,10 @@ export const InsertGTM = (GTM) => {
 export const InsertGA = (GA) => {
 	window.addEventListener("DOMContentLoaded", function () {
 		var body = document.getElementsByTagName("body")[0];
-		var noscript = document.createElement("noscript");
-		var iframe = document.createElement("iframe");
-		iframe.src = "https://www.googletagmanager.com/gtag/js?id=" + GA;
-		iframe.height = 0;
-		iframe.width = 0;
-		iframe.style = "display: none; visibility: hidden";
-		noscript.append(iframe);
-		body.insertAdjacentElement("afterbegin", noscript);
-
+		var _script = document.createElement("script");
+		_script.src = "https://www.googletagmanager.com/gtag/js?id=" + GA;
+		_script.async = true;
+		body.insertAdjacentElement("afterbegin", _script);
 		window.dataLayer = window.dataLayer || [];
 		function gtag() {
 			dataLayer.push(arguments);

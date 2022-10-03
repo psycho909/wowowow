@@ -21,10 +21,10 @@ const menu = computed(() => {
 })
 </script>
 <template>
-    <hr>
-    <g-menu :menu="menu" />
-    <hr>
-    <template v-for="block in content.body">
-        <component :is="block.component" :content="block"></component>
-    </template>
+    <div class="wrap">
+        <g-menu :menu="menu" />
+        <template v-for="block in content.body">
+            <component :is="block.component" :content="block"></component>
+        </template>
+    </div>
 </template>

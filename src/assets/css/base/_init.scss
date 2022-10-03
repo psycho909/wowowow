@@ -1,3 +1,5 @@
+$fontFamily: "PingFangTC-Regular", "Heiti TC", "Noto Sans TC", "Microsoft JhengHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
 * {
 	padding: 0;
 	margin: 0;
@@ -23,17 +25,8 @@ a {
 		outline: none;
 	}
 }
-a[href] {
-	cursor: pointer;
-}
-.cur-p {
-	cursor: pointer;
-}
-[hidden] {
-	display: none !important;
-}
 [v-cloak] {
-  display: none;
+	display: none;
 }
 .clearfix {
 	overflow: hidden;
@@ -44,14 +37,6 @@ a[href] {
 	}
 }
 
-button {
-	background: none;
-	border: none;
-	color: inherit;
-	font: inherit;
-	outline: none;
-	padding: 0;
-}
 .text-ellipsis {
 	white-space: nowrap;
 	overflow: hidden;

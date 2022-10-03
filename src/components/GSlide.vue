@@ -38,6 +38,6 @@ onUnmounted(() => {
             <swiper-slide>Slide 2</swiper-slide>
             <swiper-slide>Slide 3</swiper-slide>
         </swiper>
-        <Control :uid="content.uid" />
+        <g-modify :uid="content.uid" />
     </div>
 </template>

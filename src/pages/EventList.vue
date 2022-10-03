@@ -37,6 +37,10 @@ const search = () => {
 }
 </script>
 <template>
+    <div class="page-title">
+        <span class="page-title--style">網柑達</span>
+        <span>活動列表</span>
+    </div>
     <div class="event-list__filter">
         <div class="event-list__filter-name-box">
             <g-input label="活動名稱" placeholder="輸入內容" v-model="eventName" />

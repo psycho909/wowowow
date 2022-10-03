@@ -3,6 +3,8 @@ import { defineStore } from "pinia";
 export const mainStore = defineStore("main", {
 	state: () => {
 		return {
+			page: "SelectType",
+			type: "",
 			content: { body: [] }
 		};
 	},
@@ -48,6 +50,12 @@ export const mainStore = defineStore("main", {
 			this.content.body = _content;
 			this.content.body.splice(_index + 1, 0, _temp);
 		},
-		setText(state, data) {}
+		setText(data) {},
+		setPage(data) {
+			this.page = data;
+		},
+		setType(data) {
+			this.type = data;
+		}
 	}
 });

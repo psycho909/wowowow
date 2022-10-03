@@ -1,8 +1,6 @@
 
 <script setup>
 import { storeToRefs } from "pinia";
-import GRadio from "./elements/GRadio.vue";
-import GSelect from "./elements/GSelect.vue";
 import CreateEvent from "./pages/CreateEvent.vue";
 import EventList from "./pages/EventList.vue";
 import Home from "./pages/Home.vue";
@@ -14,41 +12,34 @@ const { content } = storeToRefs(store);
 
 
 let selected = ref("")
-const InsertGA = (GA) => {
-	window.addEventListener("DOMContentLoaded", function () {
-		var body = document.getElementsByTagName("body")[0];
-		var noscript = document.createElement("noscript");
-		var iframe = document.createElement("iframe");
-		iframe.src = "https://www.googletagmanager.com/gtag/js?id=" + GA;
-		iframe.height = 0;
-		iframe.width = 0;
-		iframe.style = "display: none; visibility: hidden";
-		noscript.append(iframe);
-		body.insertAdjacentElement("afterbegin", noscript);
 
-		window.dataLayer = window.dataLayer || [];
-		function gtag() { dataLayer.push(arguments); }
-		gtag('js', new Date());
 
-		gtag('config', GA);
-	});
-};
+const options = [{ value: 1, text: "一" }, { value: 2, text: "二" }]
+const radio1 = ref("A")
+const radio2 = ref("B")
+const radio3 = ref("C")
+const radio = ref("B")
 
 const getVal = () => {
-	InsertGA("UA-124678311-1")
-	console.log(selected.value)
+	console.log(radio.value)
 }
-const options = [{ value: 1, text: "一" }, { value: 2, text: "二" }]
+
 </script>
     
 <template>
-	<g-select v-model="selected" :options="options"></g-select>
+	<!-- <g-youtube youtube="M7lc1UVf-VE" />
+	<div>
+		<g-radio name="toy" label="A" :value="radio1" v-model="radio" />
+		<g-radio name="toy" label="B" :value="radio2" v-model="radio" />
+		<g-radio name="toy" label="C" :value="radio3" v-model="radio" />
+	</div>
+	<g-select v-model="selected" :options="options" />
 	<g-radio></g-radio>
-	<button type="button" @click="getVal">我是按鈕</button>
-	<Home></Home>
-	<SelectType></SelectType>
-	<CreateEvent></CreateEvent>
-	<EventList></EventList>
-	<Page></Page>
+	<button type="button" @click="getVal">我是按鈕</button> -->
+	<Home v-if="store.page == 'Home'"></Home>
+	<SelectType v-if="store.page == 'SelectType'"></SelectType>
+	<CreateEvent v-if="store.page == 'CreateEvent'"></CreateEvent>
+	<EventList v-if="store.page  == 'EventList'"></EventList>
+	<Page v-if="store.page  == 'Page'"></Page>
 </template>
     

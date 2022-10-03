@@ -29,8 +29,8 @@ onUnmounted(() => {
 </script>
 <template>
     <div>
-        <Control :uid="props.content.uid" />
-        <Edit v-model:showEdit="showEdit">
+        <g-modify :uid="props.content.uid" />
+        <g-edit v-model:showEdit="showEdit">
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">背景圖</div>
@@ -58,6 +58,6 @@ onUnmounted(() => {
                     <a href="javascript:;" class="edit-btn__reset" @click="reset">清除重填</a>
                 </div>
             </template>
-        </Edit>
+        </g-edit>
     </div>
 </template>

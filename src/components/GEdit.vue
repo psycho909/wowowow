@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: "Edit",
+    name: "g-edit",
     label: ""
 }
 </script>

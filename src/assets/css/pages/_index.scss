@@ -1,9 +1,53 @@
 body {
 	position: relative;
 	width: 100%;
-	min-width: 960px;
+	min-width: 1200px;
 	@include media {
 		min-width: auto;
+	}
+}
+#app {
+	position: relative;
+	width: 100%;
+}
+.container {
+	width: 1200px;
+	margin: 0 auto;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding-top: 76px;
+	padding-bottom: 76px;
+}
+.page {
+	&-title {
+		font-size: 26px;
+		color: #d0cbcb;
+		padding: 12px 0;
+		min-width: 295px;
+		margin: 0 auto;
+		text-align: center;
+		border-bottom: 1px solid #5b5b5b;
+		display: inline-block;
+		&--style {
+			color: #ff9c00;
+		}
+	}
+	&-pagination {
+		&__box {
+			display: flex;
+			align-items: center;
+			color: #5b5b5b;
+			margin: 0 auto;
+			font-size: 26px;
+		}
+		&__current {
+			color: #5a9ae5;
+		}
+		&__number {
+			margin: 0 12px;
+			display: flex;
+		}
 	}
 }
 
@@ -67,23 +111,6 @@ body {
 	width: 100%;
 	display: flex;
 	justify-content: center;
-}
-.box {
-	width: 100%;
-	padding: 1rem;
-	position: relative;
-}
-.foo {
-	background-color: rgba(255, 238, 0, 0.3);
-	border: 1px solid rgba(255, 238, 0, 1);
-}
-.heading {
-	background-color: rgba(0, 238, 255, 0.3);
-	border: 1px solid rgba(0, 238, 255, 1);
-}
-.card {
-	background-color: rgba(0, 0, 0, 0.3);
-	border: 1px solid rgba(0, 0, 0, 1);
 }
 .btn-group {
 	position: absolute;

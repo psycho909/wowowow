@@ -44,7 +44,7 @@ onUnmounted(() => {
     <div class="box fixed" :style="position" :data-uid="props.content.uid">
         <div>fixed {{props.content.uid}} </div>
         <Control :uid="props.content.uid" />
-        <Edit v-model:showEdit="showEdit">
+        <g-edit v-model:showEdit="showEdit">
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">浮動式選單</div>
@@ -107,6 +107,6 @@ onUnmounted(() => {
                     <a href="javascript:;" class="edit-btn__reset" @click="reset">清除重填</a>
                 </div>
             </template>
-        </Edit>
+        </g-edit>
     </div>
 </template>

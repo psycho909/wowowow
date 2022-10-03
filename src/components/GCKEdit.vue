@@ -50,10 +50,10 @@ onUnmounted(() => {
 <template>
     <div>
         <div>{{editorData}}</div>
-        <Control :uid="props.content.uid" />
+        <g-modify :uid="props.content.uid" />
 
         <button type="button" class="btn" @click="getEditorData">getter CKEdit</button>
-        <Edit v-model:showEdit="showEdit">
+        <g-edit v-model:showEdit="showEdit">
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">文字區塊</div>
@@ -93,7 +93,7 @@ onUnmounted(() => {
                     <a href="javascript:;" class="edit-btn__reset" @click="reset">清除重填</a>
                 </div>
             </template>
-        </Edit>
+        </g-edit>
     </div>
 </template>
     
