@@ -14,24 +14,17 @@ const emit = defineEmits(["update:showEdit"])
 const closeBtn = () => {
     emit("update:showEdit", false)
 }
-onMounted(() => {
-
-})
-onUpdated(() => {
-
-})
-onUnmounted(() => {
-
-})
 </script>
 <template>
-    <div class="edit" v-if="showEdit">
-        <div class="edit-module"></div>
-        <div class="edit-wrap">
-            <button type="button" class="edit-close" @click="closeBtn">close</button>
-            <div class="edit-content">
-                <slot name="edit-content"></slot>
+    <Teleport to="body">
+        <div class="g-edit" v-if="showEdit">
+            <div class="g-edit__module"></div>
+            <div class="g-edit__wrap">
+                <a href="javascript:;" class="icon icon-close" @click="closeBtn">close</a>
+                <div class="g-edit__content">
+                    <slot name="edit-content"></slot>
+                </div>
             </div>
         </div>
-    </div>
+    </Teleport>
 </template>

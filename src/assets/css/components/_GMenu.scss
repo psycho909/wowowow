@@ -7,6 +7,7 @@
 	min-height: 100vh;
 	padding-top: 52px;
 	transform: translateX(calc(100% - 12px));
+	z-index: 99;
 	&.open {
 		transform: translateX(0);
 		.g-menu__open {
@@ -30,5 +31,9 @@
 		color: #fff;
 		padding: 15px 24px;
 		font-size: 16px;
+		&.disabled {
+			color: #b7b7b7;
+			cursor: default;
+		}
 	}
 }

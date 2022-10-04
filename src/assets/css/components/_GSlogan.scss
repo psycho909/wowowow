@@ -1,0 +1,29 @@
+.g-slogan {
+	position: relative;
+	width: 100%;
+	&-container {
+		background-position: center 0;
+		background-image: var(--pc);
+		background-color: var(--color);
+		background-size: calc(var(--w) * 1px) calc(var(--h) * 1px);
+		width: calc(var(--w) * 1px);
+		height: calc(var(--h) * 1px);
+		position: relative;
+		background-repeat: no-repeat;
+		margin: 0 auto 24px;
+		display: block;
+		@include media {
+			background-image: url(var(--mb));
+			background-size: calc(var(--mw) / 768 * 100vw) calc(var(--mw) / 768 * 100vw);
+		}
+	}
+	.g-modify {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		&-title {
+			text-decoration: none;
+			color: #000;
+		}
+	}
+}

@@ -5,106 +5,118 @@ export default {
 }
 </script>
 <script setup>
-import { Chrome } from '@ckpack/vue-color';
 import { storeToRefs } from "pinia";
-import { nextTick } from 'vue';
+import GInput from '../elements/GInput.vue';
+import GRadio from '../elements/GRadioo.vue';
+import GSelect from '../elements/GSelect.vue';
 import { mainStore } from "../store/index";
 const props = defineProps(["data"])
 const store = mainStore()
 const { content } = storeToRefs(store);
 let showEdit = ref(false);
-let picker = ref(null)
-let bgColors = ref("#194D33A8")
-let textColors = ref("#194D33A8")
-const position = computed(() => {
-    var top = props.content.top ? `top:0px;` : `bottom:0px;`;
-    var left = props.content.left ? `left:0px;` : `right:0px;`;
-    return top + left;
+let fixedSetting = ref({})
+let fixedData = reactive({
+    position: "",
+    hamburger: "",
+    style: "",
+    menus: []
 })
 
-onMounted(async () => {
-    var _uid = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
-    if (content.value.body[_uid].update) {
+var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
+let styleOptions = [{ value: "blue", text: "一" }, { value: "red", text: "二" }]
+watchEffect(() => {
+    if (content.value.body[_index].update) {
         showEdit.value = true;
+    } else {
+        showEdit.value = false;
     }
-    await nextTick()
-
+    if (content.value.body[_index]) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            fixedData[v] = props.data.content[v];
+            fixedSetting.value[v] = props.data.content[v];
+        })
+    }
 })
-const showPicker = () => {
-    console.log("showPicker", colors.value)
-}
+onMounted(async () => {
+    await nextTick()
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            fixedData[v] = props.data.content[v];
+            fixedSetting.value[v] = props.data.content[v];
+        })
+    }
+})
 onUpdated(() => {
 
 })
 onUnmounted(() => {
 
 })
+const addMenu = () => {
+    fixedData.menus.push({ text: "", link: "", target: false })
+}
+
+const removeMenu = () => {
+
+}
+
+const submit = () => {
+    var data = { ...fixedData }
+    store.updateCpt(props.data.uid, data)
+}
+const reset = () => {
+
+}
 </script>
 <template>
-    <div class="box fixed" :style="position" :data-uid="data.uid">
-        <div>fixed {{data.uid}} </div>
-        <g-modify :uid="data.uid" />
+    <div class="g-fixed" :class="[fixedSetting.position,fixedSetting.hamburger]">
+        <div class="g-fixed-container">
+            <a :href="[menu.link?menu.link:'javascript:;']" class="g-fixed__menu"
+               :target="[menu.target?'_blank':'_self']" v-for="menu in fixedSetting.menus">{{menu.text}}</a>
+        </div>
+        <g-modify :uid="data.uid" :move="false" />
         <g-edit v-model:showEdit="showEdit">
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">浮動式選單</div>
                     <a href="javascript:;" class="edit-title__q"></a>
                 </div>
-                <div class="edit-radio__box">
+                <div class="edit-input__box">
                     <div class="edit-radio__title">選擇出現位置:</div>
-                    <div class="edit-radio__label">
-                        <input type="text" class="edit-radio__input">
-                        <span class="edit-radio__text">左</span>
-                        <span class="edit-radio__style"></span>
-                    </div>
-                    <div class="edit-radio__label">
-                        <input type="text" class="edit-radio__input">
-                        <span class="edit-radio__text">右</span>
-                        <span class="edit-radio__style"></span>
-                    </div>
-                    <div class="edit-radio__label">
-                        <input type="text" class="edit-radio__input">
-                        <span class="edit-radio__text">上</span>
-                        <span class="edit-radio__style"></span>
-                    </div>
-                    <div class="edit-radio__label">
-                        <input type="text" class="edit-radio__input">
-                        <span class="edit-radio__text">下</span>
-                        <span class="edit-radio__style"></span>
-                    </div>
+                    <g-radio label="左" name="position" value="left" v-model="fixedData.position" />
+                    <g-radio label="右" name="position" value="right" v-model="fixedData.position" />
+                    <g-radio label="上" name="position" value="top" v-model="fixedData.position" />
+                    <g-radio label="下" name="position" value="bottom" v-model="fixedData.position" />
                 </div>
-                <div class="edit-style__box">
-                    <div class="edit-bg__box">
-                        <div>
-                            <div @click="showPicker">背景色</div>
-                            <div id="picker" ref="picker">
-                                <Chrome v-model="bgColors" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="edit-bg__box">
-                        <div>
-                            <div @click="showPicker">文字顏色</div>
-                            <div id="picker" ref="picker">
-                                <Chrome v-model="textColors" />
-                            </div>
-                        </div>
-                    </div>
+                <div class="edit-input__box">
+                    <div class="edit-radio__title">手機版漢堡選單出現位置:</div>
+                    <g-radio label="左" name="hamburger" value="hamburger-left" v-model="fixedData.hamburger" />
+                    <g-radio label="右" name="hamburger" value="hamburger-right" v-model="fixedData.hamburger" />
                 </div>
-                <div class="edit-num__box">
+                <div class="edit-input__box">
+                    <g-select label="主題顏色" :options="styleOptions" v-model="fixedData.style" />
+                </div>
+                <div class="edit-input__box">
                     <span class="edit-num__title">選單數目</span>
-                    <input type="number" class="edit-num__input">
-                    <a href="javascript:;" class="edit-num__add"></a>
-                    <a href="javascript:;" class="edit-num__remove"></a>
+                    <div>{{fixedData.menus.length}}</div>
+                    <a href="javascript:;" class="icon icon-add" @click="addMenu"></a>
+                    <a href="javascript:;" class="icon icon-remove" @click="removeMenu"></a>
                 </div>
-                <div class="edit-col__box">
-                    <input type="text" class="edit-col__text" placeholder="請輸入選單文字">
-                    <input type="text" class="edit-col__link" placeholder="請輸入連結或URL">
-                    <a href="javascript:;" class="edit-col__remove"></a>
+                <div class="edit-input__box">
+                    <div class="edit-col__box" v-for="menu in fixedData.menus">
+                        <g-input placeholder="請輸入選單文字" v-model="menu.text" />
+                        <g-input placeholder="請輸入連結或URL" v-model="menu.link" />
+                        <div class="edit-radio__box">
+                            <div class="edit-radio__title">另開視窗:</div>
+                            <g-radio label="是" name="target" :value="true" v-model="menu.target" />
+                            <g-radio label="否" name="target" :value="false" v-model="menu.target" />
+                        </div>
+                        <a href="javascript:;" class="icon icon-remove"></a>
+                    </div>
                 </div>
                 <div class="edit-btn__box">
-                    <a href="javascript:;" class="edit-btn__submit" @click="submit">確認送出</a>
-                    <a href="javascript:;" class="edit-btn__reset" @click="reset">清除重填</a>
+                    <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
+                    <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
                 </div>
             </template>
         </g-edit>

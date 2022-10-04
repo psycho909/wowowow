@@ -8,8 +8,23 @@ export const mainStore = defineStore("main", {
 			config: [],
 			content: {
 				body: [
-					{ component: "GBg", uid: 1, content: [{ pc: "", mb: "", color: "#ddd" }], update: false },
-					{ component: "GSlogan", uid: 2, content: "", update: false }
+					{ component: "GBg", uid: 1, content: { pc: "", mb: "", color: "#eed" }, update: false },
+					{ component: "GSlogan", uid: 2, content: { pc: "./src/assets/css/img/slogan.png", mb: "", w: 1000, h: 187 }, update: false },
+					{
+						component: "GFixed",
+						uid: 3,
+						content: {
+							position: "left",
+							hamburger: "hamburger-right",
+							style: "blue",
+							menus: [
+								{ link: "", target: false, text: "標題一" },
+								{ link: "", target: false, text: "標題二" },
+								{ link: "", target: false, text: "標題三" }
+							]
+						},
+						update: false
+					}
 				]
 			}
 		};
@@ -30,19 +45,22 @@ export const mainStore = defineStore("main", {
 				this.content.body = [...this.content.body.slice(0, _index), ...this.content.body.slice(_index + 1)];
 			}
 		},
-		updateCpt(data) {
-			var _index = this.content.body.findIndex((v, i) => v.uid == data.uid);
-			this.content.body[_index].content = data.content;
-			this.content.body[_index].update = true;
+		updateCpt(uid, data) {
+			var _index = this.content.body.findIndex((v, i) => v.uid == uid);
+			if (_index > -1) {
+				this.content.body[_index].content = data;
+				this.content.body[_index].update = false;
+			}
 		},
 		editCpt(data) {
 			var _index = this.content.body.findIndex((v, i) => v.uid == data);
-			this.content.body[_index].update = true;
+			if (_index > -1) {
+				this.content.body[_index].update = true;
+			}
 		},
 		upCpt(data) {
-			console.log(data);
 			var _index = this.content.body.findIndex((v, i) => v.uid == data);
-			if (_index - 1 < 0) {
+			if (_index - 1 < 0 || this.content.body[_index - 1].component == "GBg" || this.content.body[_index - 1].component == "GSlogan") {
 				return;
 			}
 			var _temp = this.content.body[_index];

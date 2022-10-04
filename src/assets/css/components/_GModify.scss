@@ -1,0 +1,20 @@
+.g-modify {
+	display: flex;
+	align-items: center;
+	&-title {
+		margin-right: 6px;
+		font-size: 20px;
+		text-shadow: 0 0 2px #fff;
+	}
+	&-btn {
+		&__group {
+			display: flex;
+			a + a {
+				margin-left: 4px;
+			}
+			& + .g-modify-btn__group {
+				margin-left: 16px;
+			}
+		}
+	}
+}

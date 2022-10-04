@@ -3,12 +3,12 @@ lockfileVersion: 5.4
 specifiers:
   '@ckeditor/ckeditor5-build-classic': ^35.1.0
   '@ckeditor/ckeditor5-vue': ^4.0.1
-  '@ckpack/vue-color': ^1.2.0
   '@rollup/plugin-alias': ^3.1.9
   '@vitejs/plugin-vue': ^3.0.3
   '@vitejs/plugin-vue-jsx': ^2.0.0
   '@vuepic/vue-datepicker': ^3.4.8
   axios: ^0.27.2
+  i: ^0.3.7
   pinia: ^2.0.20
   sass: ^1.54.5
   swiper: ^8.4.2
@@ -16,18 +16,20 @@ specifiers:
   unplugin-vue-components: ^0.22.4
   vite: ^3.0.7
   vue: ^3.2.37
+  vue-color-kit: ^1.0.5
 
 dependencies:
   '@ckeditor/ckeditor5-build-classic': 35.1.0
   '@ckeditor/ckeditor5-vue': 4.0.1
-  '@ckpack/vue-color': 1.2.0_vue@3.2.38
   '@rollup/plugin-alias': 3.1.9_rollup@2.77.3
   '@vitejs/plugin-vue-jsx': 2.0.0_vite@3.0.9+vue@3.2.38
   '@vuepic/vue-datepicker': 3.4.8_vue@3.2.38
   axios: 0.27.2
+  i: 0.3.7
   pinia: 2.0.21_vue@3.2.38
   swiper: 8.4.2
   vue: 3.2.38
+  vue-color-kit: 1.0.5_vue@3.2.38
 
 devDependencies:
   '@vitejs/plugin-vue': 3.0.3_vite@3.0.9+vue@3.2.38
@@ -615,23 +617,6 @@ packages:
       '@ckeditor/ckeditor5-ui': 35.1.0
       '@ckeditor/ckeditor5-utils': 35.1.0
       lodash-es: 4.17.21
-    dev: false
-
-  /@ckpack/vue-color/1.2.0_vue@3.2.38:
-    resolution: {integrity: sha512-c9X82nppYjSxjlITO6jdLLdt9HoyZzqEWpqDL2V6NJd859d6GCh/2AHeRXk+37uRJ1UdTkCuty93WOEqja8quw==}
-    engines: {node: '>=12'}
-    peerDependencies:
-      vue: ^3.2.0
-    dependencies:
-      '@ctrl/tinycolor': 3.4.1
-      lodash-es: 4.17.21
-      material-colors: 1.2.6
-      vue: 3.2.38
-    dev: false
-
-  /@ctrl/tinycolor/3.4.1:
-    resolution: {integrity: sha512-ej5oVy6lykXsvieQtqZxCOaLT+xD4+QNarq78cIYISHmZXshCvROLudpQN3lfL8G0NL7plMSSK+zlyvCaIJ4Iw==}
-    engines: {node: '>=10'}
     dev: false
 
   /@esbuild/linux-loong64/0.14.54:
@@ -1316,6 +1301,11 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
+  /i/0.3.7:
+    resolution: {integrity: sha512-FYz4wlXgkQwIPqhzC5TdNMLSE5+GS1IIDJZY/1ZiEPCT2S3COUVZeT5OW4BmW4r5LHLQuOosSwsvnroG9GR59Q==}
+    engines: {node: '>=0.4'}
+    dev: false
+
   /immutable/4.1.0:
     resolution: {integrity: sha512-oNkuqVTA8jqG1Q6c+UglTOD1xhC1BtjKI7XkCXRkZHrN5m18/XsnUp8Q89GkQO/z+0WjonSvl0FLhDYftp46nQ==}
 
@@ -1384,10 +1374,6 @@ packages:
     dependencies:
       sourcemap-codec: 1.4.8
     dev: true
-
-  /material-colors/1.2.6:
-    resolution: {integrity: sha512-6qE4B9deFBIa9YSpOc9O0Sgc43zTeVYbgDT5veRKSlB2+ZuHNoVVxA1L/ckMUayV9Ay9y7Z/SZCLcGteW9i7bg==}
-    dev: false
 
   /merge2/1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
@@ -1748,6 +1734,14 @@ packages:
       sass: 1.54.7
     optionalDependencies:
       fsevents: 2.3.2
+
+  /vue-color-kit/1.0.5_vue@3.2.38:
+    resolution: {integrity: sha512-PUQzqdpI7672YYuoHdTLENHldieVMis0u9g2n7NAxiLGdiaqCD/QaYtbDOvtASpN5oSIfKxQgPV+i45MOlkKnw==}
+    peerDependencies:
+      vue: ^3.0.5
+    dependencies:
+      vue: 3.2.38
+    dev: false
 
   /vue-demi/0.13.11_vue@3.2.38:
     resolution: {integrity: sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==}

@@ -1,26 +1,50 @@
 <script setup>
 import { mainStore } from "../store/index";
-const props = defineProps(["uid"])
+const props = defineProps({
+    uid: {
+        type: Number
+    },
+    title: {
+        type: String
+    },
+    move: {
+        type: Boolean,
+        default: true
+    },
+    edit: {
+        type: Boolean,
+        default: true
+    },
+    remove: {
+        type: Boolean,
+        default: true
+    }
+})
+
 const store = mainStore()
-const remove = () => {
+const onRemove = () => {
     store.removeCpt(props.uid);
 }
-const up = () => {
+const onUp = () => {
     store.upCpt(props.uid);
 }
-const down = () => {
+const onDown = () => {
     store.downCpt(props.uid);
 }
-const edit = () => {
+const onEdit = () => {
     store.editCpt(props.uid);
 }
 </script>
 <template>
-    <div class="btn-group">
-        <button type="button" class="modify-btn__edit" @click="edit">edit</button>
-        <button type="button" class="modify-btn__up" @click="up">up</button>
-        <button type="button" class="modify-btn__down" @click="down">down</button>
-        <button type="button" class="modify-btn__remove" @click="remove">remove</button>
-        <slot name="btn-update"></slot>
+    <div class="g-modify">
+        <div class="g-modify-title">{{title}}</div>
+        <div class="g-modify-btn__group" v-if="move">
+            <a href="javascript:;" class="icon icon-up" @click="onUp">up</a>
+            <a href="javascript:;" class="icon icon-down" @click="onDown">down</a>
+        </div>
+        <div class="g-modify-btn__group" v-if="edit">
+            <a href="javascript:;" class="icon icon-edit" @click="onEdit">edit</a>
+            <a href="javascript:;" class="icon icon-remove" v-if="remove" @click="onRemove">remove</a>
+        </div>
     </div>
 </template>

@@ -56,3 +56,9 @@ export const InsertGA = (GA) => {
 		gtag("config", GA);
 	});
 };
+
+export const CheckImage = (img) => {
+	var regExp = /^https?:\/\/(.+\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i;
+	var match = regExp.test(img);
+	return match;
+};

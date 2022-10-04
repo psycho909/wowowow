@@ -1,22 +1,51 @@
 <script>
 export default {
-    name: "Background",
+    name: "GText",
     label: "純文字區塊"
 }
 </script>
 <script setup>
-import { Chrome } from '@ckpack/vue-color';
 import { storeToRefs } from "pinia";
+import GCkedit from '../elements/GCkedit.vue';
+import GRadio from '../elements/GRadioo.vue';
+import GSelect from '../elements/GSelect.vue';
 import { mainStore } from "../store/index";
 const props = defineProps(["data"])
 let showEdit = ref(false);
+let editorData = ref("")
+let textSetting = ref({})
+let textData = reactive({
+    align: "align-left",
+    style: "",
+    text: ""
+})
+
 const store = mainStore()
 const { content } = storeToRefs(store);
-let bgColors = ref("#194D33A8")
-onMounted(() => {
-    var _uid = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
-    if (content.value.body[_uid].update) {
+
+var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
+let styleOptions = [{ value: "blue", text: "一" }, { value: "red", text: "二" }]
+watchEffect(() => {
+    if (content.value.body[_index].update) {
         showEdit.value = true;
+    } else {
+        showEdit.value = false;
+    }
+    if (content.value.body[_index]) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            textData[v] = props.data.content[v];
+            textSetting.value[v] = props.data.content[v];
+        })
+    }
+})
+
+onMounted(async () => {
+    await nextTick()
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            textData[v] = props.data.content[v];
+            textSetting.value[v] = props.data.content[v];
+        })
     }
 
 })
@@ -26,38 +55,45 @@ onUpdated(() => {
 onUnmounted(() => {
 
 })
+
+const submit = async () => {
+    await nextTick()
+    textData.text = editorData.value
+    var data = { ...textData }
+    store.updateCpt(props.data.uid, data)
+}
+const reset = () => {
+}
 </script>
 <template>
-    <div>
-        <g-modify :uid="data.uid" />
-        <g-edit v-model:showEdit="showEdit">
-            <template #edit-content>
-                <div class="edit-title__box">
-                    <div class="edit-title__text">背景圖</div>
-                    <a href="javascript:;" class="edit-title__q"></a>
-                </div>
-                <div class="edit-img__box">
-                    <div class="edit-img__title">*圖片網址:</div>
-                    <input type="text" class="edit-img__input" />
-                    <div class="edit-img__preview"></div>
-                </div>
-                <div class="edit-mobile__box">
-                    <div class="edit-img__title">手機版圖片網址:</div>
-                    <input type="text" class="edit-img__input" />
-                    <div class="edit-img__preview"></div>
-                </div>
-                <div class="edit-bg_color__box">
-                    <div class="edit-bg_color__title">背景底色:</div>
-                    <div class="edit-bg_color__picker">
-                        <Chrome v-model="bgColors" />
+    <div class="g-text" :class="[textSetting.align,textSetting.style]">
+        <div class="g-text-container">
+            <div class="g-text__content" v-html="textSetting.text"></div>
+            <g-modify :uid="data.uid" />
+            <g-edit v-model:showEdit="showEdit">
+                <template #edit-content>
+                    <div class="edit-title__box">
+                        <div class="edit-title__text">文字區塊物件</div>
+                        <a href="javascript:;" class="edit-title__q"></a>
                     </div>
-                    <div class="edit-bgColor__preview"></div>
-                </div>
-                <div class="edit-btn__box">
-                    <a href="javascript:;" class="edit-btn__submit" @click="submit">確認送出</a>
-                    <a href="javascript:;" class="edit-btn__reset" @click="reset">清除重填</a>
-                </div>
-            </template>
-        </g-edit>
+                    <div class="edit-input__box">
+                        <div class="edit-radio__title">對其方向:</div>
+                        <g-radio label="左" name="align" value="align-left" v-model="textData.align" />
+                        <g-radio label="中" name="align" value="align-center" v-model="textData.align" />
+                    </div>
+                    <div class="edit-input__box">
+                        <g-select label="主題顏色" :options="styleOptions" v-model="textData.style" />
+                    </div>
+                    <div class="edit-input__box">
+                        <g-ckedit v-model="editorData" />
+                    </div>
+                    <div class="edit-btn__box">
+                        <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
+                        <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
+                    </div>
+                </template>
+            </g-edit>
+        </div>
+
     </div>
 </template>

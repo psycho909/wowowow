@@ -5,16 +5,19 @@ export default {
 }
 </script>
 <script setup>
-import { Chrome } from '@ckpack/vue-color';
 import { storeToRefs } from "pinia";
 import { reactive, watchEffect } from 'vue';
+import { ColorPicker } from 'vue-color-kit';
+import 'vue-color-kit/dist/vue-color-kit.css';
+import GInput from "../elements/GInput.vue";
 import { mainStore } from "../store/index";
+import { CheckImage } from "../Tool";
 const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
 const { content } = storeToRefs(store);
 let bgData = reactive({
-    color: "",
+    color: "#000",
     pc: "",
     mb: "",
     w: "",
@@ -22,27 +25,43 @@ let bgData = reactive({
     mw: "",
     mh: ""
 })
-let bgColors = ref("#000")
-let bgPCUrl = ref("https://tw.hicdn.beanfun.com/beanfun/promo/Lineage/E20220930/assets/img/bg.jpg")
-let bgMBUrl = ref("");
-var _uid = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
-const imageInfo = (url) => {
+var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
+const imageInfo = (type, url) => {
     var img = new Image();
     img.onload = function () {
-        console.log(img.width);
+        if (type == "pc") {
+            bgData.w = img.width
+            bgData.h = img.height
+        }
+        if (type == "mb") {
+            bgData.mw = img.width
+            bgData.mh = img.height
+        }
     };
     img.src = url
 }
 // https://tw.hicdn.beanfun.com/beanfun/promo/Lineage/E20220930/assets/img/bg.jpg
 watchEffect(() => {
-    if (content.value.body[_uid].update) {
+    if (content.value.body[_index].update) {
         showEdit.value = true;
+    } else {
+        showEdit.value = false;
+    }
+    if (CheckImage(bgData.pc)) {
+        imageInfo("pc", bgData.pc)
+    }
+    if (CheckImage(bgData.mb)) {
+        imageInfo("mb", bgData.mb)
     }
 
-    imageInfo(bgPCUrl.value)
-    // console.log(bgPCUrl.value)
 })
-onMounted(() => {
+onMounted(async () => {
+    await nextTick()
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            bgData[v] = props.data.content[v];
+        })
+    }
 })
 onUpdated(() => {
 
@@ -50,40 +69,48 @@ onUpdated(() => {
 onUnmounted(() => {
 
 })
+const updateColor = (color) => {
+    bgData.color = color.hex
+}
+const colorBlur = () => {
+    console.log("blurText")
+}
 
+const submit = () => {
+    var data = { ...bgData }
+    store.updateCpt(props.data.uid, data)
+}
+const reset = () => {
 
+}
 </script>
 <template>
-    <div>
-        <g-modify :uid="data.uid" />
-        <g-edit v-model:showEdit="showEdit">
-            <template #edit-content>
-                <div class="edit-title__box">
-                    <div class="edit-title__text">背景圖</div>
-                    <a href="javascript:;" class="edit-title__q"></a>
-                </div>
-                <div class="edit-img__box">
-                    <div class="edit-img__title">*圖片網址:</div>
-                    <input type="text" class="edit-img__input" v-model="bgPCUrl" />
-                    <div class="edit-img__preview"></div>
-                </div>
-                <div class="edit-mobile__box">
-                    <div class="edit-img__title">手機版圖片網址:</div>
-                    <input type="text" class="edit-img__input" v-model="bgMBUrl" />
-                    <div class="edit-img__preview"></div>
-                </div>
-                <div class="edit-bg_color__box">
-                    <div class="edit-bg_color__title">背景底色:</div>
-                    <div class="edit-bg_color__picker">
-                        <Chrome v-model="bgColors" />
+    <div class="g-bg">
+        <div class="g-bg-container">
+            <g-modify :uid="data.uid" title="背景底圖" :move="false" :remove="false" />
+            <g-edit v-model:showEdit="showEdit">
+                <template #edit-content>
+                    <div class="edit-title__box">
+                        <div class="edit-title__text">背景圖</div>
+                        <a href="javascript:;" class="edit-title__q"></a>
                     </div>
-                    <div class="edit-bgColor__preview"></div>
-                </div>
-                <div class="edit-btn__box">
-                    <a href="javascript:;" class="edit-btn__submit" @click="submit">確認送出</a>
-                    <a href="javascript:;" class="edit-btn__reset" @click="reset">清除重填</a>
-                </div>
-            </template>
-        </g-edit>
+                    <div class="edit-input__box">
+                        <g-input label="*圖片網址:" v-model="bgData.pc" :preview="bgData.pc" />
+                    </div>
+                    <div class="edit-input__box">
+                        <g-input label="手機版圖片網址:" v-model="bgData.mb" :preview="bgData.mb" />
+                    </div>
+                    <div class="edit-input__box">
+                        <g-input label="背景底色:" v-model="bgData.color" :color="bgData.color" />
+                        <ColorPicker :color="bgData.color" theme="light" :sucker-hide="true" @changeColor="updateColor"
+                                     @blur="colorBlur" tabindex="0" />
+                    </div>
+                    <div class="edit-btn__box">
+                        <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
+                        <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
+                    </div>
+                </template>
+            </g-edit>
+        </div>
     </div>
 </template>

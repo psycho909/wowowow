@@ -1,0 +1,72 @@
+.g-fixed {
+	position: fixed;
+	z-index: 9;
+	width: 140px;
+	background-color: rgba(#474747, 0.6);
+	&__menu {
+		font-size: 14px;
+		display: block;
+		text-decoration: none;
+		color: #fff;
+		text-align: center;
+		@include hover {
+			background-color: rgba(#fff, 0.6);
+			color: #000;
+		}
+	}
+	&.top {
+		top: 0;
+		left: 0;
+		width: 100%;
+		background-color: rgba(#474747, 0.6);
+		.g-fixed {
+			&-container {
+				max-width: 1000px;
+				margin: 0 auto;
+				display: flex;
+			}
+			&__menu {
+				padding: 12px 16px;
+			}
+		}
+	}
+	&.bottom {
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		background-color: rgba(#474747, 0.6);
+		.g-fixed {
+			&-container {
+				max-width: 1000px;
+				margin: 0 auto;
+				display: flex;
+			}
+			&__menu {
+				padding: 12px 16px;
+			}
+		}
+	}
+	&.left {
+		top: 100px;
+		left: 0;
+		.g-fixed {
+			&__menu {
+				padding: 12px 16px 12px 36px;
+			}
+		}
+	}
+	&.right {
+		top: 100px;
+		right: 0;
+		.g-fixed {
+			&__menu {
+				padding: 12px 36px 12px 16px;
+			}
+		}
+	}
+	.g-modify {
+		position: absolute;
+		top: -12px;
+		right: 6px;
+	}
+}
