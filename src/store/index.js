@@ -9,7 +9,7 @@ export const mainStore = defineStore("main", {
 			content: {
 				body: [
 					{ component: "GBg", uid: 1, content: { pc: "", mb: "", color: "#eed" }, update: false },
-					{ component: "GSlogan", uid: 2, content: { pc: "./src/assets/css/img/slogan.png", mb: "", w: 1000, h: 187 }, update: false },
+					{ component: "GSlogan", uid: 2, content: { pc: "./src/assets/css/img/slogan.png", mb: "", w: 1000, h: 187, mt: 250, mb: 24 }, update: false },
 					{
 						component: "GFixed",
 						uid: 3,

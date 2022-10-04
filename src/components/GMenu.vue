@@ -5,31 +5,24 @@ const props = defineProps(["menu"])
 const store = mainStore()
 const { content } = storeToRefs(store);
 const menuToggle = ref(false)
-const bg = computed(() => {
-    return content.value.body.filter((c, i) => {
-        return c.component == "GBg"
-    })
+
+const total = computed(() => {
+    return content.value.body.reduce((p, v, i) => {
+        if (!p[v.component]) {
+            p[v.component] = 1
+        } else {
+            p[v.component] += 1
+        }
+        return p
+    }, {})
 })
-const slogan = computed(() => {
-    return content.value.body.filter((c, i) => {
-        return c.component == "GSlogan"
-    })
-})
-const fixed = computed(() => {
-    return content.value.body.filter((c, i) => {
-        return c.component == "GFixed"
-    })
-})
+
 const menuFilter = computed(() => {
     return props.menu.map((v, i) => {
-        if (bg.value.length > 0 && v.title == "GBg") {
+        if (total.value[v.title] == v.limit) {
             v.status = false
-        }
-        if (slogan.value.length > 0 && v.title == "GSlogan") {
-            v.status = false
-        }
-        if (fixed.value.length > 0 && v.title == "GFixed") {
-            v.status = false
+        } else {
+            v.status = true
         }
         return v;
     })

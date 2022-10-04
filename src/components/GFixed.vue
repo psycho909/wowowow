@@ -1,7 +1,8 @@
 <script>
 export default {
     name: "Fixed",
-    label: "浮動式選單"
+    label: "浮動式選單",
+    limit: 1
 }
 </script>
 <script setup>
@@ -40,6 +41,7 @@ watchEffect(() => {
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
+        console.log("In")
         Object.keys(props.data.content).forEach((v, i) => {
             fixedData[v] = props.data.content[v];
             fixedSetting.value[v] = props.data.content[v];
