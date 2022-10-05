@@ -104,33 +104,33 @@ const reset = () => {
         <a :href="[sloganSetting.link?sloganSetting.link:'javascript:;']" class="g-slogan-container"
            :style="sloganSetting">
             <g-modify :uid="data.uid" title="主標題設定" :move="false" />
-            <g-edit v-model:showEdit="showEdit">
-                <template #edit-content>
-                    <div class="edit-title__box">
-                        <div class="edit-title__text">背景圖</div>
-                        <a href="javascript:;" class="edit-title__q"></a>
-                    </div>
-                    <div class="edit-input__box">
-                        <g-input label="間距上:" v-model="sloganData.mt" />
-                    </div>
-                    <div class="edit-input__box">
-                        <g-input label="間距下:" v-model="sloganData.mb" />
-                    </div>
-                    <div class="edit-input__box">
-                        <g-input label="*圖片網址:" v-model="sloganData.pc" :preview="sloganData.pc" />
-                    </div>
-                    <div class="edit-input__box">
-                        <g-input label="手機版圖片網址:" v-model="sloganData.mb" :preview="sloganData.mb" />
-                    </div>
-                    <div class="edit-input__box">
-                        <g-input label="主標連結:" v-model="sloganData.link" />
-                    </div>
-                    <div class="edit-btn__box">
-                        <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
-                        <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
-                    </div>
-                </template>
-            </g-edit>
         </a>
+        <g-edit v-model:showEdit="showEdit">
+            <template #edit-content>
+                <div class="edit-title__box">
+                    <div class="edit-title__text">背景圖</div>
+                    <a href="javascript:;" class="edit-title__q"></a>
+                </div>
+                <div class="edit-input__box">
+                    <g-input label="間距上:" v-model="sloganData.mt" />
+                </div>
+                <div class="edit-input__box">
+                    <g-input label="間距下:" v-model="sloganData.mb" />
+                </div>
+                <div class="edit-input__box">
+                    <g-input label="*圖片網址:" v-model="sloganData.pc" :preview="sloganData.pc" />
+                </div>
+                <div class="edit-input__box">
+                    <g-input label="手機版圖片網址:" v-model="sloganData.mb" :preview="sloganData.mb" />
+                </div>
+                <div class="edit-input__box">
+                    <g-input label="主標連結:" v-model="sloganData.link" />
+                </div>
+                <div class="edit-btn__box">
+                    <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
+                    <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
+                </div>
+            </template>
+        </g-edit>
     </div>
 </template>

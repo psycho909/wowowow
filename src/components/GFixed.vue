@@ -41,25 +41,22 @@ watchEffect(() => {
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        console.log("In")
         Object.keys(props.data.content).forEach((v, i) => {
             fixedData[v] = props.data.content[v];
             fixedSetting.value[v] = props.data.content[v];
         })
     }
 })
-onUpdated(() => {
-
-})
-onUnmounted(() => {
-
-})
 const addMenu = () => {
     fixedData.menus.push({ text: "", link: "", target: false })
 }
 
-const removeMenu = () => {
-
+const removeMenu = (index) => {
+    if (!toString.call(index).includes("Number")) {
+        fixedData.menus = fixedData.menus.slice(0, fixedData.menus.length - 1)
+    } else {
+        fixedData.menus = fixedData.menus.slice(0, index)
+    }
 }
 
 const submit = () => {
@@ -105,7 +102,7 @@ const reset = () => {
                     <a href="javascript:;" class="icon icon-remove" @click="removeMenu"></a>
                 </div>
                 <div class="edit-input__box">
-                    <div class="edit-col__box" v-for="menu in fixedData.menus">
+                    <div class="edit-col__box" v-for="(menu,index) in fixedData.menus">
                         <g-input placeholder="請輸入選單文字" v-model="menu.text" />
                         <g-input placeholder="請輸入連結或URL" v-model="menu.link" />
                         <div class="edit-radio__box">
@@ -113,7 +110,7 @@ const reset = () => {
                             <g-radio label="是" name="target" :value="true" v-model="menu.target" />
                             <g-radio label="否" name="target" :value="false" v-model="menu.target" />
                         </div>
-                        <a href="javascript:;" class="icon icon-remove"></a>
+                        <a href="javascript:;" class="icon icon-remove" @click="removeMenu(index)"></a>
                     </div>
                 </div>
                 <div class="edit-btn__box">

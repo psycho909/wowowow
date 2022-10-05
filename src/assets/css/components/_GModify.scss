@@ -1,10 +1,15 @@
 .g-modify {
 	display: flex;
 	align-items: center;
+	position: absolute;
+	top: 12px;
+	right: 12px;
 	&-title {
 		margin-right: 6px;
 		font-size: 20px;
 		text-shadow: 0 0 2px #fff;
+		text-decoration: none;
+		color: #000;
 	}
 	&-btn {
 		&__group {

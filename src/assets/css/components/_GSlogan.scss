@@ -19,13 +19,4 @@
 			background-size: calc(var(--mw) / 768 * 100vw) calc(var(--mw) / 768 * 100vw);
 		}
 	}
-	.g-modify {
-		position: absolute;
-		top: 12px;
-		right: 12px;
-		&-title {
-			text-decoration: none;
-			color: #000;
-		}
-	}
 }

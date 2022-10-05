@@ -1,9 +1,13 @@
 import axios from "axios";
 
 const apiRequest = axios.create({
-	baseURL: "/api/E20220914/"
+	baseURL: "http://localhost:3000"
 });
 
-export const GetServerList = (data) => {
-	return apiRequest.post("GetServerList", data);
+export const GetData = () => {
+	return apiRequest.get("/data");
+};
+
+export const PostData = (data) => {
+	return apiRequest.post("/data", data);
 };

@@ -1,56 +1,124 @@
 <script>
 export default {
-    name: "Video",
-    label: "影片物件"
+    name: "GVideo",
+    label: "影片區塊"
 }
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
+import GInput from "../elements/GInput.vue";
+import GRadio from '../elements/GRadioo.vue';
+import GYoutube from '../elements/GYoutube.vue';
 import { mainStore } from "../store/index";
 const props = defineProps(["data"])
 let showEdit = ref(false);
+let _videoDataLength = 1;
 const store = mainStore()
 const { content } = storeToRefs(store);
-onMounted(() => {
-    var _uid = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
-    if (content.value.body[_uid].update) {
+let videoSetting = ref({})
+let videoData = reactive({
+    num: 1,
+    type: "click",
+    videos: [{
+        url: "", show: false
+    }],
+})
+var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
+
+watchEffect(() => {
+    if (content.value.body[_index].update) {
         showEdit.value = true;
+    } else {
+        showEdit.value = false;
     }
-
+    if (content.value.body[_index]) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            videoData[v] = props.data.content[v];
+            videoSetting.value[v] = props.data.content[v];
+            _videoDataLength = videoData.num
+        })
+    }
 })
-onUpdated(() => {
-
+onMounted(async () => {
+    await nextTick()
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            videoData[v] = props.data.content[v];
+            videoSetting.value[v] = props.data.content[v];
+        })
+    }
 })
-onUnmounted(() => {
 
-})
+const submit = async () => {
+    await nextTick()
+    var data = { ...videoData }
+    store.updateCpt(props.data.uid, data)
+}
+const reset = () => {
+}
+
+const openPop = (data) => {
+    data.show = true
+}
+
+const onChange = (e) => {
+    let num = e.target.value;
+    if (_videoDataLength <= num) {
+        for (let i = 0; i < (num - _videoDataLength); i++) {
+            videoData.videos.push({
+                url: "", show: false
+            })
+        }
+        _videoDataLength = num
+    } else {
+        videoData.videos = videoData.videos.slice(0, videoData.num)
+    }
+}
 </script>
 <template>
-    <div>
-        <g-modify :uid="data.uid" />
+    <div class="g-video">
+        <div class="g-video-container" :data-num="videoSetting.num">
+            <template v-for="(videos,index) in videoSetting.videos">
+                <a v-if="videoSetting.type == 'click'" href="javascript:;" class="g-video__box">
+                    <g-youtube :youtube="videos.url" />
+                </a>
+                <a v-if="videoSetting.type == 'pop'" href="javascript:;" class="g-video__box" @click="openPop(videos)">
+                    <g-youtube :youtube="videos.url" :pop="true" />
+                    <g-lightbox v-model:showLightbox="videos.show" :style="videos.style">
+                        <template #lightbox-content>
+                            <div class="g-lightbox__video">
+                                <g-youtube :youtube="videos.url" />
+                            </div>
+                        </template>
+                    </g-lightbox>
+                </a>
+            </template>
+            <g-modify :uid="data.uid" />
+        </div>
         <g-edit v-model:showEdit="showEdit">
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">背景圖</div>
+                    <div class="edit-title__text">影片區塊</div>
                     <a href="javascript:;" class="edit-title__q"></a>
                 </div>
-                <div class="edit-img__box">
-                    <div class="edit-img__title">*圖片網址:</div>
-                    <input type="text" class="edit-img__input" />
-                    <div class="edit-img__preview"></div>
+                <div class="edit-input__box">
+                    <div class="edit-radio__title">選擇影片數量:</div>
+                    <g-radio label="單一影片" name="video" value="1" v-model="videoData.num" @change="onChange" />
+                    <g-radio label="兩格影片" name="video" value="2" v-model="videoData.num" @change="onChange" />
+                    <g-radio label="三格影片" name="video" value="3" v-model="videoData.num" @change="onChange" />
+                    <g-radio label="四格影片" name="video" value="4" v-model="videoData.num" @change="onChange" />
                 </div>
-                <div class="edit-mobile__box">
-                    <div class="edit-img__title">手機版圖片網址:</div>
-                    <input type="text" class="edit-img__input" />
-                    <div class="edit-img__preview"></div>
+                <div class="edit-input__box" v-for="(video,index) in videoData.videos">
+                    <g-input :label="'*影片'+(index+1)+'URL:'" v-model="video.url" />
                 </div>
-                <div class="edit-link__box">
-                    <div class="edit-link__title">主標連結:</div>
-                    <input type="text" class="edit-link__input" />
+                <div class="edit-input__box">
+                    <div class="edit-radio__title">影片播放方式:</div>
+                    <g-radio label="點擊直接播放" name="type" value="click" v-model="videoData.type" />
+                    <g-radio label="點擊跳出燈箱播放" name="type" value="pop" v-model="videoData.type" />
                 </div>
                 <div class="edit-btn__box">
-                    <a href="javascript:;" class="edit-btn__submit" @click="submit">確認送出</a>
-                    <a href="javascript:;" class="edit-btn__reset" @click="reset">清除重填</a>
+                    <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
+                    <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
                 </div>
             </template>
         </g-edit>

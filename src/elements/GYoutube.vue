@@ -1,23 +1,51 @@
 <script setup>
+import YouTubePlayer from 'youtube-player';
+import { youtubePreview } from '../Tool';
 const props = defineProps({
     youtube: {
         type: String
     },
-    autoplay: {
+    pop: {
         type: Boolean,
         default: false
     }
 })
+let videoRef = ref(null)
+let player = ref(null)
+let videoImg = ref(null)
+let playStatus = ref(false)
 const emit = defineEmits(["update:modelValue"])
 
-const ytUrl = computed(() => {
-    return `https://www.youtube.com/embed/${props.youtube}?autoplay=${props.autoplay ? 1 : 0}&mute=1`
+
+onMounted(async () => {
+    await nextTick()
+    if (!props.pop) {
+        player = YouTubePlayer(videoRef.value, {
+            videoId: props.youtube
+        })
+    }
+    videoImg.value = youtubePreview(props.youtube)
 })
+
+
+const onVideo = () => {
+    if (!props.pop) {
+        if (!playStatus.value) {
+            player.playVideo()
+            playStatus.value = true;
+        } else {
+            player.stopVideo()
+            playStatus.value = false;
+        }
+    }
+}
+defineExpose({ player, videoRef })
 </script>
 <template>
-    <div class="video-yt__box">
-        <iframe width="560" height="315" :src="ytUrl" title="YouTube video player" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe>
+    <div class="g-yt">
+        <div class="g-yt__box" @click="onVideo">
+            <img class="g-yt__img" :class="[playStatus?'on':'off']" :src="videoImg?.max" alt="" />
+            <div class="g-yt__video" ref="videoRef" v-if="!pop"></div>
+        </div>
     </div>
 </template>

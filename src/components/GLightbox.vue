@@ -8,6 +8,9 @@ export default {
 const props = defineProps({
     showLightbox: {
         type: Boolean, default: false
+    },
+    style: {
+        type: String
     }
 })
 const emit = defineEmits(["update:showLightbox"])
@@ -20,24 +23,19 @@ const closeBtn = () => {
     emit("update:showLightbox", false)
 }
 onMounted(() => {
-
-})
-onUpdated(() => {
-
-})
-onUnmounted(() => {
-
 })
 
 </script>
 <template>
-    <Teleport to="body">>
-        <div class="g-lightbox" v-if="showLightbox" ref="lightboxRef">
+    <Teleport to="body">
+        <div class="g-lightbox" :class="[style?style:'']" v-if="showLightbox" ref="lightboxRef">
             <div class="g-lightbox__module"></div>
             <div class="g-lightbox__wrap">
-                <button type="button" class="g-lightbox__close" @click="closeBtn">close</button>
+                <a href="javascript:;" class="g-lightbox__close" @click="closeBtn">close</a>
                 <div class="g-lightbox__content">
-                    <slot name="lightbox-title"></slot>
+                    <div class="g-lightbox__title">
+                        <slot name="lightbox-title"></slot>
+                    </div>
                     <slot name="lightbox-content"></slot>
                 </div>
             </div>

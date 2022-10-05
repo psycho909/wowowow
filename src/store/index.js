@@ -24,6 +24,31 @@ export const mainStore = defineStore("main", {
 							]
 						},
 						update: false
+					},
+					{
+						component: "GImg",
+						uid: 4,
+						content: {
+							num: "2",
+							imgs: [
+								{ pc: "https://fakeimg.pl/440x320", mb: "https://fakeimg.pl/220x120", type: "pop", pop: { show: false, type: "text", title: "title1", style: "blue", text: "<p>abc1</p>" }, target: {} },
+								{ pc: "https://fakeimg.pl/440x320", mb: "https://fakeimg.pl/220x120", type: "pop", pop: { show: false, type: "img", title: "titl2", style: "red", img: "https://fakeimg.pl/440x320" }, target: {} }
+							]
+						}
+					},
+					{
+						component: "GVideo",
+						uid: 45,
+						content: {
+							num: "3",
+							type: "pop",
+							videos: [
+								{ url: "M7lc1UVf-VE", show: false },
+								{ url: "M7lc1UVf-VE", show: false },
+								{ url: "M7lc1UVf-VE", show: false }
+							]
+						},
+						update: false
 					}
 				]
 			}

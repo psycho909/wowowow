@@ -2,7 +2,8 @@ export const youtubePreview = (youtube) => {
 	return {
 		default: `https://img.youtube.com/vi/${youtube}/default.jpg`,
 		hq: `https://img.youtube.com/vi/${youtube}/hqdefault.jpg`,
-		sd: `https://img.youtube.com/vi/${youtube}/sddefault.jpg`
+		sd: `https://img.youtube.com/vi/${youtube}/sddefault.jpg`,
+		max: `https://img.youtube.com/vi/${youtube}/maxresdefault.jpg`
 	};
 };
 
