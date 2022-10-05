@@ -1,7 +1,8 @@
 <script>
 export default {
     name: "Background",
-    label: "背景圖"
+    label: "背景圖",
+    limit: 1
 }
 </script>
 <script setup>
@@ -17,7 +18,7 @@ let showEdit = ref(false);
 const store = mainStore()
 const { content } = storeToRefs(store);
 let bgData = reactive({
-    color: "#000",
+    color: "#fff",
     pc: "",
     mb: "",
     w: "",
@@ -86,31 +87,29 @@ const reset = () => {
 </script>
 <template>
     <div class="g-bg">
-        <div class="g-bg-container">
-            <g-modify :uid="data.uid" title="背景底圖" :move="false" :remove="false" />
-            <g-edit v-model:showEdit="showEdit">
-                <template #edit-content>
-                    <div class="edit-title__box">
-                        <div class="edit-title__text">背景圖</div>
-                        <a href="javascript:;" class="edit-title__q"></a>
-                    </div>
-                    <div class="edit-input__box">
-                        <g-input label="*圖片網址:" v-model="bgData.pc" :preview="bgData.pc" />
-                    </div>
-                    <div class="edit-input__box">
-                        <g-input label="手機版圖片網址:" v-model="bgData.mb" :preview="bgData.mb" />
-                    </div>
-                    <div class="edit-input__box">
-                        <g-input label="背景底色:" v-model="bgData.color" :color="bgData.color" />
-                        <ColorPicker :color="bgData.color" theme="light" :sucker-hide="true" @changeColor="updateColor"
-                                     @blur="colorBlur" tabindex="0" />
-                    </div>
-                    <div class="edit-btn__box">
-                        <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
-                        <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
-                    </div>
-                </template>
-            </g-edit>
-        </div>
+        <g-modify :uid="data.uid" title="背景底圖" :move="false" :remove="false" />
+        <g-edit v-model:showEdit="showEdit">
+            <template #edit-content>
+                <div class="edit-title__box">
+                    <div class="edit-title__text">背景圖</div>
+                    <a href="javascript:;" class="edit-title__q"></a>
+                </div>
+                <div class="edit-input__box">
+                    <g-input label="*圖片網址:" v-model="bgData.pc" :preview="bgData.pc" />
+                </div>
+                <div class="edit-input__box">
+                    <g-input label="手機版圖片網址:" v-model="bgData.mb" :preview="bgData.mb" />
+                </div>
+                <div class="edit-input__box">
+                    <g-input label="背景底色:" v-model="bgData.color" :color="bgData.color" />
+                    <ColorPicker :color="bgData.color" theme="light" :sucker-hide="true" @changeColor="updateColor"
+                                 @blur="colorBlur" tabindex="0" />
+                </div>
+                <div class="edit-btn__box">
+                    <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
+                    <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
+                </div>
+            </template>
+        </g-edit>
     </div>
 </template>

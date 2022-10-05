@@ -53,6 +53,7 @@ const menu = computed(() => {
         return {
             title: m,
             label: components[m].label,
+            limit: components[m].limit || 0,
             status: true
         }
     });

@@ -1,16 +1,11 @@
 .g-bg {
 	position: relative;
 	width: 100%;
-	height: 370px;
-	&-container {
-		max-width: 1200px;
-		margin: 0 auto;
-		position: relative;
-	}
+	padding-top: 120px;
 	.g-modify {
 		position: absolute;
-		top: 74px;
+		top: 50%;
 		left: 50%;
-		transform: translateX(-50%);
+		transform: translate(-50%, -50%);
 	}
 }

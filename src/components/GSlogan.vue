@@ -1,7 +1,8 @@
 <script>
 export default {
     name: "Slogan",
-    label: "主標題圖片"
+    label: "主標題圖片",
+    limit: 1
 }
 </script>
 <script setup>
@@ -17,6 +18,8 @@ const { content } = storeToRefs(store);
 let sloganSetting = ref({})
 let sloganData = reactive({
     link: "",
+    mt: "250",
+    mb: "24",
     pc: "",
     mb: "",
     w: "",
@@ -46,6 +49,16 @@ watchEffect(() => {
     } else {
         showEdit.value = false;
     }
+    if (content.value.body[_index]) {
+        sloganSetting.value["--pc"] = `url(${props.data.content.pc})`
+        sloganSetting.value["--mb"] = `url(${props.data.content.mb})`
+        sloganSetting.value["--w"] = props.data.content.w
+        sloganSetting.value["--h"] = props.data.content.h
+        sloganSetting.value["--mw"] = props.data.content.mw
+        sloganSetting.value["--mh"] = props.data.content.mh
+        sloganSetting.value["--mt"] = props.data.content.mt
+        sloganSetting.value["--mb"] = props.data.content.mb
+    }
     if (CheckImage(sloganData.pc)) {
         imageInfo("pc", sloganData.pc)
     }
@@ -67,6 +80,8 @@ onMounted(async () => {
         sloganSetting.value["--h"] = props.data.content.h
         sloganSetting.value["--mw"] = props.data.content.mw
         sloganSetting.value["--mh"] = props.data.content.mh
+        sloganSetting.value["--mt"] = props.data.content.mt
+        sloganSetting.value["--mb"] = props.data.content.mb
     }
 })
 onUpdated(() => {
@@ -94,6 +109,12 @@ const reset = () => {
                     <div class="edit-title__box">
                         <div class="edit-title__text">背景圖</div>
                         <a href="javascript:;" class="edit-title__q"></a>
+                    </div>
+                    <div class="edit-input__box">
+                        <g-input label="間距上:" v-model="sloganData.mt" />
+                    </div>
+                    <div class="edit-input__box">
+                        <g-input label="間距下:" v-model="sloganData.mb" />
                     </div>
                     <div class="edit-input__box">
                         <g-input label="*圖片網址:" v-model="sloganData.pc" :preview="sloganData.pc" />

@@ -10,7 +10,9 @@
 		height: calc(var(--h) * 1px);
 		position: relative;
 		background-repeat: no-repeat;
-		margin: 0 auto 24px;
+		margin: 0 auto;
+		margin-top: calc(var(--mt) * 1px);
+		margin-bottom: calc(var(--mb) * 1px);
 		display: block;
 		@include media {
 			background-image: url(var(--mb));
