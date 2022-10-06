@@ -42,30 +42,35 @@ const imageInfo = (type, url) => {
     };
     img.src = url
 }
-// https://tw.hicdn.beanfun.com/beanfun/promo/Lineage/E20220930/assets/img/bg.jpg
 watchEffect(() => {
     if (content.value.body[_index].update) {
         showEdit.value = true;
     } else {
         showEdit.value = false;
     }
-    if (content.value.body[_index]) {
-        sloganSetting.value["--pc"] = `url(${props.data.content.pc})`
-        sloganSetting.value["--mb"] = `url(${props.data.content.mb})`
-        sloganSetting.value["--w"] = props.data.content.w
-        sloganSetting.value["--h"] = props.data.content.h
-        sloganSetting.value["--mw"] = props.data.content.mw
-        sloganSetting.value["--mh"] = props.data.content.mh
-        sloganSetting.value["--mt"] = props.data.content.mt
-        sloganSetting.value["--mb"] = props.data.content.mb
-    }
-    if (CheckImage(sloganData.pc)) {
+    if (sloganData.pc) {
         imageInfo("pc", sloganData.pc)
     }
-    if (CheckImage(sloganData.mb)) {
+    if (sloganData.mb) {
         imageInfo("mb", sloganData.mb)
     }
 
+})
+
+const cssVar = computed(() => {
+    let slogan = content.value.body.filter((c, i) => {
+        return c.component == "GSlogan"
+    })
+    return {
+        "--pc": `url(${slogan[0].content.pc})`,
+        "--mb": `url(${slogan[0].content.mb})`,
+        "--w": slogan[0].content.w,
+        "--h": slogan[0].content.h,
+        "--mw": slogan[0].content.mw,
+        "--mh": slogan[0].content.mh,
+        "--mt": slogan[0].content.mt,
+        "--mb": slogan[0].content.mb,
+    }
 })
 
 onMounted(async () => {
@@ -74,21 +79,7 @@ onMounted(async () => {
         Object.keys(props.data.content).forEach((v, i) => {
             sloganData[v] = props.data.content[v];
         })
-        sloganSetting.value["--pc"] = `url(${props.data.content.pc})`
-        sloganSetting.value["--mb"] = `url(${props.data.content.mb})`
-        sloganSetting.value["--w"] = props.data.content.w
-        sloganSetting.value["--h"] = props.data.content.h
-        sloganSetting.value["--mw"] = props.data.content.mw
-        sloganSetting.value["--mh"] = props.data.content.mh
-        sloganSetting.value["--mt"] = props.data.content.mt
-        sloganSetting.value["--mb"] = props.data.content.mb
     }
-})
-onUpdated(() => {
-
-})
-onUnmounted(() => {
-
 })
 const submit = () => {
     var data = { ...sloganData }
@@ -102,7 +93,7 @@ const reset = () => {
 <template>
     <div class="g-slogan">
         <a :href="[sloganSetting.link?sloganSetting.link:'javascript:;']" class="g-slogan-container"
-           :style="sloganSetting">
+           :style="cssVar">
             <g-modify :uid="data.uid" title="主標題設定" :move="false" />
         </a>
         <g-edit v-model:showEdit="showEdit">

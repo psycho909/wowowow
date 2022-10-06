@@ -13,3 +13,31 @@
 		background-size: calc(var(--mw) / 768 * 100vw) calc(var(--mw) / 768 * 100vw);
 	}
 }
+
+.page {
+	&-control {
+		&__group {
+			position: absolute;
+			bottom: 30px;
+			right: 30px;
+			display: flex;
+		}
+		&__btn {
+			font-size: 18px;
+			text-decoration: none;
+			display: inline-block;
+			margin-right: 15px;
+			color: #000;
+			border-radius: 12px;
+			background-color: #ff9c00;
+			width: 66px;
+			height: 64px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			&:last-child {
+				margin-right: 0;
+			}
+		}
+	}
+}

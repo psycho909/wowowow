@@ -8,6 +8,7 @@ export default {
 import { storeToRefs } from "pinia";
 import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
+import GSwiper from '../elements/GSwiper.vue';
 import { mainStore } from "../store/index";
 const props = defineProps(["data"])
 let showEdit = ref(false);
@@ -78,12 +79,7 @@ const removeMenu = (index) => {
 <template>
     <div class="g-slide">
         <div class="g-slide-container" :data-num="slideSetting.num">
-            <template v-for="(slides,index) in slideSetting.videos">
-                <a v-if="slideSetting.type == 'click'" href="javascript:;" class="g-video__box">
-                </a>
-                <a v-if="slideSetting.type == 'pop'" href="javascript:;" class="g-video__box">
-                </a>
-            </template>
+            <g-swiper :data="slideSetting" />
             <g-modify :uid="data.uid" />
         </div>
         <g-edit v-model:showEdit="showEdit">

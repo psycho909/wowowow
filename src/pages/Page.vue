@@ -13,41 +13,25 @@ const store = mainStore()
 const { content } = storeToRefs(store);
 const MODE = import.meta.env.MODE;
 
-let bgSetting = ref({ "--pc": "", "--mb": "", "--color": "" })
-let bg = computed(() => {
-    return content.value.body.filter((c, i) => {
+store.$subscribe((mutation, state) => {
+    // console.log(mutation.events.target.content)
+})
+
+const cssVar = computed(() => {
+    let bg = content.value.body.filter((c, i) => {
         return c.component == "GBg"
     })
-})
-
-watchEffect(() => {
-    if (bg.value[0]) {
-        if (bg.value[0].content) {
-            bgSetting.value["--color"] = bg.value[0].content.color
-            bgSetting.value["--pc"] = `url(${bg.value[0].content.pc})`
-            bgSetting.value["--mb"] = `url(${bg.value[0].content.mb})`
-            bgSetting.value["--w"] = bg.value[0].content.w
-            bgSetting.value["--h"] = bg.value[0].content.h
-            bgSetting.value["--mw"] = bg.value[0].content.mw
-            bgSetting.value["--mh"] = bg.value[0].content.mh
-        }
+    return {
+        "--color": bg[0].content.color,
+        "--pc": `url(${bg[0].content.pc})`,
+        "--mb": `url(${bg[0].content.mb})`,
+        "--w": bg[0].content.w,
+        "--h": bg[0].content.h,
+        "--mw": bg[0].content.mw,
+        "--mh": bg[0].content.mh,
     }
 })
 
-onMounted(() => {
-    if (Object.keys(bg.value[0])) {
-        if (Object.keys(bg.value[0].content).length > 0) {
-            bgSetting.value["--color"] = bg.value[0].content.color
-            bgSetting.value["--pc"] = `url(${bg.value[0].content.pc})`
-            bgSetting.value["--mb"] = `url(${bg.value[0].content.mb})`
-            bgSetting.value["--w"] = bg.value[0].content.w
-            bgSetting.value["--h"] = bg.value[0].content.h
-            bgSetting.value["--mw"] = bg.value[0].content.mw
-            bgSetting.value["--mh"] = bg.value[0].content.mh
-        }
-    }
-
-})
 const menu = computed(() => {
     return Object.keys(components).map((m, i) => {
         return {
@@ -58,13 +42,44 @@ const menu = computed(() => {
         }
     });
 })
+
+
+const onEvent = (type) => {
+    switch (type) {
+        case "home":
+            store.$patch(state => {
+                state.page = "Home"
+            })
+            break;
+        case "submit":
+            store.setSubmit("SAVE").then((res) => {
+                console.log(res)
+            })
+            break;
+        case "preview":
+            store.$patch(state => {
+                state.page = "Preview"
+            })
+            break;
+        case "save":
+            store.setSave(store.content).then((res) => {
+                console.log(res)
+            })
+            break;
+    }
+}
 </script>
 <template>
-    <section class="wrap" :class="MODE" data-type="one" :style="bgSetting">
+    <section class="wrap" :class="MODE" data-type="one" :style="cssVar">
         <template v-for="block in content.body">
             <component :is="block.component" :data="block"></component>
         </template>
     </section>
     <g-menu :menu="menu" />
-
+    <div class="page-control__group">
+        <a href="javascript:;" class="page-control__btn" @click="onEvent('home')">回首頁</a>
+        <a href="javascript:;" class="page-control__btn" @click="onEvent('submit')">送審</a>
+        <a href="javascript:;" class="page-control__btn" @click="onEvent('preview')">預覽</a>
+        <a href="javascript:;" class="page-control__btn" @click="onEvent('save')">存檔</a>
+    </div>
 </template>
