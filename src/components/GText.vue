@@ -48,12 +48,11 @@ onMounted(async () => {
     }
 })
 
-const submit = async () => {
-    await nextTick()
-    var data = { ...textData }
+const onSubmit = () => {
+    let data = { ...textData }
     store.updateCpt(props.data.uid, data)
 }
-const reset = () => {
+const onReset = () => {
 }
 </script>
 <template>
@@ -80,8 +79,8 @@ const reset = () => {
                     <g-ckedit v-model="textData.text" />
                 </div>
                 <div class="edit-btn__box">
-                    <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
-                    <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
+                    <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
+                    <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>
                 </div>
             </template>
         </g-edit>

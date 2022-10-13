@@ -57,15 +57,6 @@ onMounted(async () => {
     }
 })
 
-const submit = async () => {
-    await nextTick()
-    console.log(imgData)
-    var data = { ...imgData }
-    store.updateCpt(props.data.uid, data)
-}
-const reset = () => {
-}
-
 const openPop = (data) => {
     data.pop.show = true
 }
@@ -86,6 +77,32 @@ const onChange = (e) => {
         _imgDataLength = num
     } else {
         imgData.imgs = imgData.imgs.slice(0, num)
+    }
+}
+
+const onSubmit = () => {
+    let data = { ...imgData }
+    store.updateCpt(props.data.uid, data)
+}
+const onReset = () => {
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            imgData[v] = props.data.content[v];
+            imgSetting.value[v] = props.data.content[v];
+        })
+    } else {
+        imgData = {
+            num: 1,
+            imgs: [{
+                pc: "",
+                mb: "",
+                type: "",
+                pop: {
+                    show: false,
+                },
+                target: {}
+            }],
+        }
     }
 }
 </script>
@@ -177,8 +194,8 @@ const onChange = (e) => {
                     <g-input label="手機圖片網址:" v-model="img.mb" :preview="img.mb" />
                 </div>
                 <div class="edit-btn__box">
-                    <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
-                    <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
+                    <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
+                    <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>
                 </div>
             </template>
         </g-edit>

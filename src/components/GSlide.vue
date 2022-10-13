@@ -46,14 +46,6 @@ onMounted(async () => {
     }
 })
 
-const submit = async () => {
-    await nextTick()
-    var data = { ...slideData }
-    store.updateCpt(props.data.uid, data)
-}
-const reset = () => {
-}
-
 const openPop = (data) => {
     data.show = true
 }
@@ -75,6 +67,27 @@ const removeMenu = (index) => {
         slideData.slides = slideData.slides.slice(0, index)
     }
 }
+
+const onSubmit = () => {
+    let data = { ...slideData }
+    store.updateCpt(props.data.uid, data)
+}
+const onReset = () => {
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            slideData[v] = props.data.content[v];
+            slideSetting.value[v] = props.data.content[v];
+        })
+    } else {
+        slideData = {
+            num: 1,
+            slides: [{
+                pc: "", mb: "", open: false, url: "", attribute: false
+            }],
+        }
+    }
+}
+
 </script>
 <template>
     <div class="g-slide">
@@ -122,8 +135,8 @@ const removeMenu = (index) => {
                     <a href="javascript:;" class="icon icon-remove" @click="removeMenu(index)"></a>
                 </div>
                 <div class="edit-btn__box">
-                    <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
-                    <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
+                    <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
+                    <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>
                 </div>
             </template>
         </g-edit>

@@ -49,14 +49,6 @@ onMounted(async () => {
     }
 })
 
-const submit = async () => {
-    await nextTick()
-    var data = { ...videoData }
-    store.updateCpt(props.data.uid, data)
-}
-const reset = () => {
-}
-
 const openPop = (data) => {
     data.show = true
 }
@@ -72,6 +64,27 @@ const onChange = (e) => {
         _videoDataLength = num
     } else {
         videoData.videos = videoData.videos.slice(0, videoData.num)
+    }
+}
+
+const onSubmit = () => {
+    let data = { ...videoData }
+    store.updateCpt(props.data.uid, data)
+}
+const onReset = () => {
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            videoData[v] = props.data.content[v];
+            videoSetting.value[v] = props.data.content[v];
+        })
+    } else {
+        videoData = {
+            num: 1,
+            type: "click",
+            videos: [{
+                url: "", show: false
+            }],
+        }
     }
 }
 </script>
@@ -117,8 +130,8 @@ const onChange = (e) => {
                     <g-radio label="點擊跳出燈箱播放" name="type" value="pop" v-model="videoData.type" />
                 </div>
                 <div class="edit-btn__box">
-                    <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
-                    <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
+                    <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
+                    <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>
                 </div>
             </template>
         </g-edit>

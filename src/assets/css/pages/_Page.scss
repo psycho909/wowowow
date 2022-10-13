@@ -12,6 +12,9 @@
 		background-image: url(var(--mb));
 		background-size: calc(var(--mw) / 768 * 100vw) calc(var(--mw) / 768 * 100vw);
 	}
+	div:last-child {
+		margin-bottom: 0;
+	}
 }
 
 .page {

@@ -42,7 +42,7 @@ const createEvent = () => {
     })
     console.log(eventConfig)
 }
-const reset = () => {
+const onReset = () => {
     eventConfig = {
         gameSelected: "",
         startDate: new Date(),

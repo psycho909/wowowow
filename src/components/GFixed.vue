@@ -59,12 +59,24 @@ const removeMenu = (index) => {
     }
 }
 
-const submit = () => {
-    var data = { ...fixedData }
+const onSubmit = () => {
+    let data = { ...fixedData }
     store.updateCpt(props.data.uid, data)
 }
-const reset = () => {
-
+const onReset = () => {
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            fixedData[v] = props.data.content[v];
+            fixedSetting.value[v] = props.data.content[v];
+        })
+    } else {
+        fixedData = {
+            position: "",
+            hamburger: "",
+            style: "",
+            menus: []
+        }
+    }
 }
 </script>
 <template>
@@ -114,8 +126,8 @@ const reset = () => {
                     </div>
                 </div>
                 <div class="edit-btn__box">
-                    <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
-                    <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
+                    <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
+                    <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>
                 </div>
             </template>
         </g-edit>

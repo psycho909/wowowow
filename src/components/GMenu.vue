@@ -32,7 +32,7 @@ const add = (cpt) => {
     if (!cpt.status) {
         return;
     }
-    var data = {
+    let data = {
         cpt: cpt.title
     };
     store.addCpt(data);

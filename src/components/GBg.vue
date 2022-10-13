@@ -14,9 +14,9 @@ import GInput from "../elements/GInput.vue";
 import { mainStore } from "../store/index";
 import { CheckImage } from "../Tool";
 const props = defineProps(["data"])
-let showEdit = ref(false);
 const store = mainStore()
 const { content } = storeToRefs(store);
+let showEdit = ref(false);
 let bgData = reactive({
     color: "#fff",
     pc: "",
@@ -41,7 +41,6 @@ const imageInfo = (type, url) => {
     };
     img.src = url
 }
-// https://tw.hicdn.beanfun.com/beanfun/promo/Lineage/E20220930/assets/img/bg.jpg
 watchEffect(() => {
     if (content.value.body[_index].update) {
         showEdit.value = true;
@@ -64,12 +63,6 @@ onMounted(async () => {
         })
     }
 })
-onUpdated(() => {
-
-})
-onUnmounted(() => {
-
-})
 const updateColor = (color) => {
     bgData.color = color.hex
 }
@@ -77,12 +70,26 @@ const colorBlur = () => {
     console.log("blurText")
 }
 
-const submit = () => {
-    var data = { ...bgData }
+const onSubmit = () => {
+    let data = { ...bgData }
     store.updateCpt(props.data.uid, data)
 }
-const reset = () => {
-
+const onReset = () => {
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            bgData[v] = props.data.content[v];
+        })
+    } else {
+        bgData = {
+            color: "#fff",
+            pc: "",
+            mb: "",
+            w: "",
+            h: "",
+            mw: "",
+            mh: ""
+        }
+    }
 }
 </script>
 <template>
@@ -106,8 +113,8 @@ const reset = () => {
                                  @blur="colorBlur" tabindex="0" />
                 </div>
                 <div class="edit-btn__box">
-                    <a href="javascript:;" class="btn btn__submit" @click="submit">確認送出</a>
-                    <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
+                    <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
+                    <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>
                 </div>
             </template>
         </g-edit>

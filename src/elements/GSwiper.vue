@@ -15,12 +15,6 @@ breakpoints.value = {
     }
 }
 const modules = [Navigation, Pagination]
-const onSwiper = (swiper) => {
-    console.log(swiper);
-};
-const onSlideChange = () => {
-    console.log('slide change');
-};
 </script>
 <template>
     <div class="g-swiper">
@@ -33,9 +27,7 @@ const onSlideChange = () => {
                 :loop-fill-group-with-blank="true"
                 :loop="true"
                 navigation
-                :pagination="{ clickable: true }"
-                @swiper="onSwiper"
-                @slideChange="onSlideChange">
+                :pagination="{ clickable: true }">
             <swiper-slide v-for="slide in data.slides">
                 <a class="g-swiper__a" :href="[slide.url?'':'javascript:;']" :target="[slide.open?'_target':'_self']">
                     <picture>

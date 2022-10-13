@@ -36,8 +36,8 @@ onUnmounted(() => {
                 </div>
                 <input type="text" v-model="text" />
                 <div class="edit-btn__box">
-                    <a href="javascript:;" class="edit-btn__submit" @click="submit">確認送出</a>
-                    <a href="javascript:;" class="edit-btn__reset" @click="reset">清除重填</a>
+                    <a href="javascript:;" class="edit-btn__submit" @click="onSubmit">確認送出</a>
+                    <a href="javascript:;" class="edit-btn__reset" @click="onReset">清除重填</a>
                 </div>
             </template>
         </g-edit>

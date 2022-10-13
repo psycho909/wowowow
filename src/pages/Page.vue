@@ -68,6 +68,7 @@ const onEvent = (type) => {
             break;
     }
 }
+
 </script>
 <template>
     <section class="wrap" :class="MODE" data-type="one" :style="cssVar">
