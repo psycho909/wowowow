@@ -52,10 +52,10 @@ const next = () => {
                 <div class="select-type__name">{{t.name}}</div>
             </div>
         </div>
-        <div class="page-pagination__box">
+        <div class="pagination__box">
             <a href="javascript:;" class="btn btn__prev" :class="[currentPage == 1?'disabled':'']" @click="prev">上一頁</a>
-            <div class="page-pagination__number">
-                <span class="page-pagination__current">{{currentPage}}</span>/
+            <div class="pagination__page">
+                <span class="on">{{currentPage}}</span>/
                 <span>{{totalPage}}</span>
             </div>
             <a href="javascript:;" class="btn btn__next" :class="[currentPage == totalPage?'disabled':'']"

@@ -19,13 +19,8 @@ let options1 = [{ value: 1, text: "11" }, { value: 2, text: "22" }]
 let options2 = [{ value: 1, text: "33" }, { value: 2, text: "44" }]
 
 let eventData = [{}, {}, {}]
-const sort = (type) => {
-    console.log(type)
-}
-const search = () => {
-    console.log(eventFilter)
-}
 
+let sort = ref("")
 let totalPage = ref(10)
 let currentPage = ref(1)
 
@@ -58,6 +53,24 @@ onUpdated(() => {
     console.log(123)
 
 })
+
+const onSort = (type) => {
+    switch (type) {
+        case "game":
+            break;
+        case "date":
+            break;
+        case "event":
+            break;
+        case "create":
+            break;
+        case "status":
+            break;
+    }
+}
+const onSearch = () => {
+    console.log(eventFilter)
+}
 </script>
 <template>
     <div class="container">
@@ -84,25 +97,30 @@ onUpdated(() => {
                 <g-select label="狀態" v-model="eventFilter.gameStatus" :options="options2" />
             </div>
             <div class="event-list__box">
-                <a href="javascript:;" class="btn btn__search" @click="search">搜尋</a>
+                <a href="javascript:;" class="btn btn__search" @click="onSearch">搜尋</a>
             </div>
         </div>
 
         <div class="event-list__content">
-            <div class="event-list__sort-box">
-                <a href="javascript:;" class="event-list__list-sort__game" @click="sort('game')">遊戲名稱</a>
-                <a href="javascript:;" class="event-list__list-sort__date" @click="sort('date')">活動區間</a>
-                <a href="javascript:;" class="event-list__list-sort__event" @click="sort('event')">活動名稱</a>
-                <a href="javascript:;" class="event-list__list-sort__create" @click="sort('create')">人員名稱</a>
-                <a href="javascript:;" class="event-list__list-sort__status" @click="sort('status')">狀態</a>
+            <div class="event-list__head">
+                <a href="javascript:;" class="event-list__title" :class="[sort=='game'?'on':'']"
+                   @click="onSort('game')">遊戲名稱</a>
+                <a href="javascript:;" class="event-list__title" :class="[sort=='date'?'on':'']"
+                   @click="onSort('date')">活動區間</a>
+                <a href="javascript:;" class="event-list__title" :class="[sort=='event'?'on':'']"
+                   @click="onSort('event')">活動名稱</a>
+                <a href="javascript:;" class="event-list__title" :class="[sort=='create'?'on':'']"
+                   @click="onSort('create')">人員名稱</a>
+                <a href="javascript:;" class="event-list__title" :class="[sort=='status'?'on':'']"
+                   @click="onSort('status')">狀態</a>
             </div>
-            <div class="event-list__list-group">
-                <div class="event-list__list-box" v-for="event in eventData">
-                    <div class="event-list__list-game">遊戲名稱</div>
-                    <div class="event-list__list-date">20220112-20220801</div>
-                    <a href="javascript:;" class="event-list__list-event">活動名稱活動名稱活動名稱活動名稱活動名稱</a>
-                    <div class="event-list__list-create">創建活動人員名稱</div>
-                    <div class="event-list__list-status">
+            <div class="event-list__body">
+                <div class="event-list__box" v-for="event in eventData">
+                    <div class="event-list__item">遊戲名稱</div>
+                    <div class="event-list__item">20220112-20220801</div>
+                    <a href="javascript:;" class="event-list__item">活動名稱活動名稱活動名稱活動名稱活動名稱</a>
+                    <div class="event-list__item">創建活動人員名稱</div>
+                    <div class="event-list__item">
                         <div>編輯中</div>
                         <div>審核中</div>
                         <div>審核通過</div>
@@ -114,10 +132,10 @@ onUpdated(() => {
                 </div>
             </div>
         </div>
-        <div class="page-pagination__box">
+        <div class="pagination__box">
             <a href="javascript:;" class="btn btn__prev" :class="[currentPage == 1?'disabled':'']" @click="prev">上一頁</a>
-            <div class="page-pagination__number">
-                <span class="page-pagination__current">{{currentPage}}</span>/
+            <div class="pagination__page">
+                <span class="on">{{currentPage}}</span>/
                 <span>{{totalPage}}</span>
             </div>
             <a href="javascript:;" class="btn btn__next" :class="[currentPage == totalPage?'disabled':'']"

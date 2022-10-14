@@ -9,19 +9,23 @@ body {
 #app {
 	position: relative;
 	width: 100%;
+	background-color: #3b3b3b;
 }
 .container {
 	width: 1200px;
+	min-height: 100vh;
 	margin: 0 auto;
 	position: relative;
 	display: flex;
 	flex-direction: column;
+	align-items: center;
 	padding-top: 76px;
 	padding-bottom: 76px;
+	box-sizing: border-box;
 }
 .page {
 	&-title {
-		font-size: 26px;
+		font-size: 32px;
 		color: #d0cbcb;
 		padding: 12px 0;
 		min-width: 295px;
@@ -33,24 +37,23 @@ body {
 			color: #ff9c00;
 		}
 	}
-	&-pagination {
-		&__box {
-			display: flex;
-			align-items: center;
-			color: #5b5b5b;
-			margin: 0 auto;
-			font-size: 26px;
-		}
-		&__current {
+}
+.pagination {
+	&__box {
+		display: flex;
+		align-items: center;
+		color: #93928a;
+		margin: 0 auto;
+		font-size: 26px;
+	}
+	&__page {
+		margin: 0 12px;
+		display: flex;
+		.on {
 			color: #5a9ae5;
-		}
-		&__number {
-			margin: 0 12px;
-			display: flex;
 		}
 	}
 }
-
 .icon {
 	width: 26px;
 	height: 25px;

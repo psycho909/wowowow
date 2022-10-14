@@ -79,7 +79,7 @@ const onReset = () => {
                 <g-select label="選擇遊戲" :options="gameOptions" v-model="eventConfig.gameSelected" />
             </div>
             <div class="create-config__box">
-                <div class="create-config__label">上架日期</div>
+                <div class="create-config__label">*上架日期:</div>
                 <div class="create-config__input">
                     <g-date v-model="eventConfig.startDate" />
                 </div>
@@ -88,7 +88,7 @@ const onReset = () => {
                 </div>
             </div>
             <div class="create-config__box">
-                <div class="create-config__label">下架日期</div>
+                <div class="create-config__label">*下架日期:</div>
                 <div class="create-config__input">
                     <g-date v-model="eventConfig.endDate" />
                 </div>

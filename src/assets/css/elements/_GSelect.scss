@@ -1,0 +1,25 @@
+.select {
+	&-group {
+		display: flex;
+		font-size: 18px;
+		align-items: center;
+		&__label {
+			color: #fff;
+			margin-right: 12px;
+			flex-shrink: 0;
+		}
+		&__control {
+			border: none;
+			background: transparent;
+			outline: none;
+			color: #fff;
+			min-width: 120px;
+			option {
+				background: transparent;
+				outline: none;
+				border: none;
+				color: #93928a;
+			}
+		}
+	}
+}

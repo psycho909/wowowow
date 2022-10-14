@@ -29,10 +29,22 @@
 		&__box {
 			position: relative;
 			margin-bottom: 20px;
+			display: flex;
+			align-items: center;
+			font-size: 18px;
+			&:last-child {
+				margin-bottom: 0;
+			}
 		}
 		&__label {
+			color: #fff;
+			flex-shrink: 0;
+			margin-right: 12px;
 		}
 		&__input {
+			& + .create-config__input {
+				margin-left: 12px;
+			}
 		}
 	}
 	&-btn {
