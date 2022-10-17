@@ -32,7 +32,7 @@ const onDown = () => {
     store.downCpt(props.uid);
 }
 const onEdit = () => {
-    store.editCpt(props.uid);
+    store.editCptOpen(props.uid);
 }
 </script>
 <template>

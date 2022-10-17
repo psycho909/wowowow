@@ -35,7 +35,7 @@ let eventConfig = reactive({
 })
 const createEvent = () => {
     store.$patch(state => {
-        state.page = "Page"
+        state.page = "EditPage"
     })
     store.$patch(state => {
         state.config = eventConfig
@@ -75,10 +75,10 @@ const onReset = () => {
             <span>新增活動</span>
         </div>
         <div class="create-content">
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <g-select label="選擇遊戲" :options="gameOptions" v-model="eventConfig.gameSelected" />
             </div>
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <div class="create-config__label">*上架日期:</div>
                 <div class="create-config__input">
                     <g-date v-model="eventConfig.startDate" />
@@ -87,7 +87,7 @@ const onReset = () => {
                     <g-time v-model="eventConfig.startTime" />
                 </div>
             </div>
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <div class="create-config__label">*下架日期:</div>
                 <div class="create-config__input">
                     <g-date v-model="eventConfig.endDate" />
@@ -96,35 +96,35 @@ const onReset = () => {
                     <g-time v-model="eventConfig.endTime" />
                 </div>
             </div>
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <g-input label="活動名稱" placeholder="輸入內容" v-model="eventConfig.eventName" />
             </div>
 
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <g-checkbox label="COOKIE政策" v-model="eventConfig.cookie" />
             </div>
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <g-checkbox label="HEADER" v-model="eventConfig.header" />
             </div>
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <g-input label="網頁標題" placeholder="輸入內容" v-model="eventConfig.title" />
             </div>
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <g-input label="網頁說明" placeholder="輸入內容" v-model="eventConfig.description" />
             </div>
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <g-input label="FB標題" placeholder="輸入內容" v-model="eventConfig.fbTitle" />
             </div>
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <g-input label="FB說明" placeholder="輸入內容" v-model="eventConfig.fbDescription" />
             </div>
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <g-input label="FB縮圖URL" placeholder="輸入內容" v-model="eventConfig.fbImage" preview="true" />
             </div>
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <g-input label="GA" placeholder="輸入內容" v-model="eventConfig.ga" />
             </div>
-            <div class="create-config__box">
+            <div class="create-config__col">
                 <g-input label="GTM" placeholder="輸入內容" v-model="eventConfig.gtm" />
             </div>
 

@@ -16,7 +16,7 @@ const props = defineProps(["data"])
 let showEdit = ref(false);
 let _imgDataLength = 1;
 const store = mainStore()
-const { content } = storeToRefs(store);
+const { content, MODE, page } = storeToRefs(store);
 let imgSetting = ref({})
 let imgData = reactive({
     num: 1,
@@ -133,15 +133,14 @@ const onReset = () => {
                     </g-lightbox>
                 </a>
             </template>
-            <g-modify :uid="data.uid" />
+            <g-modify :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'" />
         </div>
-        <g-edit v-model:showEdit="showEdit">
+        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'">
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">圖片區塊</div>
-                    <a href="javascript:;" class="edit-title__q"></a>
+                    <div class="edit-title__text">圖片區塊<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
-                <div class="edit-input__box">
+                <div class="g-edit__col">
                     <div class="edit-radio__title">選擇圖片框樣式:</div>
                     <g-radio label="單一圖片" name="img" value="1" v-model="imgData.num" @change="onChange" />
                     <g-radio label="兩格圖片" name="img" value="2" v-model="imgData.num" @change="onChange" />
@@ -150,31 +149,31 @@ const onReset = () => {
                 </div>
                 <div class="edit-img__box" v-for="(img,index) in imgData.imgs">
                     <g-input label="*圖片網址:" v-model="img.pc" :preview="img.pc" />
-                    <div class="edit-input__box">
+                    <div class="g-edit__col">
                         <div class="edit-radio__title">開啟方式:</div>
                         <g-radio label="無" :name="'type'+index" value="" v-model="img.type" />
                         <g-radio label="POP視窗" :name="'type'+index" value="pop" v-model="img.type" />
                         <g-radio label="連結跳轉" :name="'type'+index" value="target" v-model="img.type" />
                     </div>
                     <template v-if="img.type == 'pop'">
-                        <div class="edit-input__box">
+                        <div class="g-edit__col">
                             <div class="edit-radio__title">POP內容:</div>
                             <g-radio label="純文字" :name="'popType'+index" value="text" v-model="img.pop.type" />
                             <g-radio label="圖片" :name="'popType'+index" value="img" v-model="img.pop.type" />
                         </div>
-                        <div class="edit-input__box">
+                        <div class="g-edit__col">
                             <g-input label="*POP標題:" v-model="img.pop.title" />
                         </div>
                         <template v-if="img.pop.type == 'text'">
-                            <div class="edit-input__box">
+                            <div class="g-edit__col">
                                 <g-select label="主題顏色" :options="styleOptions" v-model="img.pop.style" />
                             </div>
-                            <div class="edit-input__box">
+                            <div class="g-edit__col">
                                 <g-ckedit v-model="img.pop.text" />
                             </div>
                         </template>
                         <template v-if="img.pop.type == 'img'">
-                            <div class="edit-input__box">
+                            <div class="g-edit__col">
                                 <g-input label="*POP圖片:" v-model="img.pop.img" :preview="img.pop.img" />
                             </div>
                         </template>
@@ -183,7 +182,7 @@ const onReset = () => {
                         <div class="dit-input__box">
                             <g-input label="連結內容:" v-model="img.target.link" />
                         </div>
-                        <div class="edit-input__box">
+                        <div class="g-edit__col">
                             <div class="edit-radio__title">另開視窗:</div>
                             <g-radio label="是" :name="'attribute'+index" :value="true" v-model="img.target.attribute" />
                             <g-radio label="否" :name="'attribute'+index" :value="false"

@@ -55,16 +55,24 @@ onUpdated(() => {
 })
 
 const onSort = (type) => {
+    if (type == sort.value) {
+        return;
+    }
     switch (type) {
         case "game":
+            sort.value = "game";
             break;
         case "date":
+            sort.value = "date";
             break;
         case "event":
+            sort.value = "event";
             break;
         case "create":
+            sort.value = "create";
             break;
         case "status":
+            sort.value = "status";
             break;
     }
 }
@@ -80,11 +88,11 @@ const onSearch = () => {
         </div>
 
         <div class="event-list__filter">
-            <div class="event-list__box">
-                <g-input label="活動名稱" placeholder="輸入內容" v-model="eventFilter.eventName" />
+            <div class="event-list__col">
+                <g-input label="活動名稱:" placeholder="輸入內容" v-model="eventFilter.eventName" />
             </div>
-            <div class="event-list__box">
-                <div class="event-list__label">日期區間</div>
+            <div class="event-list__col">
+                <div class="event-list__label">日期區間:</div>
                 <div class="event-list__input">
                     <g-date v-model="eventFilter.startDate" />
                 </div>
@@ -92,42 +100,63 @@ const onSearch = () => {
                     <g-date v-model="eventFilter.endDate" />
                 </div>
             </div>
-            <div class="event-list__box">
-                <g-select label="遊戲類別" v-model="eventFilter.gameType" :options="options1" />
+            <div class="event-list__col">
+                <g-select label="遊戲類別:" v-model="eventFilter.gameType" :options="options1" />
                 <g-select label="狀態" v-model="eventFilter.gameStatus" :options="options2" />
             </div>
-            <div class="event-list__box">
+            <div class="event-list__col">
                 <a href="javascript:;" class="btn btn__search" @click="onSearch">搜尋</a>
             </div>
         </div>
 
         <div class="event-list__content">
             <div class="event-list__head">
-                <a href="javascript:;" class="event-list__title" :class="[sort=='game'?'on':'']"
-                   @click="onSort('game')">遊戲名稱</a>
-                <a href="javascript:;" class="event-list__title" :class="[sort=='date'?'on':'']"
-                   @click="onSort('date')">活動區間</a>
-                <a href="javascript:;" class="event-list__title" :class="[sort=='event'?'on':'']"
-                   @click="onSort('event')">活動名稱</a>
-                <a href="javascript:;" class="event-list__title" :class="[sort=='create'?'on':'']"
-                   @click="onSort('create')">人員名稱</a>
-                <a href="javascript:;" class="event-list__title" :class="[sort=='status'?'on':'']"
-                   @click="onSort('status')">狀態</a>
+                <div class="event-list__title">
+                    <a href="javascript:;" :class="[sort=='game'?'on':'']"
+                       @click="onSort('game')">遊戲名稱</a>
+                </div>
+                <div class="event-list__title">
+                    <a href="javascript:;" :class="[sort=='date'?'on':'']"
+                       @click="onSort('date')">活動區間</a>
+                </div>
+                <div class="event-list__title">
+                    <a href="javascript:;" :class="[sort=='event'?'on':'']"
+                       @click="onSort('event')">活動名稱</a>
+                </div>
+                <div class="event-list__title">
+                    <a href="javascript:;" :class="[sort=='status'?'on':'']"
+                       @click="onSort('status')">狀態</a>
+                </div>
             </div>
             <div class="event-list__body">
                 <div class="event-list__box" v-for="event in eventData">
-                    <div class="event-list__item">遊戲名稱</div>
-                    <div class="event-list__item">20220112-20220801</div>
-                    <a href="javascript:;" class="event-list__item">活動名稱活動名稱活動名稱活動名稱活動名稱</a>
-                    <div class="event-list__item">創建活動人員名稱</div>
+                    <div class="event-list__item">遊戲名稱遊戲名稱</div>
                     <div class="event-list__item">
-                        <div>編輯中</div>
-                        <div>審核中</div>
-                        <div>審核通過</div>
+                        <div class="event-list__date">20220112-20220801</div>
+                        <div v-if="true" class="event-list__date-online">已上線</div>
+                        <div v-if="false" class="event-list__date-end">已結束</div>
+                    </div>
+                    <div class="event-list__item"><a href="javascript:;"
+                           :target="[false?'_blank':'']">活動名稱活動名稱活動名稱活動名稱活動名稱活動名稱活動名稱活動名稱活動名稱活動名稱</a></div>
+                    <div class="event-list__item">
+                        <!-- 有編輯權限者 -->
+                        <div class="event-list__status" v-if="true">
+                            <div class="event-list__status-item">編輯中</div>
+                            <div class="event-list__status-item"><a href="javascript:;">編輯</a>|<a
+                                   href="javascript:;">預覽</a>|<a href="javascript:;">送審</a></div>
+                        </div>
 
-                        <div>編輯|預覽|送審</div>
-                        <div>瀏覽|審核</div>
-                        <div>瀏覽|待審核</div>
+                        <!-- 有審核權限者 -->
+                        <div class="event-list__status" v-if="false">
+                            <div class="event-list__status-item">審核中</div>
+                            <div class="event-list__status-item"><a href="javascript:;">瀏覽</a>|<a
+                                   href="javascript:;"><a href="javascript:;">審核</a></a></div>
+                        </div>
+                        <!-- 無審核權限者 -->
+                        <div class="event-list__status" v-if="false">
+                            <div class="event-list__status-item">審核中</div>
+                            <div class="event-list__status-item"><a href="javascript:;">瀏覽</a>|<span>待審核</span></div>
+                        </div>
                     </div>
                 </div>
             </div>

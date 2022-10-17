@@ -7,7 +7,7 @@ export default {
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
-import { reactive, watchEffect } from 'vue';
+import { nextTick, reactive, watchEffect } from 'vue';
 import { ColorPicker } from 'vue-color-kit';
 import 'vue-color-kit/dist/vue-color-kit.css';
 import GInput from "../elements/GInput.vue";
@@ -15,8 +15,9 @@ import { mainStore } from "../store/index";
 import { CheckImage } from "../Tool";
 const props = defineProps(["data"])
 const store = mainStore()
-const { content } = storeToRefs(store);
+const { content, MODE, page } = storeToRefs(store);
 let showEdit = ref(false);
+let showColor = ref(false)
 let bgData = reactive({
     color: "#fff",
     pc: "",
@@ -66,6 +67,14 @@ onMounted(async () => {
 const updateColor = (color) => {
     bgData.color = color.hex
 }
+const openColor = () => {
+    if (showColor.value) {
+        showColor.value = false;
+    } else {
+        showColor.value = true;
+    }
+
+}
 const colorBlur = () => {
     console.log("blurText")
 }
@@ -91,26 +100,49 @@ const onReset = () => {
         }
     }
 }
+
+const enterColor = async (e) => {
+    var target = e.target;
+    var current = target.closest(".input-group__color-ref");
+    if (showColor.value) {
+        if (!(current && document.querySelector(".hu-color-picker")) && !target.closest(".hu-color-picker")) {
+            showColor.value = false;
+            return;
+        }
+    }
+
+}
 </script>
 <template>
     <div class="g-bg">
-        <g-modify :uid="data.uid" title="背景底圖" :move="false" :remove="false" />
-        <g-edit v-model:showEdit="showEdit">
+        <g-modify :uid="data.uid" title="背景底圖" :move="false" :remove="false"
+                  v-if="MODE == 'development' && page == 'EditPage'" />
+        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'"
+                :func="enterColor">
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">背景圖</div>
-                    <a href="javascript:;" class="edit-title__q"></a>
+                    <div class="edit-title__text">
+                        背景圖
+                        <a href="javascript:;" class="edit-title__q"></a>
+                    </div>
                 </div>
-                <div class="edit-input__box">
+                <div class="g-edit__col">
                     <g-input label="*圖片網址:" v-model="bgData.pc" :preview="bgData.pc" />
                 </div>
-                <div class="edit-input__box">
+                <div class="g-edit__col">
                     <g-input label="手機版圖片網址:" v-model="bgData.mb" :preview="bgData.mb" />
                 </div>
-                <div class="edit-input__box">
-                    <g-input label="背景底色:" v-model="bgData.color" :color="bgData.color" />
-                    <ColorPicker :color="bgData.color" theme="light" :sucker-hide="true" @changeColor="updateColor"
-                                 @blur="colorBlur" tabindex="0" />
+                <div class="g-edit__col">
+                    <div class="input-group">
+                        <div class="input-group__label">背景底色:</div>
+                        <div class="input-group__color">
+                            <span class="input-group__color-ref" :style="`--color:${bgData.color}`"
+                                  @click="openColor"></span>
+                            <ColorPicker v-show="showColor" :color="bgData.color" theme="light" :sucker-hide="true"
+                                         @changeColor="updateColor" />
+                        </div>
+
+                    </div>
                 </div>
                 <div class="edit-btn__box">
                     <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>

@@ -20,7 +20,7 @@ let textData = reactive({
 })
 
 const store = mainStore()
-const { content } = storeToRefs(store);
+const { content, MODE, page } = storeToRefs(store);
 
 var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
 let styleOptions = [{ value: "blue", text: "一" }, { value: "red", text: "二" }]
@@ -59,23 +59,22 @@ const onReset = () => {
     <div class="g-text" :class="[textSetting.align,textSetting.style]">
         <div class="g-text-container">
             <div class="g-text__content" v-html="textSetting.text"></div>
-            <g-modify :uid="data.uid" />
+            <g-modify :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'" />
         </div>
-        <g-edit v-model:showEdit="showEdit">
+        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'">
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">文字區塊物件</div>
-                    <a href="javascript:;" class="edit-title__q"></a>
+                    <div class="edit-title__text">文字區塊物件<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
-                <div class="edit-input__box">
+                <div class="g-edit__col">
                     <div class="edit-radio__title">對其方向:</div>
                     <g-radio label="左" name="align" value="align-left" v-model="textData.align" />
                     <g-radio label="中" name="align" value="align-center" v-model="textData.align" />
                 </div>
-                <div class="edit-input__box">
+                <div class="g-edit__col">
                     <g-select label="主題顏色" :options="styleOptions" v-model="textData.style" />
                 </div>
-                <div class="edit-input__box">
+                <div class="g-edit__col">
                     <g-ckedit v-model="textData.text" />
                 </div>
                 <div class="edit-btn__box">

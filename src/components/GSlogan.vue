@@ -14,7 +14,7 @@ import { CheckImage } from "../Tool";
 const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
-const { content } = storeToRefs(store);
+const { content, MODE, page } = storeToRefs(store);
 let sloganSetting = ref({})
 let sloganData = reactive({
     link: "",
@@ -110,27 +110,26 @@ const onReset = () => {
     <div class="g-slogan">
         <a :href="[sloganSetting.link?sloganSetting.link:'javascript:;']" class="g-slogan-container"
            :style="cssVar">
-            <g-modify :uid="data.uid" title="主標題設定" :move="false" />
+            <g-modify :uid="data.uid" title="主標題設定" :move="false" v-if="MODE == 'development' && page == 'EditPage'" />
         </a>
-        <g-edit v-model:showEdit="showEdit">
+        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'">
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">背景圖</div>
-                    <a href="javascript:;" class="edit-title__q"></a>
+                    <div class="edit-title__text">背景圖<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
-                <div class="edit-input__box">
+                <div class="g-edit__col">
                     <g-input label="間距上:" v-model="sloganData.mt" />
                 </div>
-                <div class="edit-input__box">
+                <div class="g-edit__col">
                     <g-input label="間距下:" v-model="sloganData.mb" />
                 </div>
-                <div class="edit-input__box">
+                <div class="g-edit__col">
                     <g-input label="*圖片網址:" v-model="sloganData.pc" :preview="sloganData.pc" />
                 </div>
-                <div class="edit-input__box">
+                <div class="g-edit__col">
                     <g-input label="手機版圖片網址:" v-model="sloganData.mb" :preview="sloganData.mb" />
                 </div>
-                <div class="edit-input__box">
+                <div class="g-edit__col">
                     <g-input label="主標連結:" v-model="sloganData.link" />
                 </div>
                 <div class="edit-btn__box">

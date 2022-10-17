@@ -13,7 +13,7 @@ import { mainStore } from "../store/index";
 const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
-const { content } = storeToRefs(store);
+const { content, MODE, page } = storeToRefs(store);
 let slideSetting = ref({})
 let slideData = reactive({
     num: 1,
@@ -93,16 +93,15 @@ const onReset = () => {
     <div class="g-slide">
         <div class="g-slide-container" :data-num="slideSetting.num">
             <g-swiper :data="slideSetting" />
-            <g-modify :uid="data.uid" />
+            <g-modify :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'" />
         </div>
-        <g-edit v-model:showEdit="showEdit">
+        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'">
             <template #edit-content>
                 {{slideData}}
                 <div class="edit-title__box">
-                    <div class="edit-title__text">輪播區塊</div>
-                    <a href="javascript:;" class="edit-title__q"></a>
+                    <div class="edit-title__text">輪播區塊<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
-                <div class="edit-input__box">
+                <div class="g-edit__col">
                     <div class="edit-radio__title">選擇輪播數量:</div>
                     <g-radio label="單張圖片" name="slide" value="1" v-model="slideData.num" @change="onChange" />
                     <g-radio label="兩張圖片" name="slide" value="2" v-model="slideData.num" @change="onChange" />
@@ -110,25 +109,25 @@ const onReset = () => {
                     <g-radio label="四張圖片" name="slide" value="4" v-model="slideData.num" @change="onChange" />
                 </div>
                 <div class="edit-input__group" v-for="(slide,index) in slideData.slides">
-                    <div class="edit-input__box">
+                    <div class="g-edit__col">
                         <g-input label="*圖片網址" v-model="slide.pc" />
                     </div>
-                    <div class="edit-input__box">
+                    <div class="g-edit__col">
                         <div class="edit-radio__title">開啟方式:</div>
                         <g-radio label="無" :name="'open'+index" :value="false" v-model="slide.open" />
                         <g-radio label="連結跳轉" :name="'open'+index" :value="true" v-model="slide.open" />
                     </div>
                     <template v-if="slide.open">
-                        <div class="edit-input__box">
+                        <div class="g-edit__col">
                             <g-input label="URL" v-model="slide.url" />
                         </div>
-                        <div class="edit-input__box">
+                        <div class="g-edit__col">
                             <div class="edit-radio__title">另開視窗:</div>
                             <g-radio label="是" :name="'attribute'+index" :value="false" v-model="slide.attribute" />
                             <g-radio label="否" :name="'attribute'+index" :value="true" v-model="slide.attribute" />
                         </div>
                     </template>
-                    <div class="edit-input__box">
+                    <div class="g-edit__col">
                         <g-input label="手機版圖片網址" v-model="slide.mb" />
                     </div>
                     <a href="javascript:;" class="icon icon-add" @click="addMenu"></a>

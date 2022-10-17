@@ -5,17 +5,11 @@ export default {
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
-import { watchEffect } from 'vue';
 import components from "../Components.js";
-import GMenu from "../components/GMenu.vue";
 import { mainStore } from "../store/index";
 const store = mainStore()
-const { content } = storeToRefs(store);
-const MODE = import.meta.env.MODE;
+const { content, MODE, page } = storeToRefs(store);
 
-store.$subscribe((mutation, state) => {
-    // console.log(mutation.events.target.content)
-})
 
 const cssVar = computed(() => {
     let bg = content.value.body.filter((c, i) => {
@@ -24,50 +18,13 @@ const cssVar = computed(() => {
     return {
         "--color": bg[0].content.color,
         "--pc": `url(${bg[0].content.pc})`,
-        "--mb": `url(${bg[0].content.mb})`,
+        "--mb": `url(${bg[0].content.mb ? bg[0].content.mb : bg[0].content.pc})`,
         "--w": bg[0].content.w,
         "--h": bg[0].content.h,
         "--mw": bg[0].content.mw,
         "--mh": bg[0].content.mh,
     }
 })
-
-const menu = computed(() => {
-    return Object.keys(components).map((m, i) => {
-        return {
-            title: m,
-            label: components[m].label,
-            limit: components[m].limit || 0,
-            status: true
-        }
-    });
-})
-
-
-const onEvent = (type) => {
-    switch (type) {
-        case "home":
-            store.$patch(state => {
-                state.page = "Home"
-            })
-            break;
-        case "submit":
-            store.setSubmit("SAVE").then((res) => {
-                console.log(res)
-            })
-            break;
-        case "preview":
-            store.$patch(state => {
-                state.page = "Preview"
-            })
-            break;
-        case "save":
-            store.setSave(store.content).then((res) => {
-                console.log(res)
-            })
-            break;
-    }
-}
 
 </script>
 <template>
@@ -76,11 +33,4 @@ const onEvent = (type) => {
             <component :is="block.component" :data="block"></component>
         </template>
     </section>
-    <g-menu :menu="menu" />
-    <div class="page-control__group">
-        <a href="javascript:;" class="page-control__btn" @click="onEvent('home')">回首頁</a>
-        <a href="javascript:;" class="page-control__btn" @click="onEvent('submit')">送審</a>
-        <a href="javascript:;" class="page-control__btn" @click="onEvent('preview')">預覽</a>
-        <a href="javascript:;" class="page-control__btn" @click="onEvent('save')">存檔</a>
-    </div>
 </template>

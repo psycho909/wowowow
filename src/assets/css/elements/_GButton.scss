@@ -8,30 +8,19 @@
 	justify-content: center;
 	align-items: center;
 	border-radius: 10px;
+	margin: 0 auto;
+	background-color: #ff9c00;
+	@include hover {
+		background-color: lighten($color: #ff9c00, $amount: 10%);
+	}
+	&.disabled {
+		background-color: #b4b4b4;
+		cursor: default;
+	}
 	& + .btn {
 		margin-left: 12px;
 	}
-	&__search {
-		background-color: #ff9c00;
-	}
-	&__submit {
-		background-color: #ff9c00;
-	}
 	&__reset {
 		background-color: #b4b4b4;
-	}
-	&__prev {
-		background-color: #ff9c00;
-		&.disabled {
-			background-color: #b4b4b4;
-			cursor: default;
-		}
-	}
-	&__next {
-		background-color: #ff9c00;
-		&.disabled {
-			background-color: #b4b4b4;
-			cursor: default;
-		}
 	}
 }

@@ -43,6 +43,9 @@
 			align-items: center;
 			margin-bottom: 26px;
 			box-shadow: 4px 4px 0 4px rgba(#000, 0.09);
+			@include hover {
+				background-color: lighten($color: #ff9c00, $amount: 10%);
+			}
 			&:last-child {
 				margin-bottom: 0;
 			}

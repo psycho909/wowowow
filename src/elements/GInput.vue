@@ -32,11 +32,10 @@ const updateValue = (event) => {
 </script>
 <template>
     <div class="input-group">
-        <div class="input-group__label" v-if="label">*{{label}}:</div>
+        <div class="input-group__label" v-if="label">{{label}}</div>
         <input type="text" class="input-group__control" :value="modelValue" @input="updateValue"
-               :placeholder="placeholder">
+               :placeholder="placeholder" v-show="!color">
         <div class="input-group__img" v-if="preview"><img :src="preview" alt="預覽圖"></div>
         <div class="input-group__color" v-if="color"><span :style="`--color:${color}`"></span></div>
-
     </div>
 </template>

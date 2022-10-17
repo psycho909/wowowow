@@ -18,6 +18,14 @@
 }
 
 .page {
+	&-preview {
+		font-size: 32px;
+		font-weight: bold;
+		color: #fff;
+		background-color: #3b3b3b;
+		text-align: center;
+		padding: 24px 0;
+	}
 	&-control {
 		&__group {
 			position: absolute;

@@ -3,7 +3,8 @@ import { defineStore } from "pinia";
 export const mainStore = defineStore("main", {
 	state: () => {
 		return {
-			page: "Page",
+			page: "EditPage",
+			MODE: "",
 			type: "",
 			config: [],
 			content: {
@@ -94,37 +95,42 @@ export const mainStore = defineStore("main", {
 			this.content.body.push({ component: data.cpt, uid, content: {}, update: true });
 		},
 		removeCpt(data) {
-			var _index = this.content.body.findIndex((v, i) => v.uid == data);
+			var _index = this.getIndex(data);
 			if (_index > -1) {
 				this.content.body = [...this.content.body.slice(0, _index), ...this.content.body.slice(_index + 1)];
 			}
 		},
 		updateCpt(uid, data) {
-			var _index = this.content.body.findIndex((v, i) => v.uid == uid);
+			var _index = this.getIndex(uid);
 			if (_index > -1) {
 				this.content.body[_index].content = data;
 				this.content.body[_index].update = false;
 			}
 		},
-		editCpt(data) {
-			var _index = this.content.body.findIndex((v, i) => v.uid == data);
+		editCptOpen(data) {
+			var _index = this.getIndex(data);
 			if (_index > -1) {
 				this.content.body[_index].update = true;
 			}
 		},
+		editCptClose(data) {
+			var _index = this.getIndex(data);
+			if (_index > -1) {
+				this.content.body[_index].update = false;
+			}
+		},
 		upCpt(data) {
-			var _index = this.content.body.findIndex((v, i) => v.uid == data);
+			var _index = this.getIndex(data);
 			if (_index - 1 < 0 || this.content.body[_index - 1].component == "GBg" || this.content.body[_index - 1].component == "GSlogan") {
 				return;
 			}
-			console.log(this.content.body[_index - 1].component);
 			var _temp = this.content.body[_index];
 			var _content = [...this.content.body.slice(0, _index), ...this.content.body.slice(_index + 1)];
 			this.content.body = _content;
 			this.content.body.splice(_index - 1, 0, _temp);
 		},
 		downCpt(data) {
-			var _index = this.content.body.findIndex((v, i) => v.uid == data);
+			var _index = this.getIndex(data);
 			if (_index + 1 >= this.content.body.length) {
 				return;
 			}
