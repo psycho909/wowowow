@@ -5,8 +5,7 @@ import GDate from "../elements/GDate.vue";
 import GInput from "../elements/GInput.vue";
 import GSelect from "../elements/GSelect.vue";
 
-let openCheckSubmit = ref(false)
-let openSubmitEvent = ref(false)
+let openEventOff = ref(false)
 let eventFilter = reactive({
     eventName: "",
     startDate: ref(new Date()),
@@ -77,6 +76,10 @@ const onSearch = () => {
     console.log(eventFilter)
 }
 
+const eventOff = (event) => {
+    openEventOff.value = true;
+}
+
 const onSubmit = () => {
     openEventOff.value = false;
 }
@@ -88,7 +91,7 @@ const onCancel = () => {
     <div class="container">
         <div class="page-title">
             <span class="page-title--style">網柑達</span>
-            <span>活動列表</span>
+            <span>已審活動列表</span>
         </div>
 
         <div class="event-list__filter">
@@ -133,35 +136,28 @@ const onCancel = () => {
                 </div>
             </div>
             <div class="event-list__body">
-                <div class="event-list__box" v-for="event in eventData">
+                <div class="event-list__box" v-for="(event,index) in eventData">
                     <div class="event-list__item">遊戲名稱遊戲名稱</div>
                     <div class="event-list__item">
                         <div class="event-list__date">20220112-20220801</div>
-                        <div v-if="true" class="event-list__date-online">已上線</div>
-                        <div v-if="false" class="event-list__date-end">已結束</div>
                     </div>
                     <div class="event-list__item"><a href="javascript:;"
                            :target="[false?'_blank':'']">活動名稱活動名稱活動名稱活動名稱活動名稱活動名稱活動名稱活動名稱活動名稱活動名稱</a></div>
                     <div class="event-list__item">
-                        <!-- 有編輯權限者 -->
+                        <!-- 待下架/已上線 -->
                         <div class="event-list__status" v-if="true">
-                            <div class="event-list__status-item">編輯中</div>
-                            <div class="event-list__status-item"><a href="javascript:;"
-                                   class="event-list__btn">編輯</a>|<a
-                                   href="javascript:;" class="event-list__btn">預覽</a>|<a href="javascript:;"
-                                   class="event-list__btn">送審</a></div>
+                            <div class="event-list__status-item">待下架</div>
+                            <div class="event-list__status-item"><a class="event-list__btn-off" href="javascript:;"
+                                   @click="eventOff(index)">下架</a></div>
                         </div>
 
-                        <!-- 有審核權限者 -->
+                        <!-- 已結束-->
                         <div class="event-list__status" v-if="false">
-                            <div class="event-list__status-item">審核中</div>
-                            <div class="event-list__status-item"><a href="javascript:;">瀏覽</a>|<a
-                                   href="javascript:;"><a href="javascript:;">審核</a></a></div>
+                            <div class="event-list__status-item">已結束</div>
                         </div>
-                        <!-- 無審核權限者 -->
+                        <!-- 已下架 -->
                         <div class="event-list__status" v-if="false">
-                            <div class="event-list__status-item">審核中</div>
-                            <div class="event-list__status-item"><a href="javascript:;">瀏覽</a>|<span>待審核</span></div>
+                            <div class="event-list__status-item end">已下架</div>
                         </div>
                     </div>
                 </div>
@@ -177,24 +173,12 @@ const onCancel = () => {
                @click="next">下一頁</a>
         </div>
 
-        <g-lightbox v-model:showLightbox="openCheckSubmit">
+        <g-lightbox v-model:showLightbox="openEventOff">
             <template #lightbox-title>
-                <div>是否確定送審活動:</div>
+                <div>注意:</div>
             </template>
             <template #lightbox-content>
-                <div>活動名稱</div>
-            </template>
-            <template #lightbox-btn>
-                <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認</a>
-                <a href="javascript:;" class="btn btn__reset" @click="onCancel">取消</a>
-            </template>
-        </g-lightbox>
-        <g-lightbox v-model:showLightbox="openSubmitEvent">
-            <template #lightbox-title>
-                <div>審核活動:</div>
-            </template>
-            <template #lightbox-content>
-                <div>活動名稱</div>
+                <div>若下架活動，外部將無法顯示活動頁需重新經由編輯-審核流程是否確定要下架?</div>
             </template>
             <template #lightbox-btn>
                 <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認</a>

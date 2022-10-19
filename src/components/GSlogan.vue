@@ -21,40 +21,19 @@ let sloganData = reactive({
     mt: "250",
     mb: "24",
     pc: "",
-    mb: "",
+    mobile: "",
     w: "",
     h: "",
     mw: "",
     mh: ""
 })
 var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
-const imageInfo = (type, url) => {
-    var img = new Image();
-    img.onload = function () {
-        if (type == "pc") {
-            sloganData.w = img.width
-            sloganData.h = img.height
-        }
-        if (type == "mb") {
-            sloganData.mw = img.width
-            sloganData.mh = img.height
-        }
-    };
-    img.src = url
-}
 watchEffect(() => {
     if (content.value.body[_index].update) {
         showEdit.value = true;
     } else {
         showEdit.value = false;
     }
-    if (sloganData.pc) {
-        imageInfo("pc", sloganData.pc)
-    }
-    if (sloganData.mb) {
-        imageInfo("mb", sloganData.mb)
-    }
-
 })
 
 const cssVar = computed(() => {
@@ -62,12 +41,6 @@ const cssVar = computed(() => {
         return c.component == "GSlogan"
     })
     return {
-        "--pc": `url(${slogan[0].content.pc})`,
-        "--mb": `url(${slogan[0].content.mb})`,
-        "--w": slogan[0].content.w,
-        "--h": slogan[0].content.h,
-        "--mw": slogan[0].content.mw,
-        "--mh": slogan[0].content.mh,
         "--mt": slogan[0].content.mt,
         "--mb": slogan[0].content.mb,
     }
@@ -78,6 +51,7 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.keys(props.data.content).forEach((v, i) => {
             sloganData[v] = props.data.content[v];
+            sloganSetting.value[v] = props.data.content[v];
         })
     }
 })
@@ -96,7 +70,7 @@ const onReset = () => {
             mt: "250",
             mb: "24",
             pc: "",
-            mb: "",
+            mobile: "",
             w: "",
             h: "",
             mw: "",
@@ -104,32 +78,58 @@ const onReset = () => {
         }
     }
 }
-
+const closeBtn = () => {
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            sloganData[v] = props.data.content[v];
+        })
+    } else {
+        sloganData = {
+            link: "",
+            mt: "250",
+            mb: "24",
+            pc: "",
+            mobile: "",
+            w: "",
+            h: "",
+            mw: "",
+            mh: ""
+        }
+    }
+    showEdit.value = false;
+    content.value.body[_index].update = false;
+}
 </script>
 <template>
     <div class="g-slogan">
-        <a :href="[sloganSetting.link?sloganSetting.link:'javascript:;']" class="g-slogan-container"
-           :style="cssVar">
+        <a :href="[sloganSetting.link?sloganSetting.link:'javascript:;']" class="g-slogan-container" :style="cssVar">
+            <picture>
+                <source media="(max-width:768px)" :srcset="sloganSetting.mobile" />
+                <img :srcset="sloganSetting.pc" :src="sloganSetting.pc" alt="" />
+            </picture>
             <g-modify :uid="data.uid" title="主標題設定" :move="false" v-if="MODE == 'development' && page == 'EditPage'" />
         </a>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'">
+            <template #edit-close>
+                <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
+            </template>
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">背景圖<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
-                <div class="g-edit__col">
+                <div class="g-edit__row">
                     <g-input label="間距上:" v-model="sloganData.mt" />
                 </div>
-                <div class="g-edit__col">
+                <div class="g-edit__row">
                     <g-input label="間距下:" v-model="sloganData.mb" />
                 </div>
-                <div class="g-edit__col">
+                <div class="g-edit__row">
                     <g-input label="*圖片網址:" v-model="sloganData.pc" :preview="sloganData.pc" />
                 </div>
-                <div class="g-edit__col">
-                    <g-input label="手機版圖片網址:" v-model="sloganData.mb" :preview="sloganData.mb" />
+                <div class="g-edit__row">
+                    <g-input label="手機版圖片網址:" v-model="sloganData.mobile" :preview="sloganData.mobile" />
                 </div>
-                <div class="g-edit__col">
+                <div class="g-edit__row">
                     <g-input label="主標連結:" v-model="sloganData.link" />
                 </div>
                 <div class="edit-btn__box">

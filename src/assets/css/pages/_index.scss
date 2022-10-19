@@ -6,6 +6,12 @@ body {
 		min-width: auto;
 	}
 }
+.ov-hidden {
+	overflow: hidden;
+}
+.v-hidden {
+	visibility: hidden;
+}
 #app {
 	position: relative;
 	width: 100%;
@@ -22,6 +28,8 @@ body {
 	padding-top: 76px;
 	padding-bottom: 76px;
 	box-sizing: border-box;
+	@include media {
+	}
 }
 .page {
 	&-title {
@@ -60,6 +68,7 @@ body {
 	background-size: cover;
 	font-size: 0;
 	text-decoration: none;
+	vertical-align: top;
 	&-question {
 		width: 18px;
 		height: 18px;
@@ -73,7 +82,28 @@ body {
 	&-close {
 		width: 24px;
 		height: 24px;
-		background-image: url("./img/icon-close.png");
+		// background-image: url("./img/icon-close.png");
+		font-size: 0;
+		&:before {
+			content: "";
+			width: 1px;
+			height: 80%;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			background-color: #fff;
+			transform: translate(-50%, -50%) rotate(45deg);
+		}
+		&:after {
+			content: "";
+			width: 1px;
+			height: 80%;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			background-color: #fff;
+			transform: translate(-50%, -50%) rotate(-45deg);
+		}
 	}
 	&-edit {
 		background-image: url("./img/icon-edit.png");

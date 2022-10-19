@@ -30,7 +30,7 @@ let imgData = reactive({
         target: {}
     }],
 })
-let styleOptions = [{ value: "blue", text: "一" }, { value: "red", text: "二" }]
+let style1 = [{ value: "blue", text: "一" }, { value: "red", text: "二" }]
 var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
 
 watchEffect(() => {
@@ -140,24 +140,26 @@ const onReset = () => {
                 <div class="edit-title__box">
                     <div class="edit-title__text">圖片區塊<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
-                <div class="g-edit__col">
-                    <div class="edit-radio__title">選擇圖片框樣式:</div>
+                <div class="g-edit__row">
+                    <div class="input-group__label">選擇圖片框樣式:</div>
                     <g-radio label="單一圖片" name="img" value="1" v-model="imgData.num" @change="onChange" />
                     <g-radio label="兩格圖片" name="img" value="2" v-model="imgData.num" @change="onChange" />
                     <g-radio label="三格圖片" name="img" value="3" v-model="imgData.num" @change="onChange" />
                     <g-radio label="四格圖片" name="img" value="4" v-model="imgData.num" @change="onChange" />
                 </div>
-                <div class="edit-img__box" v-for="(img,index) in imgData.imgs">
-                    <g-input label="*圖片網址:" v-model="img.pc" :preview="img.pc" />
+                <div class="g-edit__row g-edit__block" v-for="(img,index) in imgData.imgs">
                     <div class="g-edit__col">
-                        <div class="edit-radio__title">開啟方式:</div>
+                        <g-input label="圖片網址:" v-model="img.pc" :preview="img.pc" />
+                    </div>
+                    <div class="g-edit__col">
+                        <div class="input-group__label">開啟方式:</div>
                         <g-radio label="無" :name="'type'+index" value="" v-model="img.type" />
                         <g-radio label="POP視窗" :name="'type'+index" value="pop" v-model="img.type" />
                         <g-radio label="連結跳轉" :name="'type'+index" value="target" v-model="img.type" />
                     </div>
                     <template v-if="img.type == 'pop'">
                         <div class="g-edit__col">
-                            <div class="edit-radio__title">POP內容:</div>
+                            <div class="input-group__label">POP內容:</div>
                             <g-radio label="純文字" :name="'popType'+index" value="text" v-model="img.pop.type" />
                             <g-radio label="圖片" :name="'popType'+index" value="img" v-model="img.pop.type" />
                         </div>
@@ -166,7 +168,7 @@ const onReset = () => {
                         </div>
                         <template v-if="img.pop.type == 'text'">
                             <div class="g-edit__col">
-                                <g-select label="主題顏色" :options="styleOptions" v-model="img.pop.style" />
+                                <g-select label="主題顏色" :options="style1" v-model="img.pop.style" />
                             </div>
                             <div class="g-edit__col">
                                 <g-ckedit v-model="img.pop.text" />
@@ -179,11 +181,11 @@ const onReset = () => {
                         </template>
                     </template>
                     <template v-if="img.type == 'link'">
-                        <div class="dit-input__box">
+                        <div class="g-edit__col">
                             <g-input label="連結內容:" v-model="img.target.link" />
                         </div>
                         <div class="g-edit__col">
-                            <div class="edit-radio__title">另開視窗:</div>
+                            <div class="input-group__label">另開視窗:</div>
                             <g-radio label="是" :name="'attribute'+index" :value="true" v-model="img.target.attribute" />
                             <g-radio label="否" :name="'attribute'+index" :value="false"
                                      v-model="img.target.attribute" />

@@ -115,7 +115,7 @@
 		margin-bottom: 20px;
 	}
 	&__item {
-		a {
+		& > a {
 			color: #fff;
 			cursor: default;
 			text-decoration: none;
@@ -142,9 +142,21 @@
 			&:first-child {
 				margin-bottom: 6px;
 			}
-			a {
+			& > a {
 				padding: 0 6px;
 			}
+		}
+	}
+	&__btn {
+		color: #fff;
+		&-off {
+			border-radius: 100vmax;
+			background-color: #ff9c00;
+			font-size: 16px;
+			padding: 4px 18px !important;
+			display: inline-block;
+			color: #000;
+			text-decoration: none;
 		}
 	}
 }

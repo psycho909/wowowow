@@ -1,24 +1,98 @@
 .g-fixed {
 	position: fixed;
-	z-index: 9;
+	z-index: 10;
 	width: 140px;
-	background-color: rgba(#474747, 0.6);
+	background-color: var(--bg, rgba(#474747, 0.9));
+	@include media {
+		width: vw(320);
+		height: 100vh;
+		display: none;
+		&.hamburger-right {
+			left: unset !important;
+			right: 0 !important;
+		}
+		&.hamburger-left {
+			right: unset !important;
+			left: 0 !important;
+		}
+		&.on {
+			display: block;
+		}
+	}
+	&__hamburger {
+		width: vw(79);
+		height: vw(79);
+		background-size: 100%;
+		background-image: url("./img/hambuger.png");
+		position: absolute;
+		top: vw(20);
+		display: none;
+		z-index: 9;
+		&.hamburger-right {
+			right: vw(20);
+		}
+		&.hamburger-left {
+			left: vw(20);
+		}
+		@include media {
+			display: block;
+		}
+	}
+	&__close {
+		width: vw(50);
+		height: vw(50);
+		position: absolute;
+		top: vw(28);
+		left: vw(28);
+		display: none;
+		&:before {
+			content: "";
+			width: vw(4);
+			height: 80%;
+			background-color: var(--btnBg, #000);
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%) rotate(45deg);
+		}
+		&:after {
+			content: "";
+			width: vw(4);
+			height: 80%;
+			background-color: var(--btnBg, #000);
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%) rotate(-45deg);
+		}
+		@include media {
+			display: block;
+		}
+	}
+	&-container {
+		@include media {
+			padding-top: vw(100);
+		}
+	}
 	&__menu {
 		font-size: 14px;
 		display: block;
 		text-decoration: none;
-		color: #fff;
+		color: var(--text, #fff);
 		text-align: center;
 		@include hover {
-			background-color: rgba(#fff, 0.6);
-			color: #000;
+			background-color: var(--hoverBg, rgba(#fff, 0.9));
+			color: var(--hoverText, #3d3a3a);
+		}
+		@include media {
+			font-size: vw(32);
+			padding: vw(30) 0;
 		}
 	}
 	&.top {
 		top: 0;
-		left: 0;
 		width: 100%;
-		background-color: rgba(#474747, 0.6);
+		background-color: var(--bg, rgba(#474747, 0.9));
 		.g-fixed {
 			&-container {
 				max-width: 1000px;
@@ -27,14 +101,16 @@
 			}
 			&__menu {
 				padding: 12px 16px;
+				@include media {
+					padding: vw(30) 0;
+				}
 			}
 		}
 	}
 	&.bottom {
 		bottom: 0;
-		left: 0;
 		width: 100%;
-		background-color: rgba(#474747, 0.6);
+		background-color: var(--bg, rgba(#474747, 0.9));
 		.g-fixed {
 			&-container {
 				max-width: 1000px;
@@ -43,24 +119,39 @@
 			}
 			&__menu {
 				padding: 12px 16px;
+				@include media {
+					padding: vw(30) 0;
+				}
 			}
 		}
 	}
 	&.left {
 		top: 100px;
 		left: 0;
+		@include media {
+			top: 0;
+		}
 		.g-fixed {
 			&__menu {
 				padding: 12px 16px 12px 36px;
+				@include media {
+					padding: vw(30) 0;
+				}
 			}
 		}
 	}
 	&.right {
 		top: 100px;
 		right: 0;
+		@include media {
+			top: 0;
+		}
 		.g-fixed {
 			&__menu {
 				padding: 12px 36px 12px 16px;
+				@include media {
+					padding: vw(30) 0;
+				}
 			}
 		}
 	}

@@ -19,12 +19,16 @@
 
 .page {
 	&-preview {
-		font-size: 32px;
+		font-size: 25px;
 		font-weight: bold;
-		color: #fff;
-		background-color: #3b3b3b;
+		color: #333333;
+		background-color: #ff9c00;
 		text-align: center;
-		padding: 24px 0;
+		padding: 6px 0;
+		@include media {
+			font-size: vw(32);
+			padding: vw(12) 0;
+		}
 	}
 	&-control {
 		&__group {

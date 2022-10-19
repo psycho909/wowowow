@@ -19,6 +19,7 @@ const changePage = (page) => {
         <div class="home-btn__group">
             <a href="javascript:;" class="home-btn__item" @click="changePage('SelectType')">新增活動</a>
             <a href="javascript:;" class="home-btn__item" @click="changePage('EventList')">活動列表 </a>
+            <a href="javascript:;" class="home-btn__item" @click="changePage('AuditList')">已審活動 </a>
             <a href="javascript:;" class="home-btn__item" @click="changePage('Guide')">使用教學 </a>
         </div>
     </div>

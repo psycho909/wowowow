@@ -21,7 +21,7 @@ let showColor = ref(false)
 let bgData = reactive({
     color: "#fff",
     pc: "",
-    mb: "",
+    mobile: "",
     w: "",
     h: "",
     mw: "",
@@ -35,7 +35,7 @@ const imageInfo = (type, url) => {
             bgData.w = img.width
             bgData.h = img.height
         }
-        if (type == "mb") {
+        if (type == "mobile") {
             bgData.mw = img.width
             bgData.mh = img.height
         }
@@ -51,8 +51,8 @@ watchEffect(() => {
     if (CheckImage(bgData.pc)) {
         imageInfo("pc", bgData.pc)
     }
-    if (CheckImage(bgData.mb)) {
-        imageInfo("mb", bgData.mb)
+    if (CheckImage(bgData.mobile)) {
+        imageInfo("mobile", bgData.mobile)
     }
 
 })
@@ -92,7 +92,7 @@ const onReset = () => {
         bgData = {
             color: "#fff",
             pc: "",
-            mb: "",
+            mobile: "",
             w: "",
             h: "",
             mw: "",
@@ -112,6 +112,25 @@ const enterColor = async (e) => {
     }
 
 }
+const closeBtn = () => {
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            bgData[v] = props.data.content[v];
+        })
+    } else {
+        bgData = {
+            color: "#fff",
+            pc: "",
+            mobile: "",
+            w: "",
+            h: "",
+            mw: "",
+            mh: ""
+        }
+    }
+    showEdit.value = false;
+    content.value.body[_index].update = false;
+}
 </script>
 <template>
     <div class="g-bg">
@@ -119,6 +138,9 @@ const enterColor = async (e) => {
                   v-if="MODE == 'development' && page == 'EditPage'" />
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'"
                 :func="enterColor">
+            <template #edit-close>
+                <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
+            </template>
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">
@@ -126,13 +148,13 @@ const enterColor = async (e) => {
                         <a href="javascript:;" class="edit-title__q"></a>
                     </div>
                 </div>
-                <div class="g-edit__col">
+                <div class="g-edit__row">
                     <g-input label="*圖片網址:" v-model="bgData.pc" :preview="bgData.pc" />
                 </div>
-                <div class="g-edit__col">
-                    <g-input label="手機版圖片網址:" v-model="bgData.mb" :preview="bgData.mb" />
+                <div class="g-edit__row">
+                    <g-input label="手機版圖片網址:" v-model="bgData.mobile" :preview="bgData.mobile" />
                 </div>
-                <div class="g-edit__col">
+                <div class="g-edit__row">
                     <div class="input-group">
                         <div class="input-group__label">背景底色:</div>
                         <div class="input-group__color">

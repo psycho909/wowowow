@@ -8,7 +8,7 @@ const props = defineProps(["data"])
 // Import Swiper styles
 let breakpoints = ref({})
 breakpoints.value = {
-    768: {
+    769: {
         slidesPerView: Number(props.data.num),
         slidesPerGroup: Number(props.data.num),
         spaceBetween: 16
@@ -20,11 +20,12 @@ const modules = [Navigation, Pagination]
     <div class="g-swiper">
         <swiper
                 :modules="modules"
-                :slides-per-view="1"
+                :slides-per-view="3"
                 :slidesPerGroup="1"
-                :space-between="16"
+                :space-between="0"
                 :breakpoints="breakpoints"
                 :loop-fill-group-with-blank="true"
+                :centered-slides="true"
                 :loop="true"
                 navigation
                 :pagination="{ clickable: true }">

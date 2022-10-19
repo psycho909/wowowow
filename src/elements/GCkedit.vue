@@ -46,10 +46,8 @@ onUnmounted(() => {
 </script>
             
 <template>
-    <div>
-        <div class="g-ckedit">
-            <ckeditor :editor="editor" v-model="modelValue" :config="editorConfig"></ckeditor>
-        </div>
+    <div class="g-ckedit">
+        <ckeditor :editor="editor" v-model="modelValue" :config="editorConfig"></ckeditor>
     </div>
 </template>
             

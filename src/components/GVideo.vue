@@ -87,6 +87,24 @@ const onReset = () => {
         }
     }
 }
+const closeBtn = () => {
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            videoData[v] = props.data.content[v];
+            videoSetting.value[v] = props.data.content[v];
+        })
+    } else {
+        videoData = {
+            num: 1,
+            type: "click",
+            videos: [{
+                url: "", show: false
+            }],
+        }
+    }
+    showEdit.value = false;
+    content.value.body[_index].update = false;
+}
 </script>
 <template>
     <div class="g-video">
@@ -109,22 +127,25 @@ const onReset = () => {
             <g-modify :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'">
+            <template #edit-close>
+                <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
+            </template>
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">影片區塊<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
-                <div class="g-edit__col">
-                    <div class="edit-radio__title">選擇影片數量:</div>
+                <div class="g-edit__row">
+                    <div class="input-group__label">選擇影片數量:</div>
                     <g-radio label="單一影片" name="video" value="1" v-model="videoData.num" @change="onChange" />
                     <g-radio label="兩格影片" name="video" value="2" v-model="videoData.num" @change="onChange" />
                     <g-radio label="三格影片" name="video" value="3" v-model="videoData.num" @change="onChange" />
                     <g-radio label="四格影片" name="video" value="4" v-model="videoData.num" @change="onChange" />
                 </div>
-                <div class="g-edit__col" v-for="(video,index) in videoData.videos">
+                <div class="g-edit__row" v-for="(video,index) in videoData.videos">
                     <g-input :label="'*影片'+(index+1)+'URL:'" v-model="video.url" />
                 </div>
-                <div class="g-edit__col">
-                    <div class="edit-radio__title">影片播放方式:</div>
+                <div class="g-edit__row">
+                    <div class="input-group__label">影片播放方式:</div>
                     <g-radio label="點擊直接播放" name="type" value="click" v-model="videoData.type" />
                     <g-radio label="點擊跳出燈箱播放" name="type" value="pop" v-model="videoData.type" />
                 </div>

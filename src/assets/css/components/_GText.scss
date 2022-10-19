@@ -1,5 +1,8 @@
 .g-text {
 	margin-bottom: 24px;
+	@include media {
+		margin-bottom: vw(24);
+	}
 	&.align-left {
 		text-align: left;
 	}
@@ -10,16 +13,21 @@
 		max-width: 1000px;
 		margin: 0 auto;
 		position: relative;
+		@include media {
+			max-width: vw(728);
+		}
 	}
 	&__content {
 		padding: 25px;
-		background-color: rgba(#474747, 0.6);
-		color: #fff;
-	}
-	&.blue {
-		.g-text__content {
-			background-color: rgba(#474747, 0.6);
-			color: #fff;
+		background-color: var(--bg, rgba(#474747, 0.6));
+		color: var(--text, #fff);
+		font-size: 18px;
+		@include media {
+			font-size: vw(30);
+			padding: vw(25);
+		}
+		& > a {
+			color: var(--link, #fff);
 		}
 	}
 }

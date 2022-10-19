@@ -15,7 +15,7 @@ export const mainStore = defineStore("main", {
 						content: {
 							position: "left",
 							hamburger: "hamburger-right",
-							style: "blue",
+							style: "blue1",
 							menus: [
 								{ link: "", target: false, text: "標題一" },
 								{ link: "", target: false, text: "標題二" },
@@ -24,16 +24,16 @@ export const mainStore = defineStore("main", {
 						},
 						update: false
 					},
-					{ component: "GBg", uid: 1, content: { pc: "", mb: "", color: "#eed" }, update: false },
-					{ component: "GSlogan", uid: 2, content: { pc: "./src/assets/css/img/slogan.png", mb: "", w: 1000, h: 187, mt: 250, mb: 24 }, update: false },
+					{ component: "GBg", uid: 1, content: { pc: "", mobile: "", color: "#fff" }, update: false },
+					{ component: "GSlogan", uid: 2, content: { pc: "./src/assets/css/img/slogan.png", mobile: "", w: 1000, h: 187, mt: 250, mb: 24 }, update: false },
 					{
 						component: "GImg",
 						uid: 4,
 						content: {
 							num: "2",
 							imgs: [
-								{ pc: "https://fakeimg.pl/440x320", mb: "https://fakeimg.pl/220x120", type: "pop", pop: { show: false, type: "text", title: "title1", style: "blue", text: "<p>abc1</p>" }, target: {} },
-								{ pc: "https://fakeimg.pl/440x320", mb: "https://fakeimg.pl/220x120", type: "pop", pop: { show: false, type: "img", title: "titl2", style: "red", img: "https://fakeimg.pl/440x320" }, target: {} }
+								{ pc: "https://fakeimg.pl/440x320", mobile: "https://fakeimg.pl/220x120", type: "pop", pop: { show: false, type: "text", title: "title1", style: "blue1", text: "<p>abc1</p>" }, target: {} },
+								{ pc: "https://fakeimg.pl/440x320", mobile: "https://fakeimg.pl/220x120", type: "pop", pop: { show: false, type: "img", title: "titl2", style: "red1", img: "https://fakeimg.pl/440x320" }, target: {} }
 							]
 						}
 					},
@@ -57,14 +57,14 @@ export const mainStore = defineStore("main", {
 						content: {
 							num: "4",
 							slides: [
-								{ pc: "https://fakeimg.pl/440x320?text=1", mb: "https://fakeimg.pl/440x320?text=1", open: false, url: "", attribute: false },
-								{ pc: "https://fakeimg.pl/440x320?text=2", mb: "https://fakeimg.pl/440x320?text=2", open: false, url: "", attribute: false },
-								{ pc: "https://fakeimg.pl/440x320?text=3", mb: "https://fakeimg.pl/440x320?text=3", open: false, url: "", attribute: false },
-								{ pc: "https://fakeimg.pl/440x320?text=4", mb: "https://fakeimg.pl/440x320?text=4", open: false, url: "", attribute: false },
-								{ pc: "https://fakeimg.pl/440x320?text=5", mb: "https://fakeimg.pl/440x320?text=5", open: false, url: "", attribute: false },
-								{ pc: "https://fakeimg.pl/440x320?text=6", mb: "https://fakeimg.pl/440x320?text=6", open: false, url: "", attribute: false },
-								{ pc: "https://fakeimg.pl/440x320?text=7", mb: "https://fakeimg.pl/440x320?text=7", open: false, url: "", attribute: false },
-								{ pc: "https://fakeimg.pl/440x320?text=8", mb: "https://fakeimg.pl/440x320?text=8", open: false, url: "", attribute: false }
+								{ pc: "https://fakeimg.pl/440x320?text=1", mobile: "https://fakeimg.pl/440x320?text=1", open: false, url: "", attribute: false },
+								{ pc: "https://fakeimg.pl/440x320?text=2", mobile: "https://fakeimg.pl/440x320?text=2", open: false, url: "", attribute: false },
+								{ pc: "https://fakeimg.pl/440x320?text=3", mobile: "https://fakeimg.pl/440x320?text=3", open: false, url: "", attribute: false },
+								{ pc: "https://fakeimg.pl/440x320?text=4", mobile: "https://fakeimg.pl/440x320?text=4", open: false, url: "", attribute: false },
+								{ pc: "https://fakeimg.pl/440x320?text=5", mobile: "https://fakeimg.pl/440x320?text=5", open: false, url: "", attribute: false },
+								{ pc: "https://fakeimg.pl/440x320?text=6", mobile: "https://fakeimg.pl/440x320?text=6", open: false, url: "", attribute: false },
+								{ pc: "https://fakeimg.pl/440x320?text=7", mobile: "https://fakeimg.pl/440x320?text=7", open: false, url: "", attribute: false },
+								{ pc: "https://fakeimg.pl/440x320?text=8", mobile: "https://fakeimg.pl/440x320?text=8", open: false, url: "", attribute: false }
 							]
 						},
 						update: false

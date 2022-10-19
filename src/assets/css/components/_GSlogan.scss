@@ -3,11 +3,6 @@
 	width: 100%;
 	&-container {
 		background-position: center 0;
-		background-image: var(--pc);
-		background-color: var(--color);
-		background-size: calc(var(--w) * 1px) calc(var(--h) * 1px);
-		width: calc(var(--w) * 1px);
-		height: calc(var(--h) * 1px);
 		position: relative;
 		background-repeat: no-repeat;
 		margin: 0 auto;
@@ -15,8 +10,14 @@
 		margin-bottom: calc(var(--mb) * 1px);
 		display: block;
 		@include media {
-			background-image: url(var(--mb));
-			background-size: calc(var(--mw) / 768 * 100vw) calc(var(--mw) / 768 * 100vw);
+			margin: 0 auto;
+			margin-top: calc(var(--mt) / 768 * 100vw);
+			margin-bottom: calc(var(--mb) / 768 * 100vw);
 		}
+	}
+	img {
+		display: block;
+		margin: 0 auto;
+		max-width: 100%;
 	}
 }

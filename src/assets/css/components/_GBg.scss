@@ -2,6 +2,9 @@
 	position: relative;
 	width: 100%;
 	padding-top: 120px;
+	@include media {
+		padding-top: vw(120);
+	}
 	.g-modify {
 		position: absolute;
 		top: 50%;

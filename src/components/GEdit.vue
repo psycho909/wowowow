@@ -24,10 +24,10 @@ const closeBtn = () => {
 }
 
 watchEffect(() => {
-    if (showEdit) {
-
+    if (props.showEdit) {
+        document.querySelector("body").classList.add("ov-hidden");
     } else {
-
+        document.querySelector("body").classList.remove("ov-hidden");
     }
 })
 </script>
@@ -36,7 +36,9 @@ watchEffect(() => {
         <div class="g-edit" v-if="showEdit" @click="func">
             <div class="g-edit__module"></div>
             <div class="g-edit__wrap">
-                <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
+                <slot name="edit-close">
+                    <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
+                </slot>
                 <div class="g-edit__content">
                     <slot name="edit-content"></slot>
                 </div>
