@@ -34,6 +34,12 @@ watchEffect(() => {
     } else {
         showEdit.value = false;
     }
+    if (content.value.body[_index]) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            sloganData[v] = props.data.content[v];
+            sloganSetting.value[v] = props.data.content[v];
+        })
+    }
 })
 
 const cssVar = computed(() => {

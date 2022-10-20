@@ -1,3 +1,14 @@
 .g-ckedit {
 	width: 100%;
+	.ck-content {
+		height: auto;
+		ol,
+		ul {
+			padding-left: 40px;
+		}
+	}
+}
+.ck-body-wrapper {
+	z-index: 10000;
+	position: relative;
 }

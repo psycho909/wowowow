@@ -11,6 +11,9 @@ const props = defineProps({
     },
     style: {
         type: String
+    },
+    action: {
+        default: true
     }
 })
 const emit = defineEmits(["update:showLightbox"])
@@ -36,7 +39,7 @@ const closeBtn = () => {
                     <div class="g-lightbox__content">
                         <slot name="lightbox-content"></slot>
                     </div>
-                    <div class="g-lightbox__btn-group">
+                    <div class="g-lightbox__btn-group" v-if="action">
                         <slot name="lightbox-btn">
                             <a href="javascript:;" class="g-lightbox__btn" @click="closeBtn">確定</a>
                         </slot>

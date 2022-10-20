@@ -1,7 +1,7 @@
 .g-slide {
-	margin-bottom: 24px;
+	margin-bottom: 54px;
 	@include media {
-		margin-bottom: vw(24);
+		margin-bottom: vw(54);
 		overflow: hidden;
 	}
 	&-container {

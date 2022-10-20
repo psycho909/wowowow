@@ -1,6 +1,11 @@
 .g-slogan {
 	position: relative;
 	width: 100%;
+	max-width: 1000px;
+	margin: 0 auto;
+	@include media {
+		max-width: vw(728);
+	}
 	&-container {
 		background-position: center 0;
 		position: relative;

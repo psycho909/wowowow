@@ -11,6 +11,7 @@ import GRadio from '../elements/GRadioo.vue';
 import GSelect from '../elements/GSelect.vue';
 import { mainStore } from "../store/index";
 import colors, { style1, style2 } from "../colors";
+
 const props = defineProps(["data"])
 let showEdit = ref(false);
 let textSetting = ref({})
@@ -37,7 +38,7 @@ watchEffect(() => {
         })
     }
 })
-
+let editors = ref(null)
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
@@ -47,6 +48,7 @@ onMounted(async () => {
         })
     }
 })
+
 
 const onSubmit = () => {
     let data = { ...textData }

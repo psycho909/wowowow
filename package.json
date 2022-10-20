@@ -7,16 +7,15 @@
 		"dev": "vite",
 		"build": "vite build",
 		"devbuild": "vite build --watch --mode devBuild",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"watch": "json-server --watch db.json"
 	},
 	"dependencies": {
-		"@ckeditor/ckeditor5-build-classic": "^35.1.0",
 		"@ckeditor/ckeditor5-vue": "^4.0.1",
 		"@rollup/plugin-alias": "^3.1.9",
 		"@vitejs/plugin-vue-jsx": "^2.0.0",
 		"@vuepic/vue-datepicker": "^3.4.8",
 		"axios": "^0.27.2",
-		"i": "^0.3.7",
 		"pinia": "^2.0.20",
 		"swiper": "^8.4.2",
 		"vue": "^3.2.37",

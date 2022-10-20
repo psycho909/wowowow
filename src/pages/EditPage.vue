@@ -8,13 +8,15 @@ import { storeToRefs } from "pinia";
 import components from "../Components.js";
 import GMenu from "../components/GMenu.vue";
 import { mainStore } from "../store/index";
+import GLightbox from "../components/GLightbox.vue";
+import axios from "axios";
 const store = mainStore()
 const { content } = storeToRefs(store);
 const MODE = import.meta.env.MODE;
+let saveLightbox = ref(false)
+let auditLightbox = ref(false)
+let homeLightbox = ref(false)
 
-store.$subscribe((mutation, state) => {
-    // console.log(mutation.events.target.content)
-})
 
 const cssVar = computed(() => {
     let bg = content.value.body.filter((c, i) => {
@@ -46,14 +48,10 @@ const menu = computed(() => {
 const onEvent = (type) => {
     switch (type) {
         case "home":
-            store.$patch(state => {
-                state.page = "Home"
-            })
+            homeLightbox.value = true;
             break;
         case "submit":
-            store.setSubmit("SAVE").then((res) => {
-                console.log(res)
-            })
+            auditLightbox.value = true;
             break;
         case "preview":
             store.$patch(state => {
@@ -61,18 +59,39 @@ const onEvent = (type) => {
             })
             break;
         case "save":
-            store.setSave(store.content).then((res) => {
-                console.log(res)
+            axios.post("http://localhost:3000/data/", {
+                listData: store.content
+            }).then((res) => {
+                return store.setSave(store.content)
+            }).then((res) => {
+                saveLightbox.value = true;
             })
             break;
         case "eventList":
-            store.$patch(state => {
-                state.page = "EventList"
-            })
+
             break;
     }
 }
 
+const onAuditSubmit = () => {
+    store.$patch(state => {
+        state.page = "EventList"
+    })
+}
+
+const onAuditCancel = () => {
+    auditLightbox.value = false;
+}
+
+const onHomeSubmit = () => {
+    store.$patch(state => {
+        state.page = "Home"
+    })
+}
+
+const onHomeCancel = () => {
+    homeLightbox.value = false;
+}
 </script>
 <template>
     <section class="wrap" :class="MODE" data-type="one" :style="cssVar">
@@ -88,4 +107,33 @@ const onEvent = (type) => {
         <a href="javascript:;" class="page-control__btn" @click="onEvent('eventList')">回列表</a>
         <a href="javascript:;" class="page-control__btn" @click="onEvent('home')">回首頁</a>
     </div>
+
+    <!-- 回首頁 -->
+    <g-lightbox v-model:showLightbox="homeLightbox">
+        <template #lightbox-content>
+            <div class="text-center">若尚未存檔會遺失目前設定，是否確定回到首頁</div>
+        </template>
+        <template #lightbox-btn>
+            <a href="javascript:;" class="btn btn__submit" @click="onHomeSubmit">確認</a>
+            <a href="javascript:;" class="btn btn__reset" @click="onHomeCancel">取消</a>
+        </template>
+    </g-lightbox>
+
+    <!-- 送審 -->
+    <g-lightbox v-model:showLightbox="auditLightbox">
+        <template #lightbox-content>
+            <div class="text-center">送審前請先確認已存檔！是否確定送審活動【活動名稱活動名稱活動名稱活動名稱】送審後將無法繼續編輯，是否確認送審？</div>
+        </template>
+        <template #lightbox-btn>
+            <a href="javascript:;" class="btn btn__submit" @click="onAuditSubmit">確認</a>
+            <a href="javascript:;" class="btn btn__reset" @click="onAuditCancel">取消</a>
+        </template>
+    </g-lightbox>
+
+    <!-- 已存檔完成 -->
+    <g-lightbox v-model:showLightbox="saveLightbox" :action="false">
+        <template #lightbox-content>
+            <div class="text-center">已存檔完成</div>
+        </template>
+    </g-lightbox>
 </template>
