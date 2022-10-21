@@ -11,7 +11,7 @@ const props = defineProps({
     showEdit: {
         type: Boolean, default: false
     }, uid: {
-        type: Number
+        type: [String, Number]
     }, func: {
         type: Function
     }
