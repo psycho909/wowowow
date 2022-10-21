@@ -156,7 +156,7 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group">
-                        <div class="input-group__label">背景底色:</div>
+                        <div class="input-group__label">*背景底色:</div>
                         <div class="input-group__color">
                             <span class="input-group__color-ref" :style="`--color:${bgData.color}`"
                                   @click="openColor"></span>

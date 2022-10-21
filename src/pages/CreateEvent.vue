@@ -5,10 +5,12 @@ import GDate from '../elements/GDate.vue';
 import GInput from '../elements/GInput.vue';
 import GSelect from '../elements/GSelect.vue';
 import GTime from '../elements/GTime.vue';
+import GTextarea from '../elements/GTextarea.vue';
+import axios from "axios";
 import { mainStore } from "../store/index";
 const store = mainStore()
 const { content } = storeToRefs(store);
-
+let createLightbox = ref(false)
 let gameOptions = [{ value: 1, text: "一" }, { value: 2, text: "二" }]
 let eventConfig = reactive({
     gameSelected: "",
@@ -32,15 +34,19 @@ let eventConfig = reactive({
     fbImage: "",
     GA: "",
     GTM: "",
+    script: ""
 })
-const createEvent = () => {
-    store.$patch(state => {
-        state.page = "EditPage"
+const onSubmit = () => {
+    axios.post("http://localhost:3000/config/", {
+        listData: eventConfig
+    }).then((res) => {
+        return store.setCreateEvent(eventConfig)
+    }).then((res) => {
+        // createLightbox.value=true;
+        store.$patch(state => {
+            state.page = "EditPage"
+        })
     })
-    store.$patch(state => {
-        state.config = eventConfig
-    })
-    console.log(eventConfig)
 }
 const onReset = () => {
     eventConfig = {
@@ -65,6 +71,7 @@ const onReset = () => {
         fbImage: "",
         GA: "",
         GTM: "",
+        script: ""
     }
 }
 </script>
@@ -76,7 +83,7 @@ const onReset = () => {
         </div>
         <div class="create-content">
             <div class="create-config__col">
-                <g-select label="選擇遊戲" :options="gameOptions" v-model="eventConfig.gameSelected" />
+                <g-select label="*選擇遊戲" :options="gameOptions" v-model="eventConfig.gameSelected" />
             </div>
             <div class="create-config__col">
                 <div class="create-config__label">*上架日期:</div>
@@ -97,7 +104,7 @@ const onReset = () => {
                 </div>
             </div>
             <div class="create-config__col">
-                <g-input label="活動名稱" placeholder="輸入內容" v-model="eventConfig.eventName" />
+                <g-input label="*活動名稱" placeholder="輸入內容" v-model="eventConfig.eventName" />
             </div>
 
             <div class="create-config__col">
@@ -122,16 +129,24 @@ const onReset = () => {
                 <g-input label="FB縮圖URL" placeholder="輸入內容" v-model="eventConfig.fbImage" preview="true" />
             </div>
             <div class="create-config__col">
-                <g-input label="GA" placeholder="輸入內容" v-model="eventConfig.ga" />
+                <g-checkbox label="GA" v-model="eventConfig.GA" />
             </div>
             <div class="create-config__col">
-                <g-input label="GTM" placeholder="輸入內容" v-model="eventConfig.gtm" />
+                <g-checkbox label="GTM" v-model="eventConfig.GTM" />
             </div>
-
+            <div class="create-config__col">
+                <g-textarea label="其它行銷script" v-model="eventConfig.script" />
+            </div>
             <div class="create-btn__group">
-                <a href="javascript:;" class="btn btn__submit" @click="createEvent()">確認送出</a>
-                <a href="javascript:;" class="btn btn__reset" @click="reset()">清除重填</a>
+                <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
+                <a href="javascript:;" class="btn btn__reset" @click="reset">清除重填</a>
             </div>
         </div>
     </div>
+    <!-- 已存檔完成 -->
+    <g-lightbox v-model:showLightbox="createLightbox" :action="false">
+        <template #lightbox-content>
+            <div class="text-center">已存檔完成</div>
+        </template>
+    </g-lightbox>
 </template>

@@ -121,13 +121,15 @@ const closeBtn = () => {
             </template>
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">背景圖<a href="javascript:;" class="edit-title__q"></a></div>
+                    <div class="edit-title__text">主標圖<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
                 <div class="g-edit__row">
-                    <g-input label="間距上:" v-model="sloganData.mt" />
-                </div>
-                <div class="g-edit__row">
-                    <g-input label="間距下:" v-model="sloganData.mb" />
+                    <div class="g-edit__col w50">
+                        <g-input label="間距上:" v-model="sloganData.mt" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="間距下:" v-model="sloganData.mb" />
+                    </div>
                 </div>
                 <div class="g-edit__row">
                     <g-input label="*圖片網址:" v-model="sloganData.pc" :preview="sloganData.pc" />

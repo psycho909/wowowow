@@ -2,7 +2,7 @@
 import { mainStore } from "../store/index";
 const props = defineProps({
     uid: {
-        type: Number
+        type: [String, Number]
     },
     title: {
         type: String

@@ -34,6 +34,9 @@
 	&__box {
 		width: 100%;
 		display: inline-block;
+		&.none {
+			cursor: default;
+		}
 		@include media {
 			margin-bottom: vw(20);
 			&:last-child {

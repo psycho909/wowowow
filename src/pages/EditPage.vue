@@ -9,6 +9,7 @@ import components from "../Components.js";
 import GMenu from "../components/GMenu.vue";
 import { mainStore } from "../store/index";
 import GLightbox from "../components/GLightbox.vue";
+import { InsertCookie, InsertScript, InsertHeader, InsertGA, InsertGTM } from "../Tool";
 import axios from "axios";
 const store = mainStore()
 const { content } = storeToRefs(store);
@@ -44,6 +45,28 @@ const menu = computed(() => {
     });
 })
 
+const pageInfo = (data) => {
+    document.title = data.title;
+    document.querySelectorAll("meta[name='description']")[0].setAttribute("content", data.description);
+    document.querySelectorAll("meta[property='og:title']").setAttribute("content", data.fbTitle);
+    document.querySelectorAll("meta[property='og:description']").setAttribute("content", data.fbDescription);
+    document.querySelectorAll("meta[property='og:image']").setAttribute("content", data.fbImage);
+    if (data.cookie == "true") {
+        InsertCookie()
+    }
+    if (data.header == "true") {
+        InsertHeader()
+    }
+    if (data.GA == "true") {
+        InsertGA(data.GA);
+    }
+    if (data.GTM == "true") {
+        InsertGTM(data.GTM);
+    }
+    if (data.script) {
+        InsertScript(data.script)
+    }
+}
 
 const onEvent = (type) => {
     switch (type) {
@@ -84,6 +107,7 @@ const onAuditCancel = () => {
 }
 
 const onHomeSubmit = () => {
+    InsertCookie
     store.$patch(state => {
         state.page = "Home"
     })

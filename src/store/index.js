@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { v4 as uuidv4 } from "uuid";
 
 export const mainStore = defineStore("main", {
 	state: () => {
@@ -159,7 +160,7 @@ export const mainStore = defineStore("main", {
 	},
 	actions: {
 		addCpt(data) {
-			var uid = Math.floor(Math.random() * 100);
+			var uid = uuidv4();
 			if (data.cpt == "GFixed") {
 				this.content.body = [{ component: data.cpt, uid, content: {}, update: true }, ...this.content.body];
 				return;
@@ -230,12 +231,14 @@ export const mainStore = defineStore("main", {
 		setContent(data) {
 			this.content = data;
 		},
-		async setSubmit(data) {
+		async setCreateEvent(data) {
 			let done = await data;
+			this.setConfig(done);
 			return done;
 		},
 		async setSave(data) {
 			let done = await data;
+			this.setContent(done);
 			return done;
 		}
 	}

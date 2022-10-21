@@ -100,12 +100,12 @@ const closeBtn = () => {
                     <div class="edit-title__text">文字區塊物件<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label">對其方向:</div>
+                    <div class="input-group__label">*對其方向:</div>
                     <g-radio label="左" name="align" value="align-left" v-model="textData.align" />
                     <g-radio label="中" name="align" value="align-center" v-model="textData.align" />
                 </div>
                 <div class="g-edit__row">
-                    <g-select label="主題顏色" :group="true" :options="[style1,style2]" v-model="textData.style" />
+                    <g-select label="*主題顏色:" :group="true" :options="[style1,style2]" v-model="textData.style" />
                 </div>
                 <div class="g-edit__row">
                     <g-ckedit v-model="textData.text" />

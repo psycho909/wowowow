@@ -135,7 +135,7 @@ const closeBtn = () => {
                     <div class="edit-title__text">影片區塊<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label">選擇影片數量:</div>
+                    <div class="input-group__label">*選擇影片數量:</div>
                     <g-radio label="單一影片" name="video" value="1" v-model="videoData.num" @change="onChange" />
                     <g-radio label="兩格影片" name="video" value="2" v-model="videoData.num" @change="onChange" />
                     <g-radio label="三格影片" name="video" value="3" v-model="videoData.num" @change="onChange" />
@@ -145,7 +145,7 @@ const closeBtn = () => {
                     <g-input :label="'*影片'+(index+1)+'URL:'" v-model="video.url" />
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label">影片播放方式:</div>
+                    <div class="input-group__label">*播放方式:</div>
                     <g-radio label="點擊直接播放" name="type" value="click" v-model="videoData.type" />
                     <g-radio label="點擊跳出燈箱播放" name="type" value="pop" v-model="videoData.type" />
                 </div>

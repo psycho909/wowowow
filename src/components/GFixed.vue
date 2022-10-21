@@ -133,19 +133,19 @@ const closeMenu = () => {
                     <div class="edit-title__text">浮動式選單<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label">出現位置:</div>
+                    <div class="input-group__label">*出現位置:</div>
                     <g-radio label="左" name="position" value="left" v-model="fixedData.position" />
                     <g-radio label="右" name="position" value="right" v-model="fixedData.position" />
                     <g-radio label="上" name="position" value="top" v-model="fixedData.position" />
                     <g-radio label="下" name="position" value="bottom" v-model="fixedData.position" />
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label">手機版漢堡選單出現位置:</div>
+                    <div class="input-group__label">*手機版漢堡選單出現位置:</div>
                     <g-radio label="左" name="hamburger" value="hamburger-left" v-model="fixedData.hamburger" />
                     <g-radio label="右" name="hamburger" value="hamburger-right" v-model="fixedData.hamburger" />
                 </div>
                 <div class="g-edit__row">
-                    <g-select label="主題顏色" :group="true" :options="[style1,style2]" v-model="fixedData.style" />
+                    <g-select label="*主題顏色" :group="true" :options="[style1,style2]" v-model="fixedData.style" />
                 </div>
                 <div class="g-edit__row">
                     <span class="input-group__label">選單數目</span>
@@ -158,8 +158,8 @@ const closeMenu = () => {
                         <a href="javascript:;" class="icon icon-add" @click="addInsertMenu(index)"></a>
                         <a href="javascript:;" class="icon icon-remove" :class="[index == 0?'v-hidden':'']"
                            @click="removeMenu(index)"></a>
-                        <g-input placeholder="請輸入選單文字" v-model="menu.text" />
-                        <g-input placeholder="請輸入連結或URL" v-model="menu.link" />
+                        <g-input placeholder="*請輸入選單文字" v-model="menu.text" />
+                        <g-input placeholder="*請輸入連結或URL" v-model="menu.link" />
                         <div class="edit-radio__box">
                             <div class="input-group__label">另開視窗:</div>
                             <g-radio label="是" :name="`target${index}`" :value="true" v-model="menu.target" />

@@ -28,7 +28,7 @@ const closeBtn = () => {
 </script>
 <template>
     <Teleport to="body">
-        <div class="g-lightbox" :class="[style?style:'']" v-if="showLightbox" ref="lightboxRef">
+        <div class="g-lightbox" :style="[style?style:'']" v-if="showLightbox" ref="lightboxRef">
             <div class="g-lightbox__module"></div>
             <div class="g-lightbox__wrap">
                 <a href="javascript:;" class="g-lightbox__close icon-close" @click="closeBtn">close</a>

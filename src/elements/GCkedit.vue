@@ -10,25 +10,15 @@ const emit = defineEmits(["update:modelValue"])
 let editor = ref(null)
 let editorConfig = ref({})
 editor.value = ClassicEditor
-// editorConfig = {
-//     plugins: [
-//         EssentialsPlugin,
-//         BoldPlugin,
-//         ItalicPlugin,
-//         LinkPlugin,
-//         ParagraphPlugin
-//     ],
-
-//     toolbar: {
-//         items: [
-//             'bold',
-//             'italic',
-//             'link',
-//             'undo',
-//             'redo'
-//         ]
-//     }
-// }
+editorConfig = {
+    toolbar: {
+        items: [
+            'bold',
+            'italic',
+            'link',
+        ]
+    }
+}
 watchEffect(() => {
     if (props.modelValue) {
         emit('update:modelValue', props.modelValue);
@@ -38,7 +28,7 @@ watchEffect(() => {
             
 <template>
     <div class="g-ckedit">
-        <ckeditor :editor="editor" v-model="modelValue"></ckeditor>
+        <ckeditor :editor="editor" :editorConfig="editorConfig" v-model="modelValue"></ckeditor>
     </div>
 </template>
             

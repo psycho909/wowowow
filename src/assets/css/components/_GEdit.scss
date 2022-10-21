@@ -104,6 +104,9 @@
 		display: flex;
 		align-items: center;
 		margin-bottom: 12px;
+		&.w5 {
+			width: 50%;
+		}
 		.input-group {
 			margin-right: 6px;
 		}
@@ -119,6 +122,8 @@
 	&__block {
 		padding-bottom: 20px;
 		border-bottom: 1px solid #979797;
+		flex-direction: column;
+		align-items: flex-start;
 	}
 	.hu-color-picker {
 		position: absolute;

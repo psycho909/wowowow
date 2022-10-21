@@ -1,4 +1,3 @@
-
 <script setup>
 import { storeToRefs } from "pinia";
 import CreateEvent from "./pages/CreateEvent.vue";

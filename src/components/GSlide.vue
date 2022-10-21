@@ -146,7 +146,7 @@ const closeBtn = () => {
                     <div class="edit-title__text">輪播區塊<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label">選擇輪播數量:</div>
+                    <div class="input-group__label">*選擇輪播數量:</div>
                     <g-radio label="單張圖片" name="item" value="1" v-model="slideData.num" @change="onChange" />
                     <g-radio label="兩張圖片" name="item" value="2" v-model="slideData.num" @change="onChange" />
                     <g-radio label="三張圖片" name="item" value="3" v-model="slideData.num" @change="onChange" />
@@ -161,10 +161,10 @@ const closeBtn = () => {
                     </div>
                     <div class="g-edit__group">
                         <div class="g-edit__col">
-                            <g-input label="*圖片網址" v-model="slide.pc" />
+                            <g-input label="*圖片網址:" v-model="slide.pc" />
                         </div>
                         <div class="g-edit__col">
-                            <div class="input-group__label">開啟方式:</div>
+                            <div class="input-group__label">*開啟方式:</div>
                             <g-radio label="無" :name="'open'+index" :value="false" v-model="slide.open" />
                             <g-radio label="連結跳轉" :name="'open'+index" :value="true" v-model="slide.open" />
                         </div>
@@ -173,7 +173,7 @@ const closeBtn = () => {
                                 <g-input label="URL" v-model="slide.url" />
                             </div>
                             <div class="g-edit__col">
-                                <div class="input-group__label">另開視窗:</div>
+                                <div class="input-group__label">*另開視窗:</div>
                                 <g-radio label="是" :name="'attribute'+index" :value="false" v-model="slide.attribute" />
                                 <g-radio label="否" :name="'attribute'+index" :value="true" v-model="slide.attribute" />
                             </div>

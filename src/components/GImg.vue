@@ -12,6 +12,7 @@ import GRadio from '../elements/GRadioo.vue';
 import GSelect from '../elements/GSelect.vue';
 import { mainStore } from "../store/index";
 import GLightbox from './GLightbox.vue';
+import colors, { style1, style2 } from "../colors";
 const props = defineProps(["data"])
 let showEdit = ref(false);
 let _imgDataLength = 1;
@@ -25,12 +26,11 @@ let imgData = reactive({
         mb: "",
         type: "",
         pop: {
-            show: false,
+            show: false, type: "text"
         },
         target: {}
     }],
 })
-let style1 = [{ value: "blue", text: "一" }, { value: "red", text: "二" }]
 var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
 
 watchEffect(() => {
@@ -70,6 +70,7 @@ const onChange = (e) => {
                 type: "",
                 pop: {
                     show: false,
+                    type: "text"
                 },
                 target: {}
             })
@@ -99,6 +100,7 @@ const onReset = () => {
                 type: "",
                 pop: {
                     show: false,
+                    type: "text"
                 },
                 target: {}
             }],
@@ -110,19 +112,21 @@ const onReset = () => {
     <div class="g-img">
         <div class="g-img-container" :data-num="imgSetting.num">
             <template v-for="imgs in imgSetting.imgs">
-                <a v-if="imgs.type == 'target'" :href="[imgs.target.link?imgs.target.link:'javascript:;']"
-                   :target="[imgs.target.attribute?'_blank':'_self']" class="g-img__box">
+                <a v-if="imgs.type == 'link'" :href="[imgs.target.link?imgs.target.link:'javascript:;']"
+                   :target="[imgs.target.attribute?'_blank':'_self']" class="g-img__box" :class="imgs.type?'':'none'">
                     <picture>
                         <source media="(max-width:768px)" :srcset="imgs.mb" />
                         <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
                     </picture>
                 </a>
-                <a v-if="imgs.type == 'pop'" href="javascript:;" class="g-img__box" @click="openPop(imgs)">
+                <a v-if="imgs.type == 'pop'" href="javascript:;" class="g-img__box" :class="imgs.type?'':'none'"
+                   @click="openPop(imgs)">
                     <picture>
                         <source media="(max-width:768px)" :srcset="imgs.mb" />
                         <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
                     </picture>
-                    <g-lightbox v-model:showLightbox="imgs.pop.show" :style="imgs.pop.style">
+                    <!-- :style="colors[imgs.pop.style]" -->
+                    <g-lightbox v-model:showLightbox="imgs.pop.show">
                         <template #lightbox-title>{{imgs.pop.title}}</template>
                         <template #lightbox-content>
                             <div class="g-lightbox__text" v-if="imgs.pop.text" v-html="imgs.pop.text"></div>
@@ -131,6 +135,12 @@ const onReset = () => {
                             </div>
                         </template>
                     </g-lightbox>
+                </a>
+                <a v-if="imgs.type == ''" href="javascript:;" class="g-img__box" :class="imgs.type?'':'none'">
+                    <picture>
+                        <source media="(max-width:768px)" :srcset="imgs.mb" />
+                        <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
+                    </picture>
                 </a>
             </template>
             <g-modify :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'" />
@@ -141,7 +151,7 @@ const onReset = () => {
                     <div class="edit-title__text">圖片區塊<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label">選擇圖片框樣式:</div>
+                    <div class="input-group__label">*圖片樣式:</div>
                     <g-radio label="單一圖片" name="img" value="1" v-model="imgData.num" @change="onChange" />
                     <g-radio label="兩格圖片" name="img" value="2" v-model="imgData.num" @change="onChange" />
                     <g-radio label="三格圖片" name="img" value="3" v-model="imgData.num" @change="onChange" />
@@ -149,18 +159,18 @@ const onReset = () => {
                 </div>
                 <div class="g-edit__row g-edit__block" v-for="(img,index) in imgData.imgs">
                     <div class="g-edit__col">
-                        <g-input label="圖片網址:" v-model="img.pc" :preview="img.pc" />
+                        <g-input label="*圖片網址:" v-model="img.pc" :preview="img.pc" />
                     </div>
                     <div class="g-edit__col">
-                        <div class="input-group__label">開啟方式:</div>
+                        <div class="input-group__label">*開啟方式:</div>
                         <g-radio label="無" :name="'type'+index" value="" v-model="img.type" />
                         <g-radio label="POP視窗" :name="'type'+index" value="pop" v-model="img.type" />
-                        <g-radio label="連結跳轉" :name="'type'+index" value="target" v-model="img.type" />
+                        <g-radio label="連結跳轉" :name="'type'+index" value="link" v-model="img.type" />
                     </div>
                     <template v-if="img.type == 'pop'">
                         <div class="g-edit__col">
-                            <div class="input-group__label">POP內容:</div>
-                            <g-radio label="純文字" :name="'popType'+index" value="text" v-model="img.pop.type" />
+                            <div class="input-group__label">*POP內容:</div>
+                            <g-radio label="*純文字" :name="'popType'+index" value="text" v-model="img.pop.type" />
                             <g-radio label="圖片" :name="'popType'+index" value="img" v-model="img.pop.type" />
                         </div>
                         <div class="g-edit__col">
@@ -168,7 +178,8 @@ const onReset = () => {
                         </div>
                         <template v-if="img.pop.type == 'text'">
                             <div class="g-edit__col">
-                                <g-select label="主題顏色" :options="style1" v-model="img.pop.style" />
+                                <g-select label="*主題顏色" :group="true" :options="[style1,style2]"
+                                          v-model="img.pop.style" />
                             </div>
                             <div class="g-edit__col">
                                 <g-ckedit v-model="img.pop.text" />

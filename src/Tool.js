@@ -58,6 +58,27 @@ export const InsertGA = (GA) => {
 	});
 };
 
+export const InsertCookie = () => {
+	var body = document.getElementsByTagName("body")[0];
+	var _script = document.createElement("script");
+	_script.src = "https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/script/cookie-bar/cookie-bar.js";
+	_script.async = true;
+	_script.setAttribute("id", "cookie-bar");
+	body.insertAdjacentElement("beforeend", _script);
+};
+
+export const InsertHeader = () => {};
+
+export const InsertScript = (code) => {
+	function getAttributeValue(script) {
+		const strippedString = source.replace(/(<([^>]+)>)/gi, "");
+		return strippedString;
+	}
+	var s = document.createElement("script");
+	s.type = "text/javascript";
+	s.appendChild(document.createTextNode(getAttributeValue(script)));
+};
+
 export const CheckImage = (img) => {
 	var regExp = /^https?:\/\/(.+\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i;
 	var match = regExp.test(img);
