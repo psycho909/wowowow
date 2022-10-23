@@ -112,7 +112,7 @@ const enterColor = async (e) => {
     }
 
 }
-const closeBtn = () => {
+const closeBtn = ()=> {
     if (Object.keys(props.data.content).length > 0) {
         Object.keys(props.data.content).forEach((v, i) => {
             bgData[v] = props.data.content[v];

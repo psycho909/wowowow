@@ -28,7 +28,7 @@ watchEffect(() => {
             
 <template>
     <div class="g-ckedit">
-        <ckeditor :editor="editor" :editorConfig="editorConfig" v-model="modelValue"></ckeditor>
+        <ckeditor :editor="editor" :config="editorConfig" v-model="modelValue"></ckeditor>
     </div>
 </template>
             

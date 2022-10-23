@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 export const mainStore = defineStore("main", {
 	state: () => {
 		return {
-			page: "EditPage",
+			page: "CreateEvent",
 			MODE: "",
 			type: "",
 			config: [],
@@ -162,17 +162,17 @@ export const mainStore = defineStore("main", {
 		addCpt(data) {
 			var uid = uuidv4();
 			if (data.cpt == "GFixed") {
-				this.content.body = [{ component: data.cpt, uid, content: {}, update: true }, ...this.content.body];
+				this.content.body = [{ component: data.cpt, uid, content: {}, update: true, init: true }, ...this.content.body];
 				return;
 			}
 			if (data.cpt == "GSlogan") {
 				let bgIndex = this.content.body.findIndex((v, i) => {
 					return v.component == "GBg";
 				});
-				this.content.body = [...this.content.body.slice(0, bgIndex + 1), { component: data.cpt, uid, content: {}, update: true }, ...this.content.body.slice(bgIndex + 1)];
+				this.content.body = [...this.content.body.slice(0, bgIndex + 1), { component: data.cpt, uid, content: {}, update: true, init: true }, ...this.content.body.slice(bgIndex + 1)];
 				return;
 			}
-			this.content.body.push({ component: data.cpt, uid, content: {}, update: true });
+			this.content.body.push({ component: data.cpt, uid, content: {}, update: true, init: true });
 		},
 		removeCpt(data) {
 			var _index = this.getIndex(data);
@@ -185,6 +185,7 @@ export const mainStore = defineStore("main", {
 			if (_index > -1) {
 				this.content.body[_index].content = data;
 				this.content.body[_index].update = false;
+				this.content.body[_index].init = false;
 			}
 		},
 		editCptOpen(data) {

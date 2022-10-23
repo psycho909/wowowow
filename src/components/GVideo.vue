@@ -88,6 +88,12 @@ const onReset = () => {
     }
 }
 const closeBtn = () => {
+    if (content.value.body[_index].init) {
+        showEdit.value = false;
+        store.removeCpt(props.data.uid);
+        document.querySelector("body").classList.remove("ov-hidden");
+        return;
+    }
     if (Object.keys(props.data.content).length > 0) {
         Object.keys(props.data.content).forEach((v, i) => {
             videoData[v] = props.data.content[v];

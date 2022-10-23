@@ -107,6 +107,36 @@ const onReset = () => {
         }
     }
 }
+const closeBtn = () => {
+    if (content.value.body[_index].init) {
+        showEdit.value = false;
+        store.removeCpt(props.data.uid);
+        document.querySelector("body").classList.remove("ov-hidden");
+        return;
+    }
+    if (Object.keys(props.data.content).length > 0) {
+        Object.keys(props.data.content).forEach((v, i) => {
+            imgData[v] = props.data.content[v];
+            imgSetting.value[v] = props.data.content[v];
+        })
+    } else {
+        imgData = {
+            num: 1,
+            imgs: [{
+                pc: "",
+                mb: "",
+                type: "",
+                pop: {
+                    show: false,
+                    type: "text"
+                },
+                target: {}
+            }],
+        }
+    }
+    showEdit.value = false;
+    content.value.body[_index].update = false;
+}
 </script>
 <template>
     <div class="g-img">
@@ -146,6 +176,9 @@ const onReset = () => {
             <g-modify :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'">
+            <template #edit-close>
+                <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
+            </template>
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">圖片區塊<a href="javascript:;" class="edit-title__q"></a></div>

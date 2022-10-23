@@ -22,7 +22,7 @@ const lightboxRef = ref(null)
 defineExpose({
     lightboxRef
 })
-const closeBtn = () => {
+const closeBtn = ()=> {
     emit("update:showLightbox", false)
 }
 </script>

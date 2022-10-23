@@ -10,6 +10,7 @@ import axios from "axios";
 import { mainStore } from "../store/index";
 const store = mainStore()
 const { content } = storeToRefs(store);
+const inputRef = ref([]);
 let createLightbox = ref(false)
 let gameOptions = [{ value: 1, text: "一" }, { value: 2, text: "二" }]
 let eventConfig = reactive({
@@ -37,16 +38,17 @@ let eventConfig = reactive({
     script: ""
 })
 const onSubmit = () => {
-    axios.post("http://localhost:3000/config/", {
-        listData: eventConfig
-    }).then((res) => {
-        return store.setCreateEvent(eventConfig)
-    }).then((res) => {
-        // createLightbox.value=true;
-        store.$patch(state => {
-            state.page = "EditPage"
-        })
-    })
+    console.log(inputRef.value[0])
+    // axios.post("http://localhost:3000/config/", {
+    //     listData: eventConfig
+    // }).then((res) => {
+    //     return store.setCreateEvent(eventConfig)
+    // }).then((res) => {
+    //     // createLightbox.value=true;
+    //     store.$patch(state => {
+    //         state.page = "EditPage"
+    //     })
+    // })
 }
 const onReset = () => {
     eventConfig = {
@@ -83,15 +85,15 @@ const onReset = () => {
         </div>
         <div class="create-content">
             <div class="create-config__col">
-                <g-select label="*選擇遊戲" :options="gameOptions" v-model="eventConfig.gameSelected" />
+                <g-select label="*選擇遊戲" :options="gameOptions" v-model="eventConfig.gameSelected" ref="inputRef" />
             </div>
             <div class="create-config__col">
                 <div class="create-config__label">*上架日期:</div>
                 <div class="create-config__input">
-                    <g-date v-model="eventConfig.startDate" />
+                    <g-date v-model="eventConfig.startDate" ref="inputRef" />
                 </div>
                 <div class="create-config__input">
-                    <g-time v-model="eventConfig.startTime" />
+                    <g-time v-model="eventConfig.startTime" ref="inputRef" />
                 </div>
             </div>
             <div class="create-config__col">
