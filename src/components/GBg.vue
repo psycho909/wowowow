@@ -25,7 +25,8 @@ let bgData = reactive({
     w: "",
     h: "",
     mw: "",
-    mh: ""
+    mh: "",
+    validPC: true
 })
 var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
 const imageInfo = (type, url) => {
@@ -80,8 +81,15 @@ const colorBlur = () => {
 }
 
 const onSubmit = () => {
-    let data = { ...bgData }
-    store.updateCpt(props.data.uid, data)
+    if (bgData.validPC.length > 0) {
+        bgData.validPC = true;
+    } else {
+        bgData.validPC = false;
+    }
+    if (bgData.validPC) {
+        data = { ...bgData }
+        store.updateCpt(props.data.uid, data)
+    }
 }
 const onReset = () => {
     if (Object.keys(props.data.content).length > 0) {
@@ -96,7 +104,8 @@ const onReset = () => {
             w: "",
             h: "",
             mw: "",
-            mh: ""
+            mh: "",
+            validPC: true
         }
     }
 }
@@ -112,7 +121,7 @@ const enterColor = async (e) => {
     }
 
 }
-const closeBtn = ()=> {
+const closeBtn = () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.keys(props.data.content).forEach((v, i) => {
             bgData[v] = props.data.content[v];
@@ -125,7 +134,8 @@ const closeBtn = ()=> {
             w: "",
             h: "",
             mw: "",
-            mh: ""
+            mh: "",
+            validPC: true
         }
     }
     showEdit.value = false;
@@ -149,7 +159,7 @@ const closeBtn = ()=> {
                     </div>
                 </div>
                 <div class="g-edit__row">
-                    <g-input label="*圖片網址:" v-model="bgData.pc" :preview="bgData.pc" />
+                    <g-input label="*圖片網址:" v-model="bgData.pc" :preview="bgData.pc" :valid="validPC" />
                 </div>
                 <div class="g-edit__row">
                     <g-input label="手機版圖片網址:" v-model="bgData.mobile" :preview="bgData.mobile" />

@@ -7,25 +7,29 @@ const { content } = storeToRefs(store);
 const menuToggle = ref(false)
 
 const total = computed(() => {
-    return content.value.body.reduce((p, v, i) => {
-        if (!p[v.component]) {
-            p[v.component] = 1
-        } else {
-            p[v.component] += 1
-        }
-        return p
-    }, {})
+    if (content.value.body) {
+        return content.value.body.reduce((p, v, i) => {
+            if (!p[v.component]) {
+                p[v.component] = 1
+            } else {
+                p[v.component] += 1
+            }
+            return p
+        }, {})
+    }
 })
 
 const menuFilter = computed(() => {
-    return props.menu.map((v, i) => {
-        if (total.value[v.title] == v.limit) {
-            v.status = false
-        } else {
-            v.status = true
-        }
-        return v;
-    })
+    if (props.menu) {
+        return props.menu.map((v, i) => {
+            if (total.value[v.title] == v.limit) {
+                v.status = false
+            } else {
+                v.status = true
+            }
+            return v;
+        })
+    }
 })
 
 const add = (cpt) => {

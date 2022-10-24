@@ -25,6 +25,7 @@ let imgData = reactive({
         pc: "",
         mb: "",
         type: "",
+        validPC: true,
         pop: {
             show: false, type: "text"
         },
@@ -68,6 +69,7 @@ const onChange = (e) => {
                 pc: "",
                 mb: "",
                 type: "",
+                validPC: true,
                 pop: {
                     show: false,
                     type: "text"
@@ -82,8 +84,20 @@ const onChange = (e) => {
 }
 
 const onSubmit = () => {
-    let data = { ...imgData }
-    store.updateCpt(props.data.uid, data)
+    imgData.imgs.forEach((v, i) => {
+        if (v.url.length > 0) {
+            v.validPC = true;
+        } else {
+            v.validPC = false;
+        }
+    })
+    var validCheck = imgData.imgs.every(function (v, i) {
+        return v.validPC == true;
+    })
+    if (validCheck) {
+        data = { ...imgData }
+        store.updateCpt(props.data.uid, data)
+    }
 }
 const onReset = () => {
     if (Object.keys(props.data.content).length > 0) {
@@ -98,6 +112,7 @@ const onReset = () => {
                 pc: "",
                 mb: "",
                 type: "",
+                validPC: true,
                 pop: {
                     show: false,
                     type: "text"
@@ -126,6 +141,7 @@ const closeBtn = () => {
                 pc: "",
                 mb: "",
                 type: "",
+                validPC: true,
                 pop: {
                     show: false,
                     type: "text"
@@ -145,7 +161,7 @@ const closeBtn = () => {
                 <a v-if="imgs.type == 'link'" :href="[imgs.target.link?imgs.target.link:'javascript:;']"
                    :target="[imgs.target.attribute?'_blank':'_self']" class="g-img__box" :class="imgs.type?'':'none'">
                     <picture>
-                        <source media="(max-width:768px)" :srcset="imgs.mb" />
+                        <source media="(max-width:768px)" :srcset="imgs.mb || imgs.pc" />
                         <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
                     </picture>
                 </a>
@@ -153,7 +169,7 @@ const closeBtn = () => {
                    @click="openPop(imgs)">
                     <picture>
                         <source media="(max-width:768px)" :srcset="imgs.mb" />
-                        <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
+                        <img :srcset="imgs.pc" :src="imgs.pc" alt="" :valid="validPC" />
                     </picture>
                     <!-- :style="colors[imgs.pop.style]" -->
                     <g-lightbox v-model:showLightbox="imgs.pop.show">

@@ -30,9 +30,10 @@ const modules = [Navigation, Pagination]
                 navigation
                 :pagination="{ clickable: true }">
             <swiper-slide v-for="slide in data.slides">
-                <a class="g-swiper__a" :href="[slide.url?'':'javascript:;']" :target="[slide.open?'_target':'_self']">
+                <a class="g-swiper__a" :href="[slide.url?'':'javascript:;']"
+                   :target="[slide.open && slide.url?'_target':'_self']">
                     <picture>
-                        <source media="(max-width:768px)" :srcset="slide.mb" />
+                        <source media="(max-width:768px)" :srcset="slide.mb || slide.pc" />
                         <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
                     </picture>
                 </a>

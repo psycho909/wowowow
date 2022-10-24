@@ -3,6 +3,14 @@
 		display: flex;
 		font-size: 18px;
 		align-items: center;
+		&.warning {
+			select {
+				border: 1px solid red;
+			}
+		}
+		&__warning {
+			color: red;
+		}
 		&__label {
 			color: #fff;
 			margin-right: 12px;
@@ -14,6 +22,8 @@
 			outline: none;
 			color: #fff;
 			min-width: 120px;
+			border: 1px solid #888888;
+			border-radius: 6px;
 			option {
 				background: transparent;
 				outline: none;

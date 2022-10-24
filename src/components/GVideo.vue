@@ -20,7 +20,7 @@ let videoData = reactive({
     num: 1,
     type: "click",
     videos: [{
-        url: "", show: false
+        url: "", show: false, validUrl: true
     }],
 })
 var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
@@ -58,7 +58,7 @@ const onChange = (e) => {
     if (_videoDataLength <= num) {
         for (let i = 0; i < (num - _videoDataLength); i++) {
             videoData.videos.push({
-                url: "", show: false
+                url: "", show: false, validUrl: true
             })
         }
         _videoDataLength = num
@@ -68,8 +68,20 @@ const onChange = (e) => {
 }
 
 const onSubmit = () => {
-    let data = { ...videoData }
-    store.updateCpt(props.data.uid, data)
+    videoData.videos.forEach((v, i) => {
+        if (v.url.length > 0) {
+            v.validUrl = true;
+        } else {
+            v.validUrl = false;
+        }
+    })
+    var validCheck = videoData.videos.every(function (v, i) {
+        return v.validUrl == true;
+    })
+    if (validCheck) {
+        let data = { ...videoData }
+        store.updateCpt(props.data.uid, data)
+    }
 }
 const onReset = () => {
     if (Object.keys(props.data.content).length > 0) {
@@ -82,7 +94,7 @@ const onReset = () => {
             num: 1,
             type: "click",
             videos: [{
-                url: "", show: false
+                url: "", show: false, validUrl: true
             }],
         }
     }
@@ -104,7 +116,7 @@ const closeBtn = () => {
             num: 1,
             type: "click",
             videos: [{
-                url: "", show: false
+                url: "", show: false, validUrl: true
             }],
         }
     }
@@ -148,7 +160,7 @@ const closeBtn = () => {
                     <g-radio label="四格影片" name="video" value="4" v-model="videoData.num" @change="onChange" />
                 </div>
                 <div class="g-edit__row" v-for="(video,index) in videoData.videos">
-                    <g-input :label="'*影片'+(index+1)+'URL:'" v-model="video.url" />
+                    <g-input :label="'*影片'+(index+1)+'URL:'" v-model="video.url" :valid="video.validUrl" />
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label">*播放方式:</div>

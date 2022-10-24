@@ -107,7 +107,6 @@ const onAuditCancel = () => {
 }
 
 const onHomeSubmit = () => {
-    InsertCookie
     store.$patch(state => {
         state.page = "Home"
     })

@@ -50,15 +50,15 @@ onMounted(async () => {
     }
 })
 const addPushMenu = () => {
-    fixedData.menus.push({ text: "", link: "", target: false })
+    fixedData.menus.push({ text: "", link: "", target: false, validText: true, validLink: true })
 }
 
 const addInsertMenu = (index) => {
     if (index == fixedData.menus.length) {
-        fixedData.menus.push({ text: "", link: "", target: false })
+        fixedData.menus.push({ text: "", link: "", target: false, validText: true, validLink: true })
         return;
     }
-    fixedData.menus = [...fixedData.menus.slice(0, index + 1), { text: "", link: "", target: false }, ...fixedData.menus.slice(index + 1)];
+    fixedData.menus = [...fixedData.menus.slice(0, index + 1), { text: "", link: "", target: false, validText: true, validLink: true }, ...fixedData.menus.slice(index + 1)];
 }
 const removeMenu = (index) => {
     if (!toString.call(index).includes("Number")) {
@@ -70,8 +70,29 @@ const removeMenu = (index) => {
 }
 
 const onSubmit = () => {
-    let data = { ...fixedData }
-    store.updateCpt(props.data.uid, data)
+    let data;
+    fixedData.menus.forEach(function (v, i) {
+        if (v.text.length > 0) {
+            v.validText = true;
+        } else {
+            v.validText = false;
+        }
+        if (v.link.length > 0) {
+            v.validLink = true;
+        } else {
+            v.validLink = false;
+        }
+    })
+    var validCheck = fixedData.menus.every(function (v, i) {
+        return v.validText == true && v.validLink == true
+    })
+    if (validCheck) {
+        data = { ...fixedData }
+        store.updateCpt(props.data.uid, data)
+    }
+    // let data = { ...fixedData }
+
+    // store.updateCpt(props.data.uid, data)
 }
 const onReset = () => {
     if (Object.keys(props.data.content).length > 0) {
@@ -164,8 +185,8 @@ const closeMenu = () => {
                         <a href="javascript:;" class="icon icon-add" @click="addInsertMenu(index)"></a>
                         <a href="javascript:;" class="icon icon-remove" :class="[index == 0?'v-hidden':'']"
                            @click="removeMenu(index)"></a>
-                        <g-input placeholder="*請輸入選單文字" v-model="menu.text" />
-                        <g-input placeholder="*請輸入連結或URL" v-model="menu.link" />
+                        <g-input placeholder="*選單文字" v-model="menu.text" :valid="menu.validText" />
+                        <g-input placeholder="*連結或URL" v-model="menu.link" :valid="menu.validLink" />
                         <div class="edit-radio__box">
                             <div class="input-group__label">另開視窗:</div>
                             <g-radio label="是" :name="`target${index}`" :value="true" v-model="menu.target" />

@@ -22,7 +22,7 @@ const lightboxRef = ref(null)
 defineExpose({
     lightboxRef
 })
-const closeBtn = ()=> {
+const closeBtn = () => {
     emit("update:showLightbox", false)
 }
 </script>
@@ -31,7 +31,9 @@ const closeBtn = ()=> {
         <div class="g-lightbox" :style="[style?style:'']" v-if="showLightbox" ref="lightboxRef">
             <div class="g-lightbox__module"></div>
             <div class="g-lightbox__wrap">
-                <a href="javascript:;" class="g-lightbox__close icon-close" @click="closeBtn">close</a>
+                <slot name="lightbox-close">
+                    <a href="javascript:;" class="g-lightbox__close icon-close" @click="closeBtn">close</a>
+                </slot>
                 <div class="g-lightbox__container">
                     <div class="g-lightbox__title">
                         <slot name="lightbox-title"></slot>

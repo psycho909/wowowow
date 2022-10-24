@@ -21,11 +21,7 @@ let sloganData = reactive({
     mt: "250",
     mb: "24",
     pc: "",
-    mobile: "",
-    w: "",
-    h: "",
-    mw: "",
-    mh: ""
+    mobile: "", validPC: true
 })
 var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
 watchEffect(() => {
@@ -62,8 +58,15 @@ onMounted(async () => {
     }
 })
 const onSubmit = () => {
-    let data = { ...sloganData }
-    store.updateCpt(props.data.uid, data)
+    if (sloganData.validPC.length > 0) {
+        sloganData.validPC = true;
+    } else {
+        sloganData.validPC = false;
+    }
+    if (sloganData.validPC) {
+        data = { ...sloganData }
+        store.updateCpt(props.data.uid, data)
+    }
 }
 const onReset = () => {
     if (Object.keys(props.data.content).length > 0) {
@@ -76,11 +79,7 @@ const onReset = () => {
             mt: "250",
             mb: "24",
             pc: "",
-            mobile: "",
-            w: "",
-            h: "",
-            mw: "",
-            mh: ""
+            mobile: "", validPC: true
         }
     }
 }
@@ -101,11 +100,7 @@ const closeBtn = () => {
             mt: "250",
             mb: "24",
             pc: "",
-            mobile: "",
-            w: "",
-            h: "",
-            mw: "",
-            mh: ""
+            mobile: "", validPC: true
         }
     }
     showEdit.value = false;
@@ -116,7 +111,7 @@ const closeBtn = () => {
     <div class="g-slogan">
         <a :href="[sloganSetting.link?sloganSetting.link:'javascript:;']" class="g-slogan-container" :style="cssVar">
             <picture>
-                <source media="(max-width:768px)" :srcset="sloganSetting.mobile" />
+                <source media="(max-width:768px)" :srcset="sloganSetting.mobile || sloganSetting.pc" />
                 <img :srcset="sloganSetting.pc" :src="sloganSetting.pc" alt="" />
             </picture>
             <g-modify :uid="data.uid" title="主標題設定" :move="false" v-if="MODE == 'development' && page == 'EditPage'" />

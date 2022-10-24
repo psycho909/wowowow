@@ -18,7 +18,7 @@ let slideSetting = ref({})
 let slideData = reactive({
     num: 1,
     slides: [{
-        pc: "", mobile: "", open: false, url: "", attribute: false
+        pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true
     }],
 })
 var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
@@ -57,12 +57,12 @@ const onChange = (e) => {
 const addInsertMenu = (index) => {
     if (index == slideData.slides.length) {
         slideData.slides.push({
-            pc: "", mobile: "", url: "", attribute: false
+            pc: "", mobile: "", url: "", attribute: false, validPC: true
         })
         return;
     }
     slideData.slides = [...slideData.slides.slice(0, index + 1), {
-        pc: "", mobile: "", url: "", attribute: false
+        pc: "", mobile: "", url: "", attribute: false, validPC: true
     }, ...slideData.slides.slice(index + 1)];
 }
 
@@ -95,8 +95,20 @@ const onDown = (index) => {
 }
 
 const onSubmit = () => {
-    let data = { ...slideData }
-    store.updateCpt(props.data.uid, data)
+    slideData.slides.forEach((v, i) => {
+        if (v.url.length > 0) {
+            v.validPC = true;
+        } else {
+            v.validPC = false;
+        }
+    })
+    var validCheck = slideData.slides.every(function (v, i) {
+        return v.validPC == true;
+    })
+    if (validCheck) {
+        data = { ...slideData }
+        store.updateCpt(props.data.uid, data)
+    }
 }
 const onReset = () => {
     if (Object.keys(props.data.content).length > 0) {
@@ -108,7 +120,7 @@ const onReset = () => {
         slideData = {
             num: 1,
             slides: [{
-                pc: "", mobile: "", open: false, url: "", attribute: false
+                pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true
             }],
         }
     }
@@ -158,34 +170,38 @@ const closeBtn = () => {
                     <g-radio label="三張圖片" name="item" value="3" v-model="slideData.num" @change="onChange" />
                     <g-radio label="四張圖片" name="item" value="4" v-model="slideData.num" @change="onChange" />
                 </div>
-                <div class="g-edit__row g-edit__block" v-for="(slide,index) in slideData.slides">
-                    <div class="g-edit__group">
-                        <a href="javascript:;" class="icon icon-add" @click="addInsertMenu(index)"></a>
-                        <a href="javascript:;" class="icon icon-remove" @click="removeMenu(index)"></a>
-                        <a href="javascript:;" class="icon icon-up" @click="onUp(index)">up</a>
-                        <a href="javascript:;" class="icon icon-down" @click="onDown(index)">down</a>
-                    </div>
-                    <div class="g-edit__group">
-                        <div class="g-edit__col">
-                            <g-input label="*圖片網址:" v-model="slide.pc" />
+                <div class="g-edit__row" v-for="(slide,index) in slideData.slides">
+                    <div class="g-edit__col">
+                        <div class="g-edit__group">
+                            <a href="javascript:;" class="icon icon-add" @click="addInsertMenu(index)"></a>
+                            <a href="javascript:;" class="icon icon-remove" @click="removeMenu(index)"></a>
+                            <a href="javascript:;" class="icon icon-up" @click="onUp(index)">up</a>
+                            <a href="javascript:;" class="icon icon-down" @click="onDown(index)">down</a>
                         </div>
-                        <div class="g-edit__col">
-                            <div class="input-group__label">*開啟方式:</div>
-                            <g-radio label="無" :name="'open'+index" :value="false" v-model="slide.open" />
-                            <g-radio label="連結跳轉" :name="'open'+index" :value="true" v-model="slide.open" />
-                        </div>
-                        <template v-if="slide.open == 'true'">
+                        <div class="g-edit__group">
                             <div class="g-edit__col">
-                                <g-input label="URL" v-model="slide.url" />
+                                <g-input label="*圖片網址:" v-model="slide.pc" :valid="slide.validPC" />
                             </div>
                             <div class="g-edit__col">
-                                <div class="input-group__label">*另開視窗:</div>
-                                <g-radio label="是" :name="'attribute'+index" :value="false" v-model="slide.attribute" />
-                                <g-radio label="否" :name="'attribute'+index" :value="true" v-model="slide.attribute" />
+                                <div class="input-group__label">*開啟方式:</div>
+                                <g-radio label="無" :name="'open'+index" :value="false" v-model="slide.open" />
+                                <g-radio label="連結跳轉" :name="'open'+index" :value="true" v-model="slide.open" />
                             </div>
-                        </template>
-                        <div class="g-edit__col">
-                            <g-input label="手機版圖片網址" v-model="slide.mobile" />
+                            <template v-if="slide.open == 'true'">
+                                <div class="g-edit__col">
+                                    <g-input label="URL" v-model="slide.url" />
+                                </div>
+                                <div class="g-edit__col">
+                                    <div class="input-group__label">*另開視窗:</div>
+                                    <g-radio label="是" :name="'attribute'+index" :value="false"
+                                             v-model="slide.attribute" />
+                                    <g-radio label="否" :name="'attribute'+index" :value="true"
+                                             v-model="slide.attribute" />
+                                </div>
+                            </template>
+                            <div class="g-edit__col">
+                                <g-input label="手機版圖片網址" v-model="slide.mobile" />
+                            </div>
                         </div>
                     </div>
                 </div>
