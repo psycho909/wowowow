@@ -40,6 +40,16 @@
 			color: #fff;
 			flex-shrink: 0;
 			margin-right: 12px;
+			position: relative;
+			&.required {
+				&:before {
+					content: "*";
+					position: absolute;
+					top: 4px;
+					left: -12px;
+					color: red;
+				}
+			}
 		}
 		&__input {
 			& + .create-config__input {

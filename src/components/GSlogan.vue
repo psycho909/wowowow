@@ -23,14 +23,13 @@ let sloganData = reactive({
     pc: "",
     mobile: "", validPC: true
 })
-var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
 watchEffect(() => {
-    if (content.value.body[_index].update) {
+    if (props.data.update) {
         showEdit.value = true;
     } else {
         showEdit.value = false;
     }
-    if (content.value.body[_index]) {
+    if (props.data) {
         Object.keys(props.data.content).forEach((v, i) => {
             sloganData[v] = props.data.content[v];
             sloganSetting.value[v] = props.data.content[v];
@@ -39,12 +38,9 @@ watchEffect(() => {
 })
 
 const cssVar = computed(() => {
-    let slogan = content.value.body.filter((c, i) => {
-        return c.component == "GSlogan"
-    })
     return {
-        "--mt": slogan[0].content.mt,
-        "--mb": slogan[0].content.mb,
+        "--mt": props.data.content.mt,
+        "--mb": props.data.content.mb,
     }
 })
 
@@ -58,6 +54,7 @@ onMounted(async () => {
     }
 })
 const onSubmit = () => {
+    let data = {}
     if (sloganData.validPC.length > 0) {
         sloganData.validPC = true;
     } else {
@@ -84,7 +81,7 @@ const onReset = () => {
     }
 }
 const closeBtn = () => {
-    if (content.value.body[_index].init) {
+    if (props.data.init) {
         showEdit.value = false;
         store.removeCpt(props.data.uid);
         document.querySelector("body").classList.remove("ov-hidden");
@@ -104,12 +101,12 @@ const closeBtn = () => {
         }
     }
     showEdit.value = false;
-    content.value.body[_index].update = false;
+    props.data.update = false;
 }
 </script>
 <template>
-    <div class="g-slogan">
-        <a :href="[sloganSetting.link?sloganSetting.link:'javascript:;']" class="g-slogan-container" :style="cssVar">
+    <div class="g-slogan" :style="cssVar">
+        <a :href="[sloganSetting.link ? sloganSetting.link : 'javascript:;']" class="g-slogan-container">
             <picture>
                 <source media="(max-width:768px)" :srcset="sloganSetting.mobile || sloganSetting.pc" />
                 <img :srcset="sloganSetting.pc" :src="sloganSetting.pc" alt="" />
@@ -125,21 +122,21 @@ const closeBtn = () => {
                     <div class="edit-title__text">主標圖<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
                 <div class="g-edit__row">
-                    <div class="g-edit__col w50">
-                        <g-input label="間距上:" v-model="sloganData.mt" />
-                    </div>
-                    <div class="g-edit__col w50">
-                        <g-input label="間距下:" v-model="sloganData.mb" />
-                    </div>
-                </div>
-                <div class="g-edit__row">
-                    <g-input label="*圖片網址:" v-model="sloganData.pc" :preview="sloganData.pc" />
+                    <g-input label="圖片網址:" v-model="sloganData.pc" :preview="sloganData.pc" :required="true" />
                 </div>
                 <div class="g-edit__row">
                     <g-input label="手機版圖片網址:" v-model="sloganData.mobile" :preview="sloganData.mobile" />
                 </div>
                 <div class="g-edit__row">
                     <g-input label="主標連結:" v-model="sloganData.link" />
+                </div>
+                <div class="g-edit__row">
+                    <div class="g-edit__col w50">
+                        <g-input label="間距上:" v-model="sloganData.mt" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="間距下:" v-model="sloganData.mb" />
+                    </div>
                 </div>
                 <div class="edit-btn__box">
                     <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>

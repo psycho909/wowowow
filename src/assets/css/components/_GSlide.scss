@@ -1,8 +1,11 @@
 .g-slide {
-	margin-bottom: 54px;
+	margin-top: calc(var(--mt, 0) * 1px);
+	margin-bottom: calc(var(--mb, 54) * 1px);
 	@include media {
 		margin-bottom: vw(54);
 		overflow: hidden;
+		margin-top: calc(var(--mt, 0) / 768 * 100vw);
+		margin-bottom: calc(var(--mb, 54) / 768 * 100vw);
 	}
 	&-container {
 		position: relative;

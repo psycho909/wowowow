@@ -28,7 +28,7 @@ let bgData = reactive({
     mh: "",
     validPC: true
 })
-var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
+
 const imageInfo = (type, url) => {
     var img = new Image();
     img.onload = function () {
@@ -44,7 +44,7 @@ const imageInfo = (type, url) => {
     img.src = url
 }
 watchEffect(() => {
-    if (content.value.body[_index].update) {
+    if (props.data.update) {
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -139,7 +139,7 @@ const closeBtn = () => {
         }
     }
     showEdit.value = false;
-    content.value.body[_index].update = false;
+    props.data.update = false;
 }
 </script>
 <template>
@@ -159,14 +159,14 @@ const closeBtn = () => {
                     </div>
                 </div>
                 <div class="g-edit__row">
-                    <g-input label="*圖片網址:" v-model="bgData.pc" :preview="bgData.pc" :valid="validPC" />
+                    <g-input label="圖片網址:" v-model="bgData.pc" :preview="bgData.pc" :valid="validPC" :required="true" />
                 </div>
                 <div class="g-edit__row">
                     <g-input label="手機版圖片網址:" v-model="bgData.mobile" :preview="bgData.mobile" />
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group">
-                        <div class="input-group__label">*背景底色:</div>
+                        <div class="input-group__label required">背景底色:</div>
                         <div class="input-group__color">
                             <span class="input-group__color-ref" :style="`--color:${bgData.color}`"
                                   @click="openColor"></span>

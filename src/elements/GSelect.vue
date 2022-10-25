@@ -10,7 +10,7 @@ const props = defineProps({
         default: ""
     },
     modelValue: {
-        type: String,
+        type: [String, Number],
         default: ""
     },
     group: {
@@ -20,6 +20,10 @@ const props = defineProps({
     valid: {
         type: Boolean,
         default: true
+    },
+    required: {
+        type: Boolean,
+        default: false
     }
 })
 const emit = defineEmits(["update:modelValue"])
@@ -28,25 +32,25 @@ const updateValue = (event) => {
 }
 </script>
 <template>
-    <div class="select-group" :class="[valid?'':'warning']">
-        <div class="select-group__label">{{label}}</div>
+    <div class="select-group" :class="[valid ? '' : 'warning']">
+        <div class="select-group__label" :class="[required ? 'required' : '']">{{ label }}</div>
         <div class="select-group__box" v-if="group">
             <select class="select-group__control" @change="updateValue" v-model="modelValue">
                 <optgroup label="淺色系">
-                    <option :value="option.value" v-for="option in options[0]">{{option.text}}</option>
+                    <option :value="option.value" v-for="option in options[0]">{{ option.text }}</option>
                 </optgroup>
                 <optgroup label="深色系">
-                    <option :value="option.value" v-for="option in options[1]">{{option.text}}</option>
+                    <option :value="option.value" v-for="option in options[1]">{{ option.text }}</option>
                 </optgroup>
             </select>
-            <div class="select-group__warning" v-if="!valid">請填寫正確 {{label}}</div>
+            <div class="select-group__warning" v-if="!valid">請填寫正確 {{ label }}</div>
         </div>
         <div class="select-group__box" v-else>
             <select class="select-group__control" @change="updateValue" v-model="modelValue">
                 <option value="-1">請選擇</option>
-                <option :value="option.value" v-for="option in options">{{option.text}}</option>
+                <option :value="option.value" v-for="option in options">{{ option.text }}</option>
             </select>
-            <div class="select-group__warning" v-if="!valid">請填寫正確 {{label}}</div>
+            <div class="select-group__warning" v-if="!valid">請填寫正確 {{ label }}</div>
         </div>
     </div>
 </template>

@@ -61,7 +61,7 @@
 	&__content {
 		width: 100%;
 		background-color: #fff;
-		padding: 20px 20px 30px;
+		padding: 30px;
 		box-sizing: border-box;
 		border-radius: 10px;
 		white-space: normal;
@@ -104,7 +104,7 @@
 		display: flex;
 		align-items: flex-start;
 		margin-bottom: 12px;
-		&.w5 {
+		&.w50 {
 			width: 50%;
 		}
 		.input-group {
@@ -140,7 +140,7 @@
 		&__box {
 			min-width: 295px;
 			border-bottom: 1px solid #5b5b5b;
-			margin: 0 auto 40px;
+			margin: 0 auto 28px;
 			padding: 12px 0;
 			text-align: center;
 			display: inline-block;

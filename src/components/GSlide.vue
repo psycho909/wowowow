@@ -16,20 +16,18 @@ const store = mainStore()
 const { content, MODE, page } = storeToRefs(store);
 let slideSetting = ref({})
 let slideData = reactive({
-    num: 1,
+    num: 1, mt: 0, mb: 54,
     slides: [{
         pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true
     }],
 })
-var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
-
 watchEffect(() => {
-    if (content.value.body[_index].update) {
+    if (props.data.update) {
         showEdit.value = true;
     } else {
         showEdit.value = false;
     }
-    if (content.value.body[_index]) {
+    if (props.data) {
         Object.keys(props.data.content).forEach((v, i) => {
             slideData[v] = props.data.content[v];
             slideSetting.value[v] = props.data.content[v];
@@ -43,6 +41,13 @@ onMounted(async () => {
             slideData[v] = props.data.content[v];
             slideSetting.value[v] = props.data.content[v];
         })
+    }
+})
+
+const cssVar = computed(() => {
+    return {
+        "--mt": props.data.content.mt,
+        "--mb": props.data.content.mb,
     }
 })
 
@@ -95,8 +100,9 @@ const onDown = (index) => {
 }
 
 const onSubmit = () => {
+    let data = {}
     slideData.slides.forEach((v, i) => {
-        if (v.url.length > 0) {
+        if (v.pc.length > 0) {
             v.validPC = true;
         } else {
             v.validPC = false;
@@ -118,7 +124,7 @@ const onReset = () => {
         })
     } else {
         slideData = {
-            num: 1,
+            num: 1, mt: 0, mb: 54,
             slides: [{
                 pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true
             }],
@@ -126,7 +132,7 @@ const onReset = () => {
     }
 }
 const closeBtn = () => {
-    if (content.value.body[_index].init) {
+    if (props.data.init) {
         showEdit.value = false;
         store.removeCpt(props.data.uid);
         document.querySelector("body").classList.remove("ov-hidden");
@@ -146,11 +152,11 @@ const closeBtn = () => {
         }
     }
     showEdit.value = false;
-    content.value.body[_index].update = false;
+    props.data.update = false;
 }
 </script>
 <template>
-    <div class="g-slide">
+    <div class="g-slide" :style="cssVar">
         <div class="g-slide-container" :data-num="slideSetting.num">
             <g-swiper :data="slideSetting" />
             <g-modify :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'" />
@@ -164,13 +170,13 @@ const closeBtn = () => {
                     <div class="edit-title__text">輪播區塊<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label">*選擇輪播數量:</div>
+                    <div class="input-group__label required">選擇輪播數量:</div>
                     <g-radio label="單張圖片" name="item" value="1" v-model="slideData.num" @change="onChange" />
                     <g-radio label="兩張圖片" name="item" value="2" v-model="slideData.num" @change="onChange" />
                     <g-radio label="三張圖片" name="item" value="3" v-model="slideData.num" @change="onChange" />
                     <g-radio label="四張圖片" name="item" value="4" v-model="slideData.num" @change="onChange" />
                 </div>
-                <div class="g-edit__row" v-for="(slide,index) in slideData.slides">
+                <div class="g-edit__row" v-for="(slide, index) in slideData.slides">
                     <div class="g-edit__col">
                         <div class="g-edit__group">
                             <a href="javascript:;" class="icon icon-add" @click="addInsertMenu(index)"></a>
@@ -180,22 +186,22 @@ const closeBtn = () => {
                         </div>
                         <div class="g-edit__group">
                             <div class="g-edit__col">
-                                <g-input label="*圖片網址:" v-model="slide.pc" :valid="slide.validPC" />
+                                <g-input label="圖片網址:" v-model="slide.pc" :valid="slide.validPC" :required="true" />
                             </div>
                             <div class="g-edit__col">
-                                <div class="input-group__label">*開啟方式:</div>
-                                <g-radio label="無" :name="'open'+index" :value="false" v-model="slide.open" />
-                                <g-radio label="連結跳轉" :name="'open'+index" :value="true" v-model="slide.open" />
+                                <div class="input-group__label required">開啟方式:</div>
+                                <g-radio label="無" :name="'open' + index" :value="false" v-model="slide.open" />
+                                <g-radio label="連結跳轉" :name="'open' + index" :value="true" v-model="slide.open" />
                             </div>
                             <template v-if="slide.open == 'true'">
                                 <div class="g-edit__col">
                                     <g-input label="URL" v-model="slide.url" />
                                 </div>
                                 <div class="g-edit__col">
-                                    <div class="input-group__label">*另開視窗:</div>
-                                    <g-radio label="是" :name="'attribute'+index" :value="false"
+                                    <div class="input-group__label required">另開視窗:</div>
+                                    <g-radio label="是" :name="'attribute' + index" :value="false"
                                              v-model="slide.attribute" />
-                                    <g-radio label="否" :name="'attribute'+index" :value="true"
+                                    <g-radio label="否" :name="'attribute' + index" :value="true"
                                              v-model="slide.attribute" />
                                 </div>
                             </template>
@@ -203,6 +209,14 @@ const closeBtn = () => {
                                 <g-input label="手機版圖片網址" v-model="slide.mobile" />
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="g-edit__row">
+                    <div class="g-edit__col w50">
+                        <g-input label="間距上:" v-model="slideData.mt" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="間距下:" v-model="slideData.mb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

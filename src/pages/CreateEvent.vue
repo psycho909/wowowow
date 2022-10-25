@@ -130,11 +130,11 @@ const closeBtn = () => {
         </div>
         <div class="create-content">
             <div class="create-config__col">
-                <g-select label="*選擇遊戲" :options="gameOptions" v-model="eventConfig.gameSelected"
-                          :valid="valid.gameSelected" />
+                <g-select label="選擇遊戲" :options="gameOptions" v-model="eventConfig.gameSelected"
+                          :valid="valid.gameSelected" :required="true" />
             </div>
             <div class="create-config__col">
-                <div class="create-config__label">*上架日期:</div>
+                <div class="create-config__label required">上架日期:</div>
                 <div class="create-config__input">
                     <g-date v-model="eventConfig.startDate" :valid="valid.startDate" />
                 </div>
@@ -143,7 +143,7 @@ const closeBtn = () => {
                 </div>
             </div>
             <div class="create-config__col">
-                <div class="create-config__label">*下架日期:</div>
+                <div class="create-config__label required">下架日期:</div>
                 <div class="create-config__input">
                     <g-date v-model="eventConfig.endDate" :valid="valid.endDate" />
                 </div>
@@ -152,7 +152,8 @@ const closeBtn = () => {
                 </div>
             </div>
             <div class="create-config__col">
-                <g-input label="*活動名稱" placeholder="輸入內容" v-model="eventConfig.eventName" :valid="valid.eventName" />
+                <g-input label="活動名稱" placeholder="輸入內容" v-model="eventConfig.eventName" :valid="valid.eventName"
+                         :required="true" />
             </div>
 
             <div class="create-config__col">
@@ -174,7 +175,8 @@ const closeBtn = () => {
                 <g-input label="FB說明" placeholder="輸入內容" v-model="eventConfig.fbDescription" />
             </div>
             <div class="create-config__col">
-                <g-input label="FB縮圖URL" placeholder="輸入內容" v-model="eventConfig.fbImage" preview="true" />
+                <g-input label="FB縮圖URL" placeholder="輸入內容" v-model="eventConfig.fbImage"
+                         :preview="eventConfig.fbImage" />
             </div>
             <div class="create-config__col">
                 <g-checkbox label="GA" v-model="eventConfig.GA" />

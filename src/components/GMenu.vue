@@ -20,7 +20,7 @@ const total = computed(() => {
 })
 
 const menuFilter = computed(() => {
-    if (props.menu) {
+    if (props.menu && total.value) {
         return props.menu.map((v, i) => {
             if (total.value[v.title] == v.limit) {
                 v.status = false
@@ -51,11 +51,11 @@ const onClose = () => {
 </script>
 <template>
     <Teleport to="body">
-        <div class="g-menu" :class="[menuToggle?'open':'']">
+        <div class="g-menu" :class="[menuToggle ? 'open' : '']">
             <a href="javascript:;" class="g-menu__open icon-open" @click="onOpen"></a>
             <a href="javascript:;" class="g-menu__close icon-close" @click="onClose"></a>
-            <a href="javascript:;" class="g-menu__add" :class="[m.status?'':'disabled']" v-for="m in menuFilter"
-               @click="add(m)">{{m.label}}</a>
+            <a href="javascript:;" class="g-menu__add" :class="[m.status ? '' : 'disabled']" v-for="m in menuFilter"
+               @click="add(m)">{{ m.label }}</a>
         </div>
     </Teleport>
 </template>

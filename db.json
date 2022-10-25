@@ -169,9 +169,13 @@
 								"type": "",
 								"pop": {
 									"show": false,
-									"type": "text"
+									"type": "text",
+									"align": "align-left",
+									"style": "red1"
 								},
-								"target": {}
+								"target": {
+									"attribute": true
+								}
 							}
 						]
 					},

@@ -75,6 +75,14 @@
 	&__content {
 		text-align: left;
 	}
+	&__text {
+		&.align-left {
+			text-align: left;
+		}
+		&.align-center {
+			text-align: center;
+		}
+	}
 	&__img {
 		text-align: center;
 		font-size: 0;

@@ -5,12 +5,13 @@ export default {
 }
 </script>
 <script setup>
+import { useSlots } from "vue";
 const props = defineProps({
     showLightbox: {
         type: Boolean, default: false
     },
     style: {
-        type: String
+        type: [String, Object]
     },
     action: {
         default: true
@@ -19,23 +20,25 @@ const props = defineProps({
 const emit = defineEmits(["update:showLightbox"])
 const lightboxRef = ref(null)
 
-defineExpose({
-    lightboxRef
-})
+
 const closeBtn = () => {
     emit("update:showLightbox", false)
 }
+const slotTile = useSlots()['lightbox-title'];
+defineExpose({
+    lightboxRef
+})
 </script>
 <template>
     <Teleport to="body">
-        <div class="g-lightbox" :style="[style?style:'']" v-if="showLightbox" ref="lightboxRef">
+        <div class="g-lightbox" :style="[style ? style : '']" v-if="showLightbox" ref="lightboxRef">
             <div class="g-lightbox__module"></div>
             <div class="g-lightbox__wrap">
                 <slot name="lightbox-close">
                     <a href="javascript:;" class="g-lightbox__close icon-close" @click="closeBtn">close</a>
                 </slot>
                 <div class="g-lightbox__container">
-                    <div class="g-lightbox__title">
+                    <div class="g-lightbox__title" v-if="slotTile">
                         <slot name="lightbox-title"></slot>
                     </div>
                     <div class="g-lightbox__content">

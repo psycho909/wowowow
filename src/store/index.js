@@ -84,21 +84,20 @@ export const mainStore = defineStore("main", {
 		setType(data) {
 			this.type = data;
 		},
-		setConfig(data) {
-			this.config = data;
-		},
-		setContent(data) {
-			this.content = data;
+		setEnv(data) {
+			this.MODE = data;
 		},
 		async setCreateEvent(data) {
-			let done = await data;
-			this.setConfig(done);
-			return done;
+			this.config = data;
+			return data;
 		},
 		async setSave(data) {
-			let done = await data;
-			this.setContent(done);
-			return done;
+			this.content = data;
+			return data;
+		},
+		async setData(data) {
+			this.content = data;
+			return data;
 		}
 	}
 });

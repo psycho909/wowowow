@@ -11,13 +11,13 @@ import { mainStore } from "../store/index";
 import GLightbox from "../components/GLightbox.vue";
 import { InsertCookie, InsertScript, InsertHeader, InsertGA, InsertGTM } from "../Tool";
 import axios from "axios";
+import { watch, watchEffect } from 'vue';
 const store = mainStore()
 const { content } = storeToRefs(store);
 const MODE = import.meta.env.MODE;
 let saveLightbox = ref(false)
 let auditLightbox = ref(false)
 let homeLightbox = ref(false)
-
 
 const cssVar = computed(() => {
     let bg = content.value.body.filter((c, i) => {
@@ -26,13 +26,14 @@ const cssVar = computed(() => {
     return {
         "--color": bg[0].content.color,
         "--pc": `url(${bg[0].content.pc})`,
-        "--mb": `url(${bg[0].content.mb ? bg[0].content.mb : bg[0].content.pc})`,
+        "--mobile": `url(${bg[0].content.mobile ? bg[0].content.mobile : bg[0].content.pc})`,
         "--w": bg[0].content.w,
         "--h": bg[0].content.h,
         "--mw": bg[0].content.mw,
         "--mh": bg[0].content.mh,
     }
 })
+
 
 const menu = computed(() => {
     return Object.keys(components).map((m, i) => {
@@ -117,7 +118,7 @@ const onHomeCancel = () => {
 }
 </script>
 <template>
-    <section class="wrap" :class="MODE" data-type="one" :style="cssVar">
+    <section class="wrap" :class="MODE" data-type="one" :style="cssVar" v-if="content.body">
         <template v-for="block in content.body">
             <component :is="block.component" :data="block"></component>
         </template>

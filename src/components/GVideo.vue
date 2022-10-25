@@ -22,16 +22,16 @@ let videoData = reactive({
     videos: [{
         url: "", show: false, validUrl: true
     }],
+    mt: 0, mb: 54,
 })
-var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
 
 watchEffect(() => {
-    if (content.value.body[_index].update) {
+    if (props.data.update) {
         showEdit.value = true;
     } else {
         showEdit.value = false;
     }
-    if (content.value.body[_index]) {
+    if (props.data) {
         Object.keys(props.data.content).forEach((v, i) => {
             videoData[v] = props.data.content[v];
             videoSetting.value[v] = props.data.content[v];
@@ -46,6 +46,13 @@ onMounted(async () => {
             videoData[v] = props.data.content[v];
             videoSetting.value[v] = props.data.content[v];
         })
+    }
+})
+
+const cssVar = computed(() => {
+    return {
+        "--mt": props.data.content.mt,
+        "--mb": props.data.content.mb,
     }
 })
 
@@ -68,6 +75,7 @@ const onChange = (e) => {
 }
 
 const onSubmit = () => {
+    let data = {}
     videoData.videos.forEach((v, i) => {
         if (v.url.length > 0) {
             v.validUrl = true;
@@ -79,7 +87,7 @@ const onSubmit = () => {
         return v.validUrl == true;
     })
     if (validCheck) {
-        let data = { ...videoData }
+        data = { ...videoData }
         store.updateCpt(props.data.uid, data)
     }
 }
@@ -96,11 +104,12 @@ const onReset = () => {
             videos: [{
                 url: "", show: false, validUrl: true
             }],
+            mt: 0, mb: 54,
         }
     }
 }
 const closeBtn = () => {
-    if (content.value.body[_index].init) {
+    if (props.data.init) {
         showEdit.value = false;
         store.removeCpt(props.data.uid);
         document.querySelector("body").classList.remove("ov-hidden");
@@ -118,16 +127,17 @@ const closeBtn = () => {
             videos: [{
                 url: "", show: false, validUrl: true
             }],
+            mt: 0, mb: 54,
         }
     }
     showEdit.value = false;
-    content.value.body[_index].update = false;
+    props.data.update = false;
 }
 </script>
 <template>
-    <div class="g-video">
+    <div class="g-video" :style="cssVar">
         <div class="g-video-container" :data-num="videoSetting.num">
-            <template v-for="(videos,index) in videoSetting.videos">
+            <template v-for="(videos, index) in videoSetting.videos">
                 <a v-if="videoSetting.type == 'click'" href="javascript:;" class="g-video__box">
                     <g-youtube :youtube="videos.url" />
                 </a>
@@ -153,19 +163,28 @@ const closeBtn = () => {
                     <div class="edit-title__text">影片區塊<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label">*選擇影片數量:</div>
+                    <div class="input-group__label required">選擇影片數量:</div>
                     <g-radio label="單一影片" name="video" value="1" v-model="videoData.num" @change="onChange" />
                     <g-radio label="兩格影片" name="video" value="2" v-model="videoData.num" @change="onChange" />
                     <g-radio label="三格影片" name="video" value="3" v-model="videoData.num" @change="onChange" />
                     <g-radio label="四格影片" name="video" value="4" v-model="videoData.num" @change="onChange" />
                 </div>
-                <div class="g-edit__row" v-for="(video,index) in videoData.videos">
-                    <g-input :label="'*影片'+(index+1)+'URL:'" v-model="video.url" :valid="video.validUrl" />
+                <div class="g-edit__row" v-for="(video, index) in videoData.videos">
+                    <g-input :label="'影片' + (index + 1) + 'URL:'" v-model="video.url" :valid="video.validUrl"
+                             :required="true" />
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label">*播放方式:</div>
+                    <div class="input-group__label required">播放方式:</div>
                     <g-radio label="點擊直接播放" name="type" value="click" v-model="videoData.type" />
                     <g-radio label="點擊跳出燈箱播放" name="type" value="pop" v-model="videoData.type" />
+                </div>
+                <div class="g-edit__row">
+                    <div class="g-edit__col w50">
+                        <g-input label="間距上:" v-model="videoData.mt" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="間距下:" v-model="videoData.mb" />
+                    </div>
                 </div>
                 <div class="edit-btn__box">
                     <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>

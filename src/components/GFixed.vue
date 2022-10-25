@@ -25,15 +25,13 @@ let fixedData = reactive({
     menus: []
 })
 
-var _index = content.value.body.findIndex((v, i) => v.uid == props.data.uid);
-
 watchEffect(() => {
-    if (content.value.body[_index].update) {
+    if (props.data.update) {
         showEdit.value = true;
     } else {
         showEdit.value = false;
     }
-    if (content.value.body[_index]) {
+    if (props.data) {
         Object.keys(props.data.content).forEach((v, i) => {
             fixedData[v] = props.data.content[v];
             fixedSetting.value[v] = props.data.content[v];
@@ -90,9 +88,6 @@ const onSubmit = () => {
         data = { ...fixedData }
         store.updateCpt(props.data.uid, data)
     }
-    // let data = { ...fixedData }
-
-    // store.updateCpt(props.data.uid, data)
 }
 const onReset = () => {
     if (Object.keys(props.data.content).length > 0) {
@@ -110,7 +105,7 @@ const onReset = () => {
     }
 }
 const closeBtn = () => {
-    if (content.value.body[_index].init) {
+    if (props.data.init) {
         showEdit.value = false;
         store.removeCpt(props.data.uid);
         document.querySelector("body").classList.remove("ov-hidden");
@@ -130,7 +125,7 @@ const closeBtn = () => {
         }
     }
     showEdit.value = false;
-    content.value.body[_index].update = false;
+    props.data.update = false;
 }
 
 const openMenu = () => {
@@ -143,12 +138,12 @@ const closeMenu = () => {
 </script>
 <template>
     <div class="g-fixed__hamburger" :class="[fixedSetting.hamburger]" @click="openMenu"></div>
-    <div class="g-fixed" :class="[fixedSetting.position,fixedSetting.hamburger,menuToggle?'on':'']"
+    <div class="g-fixed" :class="[fixedSetting.position, fixedSetting.hamburger, menuToggle ? 'on' : '']"
          :style="colors[fixedSetting.style]">
         <a href="javascript:;" class="g-fixed__close" @click="closeMenu"></a>
         <div class="g-fixed-container">
-            <a :href="[menu.link?menu.link:'javascript:;']" class="g-fixed__menu"
-               :target="[menu.target?'_blank':'_self']" v-for="menu in fixedSetting.menus">{{menu.text}}</a>
+            <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
+               :target="[menu.target ? '_blank' : '_self']" v-for="menu in fixedSetting.menus">{{ menu.text }}</a>
         </div>
         <g-modify :uid="data.uid" :move="false" v-if="MODE == 'development' && page == 'EditPage'" />
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'">
@@ -160,30 +155,31 @@ const closeMenu = () => {
                     <div class="edit-title__text">浮動式選單<a href="javascript:;" class="edit-title__q"></a></div>
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label">*出現位置:</div>
+                    <div class="input-group__label required">出現位置:</div>
                     <g-radio label="左" name="position" value="left" v-model="fixedData.position" />
                     <g-radio label="右" name="position" value="right" v-model="fixedData.position" />
                     <g-radio label="上" name="position" value="top" v-model="fixedData.position" />
                     <g-radio label="下" name="position" value="bottom" v-model="fixedData.position" />
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label">*手機版漢堡選單出現位置:</div>
+                    <div class="input-group__label required">手機版漢堡選單出現位置:</div>
                     <g-radio label="左" name="hamburger" value="hamburger-left" v-model="fixedData.hamburger" />
                     <g-radio label="右" name="hamburger" value="hamburger-right" v-model="fixedData.hamburger" />
                 </div>
                 <div class="g-edit__row">
-                    <g-select label="*主題顏色" :group="true" :options="[style1,style2]" v-model="fixedData.style" />
+                    <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
+                              v-model="fixedData.style" />
                 </div>
                 <div class="g-edit__row">
                     <span class="input-group__label">選單數目</span>
-                    <div>{{fixedData.menus.length}}</div>
+                    <div>{{ fixedData.menus.length }}</div>
                     <a href="javascript:;" class="input-group__click icon icon-add" @click="addPushMenu"></a>
                     <a href="javascript:;" class="input-group__click icon icon-remove" @click="removeMenu"></a>
                 </div>
                 <div class="g-edit__row">
-                    <div class="g-edit__col" v-for="(menu,index) in fixedData.menus">
+                    <div class="g-edit__col" v-for="(menu, index) in fixedData.menus">
                         <a href="javascript:;" class="icon icon-add" @click="addInsertMenu(index)"></a>
-                        <a href="javascript:;" class="icon icon-remove" :class="[index == 0?'v-hidden':'']"
+                        <a href="javascript:;" class="icon icon-remove" :class="[index == 0 ? 'v-hidden' : '']"
                            @click="removeMenu(index)"></a>
                         <g-input placeholder="*選單文字" v-model="menu.text" :valid="menu.validText" />
                         <g-input placeholder="*連結或URL" v-model="menu.link" :valid="menu.validLink" />

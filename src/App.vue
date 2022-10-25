@@ -14,12 +14,11 @@ const store = mainStore()
 const { content, MODE, page } = storeToRefs(store);
 
 onMounted(() => {
-	store.$patch((state) => {
-		state.MODE = import.meta.env.MODE;
-	})
+	store.setEnv(import.meta.env.MODE);
 	axios.get("http://localhost:3000/data/").then((res) => {
-		return store.setContent(res.data.listData)
+		store.setData(res.data.listData)
 	})
+
 })
 </script>
     
@@ -28,13 +27,13 @@ onMounted(() => {
 		<Home v-if="page == 'Home'"></Home>
 		<SelectType v-if="page == 'SelectType'"></SelectType>
 		<CreateEvent v-if="page == 'CreateEvent'"></CreateEvent>
-		<EventList v-if="page  == 'EventList'"></EventList>
-		<AuditList v-if="page  == 'AuditList'"></AuditList>
-		<EditPage v-if="page  == 'EditPage'"></EditPage>
-		<Preview v-if="page  == 'Preview'"></Preview>
+		<EventList v-if="page == 'EventList'"></EventList>
+		<AuditList v-if="page == 'AuditList'"></AuditList>
+		<EditPage v-if="page == 'EditPage'"></EditPage>
+		<Preview v-if="page == 'Preview'"></Preview>
 	</template>
 	<template v-else>
-		<Page v-if="page  == 'Page'"></Page>
+		<Page v-if="page == 'Page'"></Page>
 	</template>
 </template>
     
