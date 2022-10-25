@@ -145,8 +145,8 @@ const closeMenu = () => {
             <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
                :target="[menu.target ? '_blank' : '_self']" v-for="menu in fixedSetting.menus">{{ menu.text }}</a>
         </div>
-        <g-modify :uid="data.uid" :move="false" v-if="MODE == 'development' && page == 'EditPage'" />
-        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'">
+        <g-modify :uid="data.uid" :move="false" v-if="page == 'EditPage'" />
+        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
             <template #edit-close>
                 <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
             </template>

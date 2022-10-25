@@ -111,9 +111,9 @@ const closeBtn = () => {
                 <source media="(max-width:768px)" :srcset="sloganSetting.mobile || sloganSetting.pc" />
                 <img :srcset="sloganSetting.pc" :src="sloganSetting.pc" alt="" />
             </picture>
-            <g-modify :uid="data.uid" title="主標題設定" :move="false" v-if="MODE == 'development' && page == 'EditPage'" />
+            <g-modify :uid="data.uid" title="主標題設定" :move="false" v-if="page == 'EditPage'" />
         </a>
-        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'">
+        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
             <template #edit-close>
                 <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
             </template>

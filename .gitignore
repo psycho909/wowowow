@@ -1,3 +1,4 @@
-node_modules
+dist/*
 PSD final/
 *.mjs
+node_modules

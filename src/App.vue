@@ -14,7 +14,6 @@ const store = mainStore()
 const { content, MODE, page } = storeToRefs(store);
 
 onMounted(() => {
-	store.setEnv(import.meta.env.MODE);
 	axios.get("http://localhost:3000/data/").then((res) => {
 		store.setData(res.data.listData)
 	})
@@ -23,17 +22,12 @@ onMounted(() => {
 </script>
     
 <template>
-	<template v-if="MODE == 'development'">
-		<Home v-if="page == 'Home'"></Home>
-		<SelectType v-if="page == 'SelectType'"></SelectType>
-		<CreateEvent v-if="page == 'CreateEvent'"></CreateEvent>
-		<EventList v-if="page == 'EventList'"></EventList>
-		<AuditList v-if="page == 'AuditList'"></AuditList>
-		<EditPage v-if="page == 'EditPage'"></EditPage>
-		<Preview v-if="page == 'Preview'"></Preview>
-	</template>
-	<template v-else>
-		<Page v-if="page == 'Page'"></Page>
-	</template>
+	<Home v-if="page == 'Home'"></Home>
+	<SelectType v-if="page == 'SelectType'"></SelectType>
+	<CreateEvent v-if="page == 'CreateEvent'"></CreateEvent>
+	<EventList v-if="page == 'EventList'"></EventList>
+	<AuditList v-if="page == 'AuditList'"></AuditList>
+	<EditPage v-if="page == 'EditPage'"></EditPage>
+	<Preview v-if="page == 'Preview'"></Preview>
 </template>
     

@@ -159,9 +159,9 @@ const closeBtn = () => {
     <div class="g-slide" :style="cssVar">
         <div class="g-slide-container" :data-num="slideSetting.num">
             <g-swiper :data="slideSetting" />
-            <g-modify :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'" />
+            <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
         </div>
-        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="MODE == 'development' && page == 'EditPage'">
+        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
             <template #edit-close>
                 <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
             </template>

@@ -42,12 +42,13 @@ export default defineConfig(({ mode }) => {
 			emptyOutDir: mode == "devbuild" ? false : true,
 			rollupOptions: {
 				input: {
-					index: path.resolve(__dirname, "index.html")
+					index: path.resolve(__dirname, "index.html"),
+					main: path.resolve(__dirname, "main.html")
 				},
 				// entryFileNames: "assets/js/[name].[hash].js",
 				output: {
-					entryFileNames: "js/default.js",
-					chunkFileNames: "js/default.js",
+					entryFileNames: `js/[name].js`,
+					chunkFileNames: `js/[name].js`,
 					assetFileNames: (assetInfo) => {
 						let extType = assetInfo.name.split(".").at(1);
 						if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
