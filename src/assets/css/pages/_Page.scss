@@ -9,7 +9,7 @@
 	background-repeat: no-repeat;
 	padding-bottom: 100px;
 	@include media {
-		background-image: var(--mb);
+		background-image: var(--mobile);
 		background-size: calc(var(--mw) / 768 * 100vw) calc(var(--mw) / 768 * 100vw);
 	}
 	div:last-child {
