@@ -11,7 +11,7 @@ import SelectType from "./pages/SelectType.vue";
 import axios from "axios";
 import { mainStore } from "./store/index";
 const store = mainStore()
-const { content, MODE, page } = storeToRefs(store);
+const { content, page } = storeToRefs(store);
 
 onMounted(() => {
 	axios.get("http://localhost:3000/data/").then((res) => {

@@ -18,7 +18,7 @@ const cssVar = computed(() => {
         return {
             "--color": bg[0].content.color,
             "--pc": `url(${bg[0].content.pc})`,
-            "--mb": `url(${bg[0].content.mobile ? bg[0].content.mobile : bg[0].content.pc})`,
+            "--mobile": `url(${bg[0].content.mobile ? bg[0].content.mobile : bg[0].content.pc})`,
             "--w": bg[0].content.w,
             "--h": bg[0].content.h,
             "--mw": bg[0].content.mw,
