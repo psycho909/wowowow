@@ -6,7 +6,15 @@ export const mainStore = defineStore("main", {
 		return {
 			page: "EditPage",
 			MODE: "",
-			type: "",
+			type: "A",
+			template: {
+				A: {
+					body: []
+				},
+				B: {
+					body: []
+				}
+			},
 			config: [],
 			content: {}
 		};
