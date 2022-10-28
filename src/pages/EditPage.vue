@@ -11,13 +11,23 @@ import { mainStore } from "../store/index";
 import GLightbox from "../components/GLightbox.vue";
 import { InsertCookie, InsertScript, InsertHeader, InsertGA, InsertGTM } from "../Tool";
 import axios from "axios";
-import { watch, watchEffect } from 'vue';
+import { loadingShow, loadingHide } from "../Tool";
+import { UpdateEventContent, ApproveEvent } from "../api";
+
 const store = mainStore()
 const { content } = storeToRefs(store);
 const MODE = import.meta.env.MODE;
 let saveLightbox = ref(false)
 let auditLightbox = ref(false)
 let homeLightbox = ref(false)
+let message = ref("");
+let messageLightbox = ref(false);
+
+onMounted(() => {
+    if (!store.content) {
+        store.setData(store.template[store.pageTypeSeq]);
+    }
+})
 
 const cssVar = computed(() => {
     if (content.value.body) {
@@ -47,29 +57,6 @@ const menu = computed(() => {
     });
 })
 
-const pageInfo = (data) => {
-    document.title = data.title;
-    document.querySelectorAll("meta[name='description']")[0].setAttribute("content", data.description);
-    document.querySelectorAll("meta[property='og:title']").setAttribute("content", data.fbTitle);
-    document.querySelectorAll("meta[property='og:description']").setAttribute("content", data.fbDescription);
-    document.querySelectorAll("meta[property='og:image']").setAttribute("content", data.fbImage);
-    if (data.cookie == "true") {
-        InsertCookie()
-    }
-    if (data.header == "true") {
-        InsertHeader()
-    }
-    if (data.GA == "true") {
-        InsertGA(data.GA);
-    }
-    if (data.GTM == "true") {
-        InsertGTM(data.GTM);
-    }
-    if (data.script) {
-        InsertScript(data.script)
-    }
-}
-
 const onEvent = (type) => {
     switch (type) {
         case "home":
@@ -79,43 +66,38 @@ const onEvent = (type) => {
             auditLightbox.value = true;
             break;
         case "preview":
-            store.$patch(state => {
-                state.page = "Preview"
-            })
+            store.setPage("Preview");
             break;
         case "save":
-            axios.post("http://localhost:3000/data/", {
-                listData: store.content
-            }).then((res) => {
+            UpdateEventContent(1, store.content).then((res) => {
                 return store.setSave(store.content)
             }).then((res) => {
                 saveLightbox.value = true;
             })
             break;
         case "eventList":
-
+            store.setPage("EventList");
             break;
     }
 }
 
-const onAuditSubmit = () => {
-    store.$patch(state => {
-        state.page = "EventList"
+const onApproveSubmit = () => {
+    let data = { ...store.config, ...store.content }
+    ApproveEvent(1, data).then((res) => {
+        let { code, message, url, listData } = res.data;
+        if (code != 1) {
+            return;
+        }
+        store.setData({})
     })
-}
-
-const onAuditCancel = () => {
-    auditLightbox.value = false;
 }
 
 const onHomeSubmit = () => {
-    store.$patch(state => {
-        state.page = "Home"
-    })
+    store.setPage("Home")
 }
 
-const onHomeCancel = () => {
-    homeLightbox.value = false;
+const onCancel = (ref) => {
+    ref["value"] = false;
 }
 </script>
 <template>
@@ -140,7 +122,7 @@ const onHomeCancel = () => {
         </template>
         <template #lightbox-btn>
             <a href="javascript:;" class="btn btn__submit" @click="onHomeSubmit">確認</a>
-            <a href="javascript:;" class="btn btn__reset" @click="onHomeCancel">取消</a>
+            <a href="javascript:;" class="btn btn__reset" @click="onCancel(homeLightbox)">取消</a>
         </template>
     </g-lightbox>
 
@@ -150,8 +132,8 @@ const onHomeCancel = () => {
             <div class="text-center">送審前請先確認已存檔！是否確定送審活動【活動名稱活動名稱活動名稱活動名稱】送審後將無法繼續編輯，是否確認送審？</div>
         </template>
         <template #lightbox-btn>
-            <a href="javascript:;" class="btn btn__submit" @click="onAuditSubmit">確認</a>
-            <a href="javascript:;" class="btn btn__reset" @click="onAuditCancel">取消</a>
+            <a href="javascript:;" class="btn btn__submit" @click="onApproveSubmit">確認</a>
+            <a href="javascript:;" class="btn btn__reset" @click="onCancel(auditLightbox)">取消</a>
         </template>
     </g-lightbox>
 
@@ -159,6 +141,11 @@ const onHomeCancel = () => {
     <g-lightbox v-model:showLightbox="saveLightbox" :action="false">
         <template #lightbox-content>
             <div class="text-center">已存檔完成</div>
+        </template>
+    </g-lightbox>
+    <g-lightbox v-model:showLightbox="messageLightbox">
+        <template #lightbox-content>
+            <div>{{ message }}</div>
         </template>
     </g-lightbox>
 </template>

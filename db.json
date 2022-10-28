@@ -1,213 +1,246 @@
 {
-	"data": {
-		"listData": {
-			"body": [
-				{
-					"component": "GFixed",
-					"uid": 99,
-					"content": {
-						"position": "left",
-						"hamburger": "hamburger-right",
-						"style": "grayscale2",
-						"menus": [
-							{
-								"text": "選單內容1",
-								"link": "",
-								"target": false,
-								"validText": true,
-								"validLink": true
-							},
-							{
-								"text": "選單內容2",
-								"link": "",
-								"target": false,
-								"validText": true,
-								"validLink": true
-							},
-							{
-								"text": "選單內容3",
-								"link": "",
-								"target": false,
-								"validText": true,
-								"validLink": true
-							},
-							{
-								"text": "選單內容4",
-								"link": "",
-								"target": false,
-								"validText": true,
-								"validLink": true
-							},
-							{
-								"text": "選單內容5",
-								"link": "",
-								"target": false,
-								"validText": true,
-								"validLink": true
-							}
-						]
-					},
-					"update": false
-				},
-				{
-					"component": "GBg",
-					"uid": 1,
-					"content": {
-						"color": "#070508",
-						"pc": "https://alpha-tw.beanfun.com/3KO/removable/pchome/images/bg.jpg",
-						"mobile": "",
-						"w": 1920,
-						"h": 958,
-						"mw": "",
-						"mh": ""
-					},
-					"update": false
-				},
-				{
-					"component": "GSlogan",
-					"uid": 16,
-					"content": {
-						"link": "",
-						"mt": "250",
-						"mb": "24",
-						"pc": "https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slogan.jpg",
-						"mobile": "",
-						"validPC": true
-					},
-					"update": false
-				},
-				{
-					"component": "GSlide",
-					"uid": 70,
-					"content": {
-						"num": 1,
-						"slides": [
-							{
-								"pc": "https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slide.jpg",
-								"mobile": "",
-								"open": false,
-								"url": "",
-								"attribute": false,
-								"validPC": true
-							},
-							{
-								"pc": "https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slide.jpg",
-								"mobile": "",
-								"url": "",
-								"attribute": false,
-								"validPC": true
-							},
-							{
-								"pc": "https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slide.jpg",
-								"mobile": "",
-								"url": "",
-								"attribute": false,
-								"validPC": true
-							},
-							{
-								"pc": "https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slide.jpg",
-								"mobile": "",
-								"url": "",
-								"attribute": false,
-								"validPC": true
-							}
-						]
-					},
-					"update": false
-				},
-				{
-					"component": "GText",
-					"uid": 59,
-					"content": {
-						"align": "align-left",
-						"style": "yellow2",
-						"text": "<p>本活動皆由官方統一提供角色設定，各血盟盟主可於報名時決定所有成員欲於競賽中使用的職業，</p><p>&nbsp;報名血盟含盟主共25名成員中，需完整包含11種職業&nbsp;</p><p>【官方提供角色】僅複製原伺服器報名參賽角色的「血盟資料、角色名稱」至活動伺服器中，而角色職業、等級、性別、變身、魔法娃娃、裝備…等，皆採用官方統一提供之角色設定，非原角色資訊。&nbsp;</p><p>點我看<a href=\"https://www.xiaopiu.com/web/byId?type=project&amp;id=615d656dd50bdb146bab2295\">【官方提供角色】</a></p><p>&nbsp;</p><p>1.旗幟戰菁英賽第六季賽事採用問卷報名，並由血盟盟主為代表透過線上問卷進行報名。須完整填寫隊伍及成員資訊。後續官方將從報名的血盟中，由系統隨機挑選出60組血盟並區分資格賽Ａ組及Ｂ組各30個血盟參加資格賽。若因血盟移轉、角色所屬血盟…等與報名資料不符，將視同棄權參賽資格，且不進行遞補或調整。 &nbsp;</p><p>&nbsp;</p><p>2.報名時除盟主/守護騎士不可更換職業外，其餘成員可選取與正式伺服器角色不同職業。 &nbsp;</p><p>&nbsp;</p><p>3.報名血盟含盟主共25名成員中，需完整包含11種職業，未符合條件者將不予入選資格賽。 隊伍人數最多25人，最少15人，須依據下拉選單中的『11種職業』進行賽事角色職業分配。 &nbsp;</p><p>&nbsp;</p><p>4.2022/06/29(三)晚間20:00前於遊戲官網公布資格賽入選血盟名稱以及成員名單，Ａ組及Ｂ組之名單將另行公告。 ※注意，資格賽名單公布後不可再更換組別。&nbsp;</p><p>&nbsp;</p><p>&nbsp;5.如有血盟有重複報名，將以最後收到的一份報名資料 &nbsp;開放報名時間：2022/06/23～2022/06/26間23:59 【提醒：報名時若使用特殊字元創立隊伍名稱，有可能會發生隊伍名稱無法正常顯示問題， 網頁顯示問題不會影響報名或賽事進行，若後續有獲選參賽系統將會使用原遊戲內血盟名稱創建隊伍】 &nbsp;</p>"
-					},
-					"update": false
-				},
-				{
-					"component": "GVideo",
-					"uid": 5,
-					"content": {
-						"num": "4",
-						"type": "click",
-						"videos": [
-							{
-								"url": "https://www.youtube.com/watch?v=sYKJsLiMpJk",
-								"show": false,
-								"validUrl": true
-							},
-							{
-								"url": "https://www.youtube.com/watch?v=sYKJsLiMpJk",
-								"show": false,
-								"validUrl": true
-							},
-							{
-								"url": "https://www.youtube.com/watch?v=sYKJsLiMpJk",
-								"show": false,
-								"validUrl": true
-							},
-							{
-								"url": "https://www.youtube.com/watch?v=sYKJsLiMpJk",
-								"show": false,
-								"validUrl": true
-							}
-						]
-					},
-					"update": false
-				},
-				{
-					"component": "GImg",
-					"uid": "cdf9acde-c382-4950-a1a9-57f9ec242f0f",
-					"content": {
-						"num": 1,
-						"imgs": [
-							{
-								"pc": "https://fakeimg.pl/440x320/282828/eae0d0/",
-								"validPC": true,
-								"mb": "",
-								"type": "",
-								"pop": {
-									"show": false,
-									"type": "text",
-									"align": "align-left",
-									"style": "red1"
-								},
-								"target": {
-									"attribute": true
-								}
-							}
-						]
-					},
-					"update": false
-				}
-			]
-		}
+	"GetGames": {
+		"listData": [
+			{
+				"guid": 1,
+				"gameName": "便利商店口袋版",
+				"serviceCode": "611647",
+				"serviceRegion": "T0"
+			},
+			{
+				"guid": 2,
+				"gameName": "魔力寶貝M",
+				"serviceCode": "611646",
+				"serviceRegion": "I0"
+			},
+			{
+				"guid": 3,
+				"gameName": "召喚圖板",
+				"serviceCode": "611640",
+				"serviceRegion": "G0"
+			},
+			{
+				"guid": 4,
+				"gameName": "天堂M",
+				"serviceCode": "611644",
+				"serviceRegion": "T0"
+			},
+			{
+				"guid": 5,
+				"gameName": "櫻桃小丸子-夢遊版",
+				"serviceCode": "611648",
+				"serviceRegion": "I0"
+			},
+			{
+				"guid": 6,
+				"gameName": "小森生活",
+				"serviceCode": "611649",
+				"serviceRegion": "G0"
+			},
+			{
+				"guid": 1003,
+				"gameName": "新楓之谷",
+				"serviceCode": "610074",
+				"serviceRegion": "T9"
+			},
+			{
+				"guid": 2003,
+				"gameName": "龍之谷M",
+				"serviceCode": "611652",
+				"serviceRegion": "T0"
+			},
+			{
+				"guid": 2005,
+				"gameName": "月光雕刻師",
+				"serviceCode": "611656",
+				"serviceRegion": "T0"
+			},
+			{
+				"guid": 2006,
+				"gameName": "彈射世界",
+				"serviceCode": "611657",
+				"serviceRegion": "T0"
+			},
+			{
+				"guid": 2008,
+				"gameName": "天堂月服",
+				"serviceCode": "600035",
+				"serviceRegion": "T7"
+			},
+			{
+				"guid": 2010,
+				"gameName": "天堂免服",
+				"serviceCode": "600041",
+				"serviceRegion": "BE"
+			},
+			{
+				"guid": 2011,
+				"gameName": "天堂國際服",
+				"serviceCode": "611639",
+				"serviceRegion": "T0"
+			},
+			{
+				"guid": 2012,
+				"gameName": "曖昧瞬間",
+				"serviceCode": "611654",
+				"serviceRegion": "G0"
+			},
+			{
+				"guid": 2013,
+				"gameName": "跑跑卡丁車",
+				"serviceCode": "610096",
+				"serviceRegion": "TE"
+			},
+			{
+				"guid": 8,
+				"gameName": "罪惡童話:集體崩壞的公主",
+				"serviceCode": "611651",
+				"serviceRegion": "T0"
+			}
+		],
+		"data": null,
+		"code": 1,
+		"message": null,
+		"url": null
 	},
-	"config": {
-		"listData": {
-			"gameSelected": -1,
-			"startDate": "2022-10-24T02:27:48.976Z",
-			"startTime": {
-				"hours": 10,
-				"minutes": 27
+	"GetEventList": {
+		"listData": [
+			{
+				"eventSeq": 4,
+				"gameseq": 0,
+				"eventName": "TEETET",
+				"cookie": 0,
+				"header": 0,
+				"webtitle": "string",
+				"webDescription": "string",
+				"ogTitle": "string",
+				"ogDescription": "string",
+				"ogUrl": "string",
+				"ga": "string",
+				"gtm": "string",
+				"url": null,
+				"pageTypeSeq": 0,
+				"detail": "444567563",
+				"createUser": "test",
+				"createTime": "2022-10-21T11:16:38.59",
+				"updateUser": "test",
+				"updateTime": "2022-10-21T14:29:35.513",
+				"beginDate": "2022-01-01T00:00:00",
+				"endDate": "2022-01-01T00:00:00",
+				"flag": 0,
+				"approvedUrl": ""
 			},
-			"endDate": "2022-10-24T02:27:48.976Z",
-			"endTime": {
-				"hours": 10,
-				"minutes": 27
+			{
+				"eventSeq": 2,
+				"gameseq": 1,
+				"eventName": "1",
+				"cookie": 1,
+				"header": 1,
+				"webtitle": "1",
+				"webDescription": "1",
+				"ogTitle": "1",
+				"ogDescription": "1",
+				"ogUrl": "1",
+				"ga": "1",
+				"gtm": "1",
+				"url": null,
+				"pageTypeSeq": 1,
+				"detail": null,
+				"createUser": "12",
+				"createTime": "2022-10-17T16:18:25.537",
+				"updateUser": null,
+				"updateTime": null,
+				"beginDate": "2022-01-01T00:00:00",
+				"endDate": "2022-01-01T00:00:00",
+				"flag": 0,
+				"approvedUrl": ""
 			},
-			"eventName": "",
-			"cookie": false,
-			"header": false,
-			"title": "",
-			"description": "",
-			"fbTitle": "",
-			"fbDescription": "",
-			"fbImage": "",
-			"GA": "",
-			"GTM": "",
-			"script": ""
-		}
+			{
+				"eventSeq": 1,
+				"gameseq": 1,
+				"eventName": "2222",
+				"cookie": 1,
+				"header": 1,
+				"webtitle": "1",
+				"webDescription": "1",
+				"ogTitle": "1",
+				"ogDescription": "1",
+				"ogUrl": "1",
+				"ga": "1",
+				"gtm": "1",
+				"url": "123",
+				"pageTypeSeq": 1,
+				"detail": null,
+				"createUser": "12",
+				"createTime": "2022-10-17T16:16:27.663",
+				"updateUser": "123",
+				"updateTime": "2022-10-25T15:29:07.983",
+				"beginDate": "2022-01-01T00:00:00",
+				"endDate": "2022-01-01T00:00:00",
+				"flag": 2,
+				"approvedUrl": "https://gama-event.beanfun.com/1/main?Url123&Id=1"
+			}
+		],
+		"data": null,
+		"code": 1,
+		"message": null,
+		"url": null
+	},
+	"GetPageType": {
+		"listData": [
+			{
+				"pageTypeSeq": 1,
+				"subject": "1",
+				"directions": "1",
+				"image": "1"
+			},
+			{
+				"pageTypeSeq": 2,
+				"subject": "2",
+				"directions": "2",
+				"image": "2"
+			},
+			{
+				"pageTypeSeq": 3,
+				"subject": "3",
+				"directions": "3",
+				"image": "3"
+			}
+		],
+		"data": null,
+		"code": 1,
+		"message": null,
+		"url": null
+	},
+	"GetApprovedEvent": {
+		"listData": [
+			{
+				"approvedSeq": 1,
+				"eventSeq": 1,
+				"gameseq": 1,
+				"eventName": "2222",
+				"cookie": 1,
+				"header": 1,
+				"webtitle": "1",
+				"webDescription": "1",
+				"ogTitle": "1",
+				"ogDescription": "1",
+				"ogUrl": "1",
+				"ga": "1",
+				"gtm": "1",
+				"url": "123",
+				"pageTypeSeq": 1,
+				"detail": null,
+				"updateUser": "123",
+				"updateTime": "2022-10-25T15:29:07.983",
+				"beginDate": "2022-01-01T00:00:00",
+				"endDate": "2022-01-01T00:00:00",
+				"show": 1
+			}
+		],
+		"data": null,
+		"code": 1,
+		"message": null,
+		"url": null
 	}
 }

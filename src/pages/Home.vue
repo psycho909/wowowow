@@ -17,9 +17,9 @@ const changePage = (page) => {
             <span>活動網站製作系統</span>
         </div>
         <div class="home-btn__group">
-            <a href="javascript:;" class="home-btn__item" @click="changePage('SelectType')">新增活動</a>
+            <a href="javascript:;" class="home-btn__item" @click="changePage('PageType')">新增活動</a>
             <a href="javascript:;" class="home-btn__item" @click="changePage('EventList')">活動列表 </a>
-            <a href="javascript:;" class="home-btn__item" @click="changePage('AuditList')">已審活動 </a>
+            <a href="javascript:;" class="home-btn__item" @click="changePage('ApproveList')">已審活動 </a>
             <a href="javascript:;" class="home-btn__item" @click="changePage('Guide')">使用教學 </a>
         </div>
     </div>

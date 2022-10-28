@@ -49,8 +49,9 @@
 		width: 1000px;
 		border-right: 1px solid #5b5b5b;
 		border-left: 1px solid #5b5b5b;
-		padding: 20px 54px;
+		padding: 20px;
 		position: relative;
+		box-sizing: border-box;
 		&:before {
 			content: "";
 			width: 100%;
@@ -72,7 +73,7 @@
 	}
 	&__head {
 		display: grid;
-		grid-template-columns: 160px 200px 1fr 160px;
+		grid-template-columns: 160px 200px 1fr 250px;
 		margin-bottom: 12px;
 	}
 	&__title {
@@ -83,22 +84,26 @@
 			color: #fff;
 			text-decoration: none;
 			position: relative;
-			&:before {
-				content: "";
-				width: 0;
-				height: 0;
-				border-style: solid;
-				border-width: 8px 4px 0 4px;
-				border-color: #fff transparent transparent transparent;
-				position: absolute;
-				top: 50%;
-				right: -24px;
-				transform: translateY(-50%);
-			}
-			&.on {
+			cursor: default;
+			&.arrow {
+				cursor: pointer;
 				&:before {
-					border-width: 0 4px 8px 4px;
-					border-color: transparent transparent #ff9c00 transparent;
+					content: "";
+					width: 0;
+					height: 0;
+					border-style: solid;
+					border-width: 8px 4px 0 4px;
+					border-color: #fff transparent transparent transparent;
+					position: absolute;
+					top: 50%;
+					right: -24px;
+					transform: translateY(-50%);
+				}
+				&.on {
+					&:before {
+						border-width: 0 4px 8px 4px;
+						border-color: transparent transparent #ff9c00 transparent;
+					}
 				}
 			}
 		}
@@ -107,7 +112,7 @@
 	}
 	&__box {
 		display: grid;
-		grid-template-columns: 160px 200px 1fr 160px;
+		grid-template-columns: 160px 200px 1fr 250px;
 		align-items: flex-start;
 		text-align: center;
 		color: #fff;
@@ -145,10 +150,35 @@
 			& > a {
 				padding: 0 6px;
 			}
+			&[data-status="編輯中"] {
+				color: #fff;
+			}
+			&[data-status="審核通過"] {
+				color: #fff;
+			}
+			&[data-status="審核中"] {
+				color: #fff;
+			}
 		}
 	}
 	&__btn {
 		color: #fff;
+		padding: 6px 8px !important;
+		background-color: #ff9c00;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 14px;
+		border-radius: 6px;
+		& + .event-list__btn {
+			margin-left: 6px;
+		}
+		&-edit {
+			background-color: #0d6efd;
+		}
+		&-preview {
+			background-color: #ffc107;
+			color: rgb(31, 31, 31);
+		}
 		&-off {
 			border-radius: 100vmax;
 			background-color: #ff9c00;

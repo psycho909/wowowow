@@ -7,6 +7,7 @@ export default {
 import { storeToRefs } from "pinia";
 import components from "../Components.js";
 import { mainStore } from "../store/index";
+import { loadingShow, loadingHide } from "../Tool";
 const store = mainStore()
 const { content, MODE, page } = storeToRefs(store);
 
@@ -26,7 +27,16 @@ const cssVar = computed(() => {
         }
     }
 })
-
+const onEvent = (type) => {
+    switch (type) {
+        case "home":
+            homeLightbox.value = true;
+            break;
+        case "eventList":
+            store.setPage("EventList");
+            break;
+    }
+}
 </script>
 <template>
     <section class="page-preview">預覽模式</section>
@@ -35,4 +45,8 @@ const cssVar = computed(() => {
             <component :is="block.component" :data="block"></component>
         </template>
     </section>
+    <div class="page-control__group">
+        <a href="javascript:;" class="page-control__btn" @click="onEvent('eventList')">回列表</a>
+        <a href="javascript:;" class="page-control__btn" @click="onEvent('home')">回首頁</a>
+    </div>
 </template>

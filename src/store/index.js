@@ -1,22 +1,17 @@
 import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
+import template from "./template";
 
 export const mainStore = defineStore("main", {
 	state: () => {
 		return {
-			page: "EditPage",
+			page: "Home",
+			flag: 0,
 			MODE: "",
-			type: "A",
-			template: {
-				A: {
-					body: []
-				},
-				B: {
-					body: []
-				}
-			},
-			config: [],
-			content: {}
+			pageTypeSeq: "",
+			config: {},
+			content: {},
+			template
 		};
 	},
 	getters: {
@@ -89,11 +84,16 @@ export const mainStore = defineStore("main", {
 		setPage(data) {
 			this.page = data;
 		},
-		setType(data) {
-			this.type = data;
+		async setConfig(data) {
+			this.config = data;
+			return data;
 		},
-		setEnv(data) {
-			this.MODE = data;
+		setPageTypeSeq(data) {
+			this.pageTypeSeq = data;
+		},
+		async setFlag(data) {
+			this.setFlag = data;
+			return data;
 		},
 		async setCreateEvent(data) {
 			this.config = data;
@@ -104,7 +104,8 @@ export const mainStore = defineStore("main", {
 			return data;
 		},
 		async setData(data) {
-			this.content = data;
+			this.config = data;
+			this.content = data?.detail || {};
 			return data;
 		}
 	}

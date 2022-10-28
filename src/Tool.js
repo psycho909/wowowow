@@ -84,3 +84,11 @@ export const CheckImage = (img) => {
 	var match = regExp.test(img);
 	return match;
 };
+
+export const loadingShow = () => {
+	$("#loadingProgress").show();
+};
+
+export const loadingHide = () => {
+	$("#loadingProgress").hide();
+};

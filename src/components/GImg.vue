@@ -196,7 +196,7 @@ const closeBtn = () => {
                    @click="openPop(imgs)">
                     <picture>
                         <source media="(max-width:768px)" :srcset="imgs.mobile || imgs.pc" />
-                        <img :srcset="imgs.pc" :src="imgs.pc" alt="" :valid="validPC" />
+                        <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
                     </picture>
                     <g-lightbox v-model:showLightbox="imgs.pop.show" :style="colors[imgs.pop.style]">
                         <template #lightbox-title>{{ imgs.pop.title }}</template>
@@ -235,7 +235,7 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row g-edit__block" v-for="(img, index) in imgData.imgs">
                     <div class="g-edit__col">
-                        <g-input label="圖片網址:" v-model="img.pc" :preview="img.pc" :required="true" />
+                        <g-input label="圖片網址:" v-model="img.pc" :preview="img.pc" :required="true" :valid="validPC" />
                     </div>
                     <div class="g-edit__col">
                         <div class="input-group__label required">開啟方式:</div>

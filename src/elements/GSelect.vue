@@ -47,8 +47,13 @@ const updateValue = (event) => {
         </div>
         <div class="select-group__box" v-else>
             <select class="select-group__control" @change="updateValue" v-model="modelValue">
-                <option value="-1">請選擇</option>
-                <option :value="option.value" v-for="option in options">{{ option.text }}</option>
+                <option value="">請選擇</option>
+                <template v-for="option in options">
+                    <slot name="options" :option="option">
+                        <option :value="option.value">{{ option.text }}</option>
+                    </slot>
+
+                </template>
             </select>
             <div class="select-group__warning" v-if="!valid">請填寫正確 {{ label }}</div>
         </div>
