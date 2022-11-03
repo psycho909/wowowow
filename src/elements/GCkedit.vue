@@ -19,16 +19,24 @@ editorConfig = {
         ]
     }
 }
+const value = computed({
+    get() {
+        return props.modelValue;
+    },
+    set(value) {
+        emit("update:modelValue", value);
+    },
+});
 watchEffect(() => {
     if (props.modelValue) {
-        emit('update:modelValue', props.modelValue);
+        emit('update:modelValue', value.value);
     }
 })
 </script>
             
 <template>
     <div class="g-ckedit">
-        <ckeditor :editor="editor" :config="editorConfig" v-model="modelValue"></ckeditor>
+        <ckeditor :editor="editor" :config="editorConfig" v-model="value"></ckeditor>
     </div>
 </template>
             

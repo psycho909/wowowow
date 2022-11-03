@@ -12,7 +12,11 @@ import axios from "axios";
 import { mainStore } from "./store/index";
 const store = mainStore()
 const { page } = storeToRefs(store);
-
+onMounted(() => {
+	axios.get("http://localhost:3000/data/").then((res) => {
+		store.setSave(res.data.listData)
+	})
+})
 </script>
     
 <template>

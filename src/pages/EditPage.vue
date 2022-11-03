@@ -16,7 +16,6 @@ import { UpdateEventContent, ApproveEvent } from "../api";
 
 const store = mainStore()
 const { content } = storeToRefs(store);
-const MODE = import.meta.env.MODE;
 let saveLightbox = ref(false)
 let auditLightbox = ref(false)
 let homeLightbox = ref(false)
@@ -24,6 +23,7 @@ let message = ref("");
 let messageLightbox = ref(false);
 
 onMounted(() => {
+    console.log(store.content)
     if (!store.content) {
         store.setData(store.template[store.pageTypeSeq]);
     }
