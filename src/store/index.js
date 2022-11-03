@@ -5,7 +5,7 @@ import template from "./template";
 export const mainStore = defineStore("main", {
 	state: () => {
 		return {
-			page: "EditPage",
+			page: "CreateEvent",
 			flag: 0,
 			MODE: "",
 			pageTypeSeq: "",

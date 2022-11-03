@@ -15,7 +15,7 @@ const store = mainStore()
 const { content, flag } = storeToRefs(store);
 let createLightbox = ref(false)
 let loading = ref(true)
-let gameOptions = ref([])
+let gameOptions = ref([{ guid: 1, gameName: "A" }, { guid: 2, gameName: "BN" }])
 let valid = reactive({
     gameSelected: true,
     beginDate: true,
@@ -55,60 +55,60 @@ let message = ref("");
 let messageLightbox = ref(false);
 
 onMounted(() => {
-    loadingShow()
-    GetGames(1).then((res) => {
-        let { code, message, url, listData } = res.data;
-        if (code != 1) {
-            return;
-        }
-        loadingHide()
-        gameOptions.value = listData;
-        loading.value = false;
-        return res;
-    }).then((res) => {
-        // 狀態 (0=編輯中/1=審核中/2=審核通過/3=刪除/4=審核不過)
-        if (store.config) {
-            eventConfig = { ...eventConfig, ...store.edit };
-            store.setConfig({});
-            return;
-        }
-        eventConfig.pageTypeSeq = store.pageTypeSeq;
-    })
+    // loadingShow()
+    // GetGames(1).then((res) => {
+    //     let { code, message, url, listData } = res.data;
+    //     if (code != 1) {
+    //         return;
+    //     }
+    //     loadingHide()
+    //     gameOptions.value = listData;
+    //     loading.value = false;
+    //     return res;
+    // }).then((res) => {
+    //     // 狀態 (0=編輯中/1=審核中/2=審核通過/3=刪除/4=審核不過)
+    //     if (store.config) {
+    //         eventConfig = { ...eventConfig, ...store.edit };
+    //         store.setConfig({});
+    //         return;
+    //     }
+    //     eventConfig.pageTypeSeq = store.pageTypeSeq;
+    // })
 })
 const onSubmit = () => {
     var start, end, data;
-    if (eventConfig.beginDate && eventConfig.beginTime) {
-        start = +new Date(`${eventConfig.beginDate.getFullYear()}/${eventConfig.beginDate.getMonth() + 1}/${eventConfig.beginDate.getDate()} ${eventConfig.beginTime.hours}:${eventConfig.beginTime.minutes}`);
-        valid.beginDate = true;
-    } else {
-        valid.beginDate = false;
-    }
-    if (eventConfig.endDate && eventConfig.endTime) {
-        end = +new Date(`${eventConfig.endDate.getFullYear()}/${eventConfig.endDate.getMonth() + 1}/${eventConfig.endDate.getDate()} ${eventConfig.endTime.hours}:${eventConfig.endTime.minutes}`);
-        valid.endDate = true;
-    } else {
-        valid.endDate = false;
-    }
+    // if (eventConfig.beginDate && eventConfig.beginTime) {
+    //     start = +new Date(`${eventConfig.beginDate.getFullYear()}/${eventConfig.beginDate.getMonth() + 1}/${eventConfig.beginDate.getDate()} ${eventConfig.beginTime.hours}:${eventConfig.beginTime.minutes}`);
+    //     valid.beginDate = true;
+    // } else {
+    //     valid.beginDate = false;
+    // }
+    // if (eventConfig.endDate && eventConfig.endTime) {
+    //     end = +new Date(`${eventConfig.endDate.getFullYear()}/${eventConfig.endDate.getMonth() + 1}/${eventConfig.endDate.getDate()} ${eventConfig.endTime.hours}:${eventConfig.endTime.minutes}`);
+    //     valid.endDate = true;
+    // } else {
+    //     valid.endDate = false;
+    // }
 
-    if ((start && end) && (end >= start)) {
-        valid.beginDate = false;
-        valid.endDate = false;
-    } else {
-        valid.beginDate = true;
-        valid.endDate = true;
-    }
+    // if ((start && end) && (end >= start)) {
+    //     valid.beginDate = false;
+    //     valid.endDate = false;
+    // } else {
+    //     valid.beginDate = true;
+    //     valid.endDate = true;
+    // }
 
-    if (eventConfig.gameseq < 0 || !eventConfig.gameseq) {
-        valid.gameSelected = false;
-    } else {
-        valid.gameSelected = true;
-    }
+    // if (eventConfig.gameseq < 0 || !eventConfig.gameseq) {
+    //     valid.gameSelected = false;
+    // } else {
+    //     valid.gameSelected = true;
+    // }
 
-    if (eventConfig.eventName.length > 0) {
-        valid.eventName = true;
-    } else {
-        valid.eventName = false;
-    }
+    // if (eventConfig.eventName.length > 0) {
+    //     valid.eventName = true;
+    // } else {
+    //     valid.eventName = false;
+    // }
     var validCheck = Object.keys(valid).every(function (v, i) {
         return valid[v] == true;
     })
@@ -116,6 +116,7 @@ const onSubmit = () => {
         data = { ...eventConfig };
         data.beginDate = new Date(`${data.beginDate.getFullYear()}/${data.beginDate.getMonth() + 1}/${data.beginDate.getDate()} ${data.beginTime.hours}:${data.beginTime.minutes}`);
         data.endDate = new Date(`${data.endDate.getFullYear()}/${data.endDate.getMonth() + 1}/${data.endDate.getDate()} ${data.endTime.hours}:${data.endTime.minutes}`);
+        console.log(data)
         // axios.post("http://localhost:3000/config/", {
         //     listData: eventConfig
         // }).then((res) => {

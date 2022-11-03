@@ -12,7 +12,7 @@ const radioValue = computed({
 });
 
 const updateValue = (event) => {
-    emit("update:modelValue", radioValue.value)
+    emit("update:modelValue", event.target.value)
 }
 </script>
 <template>
