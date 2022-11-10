@@ -1,7 +1,8 @@
 <script>
 export default {
     name: "GSlide",
-    label: "輪播物件"
+    label: "輪播圖",
+    order: 4
 }
 </script>
 <script setup>
@@ -10,15 +11,16 @@ import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GSwiper from '../elements/GSwiper.vue';
 import { mainStore } from "../store/index";
+import { CheckImage, CheckUrl } from "../Tool";
 const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
-const { content, MODE, page } = storeToRefs(store);
+const { content, page } = storeToRefs(store);
 let slideSetting = ref({})
 let slideData = reactive({
     num: 1, mt: 0, mb: 54,
     slides: [{
-        pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true
+        pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
     }],
 })
 watchEffect(() => {
@@ -28,18 +30,45 @@ watchEffect(() => {
         showEdit.value = false;
     }
     if (props.data) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            slideData[v] = props.data.content[v];
-            slideSetting.value[v] = props.data.content[v];
-        })
+        if (Object.keys(props.data.content).length > 0) {
+            let _temp = { ...props.data.content };
+            _temp.slides = [...props.data.content.slides];
+            _temp.slides.forEach((v, i) => {
+                _temp.slides[i] = { ...v };
+            })
+            let _temp2 = { ...props.data.content };
+            _temp2.slides = [...props.data.content.slides];
+            _temp2.slides.forEach((v, i) => {
+                _temp2.slides[i] = { ...v };
+            })
+            Object.keys(_temp).forEach((v, i) => {
+                slideData[v] = _temp[v];
+            })
+            Object.keys(_temp2).forEach((v, i) => {
+                slideSetting.value[v] = _temp2[v];
+            })
+        }
+
     }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            slideData[v] = props.data.content[v];
-            slideSetting.value[v] = props.data.content[v];
+        let _temp = { ...props.data.content };
+        _temp.slides = [...props.data.content.slides];
+        _temp.slides.forEach((v, i) => {
+            _temp.slides[i] = { ...v };
+        })
+        let _temp2 = { ...props.data.content };
+        _temp2.slides = [...props.data.content.slides];
+        _temp2.slides.forEach((v, i) => {
+            _temp2.slides[i] = { ...v };
+        })
+        Object.keys(_temp).forEach((v, i) => {
+            slideData[v] = _temp[v];
+        })
+        Object.keys(_temp2).forEach((v, i) => {
+            slideSetting.value[v] = _temp2[v];
         })
     }
 })
@@ -49,6 +78,10 @@ const cssVar = computed(() => {
         "--mt": props.data.content.mt,
         "--mb": props.data.content.mb,
     }
+})
+
+const status = computed(() => {
+    return store.page == "EditPage" ? false : true;
 })
 
 const openPop = (data) => {
@@ -62,12 +95,12 @@ const onChange = (e) => {
 const addInsertMenu = (index) => {
     if (index == slideData.slides.length) {
         slideData.slides.push({
-            pc: "", mobile: "", url: "", attribute: false, validPC: true
+            pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
         })
         return;
     }
     slideData.slides = [...slideData.slides.slice(0, index + 1), {
-        pc: "", mobile: "", url: "", attribute: false, validPC: true
+        pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
     }, ...slideData.slides.slice(index + 1)];
 }
 
@@ -99,17 +132,43 @@ const onDown = (index) => {
     slideData.slides.splice(index + 1, 0, _temp);
 }
 
-const onSubmit = () => {
+const onSubmit = async () => {
     let data = {}
-    slideData.slides.forEach((v, i) => {
-        if (v.pc.length > 0) {
-            v.validPC = true;
+
+    for (let i = 0; i < slideData.slides.length; i++) {
+        if (slideData.slides[i].pc.length == 0) {
+            slideData.slides[i].validPC = false;
         } else {
-            v.validPC = false;
+            if (!await CheckImage(slideData.slides[i].pc)) {
+                slideData.slides[i].validPC = false;
+            } else {
+                slideData.slides[i].validPC = true;
+            }
         }
-    })
+
+        if (slideData.slides[i].mobile.length > 0) {
+            if (!await CheckImage(slideData.slides[i].mobile)) {
+                slideData.slides[i].validMobile = false;
+            } else {
+                slideData.slides[i].validMobile = true;
+            }
+        } else {
+            slideData.slides[i].validMobile = true;
+        }
+
+        if (slideData.slides[i].url.length > 0) {
+            if (!CheckUrl(slideData.slides[i].url)) {
+                slideData.slides[i].validUrl = false;
+            } else {
+                slideData.slides[i].validUrl = true;
+            }
+        } else {
+            slideData.slides[i].validUrl = true;
+        }
+    }
+
     var validCheck = slideData.slides.every(function (v, i) {
-        return v.validPC == true;
+        return v.validPC == true && v.validMobile == true && v.validUrl == true;
     })
     if (validCheck) {
         data = { ...slideData }
@@ -126,7 +185,7 @@ const onReset = () => {
         slideData = {
             num: 1, mt: 0, mb: 54,
             slides: [{
-                pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true
+                pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
             }],
         }
     }
@@ -145,11 +204,11 @@ const closeBtn = () => {
         })
     } else {
         slideData = {
-            num: 1,
+            num: 1, mt: 0, mb: 54,
             slides: [{
-                pc: "", mobile: "", open: false, url: "", attribute: false
-            }],
-        }
+                pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
+            }]
+        };
     }
     showEdit.value = false;
     props.data.update = false;
@@ -158,7 +217,7 @@ const closeBtn = () => {
 <template>
     <div class="g-slide" :style="cssVar">
         <div class="g-slide-container" :data-num="slideSetting.num">
-            <g-swiper :data="slideSetting" />
+            <g-swiper :data="slideSetting" :status="status" />
             <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
@@ -186,7 +245,8 @@ const closeBtn = () => {
                         </div>
                         <div class="g-edit__group">
                             <div class="g-edit__col">
-                                <g-input label="圖片網址:" v-model="slide.pc" :valid="slide.validPC" :required="true" />
+                                <g-input label="圖片網址:" v-model="slide.pc" :valid="slide.validPC" :preview="slide.pc"
+                                         :required="true" />
                             </div>
                             <div class="g-edit__col">
                                 <div class="input-group__label required">開啟方式:</div>
@@ -195,7 +255,7 @@ const closeBtn = () => {
                             </div>
                             <template v-if="slide.open == 'true'">
                                 <div class="g-edit__col">
-                                    <g-input label="URL" v-model="slide.url" />
+                                    <g-input label="連結" v-model="slide.url" :valid="slide.validUrl" />
                                 </div>
                                 <div class="g-edit__col">
                                     <div class="input-group__label required">另開視窗:</div>
@@ -206,17 +266,18 @@ const closeBtn = () => {
                                 </div>
                             </template>
                             <div class="g-edit__col">
-                                <g-input label="手機版圖片網址" v-model="slide.mobile" />
+                                <g-input label="手機版圖片網址" v-model="slide.mobile" :preview="slide.mobile"
+                                         :valid="slide.validMobile" />
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="間距上:" v-model="slideData.mt" />
+                        <g-input label="間距上:" type="number" v-model="slideData.mt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="間距下:" v-model="slideData.mb" />
+                        <g-input label="間距下:" type="number" v-model="slideData.mb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">
