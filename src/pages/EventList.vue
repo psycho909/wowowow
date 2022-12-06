@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUpdated } from "vue";
+import { mainStore } from "../store/index";
 import GLightbox from "../components/GLightbox.vue";
 import GDate from "../elements/GDate.vue";
 import GInput from "../elements/GInput.vue";
@@ -8,9 +8,9 @@ import GHome from "../components/GHome.vue";
 import { loadingShow, loadingHide } from "../Tool";
 import { GetGames, GetEventList, ApproveEvent } from "../api";
 
+const store = mainStore()
 let approveLightbox = ref(false)
 let approvedLightbox = ref(false)
-let loading = ref(true)
 let eventFilter = reactive({
     eventName: "",
     beginDate: ref(""),
@@ -24,24 +24,16 @@ let gameSeqOptions = ref([])
 let flagOptions = ref([{ value: 0, text: "編輯中" }, { value: "1", text: "審核中" }, { value: "2", text: "審核通過" }, { value: "3", text: "刪除" }])
 let eventData = ref([])
 let totalPage = ref(0)
+let total = ref(5)
 let currentPage = ref(1)
-let approveTemp = ref({})
-let message = ref("");
+let approveTemp = ref({});
+let messageText = ref("");
 let messageLightbox = ref(false);
+let messageAccess = ref(0);
 
-onMounted(async () => {
-    await nextTick()
-    loadingShow()
-    GetGames(1).then((res) => {
-        let { code, message, url, listData } = res.data;
-        if (code != 1) {
-            return;
-        }
-        loadingHide()
-        gameSeqOptions.value = listData;
-        loading.value = false;
-    })
-})
+if (window.sessionStorage.getItem("state")) {
+    window.sessionStorage.removeItem("state")
+}
 
 const prev = () => {
     let temp = currentPage.value;
@@ -61,36 +53,50 @@ const next = () => {
     currentPage.value = temp;
 }
 
+const eventDataSlice = computed(() => {
+    return eventData.value.slice(currentPage.value * total.value - total.value, currentPage.value * total.value);
+})
+
 const onSort = (type) => {
     if (type == eventFilter.sort) {
-        return;
+        eventFilter.sort = "";
+    } else {
+        eventFilter.sort = type;
     }
-    eventFilter.sort = type;
-    loadingShow()
-    let data = { ...eventFilter };
-    let { eventName, beginDate, endDate, gameseq, flag, sort } = data;
-    GetEventList(1, { eventName, beginDate, endDate, gameseq, flag, sort } = data).then((res) => {
-        let { code, message, url, listData } = res.data;
-        if (code != 1) {
-            return;
-        }
-        loadingHide()
-        eventData.value = listData;
-        totalPage.value = Math.ceil(listData.length / 30);
-    })
+    onSearch();
 }
 const onSearch = () => {
     loadingShow()
     let data = { ...eventFilter };
-    let { eventName, beginDate, endDate, gameseq, flag, sort } = data;
-    GetEventList(1, { eventName, beginDate, endDate, gameseq, flag, sort } = data).then((res) => {
+    GetEventList(store.otp, data).then((res) => {
         let { code, message, url, listData } = res.data;
         if (code != 1) {
+            messageText.value = message;
+            messageLightbox.value = true;
             return;
         }
+        eventData.value = listData || [];
+        messageAccess.value = message;
+        if (store.save) {
+            currentPage.value = store.eventListCurrent;
+            if (store.eventListData) {
+                totalPage.value = Math.ceil(store.eventListData.length / total.value);
+            } else {
+                totalPage.value = 0;
+            }
+        } else {
+            currentPage.value = 1;
+            if (eventData.value.length) {
+                totalPage.value = Math.ceil(eventData.value.length / total.value);
+            } else {
+                totalPage.value = 0;
+            }
+
+        }
+        store.setEventListFilter(data, currentPage.value, listData, message);
+        store.setSave(false);
+    }).finally(() => {
         loadingHide()
-        eventData.value = listData;
-        totalPage.value = Math.ceil(listData.length / 30);
     })
 }
 
@@ -131,11 +137,18 @@ const dateFormat = (date) => {
     return `${dateTime.getFullYear()}/${dateTime.getMonth() + 1}/${dateTime.getDate()}`
 }
 
-const onEditEvent = (eventSeq) => {
-    let data = {}
-    data = eventData.value.filter((v, i) => {
-        return v.eventSeq == eventSeq
-    })
+const onSaveTemp = () => {
+    store.setEventListFilter({ ...eventFilter }, currentPage.value, eventData.value, messageAccess.value);
+}
+
+const onEditEvent = (event) => {
+    let data = { ...event };
+    data.beginTime = {
+        hours: "", minutes: ""
+    };
+    data.endTime = {
+        hours: "", minutes: ""
+    };
     data.beginTime.hours = new Date(data.beginDate).getHours()
     data.beginTime.minutes = new Date(data.beginDate).getMinutes()
     data.beginTime.hours = new Date(data.beginDate).getHours()
@@ -146,15 +159,20 @@ const onEditEvent = (eventSeq) => {
     data.endTime.minutes = new Date(data.endDate).getMinutes()
 
     store.setConfig(data).then((res) => {
+        store.setStatus("edit");
         store.setPage("CreateEvent");
+        onSaveTemp();
     });
 
 }
-const onEditDetail = (eventSeq) => {
-    let data = {};
-    data = eventData.value.filter((v, i) => {
-        return v.eventSeq == eventSeq
-    })
+const onEditDetail = (event) => {
+    let data = { ...event };
+    data.beginTime = {
+        hours: "", minutes: ""
+    };
+    data.endTime = {
+        hours: "", minutes: ""
+    };
     data.beginTime.hours = new Date(data.beginDate).getHours()
     data.beginTime.minutes = new Date(data.beginDate).getMinutes()
     data.beginTime.hours = new Date(data.beginDate).getHours()
@@ -165,12 +183,21 @@ const onEditDetail = (eventSeq) => {
     data.endTime.minutes = new Date(data.endDate).getMinutes()
 
     store.setData(data).then((res) => {
+        store.setStatus("edit");
         store.setPage("EditPage");
+        onSaveTemp();
     });
 }
-const onPreview = (data) => {
-    store.setData(data).then((res) => {
-        store.setPage("Preview")
+const onPreview = (event) => {
+    if (event.detail == null) {
+        messageText.value = "請先編輯內容";
+        messageLightbox.value = true;
+        return;
+    }
+    store.setData(event).then((res) => {
+        store.setStorageState(store.$state, "EventList");
+        store.setPage("Preview");
+        onSaveTemp();
     })
 }
 
@@ -184,33 +211,144 @@ const onApprove = (event, type) => {
     }
 }
 
-const onSubmit = (ref, type) => {
-    if (type == '審核') {
-        ApproveEvent(1, approveTemp).then((res) => {
-            let { code, message, url, listData } = res.data;
-            if (code != 1) {
-                return;
-            }
-            ref["value"] = false;
-        })
-    }
+const onSubmit = (type) => {
+    var data = { ...approveTemp.value }
+    Object.keys(data).forEach((v, i) => {
+        if (data[v] == null) {
+            data[v] = "";
+        }
+    })
+    loadingShow();
     if (type == '送審') {
-        ApproveEvent(1, approveTemp).then((res) => {
+        data.flag = 1;
+        ApproveEvent(store.otp, data).then((res) => {
             let { code, message, url, listData } = res.data;
             if (code != 1) {
-                return;
+                messageText.value = message;
+                messageLightbox.value = true;
+                return code;
             }
-            ref["value"] = false;
+            eventData.value.forEach((v, i) => {
+                if (v.eventSeq == data.eventSeq) {
+                    v.flag = 1;
+                }
+            })
+            return code;
+        }).then((res) => {
+            if (res == 1) {
+                messageText.value = "已送審成功";
+                messageLightbox.value = true;
+                store.setSave(true);
+                onSaveTemp();
+                onSearch();
+            }
+        }).finally(() => {
+            approveLightbox.value = false;
+            loadingHide()
         })
     }
+    if (type == '審核通過') {
+        data.flag = 2;
+        ApproveEvent(store.otp, data).then((res) => {
+            let { code, message, url, listData } = res.data;
+            if (code != 1) {
+                messageText.value = message;
+                messageLightbox.value = true;
+                return code;
+            }
+            eventData.value.forEach((v, i) => {
+                if (v.eventSeq == data.eventSeq) {
+                    v.flag = 2;
+                }
+            })
 
-
+            return code;
+        }).then((res) => {
+            if (res == 1) {
+                messageText.value = "已審核成功";
+                messageLightbox.value = true;
+                store.setSave(true);
+                onSaveTemp();
+                onSearch();
+            }
+        }).finally(() => {
+            approvedLightbox.value = false;
+            loadingHide()
+        })
+    }
+    if (type == '審核不通過') {
+        data.flag = 4;
+        ApproveEvent(store.otp, data).then((res) => {
+            let { code, message, url, listData } = res.data;
+            if (code != 1) {
+                messageText.value = message;
+                messageLightbox.value = true;
+                return code;
+            }
+            eventData.value.forEach((v, i) => {
+                if (v.eventSeq == data.eventSeq) {
+                    v.flag = 2;
+                }
+            })
+            return code;
+        }).then((res) => {
+            if (res == 1) {
+                messageText.value = "審核不通過";
+                messageLightbox.value = true;
+                store.setSave(true);
+                onSaveTemp();
+                onSearch();
+            }
+        }).finally(() => {
+            approvedLightbox.value = false;
+            loadingHide()
+        })
+    }
 }
 
-const onCancel = (ref) => {
-    ref["value"] = false;
+const onCancel = (type) => {
+    if (type == "送審") {
+        approvedLightbox.value = false;
+    }
+    if (type == "審核") {
+        approvedLightbox.value = false;
+    }
 }
 
+
+onMounted(async () => {
+    await nextTick()
+    loadingShow()
+    GetGames(store.otp).then((res) => {
+        let { code, message, url, listData } = res.data;
+        if (code != 1) {
+            return;
+        }
+        gameSeqOptions.value = listData;
+        if (Object.keys(store.eventListFilter).length) {
+            Object.keys(eventFilter).forEach((v, i) => {
+                eventFilter[v] = store.eventListFilter[v];
+            })
+            if (!store.save) {
+                eventData.value = store.eventListData || [];
+                currentPage.value = store.eventListCurrent;
+                messageAccess.value = store.eventListMessage;
+                if (store.eventListData) {
+                    totalPage.value = Math.ceil(store.eventListData.length / total.value);
+                } else {
+                    totalPage.value = 0;
+                }
+
+            } else {
+                onSearch();
+            }
+        } else {
+            onSearch();
+        }
+    }).finally(() => {
+        loadingHide()
+    })
+})
 </script>
 <template>
     <div class="container">
@@ -266,14 +404,11 @@ const onCancel = (ref) => {
                 </div>
             </div>
             <div class="event-list__body">
-                <div class="event-list__box" v-for="event in eventData">
+                <div class="event-list__box" v-for="event in eventDataSlice">
                     <div class="event-list__item">{{ gameSeqName(event.gameseq)[0]?.gameName || "" }}</div>
                     <div class="event-list__item">
                         <div class="event-list__date">{{ dateFormat(event.beginDate) }}-{{ dateFormat(event.endDate) }}
                         </div>
-                        <div
-                             :class="[eventStatus(event.beginDate, event.endDate) == '已上線' ? 'event-list__date-online' : 'event-list__date-end']">
-                            {{ eventStatus(event.beginDate, event.endDate) }}</div>
                     </div>
                     <div class="event-list__item"><a
                            :href="[event.flag == 2 && event.approvedUrl ? event.approvedUrl : 'javascript:;']"
@@ -286,22 +421,26 @@ const onCancel = (ref) => {
                             }}</div>
                             <div class="event-list__status-item">
                                 <a href="javascript:;" class="event-list__btn event-list__btn-edit"
-                                   v-if="event.flag == 0 || event.flag == 2"
-                                   @click="onEditEvent(event.eventSeq)">編輯活動</a>
+                                   v-if="(event.flag != 1)"
+                                   @click="onEditEvent(event)">編輯活動</a>
                                 <a href="javascript:;" class="event-list__btn event-list__btn-edit"
-                                   v-if="event.flag == 0 || event.flag == 2"
-                                   @click="onEditDetail(event.eventSeq)">編輯內容</a>
+                                   v-if="(event.flag != 1)"
+                                   @click="onEditDetail(event)">編輯內容</a>
                                 <a href="javascript:;" class="event-list__btn event-list__btn-preview"
-                                   @click="onPreview(event.detail)">預覽</a>
+                                   @click="onPreview(event)">預覽</a>
                                 <a href="javascript:;" class="event-list__btn" v-if="event.flag == 0"
                                    @click="onApprove(event, '送審')">送審</a>
-                                <a href="javascript:;" class="event-list__btn" v-if="event.flag == 2"
+                                <a href="javascript:;" class="event-list__btn"
+                                   v-if="(event.flag == 1 && messageAccess == 1)"
                                    @click="onApprove(event, '審核')">審核</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="event-list__content" v-else>
+            <div class="event-list__null">目前沒有資料</div>
         </div>
         <div class="pagination__box" v-if="eventData.length > 0">
             <a href="javascript:;" class="btn btn__prev" :class="[currentPage == 1 ? 'disabled' : '']"
@@ -319,11 +458,11 @@ const onCancel = (ref) => {
                 <div>是否確定送審活動:</div>
             </template>
             <template #lightbox-content>
-                <div>活動名稱</div>
+                <div>活動名稱【{{ approveTemp.eventName }}】</div>
             </template>
             <template #lightbox-btn>
-                <a href="javascript:;" class="btn btn__submit" @click="onSubmit(approveLightbox, '送審')">確認</a>
-                <a href="javascript:;" class="btn btn__reset" @click="onCancel(approveLightbox)">取消</a>
+                <a href="javascript:;" class="btn btn__submit" @click="onSubmit('送審')">確認</a>
+                <a href="javascript:;" class="btn btn__reset" @click="onCancel('送審')">取消</a>
             </template>
         </g-lightbox>
         <g-lightbox v-model:showLightbox="approvedLightbox">
@@ -331,16 +470,16 @@ const onCancel = (ref) => {
                 <div>審核活動:</div>
             </template>
             <template #lightbox-content>
-                <div>活動名稱</div>
+                <div>活動名稱【{{ approveTemp.eventName }}】</div>
             </template>
             <template #lightbox-btn>
-                <a href="javascript:;" class="btn btn__submit" @click="onSubmit(approvedLightbox, '審核')">確認</a>
-                <a href="javascript:;" class="btn btn__reset" @click="onCancel(approvedLightbox)">取消</a>
+                <a href="javascript:;" class="btn btn__submit" @click="onSubmit('審核通過')">審核通過</a>
+                <a href="javascript:;" class="btn btn__unapprove" @click="onSubmit('審核不通過')">審核不通過</a>
             </template>
         </g-lightbox>
         <g-lightbox v-model:showLightbox="messageLightbox">
             <template #lightbox-content>
-                <div>{{ message }}</div>
+                <div>{{ messageText }}</div>
             </template>
         </g-lightbox>
     </div>

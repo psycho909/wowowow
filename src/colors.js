@@ -1,22 +1,22 @@
 export let style1 = [
-	{ value: "red1", text: "紅" },
-	{ value: "orange1", text: "橘" },
-	{ value: "yellow1", text: "黃" },
-	{ value: "green1", text: "綠" },
-	{ value: "blue1", text: "藍" },
-	{ value: "indigo1", text: "靛" },
-	{ value: "purple1", text: "紫" },
-	{ value: "grayscale1", text: "黑白灰" }
+	{ value: "red1", text: "紅配色" },
+	{ value: "orange1", text: "橘配色" },
+	{ value: "yellow1", text: "黃配色" },
+	{ value: "green1", text: "綠配色" },
+	{ value: "blue1", text: "藍配色" },
+	{ value: "indigo1", text: "靛配色" },
+	{ value: "purple1", text: "紫配色" },
+	{ value: "grayscale1", text: "黑白灰配色" }
 ];
 export let style2 = [
-	{ value: "red2", text: "紅" },
-	{ value: "orange2", text: "橘" },
-	{ value: "yellow2", text: "黃" },
-	{ value: "green2", text: "綠" },
-	{ value: "blue2", text: "藍" },
-	{ value: "indigo2", text: "靛" },
-	{ value: "purple2", text: "紫" },
-	{ value: "grayscale2", text: "黑白灰" }
+	{ value: "red2", text: "紅底" },
+	{ value: "orange2", text: "橘底" },
+	{ value: "yellow2", text: "黃底" },
+	{ value: "green2", text: "綠底" },
+	{ value: "blue2", text: "藍底" },
+	{ value: "indigo2", text: "靛底" },
+	{ value: "purple2", text: "紫底" },
+	{ value: "grayscale2", text: "黑灰底" }
 ];
 
 let red1 = {
@@ -48,7 +48,7 @@ let orange1 = {
 	"--hoverText": "#fff"
 };
 let orange2 = {
-	"--text": "#4A4747",
+	"--text": "#fff",
 	"--bg": "rgba(236,141,49,0.9)",
 	"--link": "#fff",
 	"--btnBg": "#fff",
@@ -85,7 +85,7 @@ let green1 = {
 	"--hoverText": "#fff"
 };
 let green2 = {
-	"--text": "#2D2C2C",
+	"--text": "#fff",
 	"--bg": "rgba(108,192,92,0.9)",
 	"--link": "#fff",
 	"--btnBg": "#fff",
@@ -104,7 +104,7 @@ let blue1 = {
 	"--hoverText": "#fff"
 };
 let blue2 = {
-	"--text": "#2D2C2C",
+	"--text": "#fff",
 	"--bg": "rgba(92,174,192,0.9)",
 	"--link": "#fff",
 	"--btnBg": "#fff",
@@ -122,7 +122,7 @@ let indigo1 = {
 	"--hoverText": "#fff"
 };
 let indigo2 = {
-	"--text": "#2D2C2C",
+	"--text": "#fff",
 	"--bg": "rgba(108,145,180,0.9)",
 	"--link": "#fff",
 	"--btnBg": "#fff",

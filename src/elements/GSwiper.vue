@@ -1,10 +1,13 @@
 <script setup>
 // Import Swiper Vue.js components
-import { Navigation, Pagination } from 'swiper';
+import { Navigation, Pagination, Autoplay } from 'swiper';
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/vue';
-const props = defineProps(["data", "status"])
+import { mainStore } from "../store/index";
+const props = defineProps(["data", "status"]);
+const store = mainStore()
 let breakpoints = ref({})
+let autoplay = ref({});
 breakpoints.value = {
     769: {
         slidesPerView: Number(props.data.num),
@@ -13,33 +16,27 @@ breakpoints.value = {
         centeredSlides: false
     }
 }
-watchEffect(() => {
-    if (props.data.num) {
-        breakpoints.value = {
-            769: {
-                slidesPerView: Number(props.data.num),
-                slidesPerGroup: Number(props.data.num),
-                spaceBetween: 16,
-                centeredSlides: false
-            }
-        }
-    }
-})
 
-const modules = [Navigation, Pagination];
+if (props.data?.autoplay?.open) {
+    autoplay.value = {
+        delay: Number(props.data.autoplay.delay) * 1000
+    }
+} else {
+    autoplay.value = false;
+}
+const modules = [Navigation, Pagination, Autoplay];
 const onSwiper = (swiper) => {
     if (!props.status) {
         swiper.disable()
     }
 };
-
 </script>
 <template>
     <div class="g-swiper">
         <swiper
 
                 :modules="modules"
-                :slides-per-view="3"
+                :slides-per-view="1"
                 :slidesPerGroup="1"
                 :space-between="0"
                 :breakpoints="breakpoints"
@@ -48,15 +45,27 @@ const onSwiper = (swiper) => {
                 :loop="true"
                 navigation
                 :pagination="{ clickable: true }"
+                :autoplay="autoplay"
                 @swiper="onSwiper">
             <swiper-slide v-for="slide in data.slides">
-                <a class="g-swiper__a" :href="[slide.url ? '' : 'javascript:;']"
-                   :target="[slide.open && slide.url ? '_target' : '_self']">
-                    <picture>
-                        <source media="(max-width:768px)" :srcset="slide.mb || slide.pc" />
-                        <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
-                    </picture>
-                </a>
+                <template v-if="store.status == 'edit'">
+                    <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
+                       :target="[slide.attribute ? '' : '']">
+                        <picture>
+                            <source media="(max-width:768px)" :srcset="slide.mb || slide.pc" />
+                            <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
+                        </picture>
+                    </a>
+                </template>
+                <template v-if="store.status != 'edit'">
+                    <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
+                       :target="[slide.attribute ? '_blank' : '_self']">
+                        <picture>
+                            <source media="(max-width:768px)" :srcset="slide.mb || slide.pc" />
+                            <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
+                        </picture>
+                    </a>
+                </template>
             </swiper-slide>
         </swiper>
     </div>

@@ -2,6 +2,7 @@
 import { mainStore } from "../store/index";
 const store = mainStore()
 const onBack = () => {
+    store.setInit();
     store.setPage("Home")
 }
 </script>

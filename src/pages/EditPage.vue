@@ -8,6 +8,7 @@ import { storeToRefs } from "pinia";
 import components from "../Components.js";
 import GMenu from "../components/GMenu.vue";
 import { mainStore } from "../store/index";
+import { templateStore } from "../store/template";
 import GLightbox from "../components/GLightbox.vue";
 import { InsertCookie, InsertScript, InsertHeader, InsertGA, InsertGTM } from "../Tool";
 import axios from "axios";
@@ -15,23 +16,26 @@ import { loadingShow, loadingHide } from "../Tool";
 import { UpdateEventContent, ApproveEvent } from "../api";
 
 const store = mainStore()
+const t = templateStore()
 const { content } = storeToRefs(store);
-let saveLightbox = ref(false)
-let auditLightbox = ref(false)
-let homeLightbox = ref(false)
-let message = ref("");
+let saveLightbox = ref(false);
+let approveLightbox = ref(false);
+let approveEndLightbox = ref(false);
+let homeLightbox = ref(false);
+let eventListLightbox = ref(false);
+let messageText = ref("");
 let messageLightbox = ref(false);
 
 onMounted(() => {
-    console.log(store.content)
-    if (!store.content) {
-        store.setData(store.template[store.pageTypeSeq]);
+    if (store.content.length == 0 && (store.config.flag == 0 || store.config.flag == 4)) {
+        store.setContent(t.template[store.config.pageTypeSeq].content);
     }
+    document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
 })
 
 const cssVar = computed(() => {
-    if (content.value.body) {
-        let bg = content.value.body.filter((c, i) => {
+    if (content.value.length > 0) {
+        let bg = content.value.filter((c, i) => {
             return c.component == "GBg"
         })
         return {
@@ -52,65 +56,140 @@ const menu = computed(() => {
             title: m,
             label: components[m].label,
             limit: components[m].limit || 0,
-            status: true
+            status: true,
+            order: components[m].order
         }
     });
 })
 
 const onEvent = (type) => {
+    var data = store.config;
+    data.detail = JSON.stringify(store.content);
+    Object.keys(data).forEach((v, i) => {
+        if (data[v] == null) {
+            data[v] = "";
+        }
+    })
     switch (type) {
         case "home":
             homeLightbox.value = true;
             break;
-        case "submit":
-            auditLightbox.value = true;
+        case "approve":
+            approveLightbox.value = true;
             break;
         case "preview":
+            store.setStorageState(store.$state, "EditPage");
             store.setPage("Preview");
             break;
         case "save":
-            UpdateEventContent(1, store.content).then((res) => {
-                return store.setSave(store.content)
+            loadingShow();
+            UpdateEventContent(store.otp, data).then((res) => {
+                let { code, message, url, listData } = res.data;
+                if (code != 1) {
+                    messageText.value = message;
+                    messageLightbox.value = true;
+                    return;
+                }
+                return data;
             }).then((res) => {
+                store.setStorageState(store.$state, "EditPage");
+                store.setUpdateTime();
+                store.setSave(true);
                 saveLightbox.value = true;
+            }).finally(() => {
+                loadingHide()
             })
             break;
         case "eventList":
-            store.setPage("EventList");
+            eventListLightbox.value = true;
+            // store.setPage("EventList");
             break;
     }
 }
 
 const onApproveSubmit = () => {
-    let data = { ...store.config, ...store.content }
-    ApproveEvent(1, data).then((res) => {
+    if (store.config.flag == 4 && !store.save) {
+        approveLightbox.value = false;
+        messageText.value = "請先存檔在送審";
+        messageLightbox.value = true;
+        return;
+    }
+    loadingShow();
+    var data = store.config;
+    data.detail = JSON.stringify(store.content);
+    data.flag = 1;
+    Object.keys(data).forEach((v, i) => {
+        if (data[v] == null) {
+            data[v] = "";
+        }
+    })
+    UpdateEventContent(store.otp, data).then((res) => {
         let { code, message, url, listData } = res.data;
         if (code != 1) {
+            messageText.value = message;
+            messageLightbox.value = true;
             return;
         }
-        store.setData({})
-    })
+        return ApproveEvent(store.otp, data);
+    }).then((res) => {
+        if (res) {
+            let { code, message, url, listData } = res.data;
+            if (code != 1) {
+                messageText.value = message;
+                messageLightbox.value = true;
+                return;
+            }
+            approveLightbox.value = false;
+            return data;
+        }
+    }).then((res) => {
+        approveEndLightbox.value = true;
+    }).finally(() => {
+        loadingHide()
+    });
+}
+
+const onApproveEnd = () => {
+    store.setSave(true);
+    store.setPage("EventList")
 }
 
 const onHomeSubmit = () => {
+    store.setInit();
     store.setPage("Home")
+    t.$reset();
 }
 
-const onCancel = (ref) => {
-    ref["value"] = false;
+const onEventListSubmit = () => {
+    store.setPage("EventList");
+    t.$reset();
+}
+
+const onCancel = (type) => {
+    if (type == "回首頁") {
+        homeLightbox.value = false;
+    }
+    if (type == "送審") {
+        approveLightbox.value = false;
+    }
+    if (type == "列表") {
+        eventListLightbox.value = false;
+    }
 }
 </script>
 <template>
-    <section class="wrap development" data-type="one" :style="cssVar" v-if="content.body">
-        <template v-for="block in content.body">
+    <section class="wrap development" :data-type="store.config.pageTypeSeq" :style="cssVar" v-if="content">
+        <template v-for="block in content">
             <component :is="block.component" :data="block"></component>
         </template>
+        <img v-if="!store.updateTime" style="display:block;margin:0 auto;max-width: 100%;"
+             src="https://alpha-tw.beanfun.com/3KO/removable/pchome/images/component.png" alt="">
     </section>
     <g-menu :menu="menu" />
     <div class="page-control__group">
         <a href="javascript:;" class="page-control__btn" @click="onEvent('save')">存檔</a>
         <a href="javascript:;" class="page-control__btn" @click="onEvent('preview')">預覽</a>
-        <a href="javascript:;" class="page-control__btn" @click="onEvent('submit')">送審</a>
+        <a href="javascript:;" class="page-control__btn" @click="onEvent('approve')">送審</a>
         <a href="javascript:;" class="page-control__btn" @click="onEvent('eventList')">回列表</a>
         <a href="javascript:;" class="page-control__btn" @click="onEvent('home')">回首頁</a>
     </div>
@@ -122,30 +201,49 @@ const onCancel = (ref) => {
         </template>
         <template #lightbox-btn>
             <a href="javascript:;" class="btn btn__submit" @click="onHomeSubmit">確認</a>
-            <a href="javascript:;" class="btn btn__reset" @click="onCancel(homeLightbox)">取消</a>
+            <a href="javascript:;" class="btn btn__reset" @click="onCancel('回首頁')">取消</a>
+        </template>
+    </g-lightbox>
+    <!-- 回列表 -->
+    <g-lightbox v-model:showLightbox="eventListLightbox">
+        <template #lightbox-content>
+            <div class="text-center">若尚未存檔會遺失目前設定，是否確定回到列表</div>
+        </template>
+        <template #lightbox-btn>
+            <a href="javascript:;" class="btn btn__submit" @click="onEventListSubmit">確認</a>
+            <a href="javascript:;" class="btn btn__reset" @click="onCancel('列表')">取消</a>
         </template>
     </g-lightbox>
 
     <!-- 送審 -->
-    <g-lightbox v-model:showLightbox="auditLightbox">
+    <g-lightbox v-model:showLightbox="approveLightbox">
         <template #lightbox-content>
-            <div class="text-center">送審前請先確認已存檔！是否確定送審活動【活動名稱活動名稱活動名稱活動名稱】送審後將無法繼續編輯，是否確認送審？</div>
+            <div class="text-center">送審前請先確認已存檔！是否確定送審活動【{{ store.config.eventName }}】送審後將無法繼續編輯，是否確認送審？</div>
         </template>
         <template #lightbox-btn>
             <a href="javascript:;" class="btn btn__submit" @click="onApproveSubmit">確認</a>
-            <a href="javascript:;" class="btn btn__reset" @click="onCancel(auditLightbox)">取消</a>
+            <a href="javascript:;" class="btn btn__reset" @click="onCancel('送審')">取消</a>
+        </template>
+    </g-lightbox>
+    <g-lightbox v-model:showLightbox="approveEndLightbox" :close="false">
+        <template #lightbox-content>
+            <div class="text-center">已送審成功</div>
+        </template>
+        <template #lightbox-btn>
+            <a href="javascript:;" class="btn btn__submit" @click="onApproveEnd">確認</a>
         </template>
     </g-lightbox>
 
     <!-- 已存檔完成 -->
-    <g-lightbox v-model:showLightbox="saveLightbox" :action="false">
+    <g-lightbox v-model:showLightbox="saveLightbox">
         <template #lightbox-content>
             <div class="text-center">已存檔完成</div>
         </template>
     </g-lightbox>
     <g-lightbox v-model:showLightbox="messageLightbox">
         <template #lightbox-content>
-            <div>{{ message }}</div>
+            <div>{{ messageText }}</div>
         </template>
     </g-lightbox>
+
 </template>

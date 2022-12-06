@@ -6,7 +6,7 @@
 	left: 0;
 	z-index: 9999;
 	overflow-y: auto;
-	background-color: rgba(0, 0, 0, 0.8);
+	background-color: rgba(10, 10, 10, 0.86);
 	text-align: center;
 	white-space: nowrap;
 	&:before {
@@ -30,6 +30,13 @@
 		right: -40px;
 		background-color: var(--btnBg, #ff9c00);
 		border-radius: 4px;
+		@include media {
+			width: vw(36) !important;
+			height: vw(36) !important;
+			right: 0;
+			border-radius: vw(4);
+			top: vw(-48);
+		}
 		&:before {
 			content: "";
 			width: 1px;
@@ -57,29 +64,45 @@
 		margin: 32px auto;
 		vertical-align: middle;
 		display: inline-block;
+		@include media {
+			width: vw(675);
+			margin: vw(32) auto;
+		}
 	}
 	&__title {
-		font-size: 36px;
+		font-size: 28px;
 		margin-bottom: 18px;
+		// color: #363636;
+		@include media {
+			font-size: vw(28);
+			margin-bottom: vw(18);
+		}
 	}
 	&__container {
 		width: 100%;
-		background-color: #fff;
+		background-color: var(--bg, #fff);
+		color: rgb(74, 74, 74);
 		padding: 20px 20px 30px;
 		box-sizing: border-box;
 		border-radius: 10px;
-		font-size: 36px;
+		font-size: 20px;
 		white-space: normal;
 		word-break: break-all;
+		color: var(--text, #363636);
+		@include media {
+			padding: vw(20) vw(20) vw(30);
+			border-radius: vw(10);
+			font-size: vw(20);
+		}
 	}
 	&__content {
-		text-align: left;
+		text-align: center;
 	}
 	&__text {
-		&.align-left {
+		&.left {
 			text-align: left;
 		}
-		&.align-center {
+		&.center {
 			text-align: center;
 		}
 	}
@@ -103,9 +126,34 @@
 		border-radius: 10px;
 		margin: 0 auto;
 		background-color: var(--btnBg, #ff9c00);
-		color: var(---btnText, #fff);
+		color: var(--btnText, #fff);
+		@include media {
+			width: vw(185);
+			height: vw(43);
+			font-size: vw(18);
+			border-radius: vw(10);
+		}
 		&-group {
 			margin-top: 24px;
+			@include media {
+				margin-top: vw(24);
+			}
+		}
+	}
+	&__video {
+		height: 450px;
+		overflow: hidden;
+		@include media {
+			height: vw(450);
+		}
+		.g-yt {
+			height: 100%;
+		}
+		.g-yt__box {
+			height: 100%;
+		}
+		.g-yt__img {
+			display: none;
 		}
 	}
 }

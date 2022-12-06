@@ -1,0 +1,30 @@
+html {
+	&[data-type="1"] {
+		.wrap {
+		}
+		.g-fixed {
+		}
+		.g-slogan {
+		}
+		.g-slide {
+		}
+		.g-text {
+		}
+	}
+	&[data-type="2"] {
+		font-size: 768px;
+		@include media {
+			body: 100vw;
+		}
+		.wrap {
+		}
+		.g-fixed {
+		}
+		.g-slogan {
+		}
+		.g-slide {
+		}
+		.g-text {
+		}
+	}
+}

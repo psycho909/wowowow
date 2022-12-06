@@ -31,6 +31,42 @@
 		width: 100%;
 		display: inline-block;
 	}
+	.swiper-button-prev {
+		width: 59px;
+		height: 96px;
+		background-size: cover;
+		background-image: url("./img/slide-left.png");
+		position: absolute;
+		top: 50%;
+		left: 0;
+		transform: translateY(-50%);
+		z-index: 10;
+		cursor: pointer;
+		@include media {
+			width: vw(59);
+			height: vw(96);
+			left: 50%;
+			margin-left: vw(-328);
+		}
+	}
+	.swiper-button-next {
+		width: 59px;
+		height: 96px;
+		background-size: cover;
+		background-image: url("./img/slide-right.png");
+		position: absolute;
+		top: 50%;
+		right: 0;
+		transform: translateY(-50%);
+		z-index: 10;
+		cursor: pointer;
+		@include media {
+			width: vw(59);
+			height: vw(96);
+			right: 50%;
+			margin-right: vw(-328);
+		}
+	}
 	.swiper-pagination {
 		display: flex;
 		justify-content: center;

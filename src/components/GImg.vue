@@ -1,7 +1,8 @@
 <script>
 export default {
     name: "GImg",
-    label: "圖片區塊"
+    label: "圖片區塊",
+    order: 5
 }
 </script>
 <script setup>
@@ -13,12 +14,15 @@ import GSelect from '../elements/GSelect.vue';
 import { mainStore } from "../store/index";
 import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
+import { CheckImage, CheckUrl, imgLoading } from "../Tool";
 const props = defineProps(["data"])
 let showEdit = ref(false);
-let _imgDataLength = 1;
+let _imgDataLength = ref(1);
 const store = mainStore()
-const { content, MODE, page } = storeToRefs(store);
+const { content, page } = storeToRefs(store);
 let imgSetting = ref({})
+let styleValid = ref(true);
+let loading = ref(true);
 let imgData = reactive({
     num: 1,
     imgs: [{
@@ -26,18 +30,19 @@ let imgData = reactive({
         mobile: "",
         type: "",
         validPC: true,
+        validMobile: true,
         pop: {
             show: false, type: "text",
-            align: "align-left",
-            style: "red1"
+            align: "left",
+            style: ""
         },
         target: {
-            attribute: true
+            link: "",
+            attribute: true, validUrl: true,
         }
     }],
     mt: 0, mb: 54,
 })
-
 watchEffect(() => {
     if (props.data.update) {
         showEdit.value = true;
@@ -45,19 +50,58 @@ watchEffect(() => {
         showEdit.value = false;
     }
     if (props.data) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            imgData[v] = props.data.content[v];
-            imgSetting.value[v] = props.data.content[v];
-            _imgDataLength = imgData.num
-        })
+        if (Object.keys(props.data.content).length > 0) {
+            let _temp = { ...props.data.content };
+            _temp.imgs = [...props.data.content.imgs];
+            _temp.imgs.forEach((v, i) => {
+                _temp.imgs[i] = { ...v };
+                _temp.imgs[i].pop = { ...v.pop };
+                _temp.imgs[i].target = { ...v.target };
+            })
+            let _temp2 = { ...props.data.content };
+            _temp2.imgs = [...props.data.content.imgs];
+            _temp2.imgs.forEach((v, i) => {
+                _temp2.imgs[i] = { ...v };
+                _temp2.imgs[i].pop = { ...v.pop };
+                _temp2.imgs[i].target = { ...v.target };
+            })
+            Object.keys(_temp).forEach((v, i) => {
+                imgData[v] = _temp[v];
+            })
+            Object.keys(_temp2).forEach((v, i) => {
+                imgSetting.value[v] = _temp2[v];
+            })
+        }
+
     }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            imgData[v] = props.data.content[v];
-            imgSetting.value[v] = props.data.content[v];
+        let _temp = { ...props.data.content };
+        _temp.imgs = [...props.data.content.imgs];
+        _temp.imgs.forEach((v, i) => {
+            _temp.imgs[i] = { ...v };
+            _temp.imgs[i].pop = { ...v.pop };
+            _temp.imgs[i].target = { ...v.target };
+        })
+        let _temp2 = { ...props.data.content };
+        _temp2.imgs = [...props.data.content.imgs];
+        _temp2.imgs.forEach((v, i) => {
+            _temp2.imgs[i] = { ...v };
+            _temp2.imgs[i].pop = { ...v.pop };
+            _temp2.imgs[i].target = { ...v.target };
+        })
+        Object.keys(_temp).forEach((v, i) => {
+            imgData[v] = _temp[v];
+        })
+        Object.keys(_temp2).forEach((v, i) => {
+            imgSetting.value[v] = _temp2[v];
+        })
+        _imgDataLength.value = imgData.num;
+
+        imgLoading(imgData.imgs).then((res) => {
+            loading.value = false;
         })
     }
 })
@@ -74,43 +118,75 @@ const openPop = (data) => {
 }
 const onChange = (e) => {
     let num = e.target.value;
-    if (_imgDataLength <= num) {
-        for (let i = 0; i < (num - _imgDataLength); i++) {
+    if (_imgDataLength.value <= num) {
+        for (let i = 0; i < (num - _imgDataLength.value); i++) {
             imgData.imgs.push({
                 pc: "",
                 mobile: "",
                 type: "",
-                validPC: true,
+                validPC: true, validMobile: true,
                 pop: {
                     show: false,
                     type: "text",
-                    align: "align-left",
-                    style: "red1"
+                    align: "left",
+                    style: ""
                 },
                 target: {
-                    attribute: true
+                    link: "",
+                    attribute: true, validUrl: true,
                 }
             })
         }
-        _imgDataLength = num
     } else {
         imgData.imgs = imgData.imgs.slice(0, num)
     }
+
+    _imgDataLength.value = num
 }
 
-const onSubmit = () => {
+const onSubmit = async () => {
     let data = {}
-    imgData.imgs.forEach((v, i) => {
-        if (v.pc.length > 0) {
-            v.validPC = true;
+
+    for (let i = 0; i < imgData.imgs.length; i++) {
+        if (imgData.imgs[i].pc.length == 0) {
+            imgData.imgs[i].validPC = false;
         } else {
-            v.validPC = false;
+            if (!await CheckImage(imgData.imgs[i].pc)) {
+                imgData.imgs[i].validPC = false;
+            } else {
+                imgData.imgs[i].validPC = true;
+            }
         }
-    })
+
+        if (imgData.imgs[i].mobile.length > 0) {
+            if (!await CheckImage(imgData.imgs[i].mobile)) {
+                imgData.imgs[i].validMobile = false;
+            } else {
+                imgData.imgs[i].validMobile = true;
+            }
+        } else {
+            imgData.imgs[i].validMobile = true;
+        }
+        if (imgData.imgs[i].target.link.length > 0) {
+            if (!CheckUrl(imgData.imgs[i].target.link)) {
+                imgData.imgs[i].target.validUrl = false;
+            } else {
+                imgData.imgs[i].target.validUrl = true;
+            }
+        } else {
+            imgData.imgs[i].target.validUrl = true;
+        }
+    }
+
+    if (imgData.style == "") {
+        styleValid.value = false;
+    } else {
+        styleValid.value = true;
+    }
     var validCheck = imgData.imgs.every(function (v, i) {
-        return v.validPC == true;
+        return v.validPC == true && v.validMobile == true && v.target.validUrl == true;
     })
-    if (validCheck) {
+    if (validCheck && styleValid.value) {
         data = { ...imgData }
         store.updateCpt(props.data.uid, data)
     }
@@ -128,15 +204,16 @@ const onReset = () => {
                 pc: "",
                 mobile: "",
                 type: "",
-                validPC: true,
+                validPC: true, validMobile: true,
                 pop: {
                     show: false,
                     type: "text",
-                    align: "align-left",
-                    style: "red1"
+                    align: "left",
+                    style: ""
                 },
                 target: {
-                    attribute: true
+                    link: "",
+                    attribute: true, validUrl: true,
                 }
             }],
             mt: 0, mb: 54,
@@ -163,14 +240,16 @@ const closeBtn = () => {
                 mobile: "",
                 type: "",
                 validPC: true,
+                validMobile: true, validUrl: true,
                 pop: {
                     show: false,
                     type: "text",
                     align: "align-left",
-                    style: "red1"
+                    style: "",
                 },
                 target: {
-                    attribute: true
+                    link: "",
+                    attribute: true, validUrl: true,
                 }
             }],
             mt: 0, mb: 54,
@@ -181,17 +260,29 @@ const closeBtn = () => {
 }
 </script>
 <template>
-    <div class="g-img" :style="cssVar">
+    <div class="g-img" :style="cssVar" :class="[loading ? 'loading' : '']">
         <div class="g-img-container" :data-num="imgSetting.num">
-            <template v-for="imgs in imgSetting.imgs">
-                <a v-if="imgs.type == 'link'" :href="[imgs.target.link ? imgs.target.link : 'javascript:;']"
-                   :target="[imgs.target.attribute ? '_blank' : '_self']" class="g-img__box"
-                   :class="imgs.type ? '' : 'none'">
-                    <picture>
-                        <source media="(max-width:768px)" :srcset="imgs.mb || imgs.pc" />
-                        <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
-                    </picture>
-                </a>
+            <template v-if="!loading" v-for="imgs in imgSetting.imgs">
+                <template v-if="imgs.type == 'link' && store.status != 'edit'">
+                    <a :href="[imgs.target.link ? imgs.target.link : 'javascript:;']"
+                       :target="[imgs.target.attribute == 'true' ? '_blank' : '_blank']" class="g-img__box"
+                       :class="imgs.type ? '' : 'none'">
+                        <picture>
+                            <source media="(max-width:768px)" :srcset="imgs.mb || imgs.pc" />
+                            <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
+                        </picture>
+                    </a>
+                </template>
+                <template v-if="imgs.type == 'link' && store.status == 'edit'">
+                    <a :href="[imgs.target.link ? imgs.target.link : 'javascript:;']"
+                       :target="[imgs.target.attribute == 'true' ? '_blank' : '_self']" class="g-img__box"
+                       :class="imgs.type ? '' : 'none'">
+                        <picture>
+                            <source media="(max-width:768px)" :srcset="imgs.mb || imgs.pc" />
+                            <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
+                        </picture>
+                    </a>
+                </template>
                 <a v-if="imgs.type == 'pop'" href="javascript:;" class="g-img__box" :class="imgs.type ? '' : 'none'"
                    @click="openPop(imgs)">
                     <picture>
@@ -216,6 +307,9 @@ const closeBtn = () => {
                     </picture>
                 </a>
             </template>
+            <template v-else>
+                <div class="g-img__box"></div>
+            </template>
             <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
@@ -224,7 +318,10 @@ const closeBtn = () => {
             </template>
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">圖片區塊<a href="javascript:;" class="edit-title__q"></a></div>
+                    <div class="edit-title__text">圖片區塊
+                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
+                           class="edit-title__q" target="_blank"></a>
+                    </div>
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">圖片樣式:</div>
@@ -235,7 +332,8 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row g-edit__block" v-for="(img, index) in imgData.imgs">
                     <div class="g-edit__col">
-                        <g-input label="圖片網址:" v-model="img.pc" :preview="img.pc" :required="true" :valid="validPC" />
+                        <g-input label="圖片網址:" v-model.trim="img.pc" :preview="img.pc" :required="true"
+                                 :valid="img.validPC" />
                     </div>
                     <div class="g-edit__col">
                         <div class="input-group__label required">開啟方式:</div>
@@ -250,16 +348,17 @@ const closeBtn = () => {
                             <g-radio label="圖片" :name="'popType' + index" value="img" v-model="img.pop.type" />
                         </div>
                         <div class="g-edit__col">
-                            <g-input label="POP標題:" :required="true" v-model="img.pop.title" />
+                            <g-input label="POP標題:" v-model="img.pop.title" />
                         </div>
                         <template v-if="img.pop.type == 'text'">
                             <div class="g-edit__row">
-                                <div class="input-group__label required">對其方向:</div>
-                                <g-radio label="左" name="align" value="align-left" v-model="img.pop.align" />
-                                <g-radio label="中" name="align" value="align-center" v-model="img.pop.align" />
+                                <div class="input-group__label required">對齊方向:</div>
+                                <g-radio label="左" :name="'align' + index" value="left" v-model="img.pop.align" />
+                                <g-radio label="中" :name="'align' + index" value="center" v-model="img.pop.align" />
                             </div>
                             <div class="g-edit__col">
                                 <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
+                                          :valid="styleValid"
                                           v-model="img.pop.style" />
                             </div>
                             <div class="g-edit__col">
@@ -268,13 +367,20 @@ const closeBtn = () => {
                         </template>
                         <template v-if="img.pop.type == 'img'">
                             <div class="g-edit__col">
-                                <g-input label="POP圖片:" v-model="img.pop.img" :preview="img.pop.img" :required="true" />
+                                <g-input label="POP圖片:" v-model.trim="img.pop.img" :preview="img.pop.img"
+                                         :required="true" />
+                            </div>
+                            <div class="g-edit__col">
+                                <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
+                                          :valid="styleValid"
+                                          v-model="img.pop.style" />
                             </div>
                         </template>
                     </template>
                     <template v-if="img.type == 'link'">
                         <div class="g-edit__col">
-                            <g-input label="連結:" :required="true" v-model="img.target.link" />
+                            <g-input label="連結:" :required="true" v-model.trim="img.target.link"
+                                     :valid="img.target.validUrl" />
                         </div>
                         <div class="g-edit__col">
                             <div class="input-group__label">另開視窗:</div>
@@ -285,14 +391,14 @@ const closeBtn = () => {
                         </div>
                     </template>
 
-                    <g-input label="手機圖片網址:" v-model="img.mobile" :preview="img.mobile" />
+                    <g-input label="手機圖片網址:" v-model.trim="img.mobile" :preview="img.mobile" :valid="img.validMobile" />
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="間距上:" v-model="imgData.mt" />
+                        <g-input label="間距上:" type="number" v-model="imgData.mt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="間距下:" v-model="imgData.mb" />
+                        <g-input label="間距下:" type="number" v-model="imgData.mb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

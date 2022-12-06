@@ -1,13 +1,14 @@
 <script>
 export default {
     name: "GText",
-    label: "純文字區塊"
+    label: "文字區塊",
+    order: 7
 }
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
-import GCkedit from '../elements/GCkedit.vue';
 import GRadio from '../elements/GRadioo.vue';
+import GCkedit from '../elements/GCkedit.vue';
 import GSelect from '../elements/GSelect.vue';
 import GInput from "../elements/GInput.vue";
 import { mainStore } from "../store/index";
@@ -16,15 +17,27 @@ import colors, { style1, style2 } from "../colors";
 const props = defineProps(["data"])
 let showEdit = ref(false);
 let textSetting = ref({})
+let styleValid = ref(true);
 let textData = reactive({
-    align: "align-left",
-    style: "red1",
+    align: "left",
+    style: "",
     text: "",
     mt: 0, mb: 54
 })
-
+// let editor = ref(null)
+// let editorConfig = ref({})
+// editor.value = ClassicEditor
+// editorConfig = {
+//     toolbar: {
+//         items: [
+//             'bold',
+//             'italic',
+//             'link',
+//         ]
+//     }
+// }
 const store = mainStore()
-const { content, MODE, page } = storeToRefs(store);
+const { content, page } = storeToRefs(store);
 
 watchEffect(() => {
     if (props.data.update) {
@@ -57,8 +70,15 @@ onMounted(async () => {
 
 
 const onSubmit = () => {
+    if (textData.style == "") {
+        styleValid.value = false;
+    } else {
+        styleValid.value = true;
+    }
     let data = { ...textData }
-    store.updateCpt(props.data.uid, data)
+    if (styleValid.value) {
+        store.updateCpt(props.data.uid, data)
+    }
 }
 const onReset = () => {
     if (Object.keys(props.data.content).length > 0) {
@@ -68,8 +88,8 @@ const onReset = () => {
         })
     } else {
         textData = {
-            align: "align-left",
-            style: "red1",
+            align: "left",
+            style: "",
             text: "",
             mt: 0, mb: 54
         }
@@ -89,8 +109,8 @@ const closeBtn = () => {
         })
     } else {
         textData = {
-            align: "align-left",
-            style: "red1",
+            align: "left",
+            style: "",
             text: "",
             mt: 0, mb: 54
         }
@@ -111,26 +131,30 @@ const closeBtn = () => {
             </template>
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">文字區塊物件<a href="javascript:;" class="edit-title__q"></a></div>
+                    <div class="edit-title__text">文字區塊
+                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Text.html"
+                           class="edit-title__q" target="_blank"></a>
+                    </div>
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label required">對其方向:</div>
-                    <g-radio label="左" name="align" value="align-left" v-model="textData.align" />
-                    <g-radio label="中" name="align" value="align-center" v-model="textData.align" />
+                    <div class="input-group__label required">對齊方向:</div>
+                    <g-radio label="左" name="align" value="left" v-model="textData.align" />
+                    <g-radio label="中" name="align" value="center" v-model="textData.align" />
                 </div>
                 <div class="g-edit__row">
                     <g-select label="主題顏色:" :group="true" :options="[style1, style2]" :required="true"
+                              :valid="styleValid"
                               v-model="textData.style" />
                 </div>
                 <div class="g-edit__row">
-                    <g-ckedit v-model="textData.text" />
+                    <g-ckedit v-model:modelValue="textData.text" />
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="間距上:" v-model="textData.mt" />
+                        <g-input label="間距上:" type="number" v-model="textData.mt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="間距下:" v-model="textData.mb" />
+                        <g-input label="間距下:" type="number" v-model="textData.mb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

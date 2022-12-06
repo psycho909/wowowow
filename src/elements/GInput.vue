@@ -1,6 +1,10 @@
 <script setup>
 
 const props = defineProps({
+    type: {
+        type: String,
+        default: "text"
+    },
     label: {
         type: String,
         default: ""
@@ -28,6 +32,10 @@ const props = defineProps({
     required: {
         type: Boolean,
         default: false
+    },
+    maxlenght: {
+        type: [Number, String],
+        default: ""
     }
 })
 
@@ -42,9 +50,9 @@ const updateValue = (event) => {
     <div class="input-group" :class="[valid ? '' : 'warning']">
         <div class="input-group__label" :class="[required ? 'required' : '']" v-if="label">{{ label }}</div>
         <div class="input-group__box">
-            <input type="text" class="input-group__control" :value="modelValue" @input="updateValue"
-                   :placeholder="placeholder" v-show="!color">
-            <div class="input-group__warning" v-if="!valid">請填寫正確 {{ label || placeholder }}</div>
+            <input :type="type" class="input-group__control" :value="modelValue" @input="updateValue"
+                   :placeholder="placeholder" v-show="!color" :maxlenght="maxlenght">
+            <div class="input-group__warning" v-if="!valid" :data-warning="`請填寫正確 ${label || placeholder}`"></div>
         </div>
         <div class="input-group__img" v-if="preview"><img :src="preview" alt="預覽圖"></div>
         <div class="input-group__color" v-if="color"><span :style="`--color:${color}`"></span></div>

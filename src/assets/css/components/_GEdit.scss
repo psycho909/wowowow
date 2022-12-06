@@ -6,7 +6,7 @@
 	left: 0;
 	z-index: 9999;
 	overflow-y: auto;
-	background-color: rgba(0, 0, 0, 0.8);
+	background-color: rgba(10, 10, 10, 0.86);
 	text-align: center;
 	white-space: nowrap;
 	&:before {
@@ -102,8 +102,9 @@
 	&__col {
 		width: 100%;
 		display: flex;
-		align-items: flex-start;
-		margin-bottom: 12px;
+		// align-items: flex-start;
+		align-items: center;
+		margin-bottom: 18px;
 		&.w50 {
 			width: 50%;
 		}
@@ -138,12 +139,21 @@
 .edit {
 	&-title {
 		&__box {
-			min-width: 295px;
-			border-bottom: 1px solid #5b5b5b;
 			margin: 0 auto 28px;
-			padding: 12px 0;
+			padding: 0 0 12px;
 			text-align: center;
 			display: inline-block;
+			position: relative;
+			&:before {
+				content: "";
+				width: 130%;
+				height: 1px;
+				background-color: #5b5b5b;
+				position: absolute;
+				bottom: -2px;
+				left: 50%;
+				transform: translateX(-50%);
+			}
 		}
 		&__text {
 			font-size: 26px;

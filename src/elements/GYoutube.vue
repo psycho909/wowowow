@@ -8,6 +8,14 @@ const props = defineProps({
     pop: {
         type: Boolean,
         default: false
+    },
+    inner: {
+        type: Boolean,
+        default: false
+    },
+    popopen: {
+        type: Boolean,
+        default: false
     }
 })
 let videoRef = ref(null)
@@ -26,6 +34,9 @@ onMounted(async () => {
             })
         }
     }
+    if (props.popopen) {
+        player.playVideo();
+    }
     videoImg.value = youtubePreview(extractVideoID(props.youtube))
 })
 
@@ -41,7 +52,8 @@ const onVideo = () => {
         }
     }
 }
-defineExpose({ player, videoRef })
+defineExpose({ player, videoRef });
+
 </script>
 <template>
     <div class="g-yt">

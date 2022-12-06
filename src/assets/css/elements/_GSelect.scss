@@ -10,6 +10,18 @@
 		}
 		&__warning {
 			color: red;
+			text-align: left;
+			position: relative;
+			width: 100%;
+			&:before {
+				content: attr(data-warning);
+				font-size: 12px;
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				transform: translateY(100%);
+			}
 		}
 		&__label {
 			color: #fff;
@@ -34,6 +46,8 @@
 			min-width: 120px;
 			border: 1px solid #888888;
 			border-radius: 6px;
+			padding: 4px 0px;
+			box-sizing: border-box;
 			option {
 				background: transparent;
 				outline: none;

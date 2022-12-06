@@ -27,7 +27,6 @@ const props = defineProps({
     }
 })
 const emit = defineEmits(["update:modelValue"])
-
 const selectValue = computed({
     get() {
         return props.modelValue;
@@ -45,18 +44,17 @@ const updateValue = (event) => {
         <div class="select-group__label" :class="[required ? 'required' : '']">{{ label }}</div>
         <div class="select-group__box" v-if="group">
             <select class="select-group__control" @change="updateValue" v-model="selectValue">
-                <optgroup label="淺色系">
+                <optgroup label="白色底配色">
                     <option :value="option.value" v-for="option in options[0]">{{ option.text }}</option>
                 </optgroup>
-                <optgroup label="深色系">
+                <optgroup label="異色底配色">
                     <option :value="option.value" v-for="option in options[1]">{{ option.text }}</option>
                 </optgroup>
             </select>
-            <div class="select-group__warning" v-if="!valid">請填寫正確 {{ label }}</div>
+            <div class="select-group__warning" v-if="!valid" :data-warning="`請填寫正確${label}`"></div>
         </div>
         <div class="select-group__box" v-else>
             <select class="select-group__control" @change="updateValue" v-model="selectValue">
-                <option value="">請選擇</option>
                 <template v-for="option in options">
                     <slot name="options" :option="option">
                         <option :value="option.value">{{ option.text }}</option>
@@ -64,7 +62,7 @@ const updateValue = (event) => {
 
                 </template>
             </select>
-            <div class="select-group__warning" v-if="!valid">請填寫正確 {{ label }}</div>
+            <div class="select-group__warning" v-if="!valid" :data-warning="`請填寫正確${label}`"></div>
         </div>
     </div>
 </template>

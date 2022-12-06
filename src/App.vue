@@ -12,20 +12,50 @@ import axios from "axios";
 import { mainStore } from "./store/index";
 const store = mainStore()
 const { page } = storeToRefs(store);
+let state = null;
+const params = new Proxy(new URLSearchParams(window.location.search), {
+	get: (searchParams, prop) => searchParams.get(prop),
+})
+
+const pathName = (window.location.href).includes("Preview");
+
+if (import.meta.env.MODE == "development") {
+	store.setOTP(1);
+} else {
+	store.setOTP(params.OTP || params.otp);
+}
+
+
+if (!pathName) {
+	if (window.sessionStorage.getItem("state")) {
+		state = JSON.parse(window.sessionStorage.getItem("state"));
+		if (state.page == 'Preview') {
+			window.sessionStorage.removeItem("state")
+		}
+		if (state.page == 'EditPage') {
+			store.setState(state);
+		}
+	}
+} else {
+	if (window.sessionStorage.getItem("state")) {
+		state = JSON.parse(window.sessionStorage.getItem("state"));
+		state.page = "Preview";
+		store.setState(state);
+	}
+
+}
 onMounted(() => {
-	axios.get("http://localhost:3000/data/").then((res) => {
-		store.setSave(res.data.listData)
-	})
+	document.querySelector("#app").classList.add("edit");
 })
 </script>
     
 <template>
-	<Home v-if="page == 'Home'"></Home>
-	<PageType v-if="page == 'PageType'"></PageType>
-	<CreateEvent v-if="page == 'CreateEvent'"></CreateEvent>
-	<EventList v-if="page == 'EventList'"></EventList>
-	<ApproveList v-if="page == 'ApproveList'"></ApproveList>
-	<EditPage v-if="page == 'EditPage'"></EditPage>
-	<Preview v-if="page == 'Preview'"></Preview>
+	<Home v-if="page == 'Home' && !pathName"></Home>
+	<PageType v-if="page == 'PageType' && !pathName"></PageType>
+	<CreateEvent v-if="page == 'CreateEvent' && !pathName"></CreateEvent>
+	<EventList v-if="page == 'EventList' && !pathName"></EventList>
+	<ApproveList v-if="page == 'ApproveList' && !pathName"></ApproveList>
+	<EditPage v-if="page == 'EditPage' && !pathName"></EditPage>
+	<Preview v-if="pathName"></Preview>
 </template>
     

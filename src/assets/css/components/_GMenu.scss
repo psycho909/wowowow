@@ -8,6 +8,9 @@
 	padding-top: 52px;
 	transform: translateX(calc(100% - 12px));
 	z-index: 99;
+	transition: all 0.3s;
+	padding-left: 24px;
+	box-sizing: border-box;
 	&.open {
 		transform: translateX(0);
 		.g-menu__open {
@@ -24,13 +27,22 @@
 		position: absolute;
 		top: 12px;
 		left: 12px;
+		&.icon-close {
+			&:before,
+			&:after {
+				background-color: #fff;
+			}
+		}
 	}
 	&__add {
 		display: block;
 		text-decoration: none;
 		color: #fff;
-		padding: 15px 24px;
+		padding: 15px 24px 15px 0px;
 		font-size: 16px;
+		@include hover {
+			color: #ff9c00;
+		}
 		&.disabled {
 			color: #b7b7b7;
 			cursor: default;

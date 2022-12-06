@@ -1,4 +1,8 @@
 .event-list {
+	&__null {
+		text-align: center;
+		color: #fff;
+	}
 	&__filter {
 		width: 540px;
 		margin: 22px auto 32px;
@@ -74,17 +78,18 @@
 	&__head {
 		display: grid;
 		grid-template-columns: 160px 200px 1fr 250px;
-		margin-bottom: 12px;
+		border-bottom: 4px solid #585858;
 	}
 	&__title {
 		position: relative;
 		text-align: center;
-		padding: 12px 0;
+		padding: 18px 0;
 		a {
 			color: #fff;
 			text-decoration: none;
 			position: relative;
 			cursor: default;
+			font-weight: bold;
 			&.arrow {
 				cursor: pointer;
 				&:before {
@@ -100,9 +105,10 @@
 					transform: translateY(-50%);
 				}
 				&.on {
+					color: #ffe000;
 					&:before {
 						border-width: 0 4px 8px 4px;
-						border-color: transparent transparent #ff9c00 transparent;
+						border-color: transparent transparent #ffe000 transparent;
 					}
 				}
 			}
@@ -113,18 +119,25 @@
 	&__box {
 		display: grid;
 		grid-template-columns: 160px 200px 1fr 250px;
-		align-items: flex-start;
+		// align-items: flex-start;
 		text-align: center;
 		color: #fff;
 		font-size: 18px;
-		margin-bottom: 20px;
+		// margin-bottom: 20px;
+		align-items: center;
+		padding: 8px 0;
+		border-bottom: 1px solid #585858;
+		&:last-child {
+			border-bottom: 0;
+		}
 	}
 	&__item {
+		padding: 0 4px;
 		& > a {
 			color: #fff;
 			cursor: default;
 			text-decoration: none;
-
+			word-break: break-all;
 			&[target="_blank"] {
 				cursor: pointer;
 				text-decoration: underline;
@@ -167,7 +180,7 @@
 		background-color: #ff9c00;
 		text-decoration: none;
 		display: inline-block;
-		font-size: 14px;
+		font-size: 12px;
 		border-radius: 6px;
 		& + .event-list__btn {
 			margin-left: 6px;

@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <meta name="open-default-browser" content="true" />
+        <meta name="description" content="" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="" />
+        <meta property="og:description" content="" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta property="og:image" content="" />
+
+        <title>@ViewData["Title"]</title>
+
+        <link href="https://tw.hicdn.beanfun.com/plugins/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css"
+              rel="stylesheet" />
+        <link rel="stylesheet" href="~/css/default.css">
+        <link rel="stylesheet" href="~/css/index.css">
+
+        <script src="https://tw.hicdn.beanfun.com/plugins/isMobile/isMobile.min.js"></script>
+        <script src="https://tw.hicdn.beanfun.com/jquery/jquery.min.js"></script>
+        <script src="https://tw.hicdn.beanfun.com/jquery/jquery-migrate.min.js"></script>
+        <script src="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/script/gbox/gbox.js"></script>
+        <script type="text/javascript"
+                src="https://tw.hicdn.beanfun.com/plugins/loadingProgress/loadingProgress.js"></script>
+        <script
+                src="https://tw.hicdn.beanfun.com/plugins/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="https://tw.hicdn.beanfun.com/plugins/ckeditor/5/ckeditor.js"></script>
+        <script language="javascript" src="https://tw.beanfun.com/js/GA_CodeNew.js"></script>
+        <link rel="modulepreload" crossorigin href="~/js/default.js" asp-append-version="true">
+        <script type="module" crossorigin src="~/js/index.js" asp-append-version="true"></script>
+</head>
+
+<body>
+        <!-- 內容開始 -->
+        <div id="app">@RenderBody()</div>
+
+        @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

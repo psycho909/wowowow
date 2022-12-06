@@ -32,6 +32,7 @@
 			display: flex;
 			align-items: center;
 			font-size: 18px;
+			color: #fff;
 			&:last-child {
 				margin-bottom: 0;
 			}
@@ -54,6 +55,11 @@
 		&__input {
 			& + .create-config__input {
 				margin-left: 12px;
+			}
+			&.error {
+				input {
+					border-color: red;
+				}
 			}
 		}
 	}

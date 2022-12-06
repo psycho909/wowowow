@@ -1,7 +1,8 @@
 <script>
 export default {
     name: "GVideo",
-    label: "影片區塊"
+    label: "影片區塊",
+    order: 6
 }
 </script>
 <script setup>
@@ -10,11 +11,12 @@ import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GYoutube from '../elements/GYoutube.vue';
 import { mainStore } from "../store/index";
+import { extractVideoID } from "../Tool";
 const props = defineProps(["data"])
 let showEdit = ref(false);
-let _videoDataLength = 1;
+let _videoDataLength = ref(1);
 const store = mainStore()
-const { content, MODE, page } = storeToRefs(store);
+const { content, page } = storeToRefs(store);
 let videoSetting = ref({})
 let videoData = reactive({
     num: 1,
@@ -62,22 +64,23 @@ const openPop = (data) => {
 
 const onChange = (e) => {
     let num = e.target.value;
-    if (_videoDataLength <= num) {
-        for (let i = 0; i < (num - _videoDataLength); i++) {
+    if (_videoDataLength.value <= num) {
+        for (let i = 0; i < (num - _videoDataLength.value); i++) {
             videoData.videos.push({
                 url: "", show: false, validUrl: true
             })
         }
-        _videoDataLength = num
+
     } else {
         videoData.videos = videoData.videos.slice(0, videoData.num)
     }
+    _videoDataLength.value = num
 }
 
 const onSubmit = () => {
     let data = {}
     videoData.videos.forEach((v, i) => {
-        if (v.url.length > 0) {
+        if (v.url.length > 0 && extractVideoID(v.url)) {
             v.validUrl = true;
         } else {
             v.validUrl = false;
@@ -143,10 +146,10 @@ const closeBtn = () => {
                 </a>
                 <a v-if="videoSetting.type == 'pop'" href="javascript:;" class="g-video__box" @click="openPop(videos)">
                     <g-youtube :youtube="videos.url" :pop="true" />
-                    <g-lightbox v-model:showLightbox="videos.show" :style="videos.style">
+                    <g-lightbox v-model:showLightbox="videos.show" :style="videos.style" :action="false">
                         <template #lightbox-content>
                             <div class="g-lightbox__video">
-                                <g-youtube :youtube="videos.url" />
+                                <g-youtube :youtube="videos.url" :popopen="videos.show" />
                             </div>
                         </template>
                     </g-lightbox>
@@ -160,7 +163,11 @@ const closeBtn = () => {
             </template>
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">影片區塊<a href="javascript:;" class="edit-title__q"></a></div>
+                    <div class="edit-title__text">
+                        影片區塊
+                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Video.html"
+                           class="edit-title__q" target="_blank"></a>
+                    </div>
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">選擇影片數量:</div>
@@ -170,7 +177,7 @@ const closeBtn = () => {
                     <g-radio label="四格影片" name="video" value="4" v-model="videoData.num" @change="onChange" />
                 </div>
                 <div class="g-edit__row" v-for="(video, index) in videoData.videos">
-                    <g-input :label="'影片' + (index + 1) + 'URL:'" v-model="video.url" :valid="video.validUrl"
+                    <g-input :label="'影片' + (index + 1) + 'URL:'" v-model.trim="video.url" :valid="video.validUrl"
                              :required="true" />
                 </div>
                 <div class="g-edit__row">
@@ -180,10 +187,10 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="間距上:" v-model="videoData.mt" />
+                        <g-input label="間距上:" type="number" v-model="videoData.mt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="間距下:" v-model="videoData.mb" />
+                        <g-input label="間距下:" type="number" v-model="videoData.mb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

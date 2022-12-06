@@ -2,7 +2,8 @@
 export default {
     name: "Background",
     label: "背景圖",
-    limit: 1
+    limit: 1,
+    order: 1
 }
 </script>
 <script setup>
@@ -26,7 +27,8 @@ let bgData = reactive({
     h: "",
     mw: "",
     mh: "",
-    validPC: true
+    validPC: true,
+    validMobile: true,
 })
 
 const imageInfo = (type, url) => {
@@ -49,13 +51,6 @@ watchEffect(() => {
     } else {
         showEdit.value = false;
     }
-    if (CheckImage(bgData.pc)) {
-        imageInfo("pc", bgData.pc)
-    }
-    if (CheckImage(bgData.mobile)) {
-        imageInfo("mobile", bgData.mobile)
-    }
-
 })
 onMounted(async () => {
     await nextTick()
@@ -80,13 +75,31 @@ const colorBlur = () => {
     console.log("blurText")
 }
 
-const onSubmit = () => {
-    if (bgData.validPC.length > 0) {
-        bgData.validPC = true;
-    } else {
+const onSubmit = async () => {
+    let data = {};
+    bgData.validMobile = true;
+    if (bgData.pc.length == 0) {
         bgData.validPC = false;
+    } else {
+        if (!await CheckImage(bgData.pc)) {
+            bgData.validPC = false;
+        } else {
+            imageInfo("pc", bgData.pc);
+            bgData.validPC = true;
+        }
     }
-    if (bgData.validPC) {
+    if (bgData.mobile.length > 0) {
+        if (!await CheckImage(bgData.mobile)) {
+            bgData.validMobile = false;
+        } else {
+            bgData.validMobile = true;
+            imageInfo("mobile", bgData.mobile)
+        }
+    } else {
+        bgData.validMobile = true;
+    }
+
+    if (bgData.validPC && bgData.validMobile) {
         data = { ...bgData }
         store.updateCpt(props.data.uid, data)
     }
@@ -105,7 +118,8 @@ const onReset = () => {
             h: "",
             mw: "",
             mh: "",
-            validPC: true
+            validPC: true,
+            validMobile: true
         }
     }
 }
@@ -135,7 +149,8 @@ const closeBtn = () => {
             h: "",
             mw: "",
             mh: "",
-            validPC: true
+            validPC: true,
+            validMobile: true,
         }
     }
     showEdit.value = false;
@@ -144,7 +159,7 @@ const closeBtn = () => {
 </script>
 <template>
     <div class="g-bg">
-        <g-modify :uid="data.uid" title="背景底圖" :move="false" :remove="false"
+        <g-modify :uid="data.uid" title="背景" :move="false" :remove="false"
                   v-if="page == 'EditPage'" />
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'"
                 :func="enterColor">
@@ -155,14 +170,17 @@ const closeBtn = () => {
                 <div class="edit-title__box">
                     <div class="edit-title__text">
                         背景圖
-                        <a href="javascript:;" class="edit-title__q"></a>
+                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/BG.html"
+                           class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
                 <div class="g-edit__row">
-                    <g-input label="圖片網址:" v-model="bgData.pc" :preview="bgData.pc" :valid="validPC" :required="true" />
+                    <g-input label="圖片網址:" v-model.trim="bgData.pc" :preview="bgData.pc" :valid="bgData.validPC"
+                             :required="true" />
                 </div>
                 <div class="g-edit__row">
-                    <g-input label="手機版圖片網址:" v-model="bgData.mobile" :preview="bgData.mobile" />
+                    <g-input label="手機版圖片網址:" v-model.trim="bgData.mobile" :preview="bgData.mobile"
+                             :valid="bgData.validMobile" />
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group">

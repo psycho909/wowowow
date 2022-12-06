@@ -22,10 +22,10 @@
 		margin-top: calc(var(--mt, 0) / 768 * 100vw);
 		margin-bottom: calc(var(--mb, 54) / 768 * 100vw);
 	}
-	&.align-left {
+	&.left {
 		text-align: left;
 	}
-	&.align-center {
+	&.center {
 		text-align: center;
 	}
 	&-container {
@@ -41,6 +41,7 @@
 		background-color: var(--bg, rgba(#474747, 0.6));
 		color: var(--text, #fff);
 		font-size: 18px;
+		word-break: break-all;
 		@include media {
 			font-size: vw(30);
 			padding: vw(25);

@@ -1,8 +1,9 @@
 <script>
 export default {
     name: "Fixed",
-    label: "浮動式選單",
-    limit: 1
+    label: "浮動選單",
+    limit: 1,
+    order: 3
 }
 </script>
 <script setup>
@@ -12,15 +13,18 @@ import GRadio from '../elements/GRadioo.vue';
 import GSelect from '../elements/GSelect.vue';
 import { mainStore } from "../store/index";
 import colors, { style1, style2 } from "../colors";
+import { CheckUrl } from "../Tool";
 const props = defineProps(["data"])
 const store = mainStore()
-const { content, MODE, page } = storeToRefs(store);
+const { content, page } = storeToRefs(store);
 let showEdit = ref(false);
 let menuToggle = ref(false);
-let fixedSetting = ref({})
+let fixedSetting = ref({});
+let fixedMenuValid = ref(true);
+let styleValid = ref(true);
 let fixedData = reactive({
-    position: "",
-    hamburger: "",
+    position: "left",
+    hamburger: "hamburger-left",
     style: "",
     menus: []
 })
@@ -32,33 +36,79 @@ watchEffect(() => {
         showEdit.value = false;
     }
     if (props.data) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            fixedData[v] = props.data.content[v];
-            fixedSetting.value[v] = props.data.content[v];
-        })
+        if (Object.keys(props.data.content).length > 0) {
+            let _temp = { ...props.data.content };
+            _temp.menus = [...props.data.content.menus];
+            _temp.menus.forEach((v, i) => {
+                _temp.menus[i] = { ...v };
+            })
+            let _temp2 = { ...props.data.content };
+            _temp2.menus = [...props.data.content.menus];
+            _temp2.menus.forEach((v, i) => {
+                _temp2.menus[i] = { ...v };
+            })
+            Object.keys(_temp).forEach((v, i) => {
+                fixedData[v] = _temp[v];
+            })
+            Object.keys(_temp2).forEach((v, i) => {
+                fixedSetting.value[v] = _temp2[v];
+            })
+        }
     }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            fixedData[v] = props.data.content[v];
-            fixedSetting.value[v] = props.data.content[v];
+        let _temp = { ...props.data.content };
+        _temp.menus = [...props.data.content.menus];
+        _temp.menus.forEach((v, i) => {
+            _temp.menus[i] = { ...v };
+        })
+        let _temp2 = { ...props.data.content };
+        _temp2.menus = [...props.data.content.menus];
+        _temp2.menus.forEach((v, i) => {
+            _temp2.menus[i] = { ...v };
+        })
+        Object.keys(_temp).forEach((v, i) => {
+            fixedData[v] = _temp[v];
+        })
+        Object.keys(_temp2).forEach((v, i) => {
+            fixedSetting.value[v] = _temp2[v];
         })
     }
 })
 const addPushMenu = () => {
-    fixedData.menus.push({ text: "", link: "", target: false, validText: true, validLink: true })
+    if (fixedData.menus.length > 15) {
+        fixedMenuValid.value = false;
+        return;
+    }
+    if (fixedData.menus.length > 0) {
+        fixedMenuValid.value = true;
+    }
+    fixedData.menus.push({ text: "", link: "", target: false, validText: true, validUrl: true })
 }
 
 const addInsertMenu = (index) => {
-    if (index == fixedData.menus.length) {
-        fixedData.menus.push({ text: "", link: "", target: false, validText: true, validLink: true })
+    if (fixedData.menus.length > 15) {
+        fixedMenuValid.value = false;
         return;
     }
-    fixedData.menus = [...fixedData.menus.slice(0, index + 1), { text: "", link: "", target: false, validText: true, validLink: true }, ...fixedData.menus.slice(index + 1)];
+    if (fixedData.menus.length > 0) {
+        fixedMenuValid.value = true;
+    }
+    if (index == fixedData.menus.length) {
+        fixedData.menus.push({ text: "", link: "", target: false, validText: true, validUrl: true })
+        return;
+    }
+    fixedData.menus = [...fixedData.menus.slice(0, index + 1), { text: "", link: "", target: false, validText: true, validUrl: true }, ...fixedData.menus.slice(index + 1)];
 }
 const removeMenu = (index) => {
+    if (fixedData.menus.length < 16) {
+        fixedMenuValid.value = true;
+    }
+    if (fixedData.menus.length == 0) {
+        fixedMenuValid.value = false;
+    }
     if (!toString.call(index).includes("Number")) {
         console.log(123)
         fixedData.menus = fixedData.menus.slice(0, fixedData.menus.length - 1)
@@ -69,6 +119,16 @@ const removeMenu = (index) => {
 
 const onSubmit = () => {
     let data;
+    if (fixedData.menus.length == 0) {
+        fixedMenuValid.value = false;
+    } else {
+        fixedMenuValid.value = true;
+    }
+    if (fixedData.style == "") {
+        styleValid.value = false;
+    } else {
+        styleValid.value = true;
+    }
     fixedData.menus.forEach(function (v, i) {
         if (v.text.length > 0) {
             v.validText = true;
@@ -76,15 +136,19 @@ const onSubmit = () => {
             v.validText = false;
         }
         if (v.link.length > 0) {
-            v.validLink = true;
+            if (!CheckUrl(v.link)) {
+                v.validUrl = false;
+            } else {
+                v.validUrl = true;
+            }
         } else {
-            v.validLink = false;
+            v.validUrl = false;
         }
     })
     var validCheck = fixedData.menus.every(function (v, i) {
-        return v.validText == true && v.validLink == true
+        return v.validText == true && v.validUrl == true
     })
-    if (validCheck) {
+    if (validCheck && fixedMenuValid.value && styleValid.value) {
         data = { ...fixedData }
         store.updateCpt(props.data.uid, data)
     }
@@ -97,8 +161,8 @@ const onReset = () => {
         })
     } else {
         fixedData = {
-            position: "",
-            hamburger: "",
+            position: "left",
+            hamburger: "hamburger-left",
             style: "",
             menus: []
         }
@@ -118,8 +182,8 @@ const closeBtn = () => {
         })
     } else {
         fixedData = {
-            position: "",
-            hamburger: "",
+            position: "left",
+            hamburger: "hamburger-left",
             style: "",
             menus: []
         }
@@ -130,10 +194,12 @@ const closeBtn = () => {
 
 const openMenu = () => {
     menuToggle.value = true;
+    document.querySelector("body").classList.add("ov-hidden");
 }
 
 const closeMenu = () => {
     menuToggle.value = false;
+    document.querySelector("body").classList.remove("ov-hidden");
 }
 </script>
 <template>
@@ -142,8 +208,18 @@ const closeMenu = () => {
          :style="colors[fixedSetting.style]">
         <a href="javascript:;" class="g-fixed__close" @click="closeMenu"></a>
         <div class="g-fixed-container">
-            <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
-               :target="[menu.target ? '_blank' : '_self']" v-for="menu in fixedSetting.menus">{{ menu.text }}</a>
+            <template v-if="store.status == 'edit'">
+                <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
+                   :target="[menu.target == 'true' ? '_blank' : '_blank']" v-for="menu in fixedSetting.menus">{{
+                           menu.text
+                   }}</a>
+            </template>
+            <template v-if="store.status != 'edit'">
+                <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
+                   :target="[menu.target == 'true' ? '_blank' : '_self']" v-for="menu in fixedSetting.menus">{{
+                           menu.text
+                   }}</a>
+            </template>
         </div>
         <g-modify :uid="data.uid" :move="false" v-if="page == 'EditPage'" />
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
@@ -152,7 +228,10 @@ const closeMenu = () => {
             </template>
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">浮動式選單<a href="javascript:;" class="edit-title__q"></a></div>
+                    <div class="edit-title__text">浮動選單
+                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Fixed.html"
+                           class="edit-title__q" target="_blank"></a>
+                    </div>
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">出現位置:</div>
@@ -168,10 +247,10 @@ const closeMenu = () => {
                 </div>
                 <div class="g-edit__row">
                     <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
-                              v-model="fixedData.style" />
+                              v-model="fixedData.style" :valid="styleValid" />
                 </div>
                 <div class="g-edit__row">
-                    <span class="input-group__label">選單數目</span>
+                    <span class="input-group__label" :class="[fixedMenuValid ? '' : 'warning']">選單數目</span>
                     <div>{{ fixedData.menus.length }}</div>
                     <a href="javascript:;" class="input-group__click icon icon-add" @click="addPushMenu"></a>
                     <a href="javascript:;" class="input-group__click icon icon-remove" @click="removeMenu"></a>
@@ -182,7 +261,7 @@ const closeMenu = () => {
                         <a href="javascript:;" class="icon icon-remove" :class="[index == 0 ? 'v-hidden' : '']"
                            @click="removeMenu(index)"></a>
                         <g-input placeholder="*選單文字" v-model="menu.text" :valid="menu.validText" />
-                        <g-input placeholder="*連結或URL" v-model="menu.link" :valid="menu.validLink" />
+                        <g-input placeholder="*連結" v-model.trim="menu.link" :valid="menu.validUrl" />
                         <div class="edit-radio__box">
                             <div class="input-group__label">另開視窗:</div>
                             <g-radio label="是" :name="`target${index}`" :value="true" v-model="menu.target" />

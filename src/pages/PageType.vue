@@ -2,6 +2,7 @@
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
 import GHome from "../components/GHome.vue";
+import GLightbox from "../components/GLightbox.vue";
 import { GetPageType } from "../api";
 import { loadingShow, loadingHide } from "../Tool";
 const store = mainStore()
@@ -10,27 +11,36 @@ const { content } = storeToRefs(store);
 let typeList = ref([])
 let totalPage = ref(0)
 let currentPage = ref(1)
-let loading = ref(true)
+let total = ref(5)
+let messageText = ref("");
+let messageLightbox = ref(false);
+let pageTypeLightbox = ref(false);
+let pageTypeSeq = ref("");
+let pageTypeTitle = ref("");
+let pageTypeDescription = ref("");
 
 onMounted(() => {
     loadingShow()
-    GetPageType(1).then((res) => {
+    GetPageType(store.otp).then((res) => {
         let { code, message, url, listData } = res.data;
         if (code != 1) {
+            messageText.value = message;
+            messageLightbox.value = true;
             return;
         }
-        loadingHide()
         typeList.value = listData;
-        totalPage.value = Math.ceil(listData.length / 12);
-        loading.value = false;
+        totalPage.value = Math.ceil(listData.length / total.value);
+    }).finally(() => {
+        loadingHide()
     })
 })
 
 const confirmType = (type) => {
-    store.$patch(state => {
-        state.pageTypeSeq = type
-        state.page = "CreateEvent"
-    })
+    pageTypeTitle.value = type.subject;
+    pageTypeDescription.value = type.directions;
+    pageTypeLightbox.value = true;
+    pageTypeSeq.value = type.pageTypeSeq;
+
 }
 const prev = () => {
     let temp = currentPage.value;
@@ -50,6 +60,17 @@ const next = () => {
     typeList.value = []
     currentPage.value = temp;
 }
+
+const onSubmit = () => {
+    store.$patch(state => {
+        state.pageTypeSeq = pageTypeSeq.value;
+        state.page = "CreateEvent";
+    })
+}
+
+const onCancel = () => {
+    pageTypeLightbox.value = false;
+}
 </script>
 <template>
     <div class="container">
@@ -58,10 +79,12 @@ const next = () => {
             <span class="page-title--style">網柑達</span>
             <span>選擇樣板</span>
         </div>
-        <div class="select-type__content">
-            <div class="select-type__box" v-for="t in typeList" @click="confirmType(t.pageTypeSeq)">
-                <a href="javascript:;" class="select-type__type"></a>
-                <div class="select-type__name">{{ t.subject }}</div>
+        <div class="page-type__content">
+            <div class="page-type__box" v-for="t in typeList" @click="confirmType(t)">
+                <a href="javascript:;" class="page-type__type" :data-type="t.pageTypeSeq">
+                    <img :src="t.image" alt="">
+                </a>
+                <div class="page-type__name">{{ t.subject }}</div>
             </div>
         </div>
         <div class="pagination__box" v-if="!loading">
@@ -75,4 +98,22 @@ const next = () => {
                @click="next">下一頁</a>
         </div>
     </div>
+    <g-lightbox v-model:showLightbox="messageLightbox">
+        <template #lightbox-content>
+            <div>{{ messageText }}</div>
+        </template>
+    </g-lightbox>
+
+    <g-lightbox v-model:showLightbox="pageTypeLightbox">
+        <template #lightbox-title>
+            <div>{{ pageTypeTitle }}</div>
+        </template>
+        <template #lightbox-content>
+            <div v-html="pageTypeDescription"></div>
+        </template>
+        <template #lightbox-btn>
+            <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認</a>
+            <a href="javascript:;" class="btn btn__reset" @click="onCancel">取消</a>
+        </template>
+    </g-lightbox>
 </template>

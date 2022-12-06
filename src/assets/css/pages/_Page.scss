@@ -1,3 +1,16 @@
+body {
+	background-color: #333333;
+}
+#app.edit {
+	#cookieBarWrap {
+		display: none;
+	}
+}
+// #app.preview {
+// 	#cookieBarWrap {
+// 		display: block;
+// 	}
+// }
 .wrap {
 	background-position: center 0;
 	background-image: var(--pc);
@@ -17,22 +30,30 @@
 	}
 }
 #cookieBarWrap {
-	display: none !important;
-	&.on {
-		display: block !important;
-	}
+	// display: none;
+	// &.on {
+	// 	display: block;
+	// }
 }
 .page {
 	&-preview {
+		width: 100%;
 		font-size: 25px;
 		font-weight: bold;
 		color: #333333;
-		background-color: #ff9c00;
+		background-color: rgba(#ff9c00, 1);
 		text-align: center;
-		padding: 6px 0;
+		padding: 12px 0;
+		position: relative;
+		z-index: 1;
 		@include media {
 			font-size: vw(32);
 			padding: vw(12) 0;
+		}
+		& + .wrap {
+			.g-modify {
+				display: none;
+			}
 		}
 	}
 	&-control {

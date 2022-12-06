@@ -9,6 +9,10 @@ const changePage = (page) => {
         state.page = page
     })
 }
+
+if (window.sessionStorage.getItem("state")) {
+    window.sessionStorage.removeItem("state")
+}
 </script>
 <template>
     <div class="container">
@@ -20,7 +24,8 @@ const changePage = (page) => {
             <a href="javascript:;" class="home-btn__item" @click="changePage('PageType')">新增活動</a>
             <a href="javascript:;" class="home-btn__item" @click="changePage('EventList')">活動列表 </a>
             <a href="javascript:;" class="home-btn__item" @click="changePage('ApproveList')">已審活動 </a>
-            <a href="javascript:;" class="home-btn__item" @click="changePage('Guide')">使用教學 </a>
+            <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Guide.html"
+               class="home-btn__item" target="_blank">使用教學 </a>
         </div>
     </div>
 </template>

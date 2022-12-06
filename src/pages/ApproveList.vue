@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUpdated } from "vue";
+import { mainStore } from "../store/index";
 import GLightbox from "../components/GLightbox.vue";
 import GDate from "../elements/GDate.vue";
 import GInput from "../elements/GInput.vue";
@@ -8,8 +8,8 @@ import GHome from "../components/GHome.vue";
 import { loadingShow, loadingHide } from "../Tool";
 import { GetGames, GetApprovedEvent, UpdateApprovedEvent } from "../api";
 
+const store = mainStore()
 let openEventOff = ref(false)
-let loading = ref(true)
 let eventFilter = reactive({
     eventName: "",
     beginDate: ref(""),
@@ -21,8 +21,9 @@ let eventFilter = reactive({
 let gameSeqOptions = ref([])
 let eventData = ref([])
 let totalPage = ref(0)
+let total = ref(5)
 let currentPage = ref(1)
-let message = ref("");
+let messageText = ref("");
 let messageLightbox = ref(false);
 let approvedTemp = ref({})
 
@@ -43,32 +44,31 @@ const next = () => {
     }
     currentPage.value = temp;
 }
-onMounted(async () => {
-    await nextTick()
-    loadingShow()
-    GetGames(1).then((res) => {
-        let { code, message, url, listData } = res.data;
-        if (code != 1) {
-            return;
-        }
-        loadingHide()
-        gameSeqOptions.value = listData;
-        loading.value = false;
-    })
+
+const eventDataSlice = computed(() => {
+    if (eventData.value.length == 0) {
+        return []
+    }
+    return eventData.value.slice(currentPage.value * total.value - total.value, currentPage.value * total.value)
 })
 
 const onSearch = () => {
     loadingShow()
     let data = { ...eventFilter };
     let { eventName, beginDate, endDate, gameSeq, approvedSeq } = data;
-    GetApprovedEvent(1, { eventName, beginDate, endDate, gameSeq, approvedSeq }).then((res) => {
+    GetApprovedEvent(store.otp, { eventName, beginDate, endDate, gameSeq, approvedSeq }).then((res) => {
         let { code, message, url, listData } = res.data;
         if (code != 1) {
+            messageText.value = message;
+            messageLightbox.value = true;
             return;
         }
+        eventData.value = listData || [];
+        currentPage.value = 1;
+        totalPage.value = Math.ceil(eventData.value.length / total.value);
+        store.setApproveListFilter(data, currentPage.value, listData);
+    }).finally(() => {
         loadingHide()
-        eventData.value = listData;
-        totalPage.value = Math.ceil(listData.length / 30);
     })
 }
 
@@ -83,17 +83,21 @@ const dateFormat = (date) => {
     return `${dateTime.getFullYear()}/${dateTime.getMonth() + 1}/${dateTime.getDate()}`
 }
 
+const onSaveTemp = () => {
+    store.setEventListFilter({ ...eventFilter }, currentPage.value, eventData.value);
+}
+
 const eventStatus = (beginDate, endDate, show) => {
-    let status = "待上架"
-    if (show) {
+    let status = "待上線"
+    if (show == 0) {
+        status = "已下架";
+    } else {
         if (+new Date() >= +new Date(beginDate) && +new Date() <= +new Date(endDate)) {
             status = "已上線";
         }
         if (+new Date() >= +new Date(endDate)) {
             status = "已結束";
         }
-    } else {
-        status = "已下架";
     }
 
     return status;
@@ -106,27 +110,74 @@ const eventOff = (event) => {
 
 const onSubmit = () => {
     loadingShow()
-    let data = { ...approvedTemp };
-    data.gameSeq = data.gameseq;
-    let { eventName, beginDate, endDate, gameSeq, approvedSeq } = data;
-    UpdateApprovedEvent(1, { eventName, beginDate, endDate, gameSeq, approvedSeq }).then((res) => {
+    let data = {};
+    data.eventName = approvedTemp.value.eventName;
+    data.beginDate = approvedTemp.value.beginDate;
+    data.endDate = approvedTemp.value.endDate;
+    data.approvedSeq = approvedTemp.value.approvedSeq;
+    data.gameSeq = "" + approvedTemp.value.gameseq;
+    Object.keys(data).forEach((v, i) => {
+        if (data[v] == null) {
+            data[v] = "";
+        }
+    })
+    UpdateApprovedEvent(store.otp, data).then((res) => {
         let { code, message, url, listData } = res.data;
         if (code != 1) {
+            messageText.value = message;
+            messageLightbox.value = true;
             return;
         }
-        loadingHide()
-        eventData.value = listData;
-        totalPage.value = Math.ceil(listData.length / 30);
+        eventData.value.forEach((v, i) => {
+            if (v.gameseq == data.gameSeq) {
+                v.show = 0;
+            }
+        })
+
         openEventOff.value = false;
-        message.value = "已下架成功";
-        return listData;
+        return res;
     }).then((res) => {
+        messageText.value = "已下架成功";
         messageLightbox.value = true;
+    }).finally(() => {
+        loadingHide()
     })
 }
-const onCancel = (ref) => {
-    ref["value"] = false;
+const onCancel = (type) => {
+    if (type == "下架") {
+        openEventOff.value = false;
+    }
 }
+
+onMounted(async () => {
+    await nextTick()
+    loadingShow()
+    GetGames(store.otp).then((res) => {
+        let { code, message, url, listData } = res.data;
+        if (code != 1) {
+            messageText.value = message;
+            messageLightbox.value = true;
+            return;
+        }
+        gameSeqOptions.value = listData;
+        if (Object.keys(store.approveListFilter).length) {
+            Object.keys(eventFilter).forEach((v, i) => {
+                eventFilter[v] = store.approveListFilter[v];
+            })
+            eventData.value = store.approveListData || [];
+            currentPage.value = store.approveListCurrent;
+            if (store.approveListData) {
+                totalPage.value = Math.ceil(store.approveListData.length / total.value);
+            } else {
+                totalPage.value = 0;
+            }
+        } else {
+            onSearch();
+        }
+    }).finally(() => {
+        loadingHide()
+    })
+})
 </script>
 <template>
     <div class="container">
@@ -177,7 +228,7 @@ const onCancel = (ref) => {
                 </div>
             </div>
             <div class="event-list__body">
-                <div class="event-list__box" v-for="(event, index) in eventData">
+                <div class="event-list__box" v-for="(event, index) in eventDataSlice">
                     <div class="event-list__item">{{ gameSeqName(event.gameseq)[0]?.gameName || "" }}</div>
                     <div class="event-list__item">
                         <div class="event-list__date">{{ dateFormat(event.beginDate) }}-{{ dateFormat(event.endDate) }}
@@ -185,19 +236,21 @@ const onCancel = (ref) => {
                     </div>
                     <div class="event-list__item"><a href="javascript:;">{{ event.eventName }}</a></div>
                     <div class="event-list__item">
-                        <!-- 待下架/已上線 -->
                         <div class="event-list__status">
-                            <div class="event-list__status-item" :class="[event.show > 0 ? '' : 'end']">{{
+                            <div class="event-list__status-item" :class="[event.show == 0 ? '' : 'end']">{{
                                     eventStatus(event.beginDate, event.endDate,
                                         event.show)
                             }}</div>
-                            <div class="event-list__status-item" v-if="event.show > 0"><a class="event-list__btn-off"
+                            <div class="event-list__status-item" v-if="(event.show == 1)"><a class="event-list__btn-off"
                                    href="javascript:;"
                                    @click="eventOff(event)">下架</a></div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="event-list__content" v-else>
+            <div class="event-list__null">目前沒有資料</div>
         </div>
         <div class="pagination__box" v-if="eventData.length > 0">
             <a href="javascript:;" class="btn btn__prev" :class="[currentPage == 1 ? 'disabled' : '']"
@@ -219,13 +272,13 @@ const onCancel = (ref) => {
             </template>
             <template #lightbox-btn>
                 <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認</a>
-                <a href="javascript:;" class="btn btn__reset" @click="onCancel(openEventOff)">取消</a>
+                <a href="javascript:;" class="btn btn__reset" @click="onCancel('下架')">取消</a>
             </template>
         </g-lightbox>
 
         <g-lightbox v-model:showLightbox="messageLightbox">
             <template #lightbox-content>
-                <div>{{ message }}</div>
+                <div>{{ messageText }}</div>
             </template>
         </g-lightbox>
     </div>

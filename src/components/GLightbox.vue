@@ -15,6 +15,9 @@ const props = defineProps({
     },
     action: {
         default: true
+    },
+    close: {
+        default: true
     }
 })
 const emit = defineEmits(["update:showLightbox"])
@@ -28,15 +31,24 @@ const slotTile = useSlots()['lightbox-title'];
 defineExpose({
     lightboxRef
 })
+watchEffect(() => {
+    if (props.showLightbox) {
+        document.querySelector("body").classList.add("ov-hidden");
+    } else {
+        document.querySelector("body").classList.remove("ov-hidden");
+    }
+})
 </script>
 <template>
     <Teleport to="body">
         <div class="g-lightbox" :style="[style ? style : '']" v-if="showLightbox" ref="lightboxRef">
             <div class="g-lightbox__module"></div>
             <div class="g-lightbox__wrap">
-                <slot name="lightbox-close">
-                    <a href="javascript:;" class="g-lightbox__close icon-close" @click="closeBtn">close</a>
-                </slot>
+                <template v-if="close">
+                    <slot name="lightbox-close">
+                        <a href="javascript:;" class="g-lightbox__close icon-close" @click="closeBtn">close</a>
+                    </slot>
+                </template>
                 <div class="g-lightbox__container">
                     <div class="g-lightbox__title" v-if="slotTile">
                         <slot name="lightbox-title"></slot>

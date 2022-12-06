@@ -24,6 +24,16 @@
 					}
 				}
 			}
+			&:disabled {
+				& + .radio-group__style {
+					color: gray;
+					cursor: default;
+				}
+				& + .radio-group__style + .radio-group__label {
+					color: gray;
+					cursor: default;
+				}
+			}
 		}
 		&__style {
 			width: 16px;
@@ -32,9 +42,10 @@
 			border-radius: 50%;
 			border: 1px solid #5b5b5b;
 			position: relative;
+			margin: 0 6px;
 		}
 		&__label {
-			margin-left: 6px;
+			// margin-left: 6px;
 		}
 	}
 }
