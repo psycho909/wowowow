@@ -18,6 +18,9 @@ const props = defineProps({
     },
     close: {
         default: true
+    },
+    class: {
+        default: ""
     }
 })
 const emit = defineEmits(["update:showLightbox"])
@@ -41,7 +44,7 @@ watchEffect(() => {
 </script>
 <template>
     <Teleport to="body">
-        <div class="g-lightbox" :style="[style ? style : '']" v-if="showLightbox" ref="lightboxRef">
+        <div class="g-lightbox" :style="[style ? style : '']" :class="class" v-if="showLightbox" ref="lightboxRef">
             <div class="g-lightbox__module"></div>
             <div class="g-lightbox__wrap">
                 <template v-if="close">

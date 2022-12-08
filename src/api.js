@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiRequest = axios.create({
-	baseURL: "../api/GamaEvent/"
+	baseURL: "/api/GamaEvent/"
 });
 
 // 取得遊戲列表

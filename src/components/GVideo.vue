@@ -146,7 +146,8 @@ const closeBtn = () => {
                 </a>
                 <a v-if="videoSetting.type == 'pop'" href="javascript:;" class="g-video__box" @click="openPop(videos)">
                     <g-youtube :youtube="videos.url" :pop="true" />
-                    <g-lightbox v-model:showLightbox="videos.show" :style="videos.style" :action="false">
+                    <g-lightbox v-model:showLightbox="videos.show" :style="videos.style" :action="false"
+                                class="lb-video">
                         <template #lightbox-content>
                             <div class="g-lightbox__video">
                                 <g-youtube :youtube="videos.url" :popopen="videos.show" />

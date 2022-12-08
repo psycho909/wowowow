@@ -36,7 +36,7 @@ const onSwiper = (swiper) => {
         <swiper
 
                 :modules="modules"
-                :slides-per-view="1"
+                :slides-per-view="3"
                 :slidesPerGroup="1"
                 :space-between="0"
                 :breakpoints="breakpoints"
@@ -46,6 +46,7 @@ const onSwiper = (swiper) => {
                 navigation
                 :pagination="{ clickable: true }"
                 :autoplay="autoplay"
+                :set-wrapper-size="true"
                 @swiper="onSwiper">
             <swiper-slide v-for="slide in data.slides">
                 <template v-if="store.status == 'edit'">

@@ -31,11 +31,11 @@
 		background-color: var(--btnBg, #ff9c00);
 		border-radius: 4px;
 		@include media {
-			width: vw(36) !important;
-			height: vw(36) !important;
+			width: vw(60) !important;
+			height: vw(60) !important;
 			right: 0;
 			border-radius: vw(4);
-			top: vw(-48);
+			top: vw(-84);
 		}
 		&:before {
 			content: "";
@@ -65,8 +65,8 @@
 		vertical-align: middle;
 		display: inline-block;
 		@include media {
-			width: vw(675);
-			margin: vw(32) auto;
+			width: vw(728);
+			margin: vw(180) auto;
 		}
 	}
 	&__title {
@@ -74,7 +74,7 @@
 		margin-bottom: 18px;
 		// color: #363636;
 		@include media {
-			font-size: vw(28);
+			font-size: vw(36);
 			margin-bottom: vw(18);
 		}
 	}
@@ -92,7 +92,7 @@
 		@include media {
 			padding: vw(20) vw(20) vw(30);
 			border-radius: vw(10);
-			font-size: vw(20);
+			font-size: vw(32);
 		}
 	}
 	&__content {
@@ -104,6 +104,12 @@
 		}
 		&.center {
 			text-align: center;
+		}
+		& + .g-lightbox__img {
+			margin-top: 24px;
+			@include media {
+				margin-top: vw(32);
+			}
 		}
 	}
 	&__img {
@@ -128,9 +134,9 @@
 		background-color: var(--btnBg, #ff9c00);
 		color: var(--btnText, #fff);
 		@include media {
-			width: vw(185);
-			height: vw(43);
-			font-size: vw(18);
+			width: vw(300);
+			height: vw(68);
+			font-size: vw(32);
 			border-radius: vw(10);
 		}
 		&-group {

@@ -106,7 +106,7 @@
 			color: var(--hoverText, #3d3a3a);
 		}
 		@include media {
-			font-size: vw(32);
+			font-size: vw(36);
 			padding: vw(30) vw(16);
 		}
 	}
@@ -124,6 +124,7 @@
 			}
 			&__menu {
 				padding: 12px 16px;
+				font-size: 24px;
 				@include media {
 					padding: vw(30) 0;
 				}
