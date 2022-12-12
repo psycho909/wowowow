@@ -111,6 +111,10 @@
 	}
 	&__content {
 		text-align: center;
+		img {
+			max-width: 100%;
+			display: inline-block;
+		}
 	}
 	&__text {
 		& + .g-lightbox__img {

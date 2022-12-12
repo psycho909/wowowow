@@ -5,43 +5,40 @@ export const mainStore = defineStore("main", {
 	state: () => {
 		return {
 			page: "EditPage",
-			status: "",
+			status: "edit",
 			MODE: "",
 			pageTypeSeq: "",
 			config: {},
 			content: [
-				{ component: "GBg", uid: 1, content: { color: "#fff", pc: "", mobile: "", w: 1920, h: 958, mw: "", mh: "", validPC: true, validMobile: true }, update: false, init: false },
 				{
-					component: "GImg",
-					uid: "08f0fc00-b08c-49ab-8368-7cc79849870f",
+					component: "GBg",
+					uid: 1,
 					content: {
-						num: "4",
-						imgs: [
-							{ pc: "https://p2.bahamut.com.tw/B/2KU/11/ab790cd54c11e278047915d4c41jkxn5.JPG?w=1000", mobile: "", type: "", validPC: true, validMobile: true, pop: { show: false, type: "text", align: "left", style: "" }, target: { link: "", attribute: true, validUrl: true } },
-							{ pc: "https://p2.bahamut.com.tw/B/2KU/11/ab790cd54c11e278047915d4c41jkxn5.JPG?w=1000", mobile: "", type: "", validPC: true, validMobile: true, pop: { show: false, type: "text", align: "left", style: "" }, target: { link: "", attribute: true, validUrl: true } },
-							{ pc: "https://p2.bahamut.com.tw/B/2KU/11/ab790cd54c11e278047915d4c41jkxn5.JPG?w=1000", mobile: "", type: "", validPC: true, validMobile: true, pop: { show: false, type: "text", align: "left", style: "" }, target: { link: "", attribute: true, validUrl: true } },
-							{ pc: "https://p2.bahamut.com.tw/B/2KU/11/ab790cd54c11e278047915d4c41jkxn5.JPG?w=1000", mobile: "", type: "", validPC: true, validMobile: true, pop: { show: false, type: "text", align: "left", style: "" }, target: { link: "", attribute: true, validUrl: true } }
-						],
-						mt: 0,
-						mb: 54
+						color: "#fff",
+						pc: "",
+						mobile: "",
+						w: 1920,
+						h: 958,
+						mw: "",
+						mh: "",
+						validPC: true,
+						validMobile: true
 					},
 					update: false,
 					init: false
 				},
 				{
-					component: "GVideo",
-					uid: "d5588576-52de-42af-9099-ea82b4d3237d",
+					component: "GSlogan",
+					uid: 2,
 					content: {
-						num: "4",
-						type: "click",
-						videos: [
-							{ url: "https://www.youtube.com/watch?v=UilsQfMIkGM", show: false, validUrl: true },
-							{ url: "https://www.youtube.com/watch?v=UilsQfMIkGM", show: false, validUrl: true },
-							{ url: "https://www.youtube.com/watch?v=UilsQfMIkGM", show: false, validUrl: true },
-							{ url: "https://www.youtube.com/watch?v=UilsQfMIkGM", show: false, validUrl: true }
-						],
-						mt: 0,
-						mb: 54
+						link: "",
+						mt: "250",
+						mb: "24",
+						pc: "",
+						mobile: "",
+						validPC: true,
+						validMobile: true,
+						validUrl: true
 					},
 					update: false,
 					init: false
