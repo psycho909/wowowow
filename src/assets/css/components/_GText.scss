@@ -27,6 +27,9 @@
 	}
 	&.center {
 		text-align: center;
+		table {
+			margin: 0 auto;
+		}
 	}
 	&-container {
 		max-width: 1000px;
@@ -39,15 +42,38 @@
 	&__content {
 		padding: 25px;
 		background-color: var(--bg, rgba(#474747, 0.6));
-		color: var(--text, #fff);
-		font-size: 18px;
+		color: var(--text, #000);
+		font-size: 24px;
 		word-break: break-all;
+		line-height: 1.5;
 		@include media {
 			font-size: vw(32);
 			padding: vw(25);
 		}
 		a {
-			color: var(--link, #fff);
+			color: var(--link, #000);
+		}
+		ol,
+		ul {
+			padding-left: 48px;
+			@include media {
+				padding-left: vw(64);
+			}
+		}
+		li {
+		}
+		table {
+			border-collapse: collapse;
+		}
+		table,
+		td {
+			border: 1px solid var(--text, #000);
+		}
+		td {
+			padding: 4px;
+			@include media {
+				padding: vw(4);
+			}
 		}
 	}
 	img {

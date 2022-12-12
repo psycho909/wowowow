@@ -135,13 +135,25 @@ const closeBtn = () => {
 </script>
 <template>
     <div class="g-slogan" :style="cssVar">
-        <a :href="[sloganSetting.link ? sloganSetting.link : 'javascript:;']" class="g-slogan-container">
-            <picture>
-                <source media="(max-width:768px)" :srcset="sloganSetting.mobile || sloganSetting.pc" />
-                <img :srcset="sloganSetting.pc" :src="sloganSetting.pc" alt="" />
-            </picture>
-            <g-modify :uid="data.uid" title="主標圖" :move="false" v-if="page == 'EditPage'" />
-        </a>
+        <template v-if="store.status != 'edit'">
+            <a :href="[sloganSetting.link ? sloganSetting.link : 'javascript:;']" class="g-slogan-container">
+                <picture>
+                    <source media="(max-width:768px)" :srcset="sloganSetting.mobile || sloganSetting.pc" />
+                    <img :srcset="sloganSetting.pc" :src="sloganSetting.pc" alt="" />
+                </picture>
+                <g-modify :uid="data.uid" title="主標圖" :move="false" v-if="page == 'EditPage'" />
+            </a>
+        </template>
+        <template v-else>
+            <a :href="[sloganSetting.link ? sloganSetting.link : 'javascript:;']" class="g-slogan-container"
+               target="_blank">
+                <picture>
+                    <source media="(max-width:768px)" :srcset="sloganSetting.mobile || sloganSetting.pc" />
+                    <img :srcset="sloganSetting.pc" :src="sloganSetting.pc" alt="" />
+                </picture>
+                <g-modify :uid="data.uid" title="主標圖" :move="false" v-if="page == 'EditPage'" />
+            </a>
+        </template>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
             <template #edit-close>
                 <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>

@@ -15,6 +15,20 @@
 		height: 100%;
 		vertical-align: middle;
 	}
+	&.left {
+		.g-lightbox__content,
+		.g-lightbox__title,
+		.g-lightbox__img {
+			text-align: left;
+		}
+	}
+	&.center {
+		.g-lightbox__content,
+		.g-lightbox__title,
+		.g-lightbox__img {
+			text-align: center;
+		}
+	}
 	&__module {
 		width: 100%;
 		height: 100%;
@@ -99,12 +113,6 @@
 		text-align: center;
 	}
 	&__text {
-		&.left {
-			text-align: left;
-		}
-		&.center {
-			text-align: center;
-		}
 		& + .g-lightbox__img {
 			margin-top: 24px;
 			@include media {
@@ -113,7 +121,6 @@
 		}
 	}
 	&__img {
-		text-align: center;
 		font-size: 0;
 		img {
 			max-width: 100%;

@@ -57,6 +57,9 @@ watchEffect(async () => {
             Object.keys(_temp2).forEach((v, i) => {
                 slideSetting.value[v] = _temp2[v];
             })
+            imgLoading(slideData.slides).then((res) => {
+                loading.value = false;
+            })
         }
         slideUpdate.value = false;
         await nextTick();

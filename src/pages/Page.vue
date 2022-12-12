@@ -7,7 +7,7 @@ export default {
 import { storeToRefs } from "pinia";
 import components from "../Components.js";
 import { mainStore } from "../store/index";
-import { loadingShow, loadingHide, gameNameFilter } from "../Tool";
+import { loadingShow, loadingHide } from "../Tool";
 import gameFooter from "../gameFooter";
 const store = mainStore()
 const { content } = storeToRefs(store);
@@ -31,7 +31,7 @@ const cssVar = computed(() => {
 let footer = {}
 onMounted(() => {
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
-    footer.prod = gameNameFilter(store.config.gameseq)[0].gameName || '天堂M';
+    footer.prod = store.config.gameName || '天堂M';
     footer.theme = store.config.footer == 1 ? 'light' : 'dark';
     gameFooter(footer);
 })

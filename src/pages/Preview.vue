@@ -8,7 +8,7 @@ import { storeToRefs } from "pinia";
 import components from "../Components.js";
 import GCookie from "../components/GCookie.vue";
 import { mainStore } from "../store/index";
-import { loadingShow, loadingHide, gameNameFilter, pageInfo } from "../Tool";
+import { loadingShow, loadingHide, pageInfo } from "../Tool";
 import gameFooter from "../gameFooter";
 import topBar from "../topBar";
 const store = mainStore()
@@ -23,12 +23,12 @@ let footer = {}
 
 onMounted(async () => {
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
-    footer.prod = gameNameFilter(store.config.gameseq)[0].gameName || '天堂M';
+    footer.prod = store.config.gameName;
     footer.theme = store.config.footer == 1 ? 'light' : 'dark';
     gameFooter(footer);
     pageInfo(store.config);
     if (store.config.header == 1) {
-        topBar(store.config.gameseq)
+        topBar(store.config.gameName)
     }
 })
 const cssVar = computed(() => {
@@ -61,15 +61,11 @@ const onEvent = (type) => {
 }
 </script>
 <template>
-    <section class="page-preview">(此頁面內容尚未儲存，如需保留請記得存檔)</section>
+    <section class="page-preview">(此頁面內容尚未儲存 ， 如需保留請記得存檔)</section>
     <section class="wrap" :data-type="store.config.pageTypeSeq" :style="cssVar">
         <template v-for="block in content">
             <component :is="block.component" :data="block"></component>
         </template>
     </section>
     <GCookie v-if="(store.config.cookie == 1)" :data="store.config"></GCookie>
-    <!-- <div class="page-control__group">
-        <a href="javascript:;" class="page-control__btn" @click="onEvent('editPage')"
-           v-if="store.config.flag == 0">回編輯</a>
-    </div> -->
 </template>

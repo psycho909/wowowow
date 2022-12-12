@@ -134,12 +134,10 @@ const onSubmit = async () => {
     } else {
         valid.eventName = false;
     }
-    if (eventConfig.webtitle) {
-        if (eventConfig.webtitle.length > 50) {
-            valid.webtitle = false;
-        } else {
-            valid.webtitle = true;
-        }
+    if (eventConfig.webtitle.length > 0 && eventConfig.webtitle.length <= 50) {
+        valid.webtitle = true;
+    } else {
+        valid.webtitle = false;
     }
     if (eventConfig.webDescription) {
         if (eventConfig.webDescription.length > 50) {
@@ -192,6 +190,9 @@ const onSubmit = async () => {
         endDate = new Date(data.endDate);
         data.beginDate = `${beginDate.getFullYear()}/${beginDate.getMonth() + 1}/${beginDate.getDate()} ${data.beginTime.hours}:${data.beginTime.minutes}`;
         data.endDate = `${endDate.getFullYear()}/${endDate.getMonth() + 1}/${endDate.getDate()} ${data.endTime.hours}:${data.endTime.minutes}`;
+        data.gameName = gameOptions.value.filter((v, i) => {
+            return v.guid == data.gameseq
+        })[0].gameName;
         Object.keys(data).forEach((v, i) => {
             if (data[v] == null) {
                 data[v] = "";
@@ -199,7 +200,6 @@ const onSubmit = async () => {
         })
         loadingShow();
         if (store.status == "edit") {
-            console.log(123)
             UpdateEvent(store.otp, data).then((res) => {
                 let { code, message, url, listData } = res.data;
                 if (code != 1) {
@@ -354,7 +354,7 @@ const onEvent = (type) => {
             </div> -->
             <div class="create-config__col">
                 <g-input label="網頁標題" placeholder="輸入內容" v-model="eventConfig.webtitle" :valid="valid.webtitle"
-                         maxlength="50" />
+                         maxlength="50" :required="true" />
             </div>
             <div class="create-config__col">
                 <g-input label="網頁說明" placeholder="輸入內容" v-model="eventConfig.webDescription"

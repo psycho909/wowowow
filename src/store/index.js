@@ -133,11 +133,15 @@ export const mainStore = defineStore("main", {
 		},
 		setPage(data, back) {
 			if (data == "Preview") {
-				window.open("/Preview?OTP=" + this.otp);
+				let page = window.location.pathname.split("/");
+				let path = [...page.slice(0, page.length - 1), "Preview?OTP=" + this.otp];
+				window.open(path.join("/"));
 				return;
 			}
 			if (back) {
-				window.location.href = "/Index?OTP=" + this.otp;
+				let page = window.location.pathname.split("/");
+				let path = [...page.slice(0, page.length - 1), "Index?OTP=" + this.otp];
+				window.location.href = path.join("/");
 				return;
 			}
 			this.page = data;
