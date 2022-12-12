@@ -30,12 +30,6 @@ watchEffect(() => {
     } else {
         showEdit.value = false;
     }
-    if (props.data) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            sloganData[v] = props.data.content[v];
-            sloganSetting.value[v] = props.data.content[v];
-        })
-    }
 })
 
 const cssVar = computed(() => {
@@ -92,6 +86,9 @@ const onSubmit = async () => {
     if (sloganData.validPC && sloganData.validMobile && sloganData.validUrl) {
         data = { ...sloganData }
         store.updateCpt(props.data.uid, data)
+        Object.keys(data).forEach((v, i) => {
+            sloganSetting.value[v] = data[v];
+        })
     }
 }
 const onReset = () => {

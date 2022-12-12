@@ -12,7 +12,6 @@ import GRadio from '../elements/GRadioo.vue';
 import GSwiper from '../elements/GSwiper.vue';
 import { mainStore } from "../store/index";
 import { CheckImage, CheckUrl, imgLoading } from "../Tool";
-import { nextTick, onUnmounted } from 'vue';
 const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()

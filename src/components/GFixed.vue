@@ -35,26 +35,6 @@ watchEffect(() => {
     } else {
         showEdit.value = false;
     }
-    if (props.data) {
-        if (Object.keys(props.data.content).length > 0) {
-            let _temp = { ...props.data.content };
-            _temp.menus = [...props.data.content.menus];
-            _temp.menus.forEach((v, i) => {
-                _temp.menus[i] = { ...v };
-            })
-            let _temp2 = { ...props.data.content };
-            _temp2.menus = [...props.data.content.menus];
-            _temp2.menus.forEach((v, i) => {
-                _temp2.menus[i] = { ...v };
-            })
-            Object.keys(_temp).forEach((v, i) => {
-                fixedData[v] = _temp[v];
-            })
-            Object.keys(_temp2).forEach((v, i) => {
-                fixedSetting.value[v] = _temp2[v];
-            })
-        }
-    }
 })
 onMounted(async () => {
     await nextTick()
@@ -150,6 +130,9 @@ const onSubmit = () => {
     })
     if (validCheck && fixedMenuValid.value && styleValid.value) {
         data = { ...fixedData }
+        Object.keys(data).forEach((v, i) => {
+            fixedSetting.value[v] = data[v];
+        })
         store.updateCpt(props.data.uid, data)
     }
 }
