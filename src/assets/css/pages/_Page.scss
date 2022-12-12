@@ -41,11 +41,11 @@ body {
 		font-size: 25px;
 		font-weight: bold;
 		color: #333333;
-		background-color: rgba(#ff9c00, 1);
+		background-color: rgba(#ff9c00, 0.8);
 		text-align: center;
 		padding: 12px 0;
 		position: relative;
-		z-index: 1;
+		z-index: 9999;
 		@include media {
 			font-size: vw(32);
 			padding: vw(12) 0;

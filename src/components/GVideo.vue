@@ -33,21 +33,27 @@ watchEffect(() => {
     } else {
         showEdit.value = false;
     }
-    if (props.data) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            videoData[v] = props.data.content[v];
-            videoSetting.value[v] = props.data.content[v];
-            _videoDataLength = videoData.num
-        })
-    }
+    // if (props.data) {
+    //     Object.keys(props.data.content).forEach((v, i) => {
+    //         videoData[v] = props.data.content[v];
+    //         videoSetting.value[v] = props.data.content[v];
+    //         _videoDataLength = videoData.num
+    //     })
+    // }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            videoData[v] = props.data.content[v];
-            videoSetting.value[v] = props.data.content[v];
+        let _temp = { ...props.data.content };
+        let _temp2 = { ...props.data.content };
+        Object.keys(_temp).forEach((v, i) => {
+            videoData[v] = _temp[v];
         })
+        Object.keys(_temp2).forEach((v, i) => {
+            videoSetting.value[v] = _temp2[v];
+        })
+
+        _videoDataLength.value = videoData.num;
     }
 })
 
@@ -91,6 +97,9 @@ const onSubmit = () => {
     })
     if (validCheck) {
         data = { ...videoData }
+        Object.keys(data).forEach((v, i) => {
+            videoSetting.value[v] = data[v];
+        })
         store.updateCpt(props.data.uid, data)
     }
 }

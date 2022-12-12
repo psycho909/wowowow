@@ -46,7 +46,7 @@ onMounted(() => {
 					configData.value = data;
 				}
 				if (data.header == 1) {
-					topBar(data.gameseq)
+					topBar(data.gameName)
 				}
 				return store.setData(data);
 			} else {

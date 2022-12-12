@@ -130,6 +130,9 @@
 		&:last-child {
 			border-bottom: 0;
 		}
+		@include hover {
+			background-color: rgba(#ddd, 0.1);
+		}
 	}
 	&__item {
 		padding: 0 4px;
@@ -187,6 +190,16 @@
 		}
 		&-edit {
 			background-color: #0d6efd;
+		}
+		&-content {
+			background-color: #10a765;
+		}
+		&-approve {
+			background-color: #cd372b;
+		}
+		&-approved {
+			background-color: #ff9c00;
+			color: #000;
 		}
 		&-preview {
 			background-color: #ffc107;

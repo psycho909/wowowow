@@ -49,31 +49,6 @@ watchEffect(() => {
     } else {
         showEdit.value = false;
     }
-    if (props.data) {
-        if (Object.keys(props.data.content).length > 0) {
-            let _temp = { ...props.data.content };
-            _temp.imgs = [...props.data.content.imgs];
-            _temp.imgs.forEach((v, i) => {
-                _temp.imgs[i] = { ...v };
-                _temp.imgs[i].pop = { ...v.pop };
-                _temp.imgs[i].target = { ...v.target };
-            })
-            let _temp2 = { ...props.data.content };
-            _temp2.imgs = [...props.data.content.imgs];
-            _temp2.imgs.forEach((v, i) => {
-                _temp2.imgs[i] = { ...v };
-                _temp2.imgs[i].pop = { ...v.pop };
-                _temp2.imgs[i].target = { ...v.target };
-            })
-            Object.keys(_temp).forEach((v, i) => {
-                imgData[v] = _temp[v];
-            })
-            Object.keys(_temp2).forEach((v, i) => {
-                imgSetting.value[v] = _temp2[v];
-            })
-        }
-
-    }
 })
 onMounted(async () => {
     await nextTick()
@@ -140,7 +115,6 @@ const onChange = (e) => {
     } else {
         imgData.imgs = imgData.imgs.slice(0, num)
     }
-
     _imgDataLength.value = num
 }
 
@@ -187,8 +161,14 @@ const onSubmit = async () => {
         return v.validPC == true && v.validMobile == true && v.target.validUrl == true;
     })
     if (validCheck && styleValid.value) {
-        data = { ...imgData }
-        store.updateCpt(props.data.uid, data)
+        data = { ...imgData };
+        Object.keys(data).forEach((v, i) => {
+            imgSetting.value[v] = data[v];
+        })
+        store.updateCpt(props.data.uid, data);
+        imgLoading(imgData.imgs).then((res) => {
+            loading.value = false;
+        })
     }
 }
 const onReset = () => {
@@ -265,7 +245,7 @@ const closeBtn = () => {
             <template v-if="!loading" v-for="imgs in imgSetting.imgs">
                 <template v-if="imgs.type == 'link' && store.status != 'edit'">
                     <a :href="[imgs.target.link ? imgs.target.link : 'javascript:;']"
-                       :target="[imgs.target.attribute == 'true' ? '_blank' : '_blank']" class="g-img__box"
+                       :target="[imgs.target.attribute == 'true' ? '_blank' : '_self']" class="g-img__box"
                        :class="imgs.type ? '' : 'none'">
                         <picture>
                             <source media="(max-width:768px)" :srcset="imgs.mb || imgs.pc" />
@@ -275,7 +255,7 @@ const closeBtn = () => {
                 </template>
                 <template v-if="imgs.type == 'link' && store.status == 'edit'">
                     <a :href="[imgs.target.link ? imgs.target.link : 'javascript:;']"
-                       :target="[imgs.target.attribute == 'true' ? '_blank' : '_self']" class="g-img__box"
+                       :target="[imgs.target.attribute == 'true' ? '_blank' : '_blank']" class="g-img__box"
                        :class="imgs.type ? '' : 'none'">
                         <picture>
                             <source media="(max-width:768px)" :srcset="imgs.mb || imgs.pc" />
@@ -289,10 +269,11 @@ const closeBtn = () => {
                         <source media="(max-width:768px)" :srcset="imgs.mobile || imgs.pc" />
                         <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
                     </picture>
-                    <g-lightbox v-model:showLightbox="imgs.pop.show" :style="colors[imgs.pop.style]">
+                    <g-lightbox v-model:showLightbox="imgs.pop.show" :style="colors[imgs.pop.style]"
+                                :class="imgs.pop.align">
                         <template #lightbox-title>{{ imgs.pop.title }}</template>
                         <template #lightbox-content>
-                            <div class="g-lightbox__text" :class="[imgs.pop.align]" v-if="imgs.pop.text"
+                            <div class="g-lightbox__text" v-if="imgs.pop.text"
                                  v-html="imgs.pop.text"></div>
                             <div class="g-lightbox__img" v-if="imgs.pop.img">
                                 <img :src="imgs.pop.img" alt="">

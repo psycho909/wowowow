@@ -22,17 +22,31 @@ export default defineConfig(({ mode }) => {
 			vueJsx()
 		],
 		server: {
+			cors: true,
 			proxy: {
 				"/api": {
 					target: "https://localhost:7080",
 					changeOrigin: true,
 					secure: false,
 					ws: true
+				},
+				"/GamaEvent/api": {
+					target: "https://localhost:7259",
+					changeOrigin: true,
+					secure: false,
+					ws: true
+				},
+				"/agent": {
+					target: "https://localhost:7259",
+					changeOrigin: true,
+					secure: false,
+					ws: true,
+					rewrite: (path) => path.replace(/^\/agent/, "")
 				}
 			}
 		},
 		esbuild: {
-			// drop: ["console", "debugger"]
+			drop: ["console", "debugger"]
 		},
 		build: {
 			target: "modules",
@@ -57,7 +71,7 @@ export default defineConfig(({ mode }) => {
 						if (/mp4/i.test(extType)) {
 							extType = "video";
 						}
-						return `assets/${extType}/[name][extname]`;
+						return `${extType}/[name][extname]`;
 					}
 				}
 			}

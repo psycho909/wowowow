@@ -308,7 +308,7 @@ const onSubmit = (type) => {
 
 const onCancel = (type) => {
     if (type == "送審") {
-        approvedLightbox.value = false;
+        approveLightbox.value = false;
     }
     if (type == "審核") {
         approvedLightbox.value = false;
@@ -423,14 +423,15 @@ onMounted(async () => {
                                 <a href="javascript:;" class="event-list__btn event-list__btn-edit"
                                    v-if="(event.flag != 1)"
                                    @click="onEditEvent(event)">編輯活動</a>
-                                <a href="javascript:;" class="event-list__btn event-list__btn-edit"
+                                <a href="javascript:;" class="event-list__btn event-list__btn-content"
                                    v-if="(event.flag != 1)"
                                    @click="onEditDetail(event)">編輯內容</a>
                                 <a href="javascript:;" class="event-list__btn event-list__btn-preview"
                                    @click="onPreview(event)">預覽</a>
-                                <a href="javascript:;" class="event-list__btn" v-if="event.flag == 0"
+                                <a href="javascript:;" class="event-list__btn event-list__btn-approve"
+                                   v-if="event.flag == 0"
                                    @click="onApprove(event, '送審')">送審</a>
-                                <a href="javascript:;" class="event-list__btn"
+                                <a href="javascript:;" class="event-list__btn event-list__btn-approved"
                                    v-if="(event.flag == 1 && messageAccess == 1)"
                                    @click="onApprove(event, '審核')">審核</a>
                             </div>

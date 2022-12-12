@@ -40,24 +40,6 @@ watchEffect(async () => {
         showEdit.value = false;
     }
     if (props.data) {
-        if (Object.keys(props.data.content).length > 0) {
-            let _temp = { ...props.data.content };
-            _temp.slides = [...props.data.content.slides];
-            _temp.slides.forEach((v, i) => {
-                _temp.slides[i] = { ...v };
-            })
-            let _temp2 = { ...props.data.content };
-            _temp2.slides = [...props.data.content.slides];
-            _temp2.slides.forEach((v, i) => {
-                _temp2.slides[i] = { ...v };
-            })
-            Object.keys(_temp).forEach((v, i) => {
-                slideData[v] = _temp[v];
-            })
-            Object.keys(_temp2).forEach((v, i) => {
-                slideSetting.value[v] = _temp2[v];
-            })
-        }
         slideUpdate.value = false;
         await nextTick();
         slideUpdate.value = true;
@@ -208,9 +190,15 @@ const onSubmit = async () => {
     if (validCheck && validDelay) {
         data = { ...slideData }
         store.updateCpt(props.data.uid, data)
+        Object.keys(data).forEach((v, i) => {
+            slideSetting.value[v] = data[v];
+        })
         slideUpdate.value = false;
         await nextTick();
         slideUpdate.value = true;
+        imgLoading(slideData.slides).then((res) => {
+            loading.value = false;
+        })
     }
 }
 const onReset = () => {

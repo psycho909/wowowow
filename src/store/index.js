@@ -4,12 +4,49 @@ import { v4 as uuidv4 } from "uuid";
 export const mainStore = defineStore("main", {
 	state: () => {
 		return {
-			page: "Home",
+			page: "EditPage",
 			status: "",
 			MODE: "",
 			pageTypeSeq: "",
 			config: {},
-			content: [],
+			content: [
+				{ component: "GBg", uid: 1, content: { color: "#fff", pc: "", mobile: "", w: 1920, h: 958, mw: "", mh: "", validPC: true, validMobile: true }, update: false, init: false },
+				{
+					component: "GImg",
+					uid: "08f0fc00-b08c-49ab-8368-7cc79849870f",
+					content: {
+						num: "4",
+						imgs: [
+							{ pc: "https://p2.bahamut.com.tw/B/2KU/11/ab790cd54c11e278047915d4c41jkxn5.JPG?w=1000", mobile: "", type: "", validPC: true, validMobile: true, pop: { show: false, type: "text", align: "left", style: "" }, target: { link: "", attribute: true, validUrl: true } },
+							{ pc: "https://p2.bahamut.com.tw/B/2KU/11/ab790cd54c11e278047915d4c41jkxn5.JPG?w=1000", mobile: "", type: "", validPC: true, validMobile: true, pop: { show: false, type: "text", align: "left", style: "" }, target: { link: "", attribute: true, validUrl: true } },
+							{ pc: "https://p2.bahamut.com.tw/B/2KU/11/ab790cd54c11e278047915d4c41jkxn5.JPG?w=1000", mobile: "", type: "", validPC: true, validMobile: true, pop: { show: false, type: "text", align: "left", style: "" }, target: { link: "", attribute: true, validUrl: true } },
+							{ pc: "https://p2.bahamut.com.tw/B/2KU/11/ab790cd54c11e278047915d4c41jkxn5.JPG?w=1000", mobile: "", type: "", validPC: true, validMobile: true, pop: { show: false, type: "text", align: "left", style: "" }, target: { link: "", attribute: true, validUrl: true } }
+						],
+						mt: 0,
+						mb: 54
+					},
+					update: false,
+					init: false
+				},
+				{
+					component: "GVideo",
+					uid: "d5588576-52de-42af-9099-ea82b4d3237d",
+					content: {
+						num: "4",
+						type: "click",
+						videos: [
+							{ url: "https://www.youtube.com/watch?v=UilsQfMIkGM", show: false, validUrl: true },
+							{ url: "https://www.youtube.com/watch?v=UilsQfMIkGM", show: false, validUrl: true },
+							{ url: "https://www.youtube.com/watch?v=UilsQfMIkGM", show: false, validUrl: true },
+							{ url: "https://www.youtube.com/watch?v=UilsQfMIkGM", show: false, validUrl: true }
+						],
+						mt: 0,
+						mb: 54
+					},
+					update: false,
+					init: false
+				}
+			],
 			eventListFilter: {},
 			eventListData: [],
 			eventListCurrent: 1,
@@ -133,11 +170,15 @@ export const mainStore = defineStore("main", {
 		},
 		setPage(data, back) {
 			if (data == "Preview") {
-				window.open("/Preview?OTP=" + this.otp);
+				let page = window.location.pathname.split("/");
+				let path = [...page.slice(0, page.length - 1), "Preview?OTP=" + this.otp];
+				window.open(path.join("/"));
 				return;
 			}
 			if (back) {
-				window.location.href = "/Index?OTP=" + this.otp;
+				let page = window.location.pathname.split("/");
+				let path = [...page.slice(0, page.length - 1), "Index?OTP=" + this.otp];
+				window.location.href = path.join("/");
 				return;
 			}
 			this.page = data;

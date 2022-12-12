@@ -6,77 +6,6 @@ export const CheckImage = async (url) => {
 		elem.src = url;
 	});
 };
-export const gameNameFilter = (gameseq) => {
-	var listData = [
-		{
-			guid: 1,
-			gameName: "便利商店口袋版"
-		},
-		{
-			guid: 2,
-			gameName: "魔力寶貝M"
-		},
-		{
-			guid: 3,
-			gameName: "召喚圖板"
-		},
-		{
-			guid: 4,
-			gameName: "天堂M"
-		},
-		{
-			guid: 5,
-			gameName: "櫻桃小丸子-夢遊版"
-		},
-		{
-			guid: 6,
-			gameName: "小森生活"
-		},
-		{
-			guid: 1003,
-			gameName: "新楓之谷"
-		},
-		{
-			guid: 2003,
-			gameName: "龍之谷M"
-		},
-		{
-			guid: 2005,
-			gameName: "月光雕刻師"
-		},
-		{
-			guid: 2006,
-			gameName: "彈射世界"
-		},
-		{
-			guid: 2008,
-			gameName: "天堂月服"
-		},
-		{
-			guid: 2010,
-			gameName: "天堂免服"
-		},
-		{
-			guid: 2011,
-			gameName: "天堂國際服"
-		},
-		{
-			guid: 2012,
-			gameName: "曖昧瞬間"
-		},
-		{
-			guid: 2013,
-			gameName: "跑跑卡丁車"
-		},
-		{
-			guid: 8,
-			gameName: "罪惡童話:集體崩壞的公主"
-		}
-	];
-	return listData.filter((v, i) => {
-		return v.guid == gameseq;
-	});
-};
 export const CheckUrl = (url) => {
 	var regExp = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
 	var match;
@@ -169,12 +98,6 @@ export const InsertScript = (code) => {
 	s.appendChild(document.createTextNode(getAttributeValue(script)));
 };
 
-// export const CheckImage = (img) => {
-// 	var regExp = /^https?:\/\/(.+\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i;
-// 	var match = regExp.test(img);
-// 	return match;
-// };
-
 export const loadingShow = () => {
 	$("#loadingProgress").show();
 };
@@ -185,9 +108,9 @@ export const loadingHide = () => {
 
 export const pageInfo = (data) => {
 	document.title = data.webtitle || data.eventName;
-	document.querySelectorAll("meta[name='description']")[0].setAttribute("content", data.webDescription || data.eventName);
-	document.querySelectorAll("meta[property='og:title']")[0].setAttribute("content", data.ogTitle || data.eventName);
-	document.querySelectorAll("meta[property='og:description']")[0].setAttribute("content", data.ogDescription || data.eventName);
+	document.querySelectorAll("meta[name='description']")[0].setAttribute("content", data.webDescription);
+	document.querySelectorAll("meta[property='og:title']")[0].setAttribute("content", data.ogTitle);
+	document.querySelectorAll("meta[property='og:description']")[0].setAttribute("content", data.ogDescription);
 	document.querySelectorAll("meta[property='og:image']")[0].setAttribute("content", data.ogUrl);
 	if (Number(data.cookie) == 1) {
 		if (document.querySelector("#cookieBarWrap")) {
