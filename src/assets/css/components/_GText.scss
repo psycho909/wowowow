@@ -46,6 +46,16 @@
 		font-size: 24px;
 		word-break: break-all;
 		line-height: 1.5;
+		position: relative;
+		.table {
+			display: inline-block;
+			float: none !important;
+		}
+		&:after {
+			content: "";
+			clear: both;
+			display: table;
+		}
 		@include media {
 			font-size: vw(32);
 			padding: vw(25);

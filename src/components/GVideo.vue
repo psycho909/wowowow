@@ -17,7 +17,7 @@ let showEdit = ref(false);
 let _videoDataLength = ref(1);
 const store = mainStore()
 const { content, page } = storeToRefs(store);
-let videoSetting = ref({})
+let videoSetting = reactive({})
 let videoData = reactive({
     num: 1,
     type: "click",
@@ -26,6 +26,16 @@ let videoData = reactive({
     }],
     mt: 0, mb: 54,
 })
+const initData = () => {
+    return {
+        num: 1,
+        type: "click",
+        videos: [{
+            url: "", show: false, validUrl: true
+        }],
+        mt: 0, mb: 54,
+    }
+};
 
 watchEffect(() => {
     if (props.data.update) {
@@ -33,26 +43,31 @@ watchEffect(() => {
     } else {
         showEdit.value = false;
     }
-    // if (props.data) {
-    //     Object.keys(props.data.content).forEach((v, i) => {
-    //         videoData[v] = props.data.content[v];
-    //         videoSetting.value[v] = props.data.content[v];
-    //         _videoDataLength = videoData.num
-    //     })
-    // }
+    if (!props.data.update) {
+        if (Object.keys(props.data.content).length > 0) {
+            let _temp = JSON.parse(JSON.stringify(props.data.content));
+            let _temp2 = JSON.parse(JSON.stringify(props.data.content));
+            Object.keys(_temp).forEach((v, i) => {
+                videoData[v] = _temp[v];
+            })
+            Object.keys(_temp2).forEach((v, i) => {
+                videoSetting[v] = _temp2[v];
+            })
+            _videoDataLength.value = videoData.num;
+        }
+    }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        let _temp = { ...props.data.content };
-        let _temp2 = { ...props.data.content };
+        let _temp = JSON.parse(JSON.stringify(props.data.content));
+        let _temp2 = JSON.parse(JSON.stringify(props.data.content));
         Object.keys(_temp).forEach((v, i) => {
             videoData[v] = _temp[v];
         })
         Object.keys(_temp2).forEach((v, i) => {
-            videoSetting.value[v] = _temp2[v];
+            videoSetting[v] = _temp2[v];
         })
-
         _videoDataLength.value = videoData.num;
     }
 })
@@ -96,29 +111,22 @@ const onSubmit = () => {
         return v.validUrl == true;
     })
     if (validCheck) {
-        data = { ...videoData }
+        $("#loadingProgress").show();
+        let { num, type, videos, mt } = videoData;
+        let videos2 = toRaw(videos)
+        data.num = num;
+        data.type = type;
+        data.mt = mt;
+        data.videos = videos2;
+        store.updateCpt(props.data.uid, data);
         Object.keys(data).forEach((v, i) => {
-            videoSetting.value[v] = data[v];
+            videoSetting[v] = data[v];
         })
-        store.updateCpt(props.data.uid, data)
     }
 }
 const onReset = () => {
-    if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            videoData[v] = props.data.content[v];
-            videoSetting.value[v] = props.data.content[v];
-        })
-    } else {
-        videoData = {
-            num: 1,
-            type: "click",
-            videos: [{
-                url: "", show: false, validUrl: true
-            }],
-            mt: 0, mb: 54,
-        }
-    }
+    _videoDataLength.value = 1;
+    Object.assign(videoData, initData());
 }
 const closeBtn = () => {
     if (props.data.init) {
@@ -128,10 +136,15 @@ const closeBtn = () => {
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            videoData[v] = props.data.content[v];
-            videoSetting.value[v] = props.data.content[v];
+        let _temp = JSON.parse(JSON.stringify(props.data.content));
+        let _temp2 = JSON.parse(JSON.stringify(props.data.content));
+        Object.keys(_temp).forEach((v, i) => {
+            videoData[v] = _temp[v];
         })
+        Object.keys(_temp2).forEach((v, i) => {
+            videoSetting[v] = _temp2[v];
+        })
+        _videoDataLength.value = videoData.num;
     } else {
         videoData = {
             num: 1,

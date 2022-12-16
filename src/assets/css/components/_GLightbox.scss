@@ -115,6 +115,15 @@
 			max-width: 100%;
 			display: inline-block;
 		}
+		.table {
+			display: inline-block;
+			float: none !important;
+		}
+		&:after {
+			content: "";
+			clear: both;
+			display: table;
+		}
 	}
 	&__text {
 		& + .g-lightbox__img {

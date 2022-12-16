@@ -31,7 +31,7 @@ export const templateStore = defineStore("template", {
 								link: "",
 								mt: "250",
 								mb: "24",
-								pc: "",
+								pc: "https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slogan.png",
 								mobile: "",
 								validPC: true,
 								validMobile: true,

@@ -19,7 +19,8 @@ breakpoints.value = {
 
 if (props.data?.autoplay?.open) {
     autoplay.value = {
-        delay: Number(props.data.autoplay.delay) * 1000
+        delay: Number(props.data.autoplay.delay) * 1000,
+        disableOnInteraction: false
     }
 } else {
     autoplay.value = false;
@@ -53,7 +54,7 @@ const onSwiper = (swiper) => {
                     <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
                        :target="[slide.url ? '_blank' : '']">
                         <picture>
-                            <source media="(max-width:768px)" :srcset="slide.mb || slide.pc" />
+                            <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                             <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
                         </picture>
                     </a>
@@ -62,7 +63,7 @@ const onSwiper = (swiper) => {
                     <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
                        :target="[slide.url ? '_blank' : '']">
                         <picture>
-                            <source media="(max-width:768px)" :srcset="slide.mb || slide.pc" />
+                            <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                             <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
                         </picture>
                     </a>

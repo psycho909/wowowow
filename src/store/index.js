@@ -4,46 +4,12 @@ import { v4 as uuidv4 } from "uuid";
 export const mainStore = defineStore("main", {
 	state: () => {
 		return {
-			page: "EditPage",
-			status: "edit",
+			page: "Home",
+			status: "",
 			MODE: "",
 			pageTypeSeq: "",
 			config: {},
-			content: [
-				{
-					component: "GBg",
-					uid: 1,
-					content: {
-						color: "#fff",
-						pc: "",
-						mobile: "",
-						w: 1920,
-						h: 958,
-						mw: "",
-						mh: "",
-						validPC: true,
-						validMobile: true
-					},
-					update: false,
-					init: false
-				},
-				{
-					component: "GSlogan",
-					uid: 2,
-					content: {
-						link: "",
-						mt: "250",
-						mb: "24",
-						pc: "",
-						mobile: "",
-						validPC: true,
-						validMobile: true,
-						validUrl: true
-					},
-					update: false,
-					init: false
-				}
-			],
+			content: [],
 			eventListFilter: {},
 			eventListData: [],
 			eventListCurrent: 1,
@@ -53,7 +19,8 @@ export const mainStore = defineStore("main", {
 			approveListCurrent: 1,
 			otp: "",
 			updateTime: "",
-			save: false
+			save: false,
+			move: false
 		};
 	},
 	getters: {
@@ -86,10 +53,11 @@ export const mainStore = defineStore("main", {
 		updateCpt(uid, data) {
 			var _index = this.getIndex(uid);
 			if (_index > -1) {
-				this.content[_index].content = data;
+				this.content[_index].content = JSON.parse(JSON.stringify(data));
 				this.content[_index].update = false;
 				this.content[_index].init = false;
 			}
+			$("#loadingProgress").hide();
 		},
 		editCptOpen(data) {
 			var _index = this.getIndex(data);
@@ -108,6 +76,7 @@ export const mainStore = defineStore("main", {
 			if (_index - 1 < 0 || this.content[_index - 1].component == "GBg" || this.content[_index - 1].component == "GSlogan") {
 				return;
 			}
+			this.move = true;
 			var _temp = this.content[_index];
 			var _content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
 			this.content = _content;
@@ -118,6 +87,7 @@ export const mainStore = defineStore("main", {
 			if (_index + 1 >= this.content.length) {
 				return;
 			}
+			this.move = true;
 			var _temp = this.content[_index];
 			var _content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
 			this.content = _content;
@@ -136,6 +106,9 @@ export const mainStore = defineStore("main", {
 			this.approveListFilter = filter;
 			this.approveListData = data;
 			this.approveListCurrent = current;
+		},
+		setMove() {
+			this.move = false;
 		},
 		setSave(data) {
 			this.save = data;

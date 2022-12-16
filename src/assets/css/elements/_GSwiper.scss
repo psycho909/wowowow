@@ -28,7 +28,7 @@
 		}
 	}
 	&__img {
-		width: 100%;
+		max-width: 100%;
 		display: inline-block;
 	}
 	.swiper-button-prev {
@@ -93,5 +93,8 @@
 		&.swiper-pagination-bullet-active {
 			background-color: #ff9c00;
 		}
+	}
+	.swiper-wrapper {
+		align-items: center;
 	}
 }

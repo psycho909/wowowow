@@ -9,6 +9,7 @@
 		min-width: vw(320);
 		height: 100vh;
 		display: none;
+		background-color: transparent;
 		&.hamburger-right {
 			left: unset !important;
 			right: 0 !important;
@@ -31,6 +32,7 @@
 			}
 		}
 	}
+
 	&__hamburger {
 		width: vw(79);
 		height: vw(79);
@@ -53,11 +55,11 @@
 	&__close {
 		width: vw(50);
 		height: vw(50);
-		position: relative;
+		position: absolute;
 		// top: vw(28);
 		// left: vw(28);
-		margin-top: vw(28);
-		margin-left: vw(28);
+		top: vw(28);
+		left: vw(28);
 		display: none;
 		z-index: 1;
 		&:before {
@@ -86,11 +88,24 @@
 	}
 	&-container {
 		@include media {
-			padding-top: vw(22);
+			padding-top: vw(48);
 			flex-direction: column;
-			max-height: 100vh;
+			height: 100vh;
 			overflow-y: auto;
-			z-index: 1;
+			z-index: 2;
+			position: relative;
+			background-color: var(--bg, rgba(#474747, 0.9));
+		}
+	}
+	&__list {
+		display: flex;
+		flex-direction: column;
+		@include media {
+			padding-top: vw(48);
+			flex-direction: column !important;
+			height: 100vh;
+			overflow-y: auto;
+			z-index: 2;
 			position: relative;
 		}
 	}
@@ -121,6 +136,7 @@
 				max-width: 1000px;
 				margin: 0 auto;
 				display: flex;
+				justify-content: center;
 			}
 			&__menu {
 				padding: 12px 16px;
@@ -128,6 +144,9 @@
 				@include media {
 					padding: vw(30) 0;
 				}
+			}
+			&__list {
+				flex-direction: row;
 			}
 		}
 		.g-modify {
@@ -146,12 +165,17 @@
 				max-width: 1000px;
 				margin: 0 auto;
 				display: flex;
+				justify-content: center;
 			}
 			&__menu {
 				padding: 12px 16px;
+				font-size: 24px;
 				@include media {
 					padding: vw(30) 0;
 				}
+			}
+			&__list {
+				flex-direction: row;
 			}
 		}
 	}

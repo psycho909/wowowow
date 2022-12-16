@@ -6,11 +6,15 @@ body {
 		display: none;
 	}
 }
-// #app.preview {
-// 	#cookieBarWrap {
-// 		display: block;
-// 	}
-// }
+
+#topBar {
+	z-index: 9998 !important;
+	position: relative;
+}
+.UNI-footer {
+	position: relative;
+	z-index: 9998;
+}
 .wrap {
 	background-position: center 0;
 	background-image: var(--pc);
@@ -27,6 +31,11 @@ body {
 	}
 	div:last-child {
 		margin-bottom: 0;
+	}
+	&:before {
+		content: "";
+		clear: both;
+		display: block;
 	}
 }
 #cookieBarWrap {
@@ -58,10 +67,11 @@ body {
 	}
 	&-control {
 		&__group {
-			position: absolute;
+			position: fixed;
 			bottom: 30px;
 			right: 30px;
 			display: flex;
+			z-index: 9997;
 		}
 		&__btn {
 			font-size: 18px;
@@ -70,14 +80,18 @@ body {
 			margin-right: 15px;
 			color: #000;
 			border-radius: 12px;
-			background-color: #ff9c00;
+			background-color: #ff8800;
 			width: 66px;
 			height: 64px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			box-shadow: 0 0 6px rgba(#000, 0.55);
 			&:last-child {
 				margin-right: 0;
+			}
+			@include hover {
+				background-color: #ffa200;
 			}
 		}
 		&__back {

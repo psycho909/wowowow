@@ -24,6 +24,15 @@ let sloganData = reactive({
     pc: "",
     mobile: "", validPC: true, validMobile: true, validUrl: true
 })
+const initData = () => {
+    return {
+        link: "",
+        mt: "250",
+        mb: "24",
+        pc: "",
+        mobile: "", validPC: true, validMobile: true, validUrl: true
+    }
+};
 watchEffect(() => {
     if (props.data.update) {
         showEdit.value = true;
@@ -84,27 +93,16 @@ const onSubmit = async () => {
     }
 
     if (sloganData.validPC && sloganData.validMobile && sloganData.validUrl) {
-        data = { ...sloganData }
-        store.updateCpt(props.data.uid, data)
+        $("#loadingProgress").show();
+        data = { ...sloganData };
+        store.updateCpt(props.data.uid, data);
         Object.keys(data).forEach((v, i) => {
             sloganSetting.value[v] = data[v];
         })
     }
 }
 const onReset = () => {
-    if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            sloganData[v] = props.data.content[v];
-        })
-    } else {
-        sloganData = {
-            link: "",
-            mt: "250",
-            mb: "24",
-            pc: "",
-            mobile: "", validPC: true, validMobile: true, validUrl: true
-        }
-    }
+    Object.assign(sloganData, initData());
 }
 const closeBtn = () => {
     if (props.data.init) {

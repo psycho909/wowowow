@@ -24,18 +24,14 @@ let textData = reactive({
     text: "",
     mt: 0, mb: 54
 })
-// let editor = ref(null)
-// let editorConfig = ref({})
-// editor.value = ClassicEditor
-// editorConfig = {
-//     toolbar: {
-//         items: [
-//             'bold',
-//             'italic',
-//             'link',
-//         ]
-//     }
-// }
+const initData = () => {
+    return {
+        align: "left",
+        style: "",
+        text: "",
+        mt: 0, mb: 54
+    }
+};
 const store = mainStore()
 const { content, page } = storeToRefs(store);
 
@@ -44,12 +40,6 @@ watchEffect(() => {
         showEdit.value = true;
     } else {
         showEdit.value = false;
-    }
-    if (props.data) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            textData[v] = props.data.content[v];
-            textSetting.value[v] = props.data.content[v];
-        })
     }
 })
 const cssVar = computed(() => {
@@ -77,23 +67,15 @@ const onSubmit = () => {
     }
     let data = { ...textData }
     if (styleValid.value) {
-        store.updateCpt(props.data.uid, data)
+        $("#loadingProgress").show();
+        store.updateCpt(props.data.uid, data);
+        Object.keys(data).forEach((v, i) => {
+            textSetting.value[v] = data[v];
+        })
     }
 }
 const onReset = () => {
-    if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            textData[v] = props.data.content[v];
-            textSetting.value[v] = props.data.content[v];
-        })
-    } else {
-        textData = {
-            align: "left",
-            style: "",
-            text: "",
-            mt: 0, mb: 54
-        }
-    }
+    Object.assign(textData, initData());
 }
 const closeBtn = () => {
     if (props.data.init) {

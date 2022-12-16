@@ -109,9 +109,9 @@ export const loadingHide = () => {
 export const pageInfo = (data) => {
 	document.title = data.webtitle || data.eventName;
 	document.querySelectorAll("meta[name='description']")[0].setAttribute("content", data.webDescription);
-	document.querySelectorAll("meta[property='og:title']")[0].setAttribute("content", data.ogTitle);
-	document.querySelectorAll("meta[property='og:description']")[0].setAttribute("content", data.ogDescription);
-	document.querySelectorAll("meta[property='og:image']")[0].setAttribute("content", data.ogUrl);
+	// document.querySelectorAll("meta[property='og:title']")[0].setAttribute("content", data.ogTitle);
+	// document.querySelectorAll("meta[property='og:description']")[0].setAttribute("content", data.ogDescription);
+	// document.querySelectorAll("meta[property='og:image']")[0].setAttribute("content", data.ogUrl);
 	if (Number(data.cookie) == 1) {
 		if (document.querySelector("#cookieBarWrap")) {
 			document.querySelector("#cookieBarWrap").classList.add("on");

@@ -39,11 +39,11 @@
 		height: 210px;
 		background-color: #e8eaed;
 		display: block;
-		// &[data-type="1"] {
-		// 	background-image: url("./img/pagetype/1.jpg");
-		// 	background-position: center 0;
-		// 	background-repeat: no-repeat;
-		// }
+		&[data-type="1"] {
+			background-image: url("./img/pagetype/1.jpg");
+			background-position: center 0;
+			background-repeat: no-repeat;
+		}
 	}
 	&__name {
 		color: #000;

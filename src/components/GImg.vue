@@ -15,12 +15,13 @@ import { mainStore } from "../store/index";
 import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading } from "../Tool";
+import { toRaw } from 'vue';
 const props = defineProps(["data"])
 let showEdit = ref(false);
 let _imgDataLength = ref(1);
 const store = mainStore()
 const { content, page } = storeToRefs(store);
-let imgSetting = ref({})
+let imgSetting = reactive({})
 let styleValid = ref(true);
 let loading = ref(true);
 let imgData = reactive({
@@ -42,39 +43,65 @@ let imgData = reactive({
         }
     }],
     mt: 0, mb: 54,
-})
+});
+const initData = () => {
+    return {
+        num: 1,
+        imgs: [{
+            pc: "",
+            mobile: "",
+            type: "",
+            validPC: true,
+            validMobile: true,
+            pop: {
+                show: false, type: "text",
+                align: "left",
+                style: ""
+            },
+            target: {
+                link: "",
+                attribute: true, validUrl: true,
+            }
+        }],
+        mt: 0, mb: 54,
+    }
+}
 watchEffect(() => {
     if (props.data.update) {
         showEdit.value = true;
     } else {
         showEdit.value = false;
     }
+    if (!props.data.update) {
+        if (Object.keys(props.data.content).length > 0) {
+            let _temp = JSON.parse(JSON.stringify(props.data.content));
+            let _temp2 = JSON.parse(JSON.stringify(props.data.content));
+            Object.keys(_temp).forEach((v, i) => {
+                imgData[v] = _temp[v];
+            })
+            Object.keys(_temp2).forEach((v, i) => {
+                imgSetting[v] = _temp2[v];
+            })
+            _imgDataLength.value = imgData.num;
+            imgLoading(imgData.imgs).then((res) => {
+                loading.value = false;
+            })
+            console.log("update")
+        }
+    }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        let _temp = { ...props.data.content };
-        _temp.imgs = [...props.data.content.imgs];
-        _temp.imgs.forEach((v, i) => {
-            _temp.imgs[i] = { ...v };
-            _temp.imgs[i].pop = { ...v.pop };
-            _temp.imgs[i].target = { ...v.target };
-        })
-        let _temp2 = { ...props.data.content };
-        _temp2.imgs = [...props.data.content.imgs];
-        _temp2.imgs.forEach((v, i) => {
-            _temp2.imgs[i] = { ...v };
-            _temp2.imgs[i].pop = { ...v.pop };
-            _temp2.imgs[i].target = { ...v.target };
-        })
+        let _temp = JSON.parse(JSON.stringify(props.data.content));
+        let _temp2 = JSON.parse(JSON.stringify(props.data.content));
         Object.keys(_temp).forEach((v, i) => {
             imgData[v] = _temp[v];
         })
         Object.keys(_temp2).forEach((v, i) => {
-            imgSetting.value[v] = _temp2[v];
+            imgSetting[v] = _temp2[v];
         })
         _imgDataLength.value = imgData.num;
-
         imgLoading(imgData.imgs).then((res) => {
             loading.value = false;
         })
@@ -115,7 +142,7 @@ const onChange = (e) => {
     } else {
         imgData.imgs = imgData.imgs.slice(0, num)
     }
-    _imgDataLength.value = num
+    _imgDataLength.value = num;
 }
 
 const onSubmit = async () => {
@@ -161,44 +188,25 @@ const onSubmit = async () => {
         return v.validPC == true && v.validMobile == true && v.target.validUrl == true;
     })
     if (validCheck && styleValid.value) {
-        data = { ...imgData };
-        Object.keys(data).forEach((v, i) => {
-            imgSetting.value[v] = data[v];
-        })
+        $("#loadingProgress").show();
+        let { imgs, mb, mt, num } = imgData;
+        let imgs2 = toRaw(imgs)
+        data.mb = mb;
+        data.mt = mt;
+        data.num = num;
+        data.imgs = imgs2;
         store.updateCpt(props.data.uid, data);
+        Object.keys(data).forEach((v, i) => {
+            imgSetting[v] = data[v];
+        })
         imgLoading(imgData.imgs).then((res) => {
             loading.value = false;
         })
     }
 }
 const onReset = () => {
-    if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            imgData[v] = props.data.content[v];
-            imgSetting.value[v] = props.data.content[v];
-        })
-    } else {
-        imgData = {
-            num: 1,
-            imgs: [{
-                pc: "",
-                mobile: "",
-                type: "",
-                validPC: true, validMobile: true,
-                pop: {
-                    show: false,
-                    type: "text",
-                    align: "left",
-                    style: ""
-                },
-                target: {
-                    link: "",
-                    attribute: true, validUrl: true,
-                }
-            }],
-            mt: 0, mb: 54,
-        }
-    }
+    _imgDataLength.value = 1;
+    Object.assign(imgData, initData());
 }
 const closeBtn = () => {
     if (props.data.init) {
@@ -208,9 +216,14 @@ const closeBtn = () => {
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            imgData[v] = props.data.content[v];
-            imgSetting.value[v] = props.data.content[v];
+        let _temp = JSON.parse(JSON.stringify(props.data.content));
+        Object.keys(_temp).forEach((v, i) => {
+            imgData[v] = _temp[v];
+            imgSetting[v] = _temp[v];
+        })
+        _imgDataLength.value = imgData.num;
+        imgLoading(imgData.imgs).then((res) => {
+            loading.value = false;
         })
     } else {
         imgData = {
@@ -245,20 +258,20 @@ const closeBtn = () => {
             <template v-if="!loading" v-for="imgs in imgSetting.imgs">
                 <template v-if="imgs.type == 'link' && store.status != 'edit'">
                     <a :href="[imgs.target.link ? imgs.target.link : 'javascript:;']"
-                       :target="[imgs.target.attribute == 'true' ? '_blank' : '_self']" class="g-img__box"
+                       :target="[imgs.target.attribute == true ? '_blank' : '_self']" class="g-img__box"
                        :class="imgs.type ? '' : 'none'">
                         <picture>
-                            <source media="(max-width:768px)" :srcset="imgs.mb || imgs.pc" />
+                            <source media="(max-width:768px)" :srcset="imgs.mobile || imgs.pc" />
                             <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
                         </picture>
                     </a>
                 </template>
                 <template v-if="imgs.type == 'link' && store.status == 'edit'">
                     <a :href="[imgs.target.link ? imgs.target.link : 'javascript:;']"
-                       :target="[imgs.target.attribute == 'true' ? '_blank' : '_blank']" class="g-img__box"
+                       :target="[imgs.target.attribute == true ? '_blank' : '_blank']" class="g-img__box"
                        :class="imgs.type ? '' : 'none'">
                         <picture>
-                            <source media="(max-width:768px)" :srcset="imgs.mb || imgs.pc" />
+                            <source media="(max-width:768px)" :srcset="imgs.mobile || imgs.pc" />
                             <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
                         </picture>
                     </a>
@@ -283,7 +296,7 @@ const closeBtn = () => {
                 </a>
                 <a v-if="imgs.type == ''" href="javascript:;" class="g-img__box" :class="imgs.type ? '' : 'none'">
                     <picture>
-                        <source media="(max-width:768px)" :srcset="imgs.mb" />
+                        <source media="(max-width:768px)" :srcset="imgs.mobile" />
                         <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
                     </picture>
                 </a>

@@ -16,7 +16,7 @@ const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
 const { content, page } = storeToRefs(store);
-let slideSetting = ref({});
+let slideSetting = reactive({});
 let slideUpdate = ref(true);
 let loading = ref(true);
 let slideData = reactive({
@@ -29,6 +29,18 @@ let slideData = reactive({
         pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
     }],
 })
+const initData = () => {
+    return {
+        num: 1, mt: 0, mb: 54, autoplay: {
+            open: false,
+            delay: 2,
+            validDelay: true
+        },
+        slides: [{
+            pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
+        }],
+    }
+};
 if (window.sessionStorage.getItem("state")) {
     window.sessionStorage.removeItem("state")
 }
@@ -38,7 +50,20 @@ watchEffect(async () => {
     } else {
         showEdit.value = false;
     }
-    if (props.data) {
+    if (!props.data.update) {
+        if (Object.keys(props.data.content).length > 0) {
+            let _temp = JSON.parse(JSON.stringify(props.data.content));
+            let _temp2 = JSON.parse(JSON.stringify(props.data.content));
+            Object.keys(_temp).forEach((v, i) => {
+                slideData[v] = _temp[v];
+            })
+            Object.keys(_temp2).forEach((v, i) => {
+                slideSetting[v] = _temp2[v];
+            })
+            imgLoading(slideData.slides).then((res) => {
+                loading.value = false;
+            })
+        }
         slideUpdate.value = false;
         await nextTick();
         slideUpdate.value = true;
@@ -47,21 +72,13 @@ watchEffect(async () => {
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        let _temp = { ...props.data.content };
-        _temp.slides = [...props.data.content.slides];
-        _temp.slides.forEach((v, i) => {
-            _temp.slides[i] = { ...v };
-        })
-        let _temp2 = { ...props.data.content };
-        _temp2.slides = [...props.data.content.slides];
-        _temp2.slides.forEach((v, i) => {
-            _temp2.slides[i] = { ...v };
-        })
+        let _temp = JSON.parse(JSON.stringify(props.data.content));
+        let _temp2 = JSON.parse(JSON.stringify(props.data.content));
         Object.keys(_temp).forEach((v, i) => {
             slideData[v] = _temp[v];
         })
         Object.keys(_temp2).forEach((v, i) => {
-            slideSetting.value[v] = _temp2[v];
+            slideSetting[v] = _temp2[v];
         })
         imgLoading(slideData.slides).then((res) => {
             loading.value = false;
@@ -82,10 +99,6 @@ const status = computed(() => {
 
 const openPop = (data) => {
     data.show = true
-}
-
-const onChange = (e) => {
-    let num = e.target.value;
 }
 
 const addInsertMenu = (index) => {
@@ -187,37 +200,29 @@ const onSubmit = async () => {
         return v.validPC == true && v.validMobile == true && v.validUrl == true;
     })
     if (validCheck && validDelay) {
-        data = { ...slideData }
-        store.updateCpt(props.data.uid, data)
+        $("#loadingProgress").show();
+        let { num, mt, mb, autoplay, slides } = slideData;
+        let autoplay2 = toRaw(autoplay)
+        let slides2 = toRaw(slides)
+        data.mb = mb;
+        data.mt = mt;
+        data.num = num;
+        data.autoplay = autoplay2;
+        data.slides = slides2;
+        store.updateCpt(props.data.uid, data);
         Object.keys(data).forEach((v, i) => {
-            slideSetting.value[v] = data[v];
+            slideSetting[v] = data[v];
+        })
+        imgLoading(slideData.slides).then((res) => {
+            loading.value = false;
         })
         slideUpdate.value = false;
         await nextTick();
         slideUpdate.value = true;
-        imgLoading(slideData.slides).then((res) => {
-            loading.value = false;
-        })
     }
 }
 const onReset = () => {
-    if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            slideData[v] = props.data.content[v];
-            slideSetting.value[v] = props.data.content[v];
-        })
-    } else {
-        slideData = {
-            num: 1, mt: 0, mb: 54, autoplay: {
-                open: false,
-                delay: 2,
-                validDelay: true
-            },
-            slides: [{
-                pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
-            }],
-        }
-    }
+    Object.assign(slideData, initData());
 }
 const closeBtn = () => {
     if (props.data.init) {
@@ -227,9 +232,16 @@ const closeBtn = () => {
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            slideData[v] = props.data.content[v];
-            slideSetting.value[v] = props.data.content[v];
+        let _temp = JSON.parse(JSON.stringify(props.data.content));
+        let _temp2 = JSON.parse(JSON.stringify(props.data.content));
+        Object.keys(_temp).forEach((v, i) => {
+            slideData[v] = _temp[v];
+        })
+        Object.keys(_temp2).forEach((v, i) => {
+            slideSetting[v] = _temp2[v];
+        })
+        imgLoading(slideData.slides).then((res) => {
+            loading.value = false;
         })
     } else {
         slideData = {

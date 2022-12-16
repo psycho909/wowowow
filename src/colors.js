@@ -61,15 +61,15 @@ let yellow1 = {
 	"--text": "#3D3A3A",
 	"--bg": "rgba(255,255,255,0.9)",
 	"--link": "#D09C5B",
-	"--btnBg": "#D09C5B",
+	"--btnBg": "rgba(237,181,0,1)",
 	"--btnText": "#fff",
 	"--hoverBg": "rgba(255,192,119,0.9)",
 	"--hoverText": "#fff"
 };
 let yellow2 = {
 	"--text": "#fff",
-	"--bg": "rgba(157,124,85,0.9)",
-	"--link": "#FFD800",
+	"--bg": "rgba(237,181,0,1)",
+	"--link": "#000",
 	"--btnBg": "#fff",
 	"--btnText": "#000",
 	"--hoverBg": "rgba(255,255,255,0.9)",
@@ -151,7 +151,7 @@ let purple2 = {
 let grayscale1 = {
 	"--text": "#3D3A3A",
 	"--bg": "rgba(255,255,255,0.9)",
-	"--link": "#3C3C3C",
+	"--link": "#d04747",
 	"--btnBg": "#3C3C3C",
 	"--btnText": "#fff",
 	"--hoverBg": "rgba(133,133,133,0.9)",

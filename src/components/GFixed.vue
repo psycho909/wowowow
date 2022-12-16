@@ -19,7 +19,7 @@ const store = mainStore()
 const { content, page } = storeToRefs(store);
 let showEdit = ref(false);
 let menuToggle = ref(false);
-let fixedSetting = ref({});
+let fixedSetting = reactive({});
 let fixedMenuValid = ref(true);
 let styleValid = ref(true);
 let fixedData = reactive({
@@ -28,32 +28,44 @@ let fixedData = reactive({
     style: "",
     menus: []
 })
-
+const initData = () => {
+    return {
+        position: "left",
+        hamburger: "hamburger-left",
+        style: "",
+        menus: []
+    }
+};
 watchEffect(() => {
     if (props.data.update) {
         showEdit.value = true;
     } else {
         showEdit.value = false;
     }
+    if (!props.data.update) {
+        if (Object.keys(props.data.content).length > 0) {
+            let _temp = JSON.parse(JSON.stringify(props.data.content));
+            let _temp2 = JSON.parse(JSON.stringify(props.data.content));
+            Object.keys(_temp).forEach((v, i) => {
+                fixedData[v] = _temp[v];
+            })
+            Object.keys(_temp2).forEach((v, i) => {
+                fixedSetting[v] = _temp2[v];
+            })
+        }
+    }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        let _temp = { ...props.data.content };
-        _temp.menus = [...props.data.content.menus];
-        _temp.menus.forEach((v, i) => {
-            _temp.menus[i] = { ...v };
-        })
-        let _temp2 = { ...props.data.content };
-        _temp2.menus = [...props.data.content.menus];
-        _temp2.menus.forEach((v, i) => {
-            _temp2.menus[i] = { ...v };
-        })
+
+        let _temp = JSON.parse(JSON.stringify(props.data.content));
+        let _temp2 = JSON.parse(JSON.stringify(props.data.content));
         Object.keys(_temp).forEach((v, i) => {
             fixedData[v] = _temp[v];
         })
         Object.keys(_temp2).forEach((v, i) => {
-            fixedSetting.value[v] = _temp2[v];
+            fixedSetting[v] = _temp2[v];
         })
     }
 })
@@ -98,7 +110,7 @@ const removeMenu = (index) => {
 }
 
 const onSubmit = () => {
-    let data;
+    let data = {};
     if (fixedData.menus.length == 0) {
         fixedMenuValid.value = false;
     } else {
@@ -129,27 +141,21 @@ const onSubmit = () => {
         return v.validText == true && v.validUrl == true
     })
     if (validCheck && fixedMenuValid.value && styleValid.value) {
-        data = { ...fixedData }
+        $("#loadingProgress").show();
+        let { position, hamburger, style, menus } = fixedData;
+        let menus2 = toRaw(menus)
+        data.position = position;
+        data.hamburger = hamburger;
+        data.style = style;
+        data.menus = menus2;
+        store.updateCpt(props.data.uid, data);
         Object.keys(data).forEach((v, i) => {
-            fixedSetting.value[v] = data[v];
+            fixedSetting[v] = data[v];
         })
-        store.updateCpt(props.data.uid, data)
     }
 }
 const onReset = () => {
-    if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            fixedData[v] = props.data.content[v];
-            fixedSetting.value[v] = props.data.content[v];
-        })
-    } else {
-        fixedData = {
-            position: "left",
-            hamburger: "hamburger-left",
-            style: "",
-            menus: []
-        }
-    }
+    Object.assign(fixedData, initData());
 }
 const closeBtn = () => {
     if (props.data.init) {
@@ -159,9 +165,13 @@ const closeBtn = () => {
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            fixedData[v] = props.data.content[v];
-            fixedSetting.value[v] = props.data.content[v];
+        let _temp = JSON.parse(JSON.stringify(props.data.content));
+        let _temp2 = JSON.parse(JSON.stringify(props.data.content));
+        Object.keys(_temp).forEach((v, i) => {
+            fixedData[v] = _temp[v];
+        })
+        Object.keys(_temp2).forEach((v, i) => {
+            fixedSetting[v] = _temp2[v];
         })
     } else {
         fixedData = {
@@ -191,18 +201,20 @@ const closeMenu = () => {
          :style="colors[fixedSetting.style]">
         <a href="javascript:;" class="g-fixed__close" @click="closeMenu"></a>
         <div class="g-fixed-container">
-            <template v-if="store.status == 'edit'">
-                <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
-                   :target="[menu.target == 'true' ? '_blank' : '_blank']" v-for="menu in fixedSetting.menus">{{
-                           menu.text
-                   }}</a>
-            </template>
-            <template v-if="store.status != 'edit'">
-                <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
-                   :target="[menu.target == 'true' ? '_blank' : '_self']" v-for="menu in fixedSetting.menus">{{
-                           menu.text
-                   }}</a>
-            </template>
+            <div class="g-fixed__list">
+                <template v-if="store.status == 'edit'">
+                    <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
+                       :target="[menu.target == 'true' ? '_blank' : '_blank']" v-for="menu in fixedSetting.menus">{{
+                               menu.text
+                       }}</a>
+                </template>
+                <template v-if="store.status != 'edit'">
+                    <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
+                       :target="[menu.target == 'true' ? '_blank' : '_self']" v-for="menu in fixedSetting.menus">{{
+                               menu.text
+                       }}</a>
+                </template>
+            </div>
         </div>
         <g-modify :uid="data.uid" :move="false" v-if="page == 'EditPage'" />
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">

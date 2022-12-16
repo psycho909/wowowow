@@ -30,20 +30,36 @@ let bgData = reactive({
     validPC: true,
     validMobile: true,
 })
-
-const imageInfo = (type, url) => {
-    var img = new Image();
-    img.onload = function () {
-        if (type == "pc") {
-            bgData.w = img.width
-            bgData.h = img.height
-        }
-        if (type == "mobile") {
-            bgData.mw = img.width
-            bgData.mh = img.height
-        }
-    };
-    img.src = url
+const initData = () => {
+    return {
+        color: "#fff",
+        pc: "",
+        mobile: "",
+        w: "",
+        h: "",
+        mw: "",
+        mh: "",
+        validPC: true,
+        validMobile: true,
+    }
+};
+const imageInfo = async (type, url) => {
+    return new Promise((resolve, reject) => {
+        var elem = new Image();
+        elem.onload = () => {
+            if (type == "pc") {
+                bgData.w = elem.width
+                bgData.h = elem.height
+            }
+            if (type == "mobile") {
+                bgData.mw = elem.width
+                bgData.mh = elem.height
+            }
+            resolve(true)
+        };
+        elem.onerror = () => resolve(false);
+        elem.src = url;
+    });
 }
 watchEffect(() => {
     if (props.data.update) {
@@ -84,7 +100,6 @@ const onSubmit = async () => {
         if (!await CheckImage(bgData.pc)) {
             bgData.validPC = false;
         } else {
-            imageInfo("pc", bgData.pc);
             bgData.validPC = true;
         }
     }
@@ -93,35 +108,22 @@ const onSubmit = async () => {
             bgData.validMobile = false;
         } else {
             bgData.validMobile = true;
-            imageInfo("mobile", bgData.mobile)
+
         }
     } else {
         bgData.validMobile = true;
     }
 
     if (bgData.validPC && bgData.validMobile) {
-        data = { ...bgData }
+        $("#loadingProgress").show();
+        await imageInfo("mobile", bgData.mobile);
+        await imageInfo("pc", bgData.pc);
+        data = { ...bgData };
         store.updateCpt(props.data.uid, data)
     }
 }
 const onReset = () => {
-    if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            bgData[v] = props.data.content[v];
-        })
-    } else {
-        bgData = {
-            color: "#fff",
-            pc: "",
-            mobile: "",
-            w: "",
-            h: "",
-            mw: "",
-            mh: "",
-            validPC: true,
-            validMobile: true
-        }
-    }
+    Object.assign(bgData, initData());
 }
 
 const enterColor = async (e) => {

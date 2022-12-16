@@ -17,7 +17,7 @@ import { UpdateEventContent, ApproveEvent } from "../api";
 
 const store = mainStore()
 const t = templateStore()
-const { content } = storeToRefs(store);
+const { content, move } = storeToRefs(store);
 let saveLightbox = ref(false);
 let approveLightbox = ref(false);
 let approveEndLightbox = ref(false);
@@ -28,7 +28,7 @@ let messageLightbox = ref(false);
 
 onMounted(() => {
     if (store.content.length == 0 && (store.config.flag == 0 || store.config.flag == 4)) {
-        store.setContent(t.template[store.config.pageTypeSeq].content);
+        store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
     }
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
 })
