@@ -16,6 +16,8 @@
 		"@vitejs/plugin-vue-jsx": "^2.0.0",
 		"@vuepic/vue-datepicker": "^3.4.8",
 		"axios": "^0.27.2",
+		"g": "^2.0.1",
+		"json-server": "^0.17.3",
 		"pinia": "^2.0.20",
 		"swiper": "^8.4.2",
 		"uuid": "^9.0.0",

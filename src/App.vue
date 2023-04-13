@@ -50,6 +50,13 @@ if (!pathName) {
 
 }
 onMounted(() => {
+	let data = {
+		"title": "My test",
+		"author": "10codeing"
+	}
+	axios.post("http://localhost:3000/user/", data).then((res) => {
+		console.log(res)
+	})
 	console.log(page.value)
 	document.querySelector("#app").classList.add("edit");
 })
