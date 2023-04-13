@@ -11,33 +11,36 @@ import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GYoutube from '../elements/GYoutube.vue';
 import { mainStore } from "../store/index";
-import { extractVideoID } from "../Tool";
+import { extractVideoID, handleNumber } from "../Tool";
 const props = defineProps(["data"])
 let showEdit = ref(false);
 let _videoDataLength = ref(1);
+let videoUpdate = ref(false);
 const store = mainStore()
 const { content, page } = storeToRefs(store);
 let videoSetting = reactive({})
 let videoData = reactive({
     num: 1,
+    preview: false,
     type: "click",
     videos: [{
         url: "", show: false, validUrl: true
     }],
-    mt: 0, mb: 54,
+    mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
 })
 const initData = () => {
     return {
         num: 1,
+        preview: false,
         type: "click",
         videos: [{
             url: "", show: false, validUrl: true
         }],
-        mt: 0, mb: 54,
+        mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
     }
 };
 
-watchEffect(() => {
+watchEffect(async () => {
     if (props.data.update) {
         showEdit.value = true;
     } else {
@@ -55,6 +58,10 @@ watchEffect(() => {
             })
             _videoDataLength.value = videoData.num;
         }
+        console.log("Video Update")
+        videoUpdate.value = true;
+        await nextTick();
+        videoUpdate.value = false;
     }
 })
 onMounted(async () => {
@@ -76,6 +83,8 @@ const cssVar = computed(() => {
     return {
         "--mt": props.data.content.mt,
         "--mb": props.data.content.mb,
+        "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
+        "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
     }
 })
 
@@ -98,7 +107,7 @@ const onChange = (e) => {
     _videoDataLength.value = num
 }
 
-const onSubmit = () => {
+const onSubmit = async () => {
     let data = {}
     videoData.videos.forEach((v, i) => {
         if (v.url.length > 0 && extractVideoID(v.url)) {
@@ -112,16 +121,26 @@ const onSubmit = () => {
     })
     if (validCheck) {
         $("#loadingProgress").show();
-        let { num, type, videos, mt } = videoData;
+        if (videoData.type == "pop") {
+            videoData.preview = true;
+        }
+        let { num, type, videos, mt, mb, mobile_mt, mobile_mb, preview } = videoData;
         let videos2 = toRaw(videos)
         data.num = num;
-        data.type = type;
+        data.preview = preview,
+            data.type = type;
         data.mt = mt;
+        data.mb = mb;
+        data.mobile_mt = mobile_mt ? mobile_mt : mt;
+        data.mobile_mb = mobile_mb ? mobile_mb : mb;
         data.videos = videos2;
         store.updateCpt(props.data.uid, data);
         Object.keys(data).forEach((v, i) => {
             videoSetting[v] = data[v];
         })
+        videoUpdate.value = true;
+        await nextTick();
+        videoUpdate.value = false;
     }
 }
 const onReset = () => {
@@ -149,10 +168,11 @@ const closeBtn = () => {
         videoData = {
             num: 1,
             type: "click",
+            preview: false,
             videos: [{
                 url: "", show: false, validUrl: true
             }],
-            mt: 0, mb: 54,
+            mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
         }
     }
     showEdit.value = false;
@@ -162,17 +182,17 @@ const closeBtn = () => {
 <template>
     <div class="g-video" :style="cssVar">
         <div class="g-video-container" :data-num="videoSetting.num">
-            <template v-for="(videos, index) in videoSetting.videos">
+            <template v-for="(videos, index) in videoSetting.videos" :key="index">
                 <a v-if="videoSetting.type == 'click'" href="javascript:;" class="g-video__box">
-                    <g-youtube :youtube="videos.url" />
+                    <g-youtube :youtube="videos.url" v-if="!videoUpdate" />
                 </a>
                 <a v-if="videoSetting.type == 'pop'" href="javascript:;" class="g-video__box" @click="openPop(videos)">
-                    <g-youtube :youtube="videos.url" :pop="true" />
+                    <g-youtube :youtube="videos.url" :pop="true" :preview="true" v-if="!videoUpdate" />
                     <g-lightbox v-model:showLightbox="videos.show" :style="videos.style" :action="false"
                                 class="lb-video">
                         <template #lightbox-content>
                             <div class="g-lightbox__video">
-                                <g-youtube :youtube="videos.url" :popopen="videos.show" />
+                                <g-youtube :youtube="videos.url" :popopen="videos.show" :popstatus="true" />
                             </div>
                         </template>
                     </g-lightbox>
@@ -210,10 +230,16 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="間距上:" type="number" v-model="videoData.mt" />
+                        <g-input label="PC間距上:" type="number" v-model="videoData.mt" @change="handleNumber" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="間距下:" type="number" v-model="videoData.mb" />
+                        <g-input label="PC間距下:" type="number" v-model="videoData.mb" @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile間距上:" type="number" v-model="videoData.mobile_mt" @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile間距下:" type="number" v-model="videoData.mobile_mb" @change="handleNumber" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

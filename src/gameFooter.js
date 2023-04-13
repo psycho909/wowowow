@@ -59,7 +59,11 @@ const gameFooter = (game) => {
 	}
 
 	//組合Footer
-	function componentFooter(option) {
+	function componentFooter(options) {
+		var option = options;
+		if (option.product == "天堂月服") {
+			option.product = "天堂";
+		}
 		//html模板，{{名稱}}代表要套入的地方
 		var logoArea_html = '<div class="logoArea">{{logoLinks}}</div>';
 		var copyrightArea_html = '<div class="copyrightArea"><p class="m-hide">{{copyrightD}}</p><p class="m-show">{{copyrightM}}</p></div>';

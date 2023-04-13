@@ -147,3 +147,7 @@ export const imgLoading = async (data) => {
 	});
 	return await Promise.all(promiseAll);
 };
+
+export const handleNumber = (e) => {
+	return (e.target.value = e.target.value.replace(/[^\d]+/g, ""));
+};

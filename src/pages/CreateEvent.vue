@@ -79,6 +79,7 @@ onMounted(() => {
         if (code != 1) {
             messageText.value = message;
             messageLightbox.value = true;
+            loadingHide()
             return;
         }
         gameOptions.value = listData;
@@ -129,36 +130,42 @@ const onSubmit = async () => {
     } else {
         valid.gameseq = false;
     }
-    if (eventConfig.eventName.length > 0 && eventConfig.eventName.length <= 50) {
+    if (eventConfig.eventName.length > 0 && eventConfig.eventName.length <= 200) {
         valid.eventName = true;
     } else {
         valid.eventName = false;
     }
-    if (eventConfig.webtitle.length > 0 && eventConfig.webtitle.length <= 50) {
+    if (eventConfig.webtitle.length > 0 && eventConfig.webtitle.length <= 200) {
         valid.webtitle = true;
     } else {
         valid.webtitle = false;
     }
     if (eventConfig.webDescription) {
-        if (eventConfig.webDescription.length > 50) {
+        if (eventConfig.webDescription.length > 200) {
             valid.webDescription = false;
         } else {
             valid.webDescription = true;
         }
+    } else {
+        valid.webDescription = true;
     }
     if (eventConfig.ogTitle) {
-        if (eventConfig.ogTitle.length > 20) {
+        if (eventConfig.ogTitle.length > 200) {
             valid.ogTitle = false;
         } else {
             valid.ogTitle = true;
         }
+    } else {
+        valid.ogTitle = true;
     }
     if (eventConfig.ogDescription) {
-        if (eventConfig.ogDescription.length > 50) {
+        if (eventConfig.ogDescription.length > 200) {
             valid.ogDescription = false;
         } else {
             valid.ogDescription = true;
         }
+    } else {
+        valid.ogDescription = true;
     }
     if (eventConfig.ogUrl) {
         if (!await CheckImage(eventConfig.ogUrl)) {
@@ -166,6 +173,8 @@ const onSubmit = async () => {
         } else {
             valid.ogUrl = true;
         }
+    } else {
+        valid.ogUrl = true;
     }
     if (eventConfig.ga) {
         if (eventConfig.ga.length > 500) {
@@ -173,6 +182,8 @@ const onSubmit = async () => {
         } else {
             valid.ga = true;
         }
+    } else {
+        valid.ga = true;
     }
     if (eventConfig.gtm) {
         if (eventConfig.gtm.length > 500) {
@@ -180,6 +191,8 @@ const onSubmit = async () => {
         } else {
             valid.gtm = true;
         }
+    } else {
+        valid.gtm = true;
     }
     var validCheck = Object.keys(valid).every(function (v, i) {
         return valid[v] == true;
@@ -205,6 +218,7 @@ const onSubmit = async () => {
                 if (code != 1) {
                     messageText.value = message;
                     messageLightbox.value = true;
+                    loadingHide()
                     return;
                 }
                 createText.value = "活動已更新完成";
@@ -221,8 +235,9 @@ const onSubmit = async () => {
             AddEventList(store.otp, data).then((res) => {
                 let { code, message, url, listData, data: eventSeq } = res.data;
                 if (code != 1) {
-                    message.value = message;
+                    messageText.value = message;
                     messageLightbox.value = true;
+                    loadingHide()
                     return;
                 }
                 data.eventSeq = eventSeq;
@@ -240,33 +255,31 @@ const onSubmit = async () => {
     }
 }
 const onReset = () => {
-    eventConfig = {
-        gameseq: "",
-        beginDate: new Date(),
-        beginTime: {
-            hours: new Date().getHours(),
-            minutes: new Date().getMinutes()
-        },
-        endDate: new Date(),
-        endTime: {
-            hours: new Date().getHours(),
-            minutes: new Date().getMinutes()
-        },
-        eventName: "",
-        cookie: 0,
-        header: 0,
-        webtitle: "",
-        webDescription: "",
-        ogTitle: "",
-        ogDescription: "",
-        ogUrl: "",
-        script: "",
-        flag: 0,
-        createUser: "",
-        createTime: "",
-        updateUser: "",
-        updateTime: ""
-    }
+    eventConfig.gameseq = "";
+    eventConfig.beginDate = "";
+    eventConfig.beginTime.hours = "";
+    eventConfig.beginTime.minutes = "";
+    eventConfig.endDate = "";
+    eventConfig.endTime.hours = "";
+    eventConfig.endTime.minutes = "";
+    eventConfig.eventName = "";
+    eventConfig.cookie = 0;
+    eventConfig.header = 0;
+    eventConfig.webtitle = "";
+    eventConfig.webDescription = "";
+    eventConfig.ogTitle = "";
+    eventConfig.ogDescription = "";
+    eventConfig.ogUrl = "";
+    eventConfig.script = "";
+    eventConfig.flag = 0;
+    eventConfig.createUser = "";
+    eventConfig.createTime = "";
+    eventConfig.updateUser = "";
+    eventConfig.updateTime = "";
+    eventConfig.ga = "";
+    eventConfig.gtm = "";
+    GAToggle.value = false;
+    GTMToggle.value = false;
 }
 const onComplete = () => {
     if (status.value == "edit") {
@@ -331,7 +344,7 @@ const onEvent = (type) => {
             </div>
             <div class="create-config__col">
                 <g-input label="活動名稱" placeholder="輸入內容" v-model="eventConfig.eventName" :valid="valid.eventName"
-                         maxlength="50"
+                         max="200"
                          :required="true" />
             </div>
             <div class="create-config__col">
@@ -343,7 +356,7 @@ const onEvent = (type) => {
                 <g-checkbox label="COOKIE政策" v-model="eventConfig.cookie" trueValue="1" falseValue="0" />
             </div>
             <div class="create-config__col">
-                <g-checkbox label="HEADER" v-model="eventConfig.header" trueValue="1" falseValue="0" />
+                <g-checkbox label="HEADER" v-model="eventConfig.header" trueValue="1" falseValue="0" />(手機版不會顯示HEADER)
             </div>
             <!-- <div class="create-config__col">
                 <g-checkbox label="Footer" v-model="eventConfig.footer.open" trueValue="1" falseValue="0" />
@@ -354,19 +367,19 @@ const onEvent = (type) => {
             </div> -->
             <div class="create-config__col">
                 <g-input label="網頁標題" placeholder="輸入內容" v-model="eventConfig.webtitle" :valid="valid.webtitle"
-                         maxlength="50" :required="true" />
+                         max="200" :required="true" />
             </div>
             <div class="create-config__col">
                 <g-input label="網頁說明" placeholder="輸入內容" v-model="eventConfig.webDescription"
-                         :valid="valid.webDescription" maxlength="50" />
+                         :valid="valid.webDescription" max="200" />
             </div>
             <div class="create-config__col">
                 <g-input label="FB標題" placeholder="輸入內容" v-model="eventConfig.ogTitle" :valid="valid.ogTitle"
-                         maxlength="20" />
+                         max="200" />
             </div>
             <div class="create-config__col">
                 <g-input label="FB說明" placeholder="輸入內容" v-model="eventConfig.ogDescription"
-                         :valid="valid.ogDescription" maxlength="50" />
+                         :valid="valid.ogDescription" max="200" />
             </div>
             <div class="create-config__col">
                 <g-input label="FB縮圖URL" placeholder="輸入內容" v-model="eventConfig.ogUrl"
@@ -374,13 +387,13 @@ const onEvent = (type) => {
             </div>
             <div class="create-config__col">
                 <g-checkbox label="GA" v-model="GAToggle" />
-                <div class="create-config__col" v-if="GAToggle == 'true'">
+                <div class="create-config__col" v-if="GAToggle == true || GAToggle == 'true'">
                     <g-input placeholder="輸入內容:G-XXXXXXX" v-model="eventConfig.ga" :valid="valid.ga" maxlength="500" />
                 </div>
             </div>
             <div class="create-config__col">
                 <g-checkbox label="GTM" v-model="GTMToggle" />
-                <div class="create-config__col" v-if="GTMToggle == 'true'">
+                <div class="create-config__col" v-if="GTMToggle == true || GTMToggle == 'true'">
                     <g-input placeholder="輸入內容:GTM-XXXXX" v-model="eventConfig.gtm" :valid="valid.gtm"
                              maxlength="500" />
                 </div>

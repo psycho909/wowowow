@@ -11,16 +11,16 @@ import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GSwiper from '../elements/GSwiper.vue';
 import { mainStore } from "../store/index";
-import { CheckImage, CheckUrl, imgLoading } from "../Tool";
+import { CheckImage, CheckUrl, imgLoading, handleNumber } from "../Tool";
 const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
 const { content, page } = storeToRefs(store);
 let slideSetting = reactive({});
-let slideUpdate = ref(true);
+let slideUpdate = ref(false);
 let loading = ref(true);
 let slideData = reactive({
-    num: 1, mt: 0, mb: 54, autoplay: {
+    num: 1, mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0, autoplay: {
         open: false,
         delay: 2,
         validDelay: true
@@ -29,9 +29,10 @@ let slideData = reactive({
         pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
     }],
 })
+let slideNumValid = ref(true);
 const initData = () => {
     return {
-        num: 1, mt: 0, mb: 54, autoplay: {
+        num: 1, mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0, autoplay: {
             open: false,
             delay: 2,
             validDelay: true
@@ -64,9 +65,9 @@ watchEffect(async () => {
                 loading.value = false;
             })
         }
-        slideUpdate.value = false;
-        await nextTick();
         slideUpdate.value = true;
+        await nextTick();
+        slideUpdate.value = false;
     }
 })
 onMounted(async () => {
@@ -90,6 +91,8 @@ const cssVar = computed(() => {
     return {
         "--mt": props.data.content.mt,
         "--mb": props.data.content.mb,
+        "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
+        "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
     }
 })
 
@@ -107,7 +110,7 @@ const addInsertMenu = (index) => {
             pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
         })
         if (slideData.num > slideData.slides.length) {
-            slideData.num = lideData.slides.length;
+            slideData.num = slideData.slides.length;
         }
         return;
     }
@@ -115,7 +118,7 @@ const addInsertMenu = (index) => {
         pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
     }, ...slideData.slides.slice(index + 1)];
     if (slideData.num > slideData.slides.length) {
-        slideData.num = lideData.slides.length;
+        slideData.num = slideData.slides.length;
     }
 }
 
@@ -199,13 +202,20 @@ const onSubmit = async () => {
     var validCheck = slideData.slides.every(function (v, i) {
         return v.validPC == true && v.validMobile == true && v.validUrl == true;
     })
-    if (validCheck && validDelay) {
+    if (slideData.slides.length >= Number(slideData.num)) {
+        slideNumValid.value = true;
+    } else {
+        slideNumValid.value = false;
+    }
+    if (validCheck && validDelay && slideNumValid.value) {
         $("#loadingProgress").show();
-        let { num, mt, mb, autoplay, slides } = slideData;
+        let { num, mt, mb, mobile_mt, mobile_mb, autoplay, slides } = slideData;
         let autoplay2 = toRaw(autoplay)
         let slides2 = toRaw(slides)
         data.mb = mb;
         data.mt = mt;
+        data.mobile_mt = mobile_mt ? mobile_mt : mt;
+        data.mobile_mb = mobile_mb ? mobile_mb : mb;
         data.num = num;
         data.autoplay = autoplay2;
         data.slides = slides2;
@@ -216,9 +226,9 @@ const onSubmit = async () => {
         imgLoading(slideData.slides).then((res) => {
             loading.value = false;
         })
-        slideUpdate.value = false;
-        await nextTick();
         slideUpdate.value = true;
+        await nextTick();
+        slideUpdate.value = false;
     }
 }
 const onReset = () => {
@@ -245,7 +255,7 @@ const closeBtn = () => {
         })
     } else {
         slideData = {
-            num: 1, mt: 0, mb: 54, autoplay: {
+            num: 1, mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0, autoplay: {
                 open: false,
                 delay: 2,
                 validDelay: true
@@ -263,7 +273,7 @@ const closeBtn = () => {
 <template>
     <div class="g-slide" :style="cssVar" :class="[loading ? 'loading' : '']">
         <div class="g-slide-container" :data-num="slideSetting.num">
-            <template v-if="!loading"><g-swiper :data="slideSetting" :status="status" v-if="slideUpdate" /></template>
+            <template v-if="!loading"><g-swiper :data="slideSetting" :status="status" v-if="!slideUpdate" /></template>
             <template v-else>
                 <div class="g-swiper"></div>
             </template>
@@ -282,13 +292,11 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">選擇輪播數量:</div>
-                    <g-radio label="單張圖片" name="item" value="1" v-model="slideData.num" />
-                    <g-radio label="兩張圖片" name="item" value="2" v-model="slideData.num"
-                             :disable="!(slideData.slides.length >= 2)" />
-                    <g-radio label="三張圖片" name="item" value="3" v-model="slideData.num"
-                             :disable="!(slideData.slides.length >= 3)" />
-                    <g-radio label="四張圖片" name="item" value="4" v-model="slideData.num"
-                             :disable="!(slideData.slides.length >= 4)" />
+                    <g-radio label="單格輪播" name="item" value="1" v-model="slideData.num" />
+                    <g-radio label="雙格輪播" name="item" value="2" v-model="slideData.num" />
+                    <g-radio label="三格輪播" name="item" value="3" v-model="slideData.num" />
+                    <g-radio label="四格輪播" name="item" value="4" v-model="slideData.num" />
+                    <div class="error" v-if="!slideNumValid">放置圖片數量不得小於所選輪播數量</div>
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col">
@@ -341,10 +349,16 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="間距上:" type="number" v-model="slideData.mt" />
+                        <g-input label="PC間距上:" type="number" v-model="slideData.mt" @change="handleNumber" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="間距下:" type="number" v-model="slideData.mb" />
+                        <g-input label="PC間距下:" type="number" v-model="slideData.mb" @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile間距上:" type="number" v-model="slideData.mobile_mt" @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile間距下:" type="number" v-model="slideData.mobile_mb" @change="handleNumber" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

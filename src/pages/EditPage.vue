@@ -50,6 +50,36 @@ const cssVar = computed(() => {
     }
 })
 
+const checkInit = computed(() => {
+    if (content.value.length > 0) {
+        var a = content.value.map((v, i) => {
+            return v.component;
+        });
+        var checkBG = a.find((v, i) => {
+            return v == "GBg";
+        });
+        var checkSlogan = a.find((v, i) => {
+            return v == "GSlogan";
+        });
+        if (Object.keys(content.value).length > 3 || Object.keys(content.value).length == 1) {
+            return true;
+        } else {
+            if (checkBG && checkSlogan) {
+                var b = content.value.filter((v, i) => {
+                    return (v.component == "GBg" && !v.init) || (v.component == "GSlogan" && !v.init);
+                });
+                if (b.length > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        }
+    }
+})
+
 const menu = computed(() => {
     return Object.keys(components).map((m, i) => {
         return {
@@ -88,6 +118,7 @@ const onEvent = (type) => {
                 if (code != 1) {
                     messageText.value = message;
                     messageLightbox.value = true;
+                    loadingHide()
                     return;
                 }
                 return data;
@@ -128,6 +159,7 @@ const onApproveSubmit = () => {
         if (code != 1) {
             messageText.value = message;
             messageLightbox.value = true;
+            loadingHide()
             return;
         }
         return ApproveEvent(store.otp, data);
@@ -137,6 +169,7 @@ const onApproveSubmit = () => {
             if (code != 1) {
                 messageText.value = message;
                 messageLightbox.value = true;
+                loadingHide()
                 return;
             }
             approveLightbox.value = false;
@@ -178,11 +211,11 @@ const onCancel = (type) => {
 }
 </script>
 <template>
-    <section class="wrap development" :data-type="store.config.pageTypeSeq" :style="cssVar" v-if="content">
-        <template v-for="block in content">
+    <section class="wrap development" :data-type="store.config.pageTypeSeq" :style="cssVar">
+        <template v-for="block in content" :key="block.uid">
             <component :is="block.component" :data="block"></component>
         </template>
-        <img v-if="!store.updateTime" style="display:block;margin:0 auto;max-width: 100%;"
+        <img v-if="!checkInit" style="display:block;margin:0 auto;max-width: 100%;"
              src="https://alpha-tw.beanfun.com/3KO/removable/pchome/images/component.png" alt="">
     </section>
     <g-menu :menu="menu" />

@@ -11,7 +11,7 @@ import { storeToRefs } from "pinia";
 import { reactive, watchEffect } from 'vue';
 import GInput from "../elements/GInput.vue";
 import { mainStore } from "../store/index";
-import { CheckImage, CheckUrl } from "../Tool";
+import { CheckImage, CheckUrl, handleNumber } from "../Tool";
 const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
@@ -21,6 +21,8 @@ let sloganData = reactive({
     link: "",
     mt: "250",
     mb: "24",
+    mobile_mt: 0,
+    mobile_mb: 0,
     pc: "",
     mobile: "", validPC: true, validMobile: true, validUrl: true
 })
@@ -29,6 +31,8 @@ const initData = () => {
         link: "",
         mt: "250",
         mb: "24",
+        mobile_mt: 0,
+        mobile_mb: 0,
         pc: "",
         mobile: "", validPC: true, validMobile: true, validUrl: true
     }
@@ -45,6 +49,8 @@ const cssVar = computed(() => {
     return {
         "--mt": props.data.content.mt,
         "--mb": props.data.content.mb,
+        "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
+        "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
     }
 })
 
@@ -120,6 +126,8 @@ const closeBtn = () => {
             link: "",
             mt: "250",
             mb: "24",
+            mobile_mt: 0,
+            mobile_mb: 0,
             pc: "",
             mobile: "", validPC: true, validMobile: true, validUrl: true
         }
@@ -173,10 +181,16 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="間距上:" type="number" v-model="sloganData.mt" />
+                        <g-input label="PC間距上:" type="number" v-model="sloganData.mt" @change="handleNumber" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="間距下:" type="number" v-model="sloganData.mb" />
+                        <g-input label="PC間距下:" type="number" v-model="sloganData.mb" @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile間距上:" type="number" v-model="sloganData.mobile_mt" @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile間距下:" type="number" v-model="sloganData.mobile_mb" @change="handleNumber" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

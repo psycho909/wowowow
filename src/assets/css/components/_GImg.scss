@@ -9,8 +9,8 @@
 		}
 	}
 	@include media {
-		margin-top: calc(var(--mt, 0) / 768 * 100vw);
-		margin-bottom: calc(var(--mb, 54) / 768 * 100vw);
+		margin-top: calc(var(--mobile_mt, 0) / 768 * 100vw);
+		margin-bottom: calc(var(--mobile_mb, 54) / 768 * 100vw);
 	}
 	&-container {
 		width: 100%;

@@ -21,7 +21,7 @@ let eventFilter = reactive({
 })
 
 let gameSeqOptions = ref([])
-let flagOptions = ref([{ value: 0, text: "編輯中" }, { value: "1", text: "審核中" }, { value: "2", text: "審核通過" }, { value: "3", text: "刪除" }])
+let flagOptions = ref([{ value: "", text: "" }, { value: 0, text: "編輯中" }, { value: "1", text: "審核中" }, { value: "2", text: "審核通過" }])
 let eventData = ref([])
 let totalPage = ref(0)
 let total = ref(5)
@@ -67,12 +67,19 @@ const onSort = (type) => {
 }
 const onSearch = () => {
     loadingShow()
+    if (eventFilter.beginDate == null) {
+        eventFilter.beginDate = "";
+    }
+    if (eventFilter.endDate == null) {
+        eventFilter.endDate = "";
+    }
     let data = { ...eventFilter };
     GetEventList(store.otp, data).then((res) => {
         let { code, message, url, listData } = res.data;
         if (code != 1) {
             messageText.value = message;
             messageLightbox.value = true;
+            loadingHide()
             return;
         }
         eventData.value = listData || [];
@@ -125,8 +132,6 @@ const flagFormat = (flag) => {
             return "審核中"
         case 2:
             return "審核通過"
-        case 3:
-            return "刪除"
         case 4:
             return "審核不過"
     }
@@ -134,7 +139,7 @@ const flagFormat = (flag) => {
 
 const dateFormat = (date) => {
     let dateTime = new Date(date)
-    return `${dateTime.getFullYear()}/${dateTime.getMonth() + 1}/${dateTime.getDate()}`
+    return `${dateTime.getFullYear()}/${dateTime.getMonth() + 1}/${dateTime.getDate()} ${dateTime.getHours()}:${dateTime.getMinutes()}`
 }
 
 const onSaveTemp = () => {
@@ -226,6 +231,7 @@ const onSubmit = (type) => {
             if (code != 1) {
                 messageText.value = message;
                 messageLightbox.value = true;
+                loadingHide()
                 return code;
             }
             eventData.value.forEach((v, i) => {
@@ -254,6 +260,7 @@ const onSubmit = (type) => {
             if (code != 1) {
                 messageText.value = message;
                 messageLightbox.value = true;
+                loadingHide()
                 return code;
             }
             eventData.value.forEach((v, i) => {
@@ -283,6 +290,7 @@ const onSubmit = (type) => {
             if (code != 1) {
                 messageText.value = message;
                 messageLightbox.value = true;
+                loadingHide()
                 return code;
             }
             eventData.value.forEach((v, i) => {
@@ -322,9 +330,12 @@ onMounted(async () => {
     GetGames(store.otp).then((res) => {
         let { code, message, url, listData } = res.data;
         if (code != 1) {
+            messageText.value = message;
+            messageLightbox.value = true;
+            loadingHide()
             return;
         }
-        gameSeqOptions.value = listData;
+        gameSeqOptions.value = [{ guid: "", gameName: "" }, ...listData];
         if (Object.keys(store.eventListFilter).length) {
             Object.keys(eventFilter).forEach((v, i) => {
                 eventFilter[v] = store.eventListFilter[v];
@@ -338,20 +349,18 @@ onMounted(async () => {
                 } else {
                     totalPage.value = 0;
                 }
-
+                loadingHide()
             } else {
                 onSearch();
             }
         } else {
             onSearch();
         }
-    }).finally(() => {
-        loadingHide()
     })
 })
 </script>
 <template>
-    <div class="container">
+    <div class="container event-list__container">
         <g-home />
         <div class="page-title">
             <span class="page-title--style">網柑達</span>
@@ -405,7 +414,9 @@ onMounted(async () => {
             </div>
             <div class="event-list__body">
                 <div class="event-list__box" v-for="event in eventDataSlice">
-                    <div class="event-list__item">{{ gameSeqName(event.gameseq)[0]?.gameName || "" }}</div>
+                    <div class="event-list__item" :class="[gameSeqName(event.gameseq)[0]?.gameName ? '' : 'end']">{{
+        gameSeqName(event.gameseq)[0]?.gameName || "遊戲已下架"
+}}</div>
                     <div class="event-list__item">
                         <div class="event-list__date">{{ dateFormat(event.beginDate) }}-{{ dateFormat(event.endDate) }}
                         </div>
@@ -417,8 +428,8 @@ onMounted(async () => {
                     <div class="event-list__item">
                         <div class="event-list__status">
                             <div class="event-list__status-item" :data-status="flagFormat(event.flag)">{{
-                                    flagFormat(event.flag)
-                            }}</div>
+        flagFormat(event.flag)
+}}</div>
                             <div class="event-list__status-item">
                                 <a href="javascript:;" class="event-list__btn event-list__btn-edit"
                                    v-if="(event.flag != 1)"

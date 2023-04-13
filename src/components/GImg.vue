@@ -14,7 +14,7 @@ import GSelect from '../elements/GSelect.vue';
 import { mainStore } from "../store/index";
 import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
-import { CheckImage, CheckUrl, imgLoading } from "../Tool";
+import { CheckImage, CheckUrl, imgLoading, handleNumber } from "../Tool";
 import { toRaw } from 'vue';
 const props = defineProps(["data"])
 let showEdit = ref(false);
@@ -42,7 +42,7 @@ let imgData = reactive({
             attribute: true, validUrl: true,
         }
     }],
-    mt: 0, mb: 54,
+    mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
 });
 const initData = () => {
     return {
@@ -63,7 +63,7 @@ const initData = () => {
                 attribute: true, validUrl: true,
             }
         }],
-        mt: 0, mb: 54,
+        mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
     }
 }
 watchEffect(() => {
@@ -112,6 +112,8 @@ const cssVar = computed(() => {
     return {
         "--mt": props.data.content.mt,
         "--mb": props.data.content.mb,
+        "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
+        "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
     }
 })
 
@@ -189,10 +191,12 @@ const onSubmit = async () => {
     })
     if (validCheck && styleValid.value) {
         $("#loadingProgress").show();
-        let { imgs, mb, mt, num } = imgData;
+        let { imgs, mb, mt, mobile_mt, mobile_mb, num } = imgData;
         let imgs2 = toRaw(imgs)
         data.mb = mb;
         data.mt = mt;
+        data.mobile_mt = mobile_mt ? mobile_mt : mt;
+        data.mobile_mb = mobile_mb ? mobile_mb : mb;
         data.num = num;
         data.imgs = imgs2;
         store.updateCpt(props.data.uid, data);
@@ -245,7 +249,7 @@ const closeBtn = () => {
                     attribute: true, validUrl: true,
                 }
             }],
-            mt: 0, mb: 54,
+            mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
         }
     }
     showEdit.value = false;
@@ -361,7 +365,7 @@ const closeBtn = () => {
                         </template>
                         <template v-if="img.pop.type == 'img'">
                             <div class="g-edit__col">
-                                <g-input label="POP圖片:" v-model.trim="img.pop.img" :preview="img.pop.img"
+                                <g-input label="POP圖片網址:" v-model.trim="img.pop.img" :preview="img.pop.img"
                                          :required="true" />
                             </div>
                             <div class="g-edit__col">
@@ -389,10 +393,16 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="間距上:" type="number" v-model="imgData.mt" />
+                        <g-input label="PC間距上:" type="number" v-model="imgData.mt" @change="handleNumber" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="間距下:" type="number" v-model="imgData.mb" />
+                        <g-input label="PC間距下:" type="number" v-model="imgData.mb" @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile間距上:" type="number" v-model="imgData.mobile_mt" @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile間距下:" type="number" v-model="imgData.mobile_mb" @change="handleNumber" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

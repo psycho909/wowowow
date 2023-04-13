@@ -22,7 +22,7 @@ export const templateStore = defineStore("template", {
 								validMobile: true
 							},
 							update: false,
-							init: false
+							init: true
 						},
 						{
 							component: "GSlogan",
@@ -38,7 +38,7 @@ export const templateStore = defineStore("template", {
 								validUrl: true
 							},
 							update: false,
-							init: false
+							init: true
 						}
 					]
 				}

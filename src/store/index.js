@@ -20,7 +20,9 @@ export const mainStore = defineStore("main", {
 			otp: "",
 			updateTime: "",
 			save: false,
-			move: false
+			move: false,
+			previewConfig: {},
+			previewContent: []
 		};
 	},
 	getters: {
@@ -122,11 +124,20 @@ export const mainStore = defineStore("main", {
 			this.eventListData = [];
 			this.eventListCurrent = 1;
 			this.eventListMessage = 0;
+			this.approveListFilter = {};
+			this.approveListData = [];
+			this.approveListCurrent = 1;
+			this.updateTime = "";
 		},
 		setStorageState(state, page) {
-			let temp = { ...state };
+			let { content, config } = state;
+			// let temp = { ...state };
+			let temp = {};
 			temp.page = page;
-			window.sessionStorage.setItem("state", JSON.stringify(temp));
+			temp.previewContent = content;
+			temp.previewConfig = config;
+			// window.sessionStorage.setItem("state", JSON.stringify(temp));
+			window.localStorage.setItem("state", JSON.stringify(temp));
 		},
 		async setState(data) {
 			const pathName = window.location.href.includes("Preview");

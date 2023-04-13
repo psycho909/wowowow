@@ -16,6 +16,14 @@ const props = defineProps({
     popopen: {
         type: Boolean,
         default: false
+    },
+    preview: {
+        type: Boolean,
+        default: false
+    },
+    popstatus: {
+        type: Boolean,
+        default: false
     }
 })
 let videoRef = ref(null)
@@ -37,6 +45,7 @@ onMounted(async () => {
     if (props.popopen) {
         player.playVideo();
     }
+    console.log("YT Update")
     videoImg.value = youtubePreview(extractVideoID(props.youtube))
 })
 
@@ -57,8 +66,8 @@ defineExpose({ player, videoRef });
 </script>
 <template>
     <div class="g-yt">
-        <div class="g-yt__box" @click="onVideo">
-            <img class="g-yt__img" :class="[playStatus ? 'on' : 'off']" :src="videoImg?.hq" alt="" />
+        <div class="g-yt__box" @click="onVideo" :data-type="[preview || popstatus?'pop':'video']">
+            <img class="g-yt__img" :class="[playStatus ? 'on' : 'off']" :src="videoImg?.hq" alt="" v-if="preview" />
             <div class="g-yt__video" ref="videoRef" v-if="!pop"></div>
         </div>
     </div>

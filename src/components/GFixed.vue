@@ -67,6 +67,16 @@ onMounted(async () => {
         Object.keys(_temp2).forEach((v, i) => {
             fixedSetting[v] = _temp2[v];
         })
+        if (fixedSetting.position == 'top') {
+            $(window).on("scroll", function () {
+                let scrollTop = $(this).scrollTop();
+                if (scrollTop >= $(".wrap").offset().top) {
+                    $(".g-fixed").addClass("fixed")
+                } else {
+                    $(".g-fixed").removeClass("fixed")
+                }
+            })
+        }
     }
 })
 const addPushMenu = () => {

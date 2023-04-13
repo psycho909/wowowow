@@ -5,7 +5,7 @@ export default {
 }
 </script>
 <script setup>
-import { useSlots } from "vue";
+import { onUnmounted, useSlots } from "vue";
 const props = defineProps({
     showLightbox: {
         type: Boolean, default: false
@@ -38,6 +38,11 @@ watchEffect(() => {
     if (props.showLightbox) {
         document.querySelector("body").classList.add("ov-hidden");
     } else {
+        document.querySelector("body").classList.remove("ov-hidden");
+    }
+})
+onUnmounted(() => {
+    if (document.querySelector("body").classList.contains("ov-hidden")) {
         document.querySelector("body").classList.remove("ov-hidden");
     }
 })

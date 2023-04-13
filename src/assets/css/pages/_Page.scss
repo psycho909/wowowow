@@ -1,5 +1,33 @@
 body {
 	background-color: #333333;
+	position: relative;
+	&.preview {
+		&:before {
+			content: "(預覽模式)";
+			width: 100%;
+			font-size: 25px;
+			font-weight: bold;
+			color: #333333;
+			background-color: rgba(#ff9c00, 1);
+			text-align: center;
+			padding: 12px 0;
+			position: relative;
+			z-index: 9999;
+			display: block;
+			@include media {
+				font-size: vw(32);
+				padding: vw(12) 0;
+			}
+			.wrap {
+				.g-modify {
+					display: none;
+				}
+			}
+		}
+	}
+}
+.error {
+	color: red;
 }
 #app.edit {
 	#cookieBarWrap {
@@ -27,7 +55,7 @@ body {
 	padding-bottom: 100px;
 	@include media {
 		background-image: var(--mobile);
-		background-size: calc(var(--mw) / 768 * 100vw) calc(var(--mw) / 768 * 100vw);
+		background-size: calc(var(--mw) / 768 * 100vw) calc(var(--mh) / 768 * 100vw);
 	}
 	div:last-child {
 		margin-bottom: 0;

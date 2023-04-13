@@ -27,24 +27,30 @@ if (import.meta.env.MODE == "development") {
 
 
 if (!pathName) {
-	if (window.sessionStorage.getItem("state")) {
-		state = JSON.parse(window.sessionStorage.getItem("state"));
-		if (state.page == 'Preview') {
-			window.sessionStorage.removeItem("state")
-		}
-		if (state.page == 'EditPage') {
-			store.setState(state);
-		}
-	}
+	// if (window.sessionStorage.getItem("state")) {
+	// 	state = JSON.parse(window.sessionStorage.getItem("state"));
+	// 	if (state.page == 'Preview') {
+	// 		window.sessionStorage.removeItem("state")
+	// 	}
+	// 	if (state.page == 'EditPage') {
+	// 		store.setState(state);
+	// 	}
+	// }
 } else {
-	if (window.sessionStorage.getItem("state")) {
-		state = JSON.parse(window.sessionStorage.getItem("state"));
+	// if (window.sessionStorage.getItem("state")) {
+	// 	state = JSON.parse(window.sessionStorage.getItem("state"));
+	// 	state.page = "Preview";
+	// 	store.setState(state);
+	// }
+	if (window.localStorage.getItem("state")) {
+		state = JSON.parse(window.localStorage.getItem("state"));
 		state.page = "Preview";
 		store.setState(state);
 	}
 
 }
 onMounted(() => {
+	console.log(page.value)
 	document.querySelector("#app").classList.add("edit");
 })
 </script>

@@ -13,39 +13,49 @@ import GSelect from '../elements/GSelect.vue';
 import GInput from "../elements/GInput.vue";
 import { mainStore } from "../store/index";
 import colors, { style1, style2 } from "../colors";
+import { handleNumber } from "../Tool";
 
 const props = defineProps(["data"])
 let showEdit = ref(false);
 let textSetting = ref({})
 let styleValid = ref(true);
+let textUpdate = ref(false);
 let textData = reactive({
     align: "left",
     style: "",
     text: "",
-    mt: 0, mb: 54
+    mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0
 })
 const initData = () => {
     return {
         align: "left",
         style: "",
         text: "",
-        mt: 0, mb: 54
+        mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0
     }
 };
 const store = mainStore()
 const { content, page } = storeToRefs(store);
 
-watchEffect(() => {
+watchEffect(async () => {
     if (props.data.update) {
         showEdit.value = true;
     } else {
         showEdit.value = false;
+    }
+    if (!props.data.update) {
+        console.log("Text")
+        textUpdate.value = true;
+        await nextTick();
+        textUpdate.value = false;
     }
 })
 const cssVar = computed(() => {
     return {
         "--mt": props.data.content.mt,
         "--mb": props.data.content.mb,
+        "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
+        "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
     }
 })
 onMounted(async () => {
@@ -58,8 +68,11 @@ onMounted(async () => {
     }
 })
 
+onUnmounted(() => {
+    console.log("did")
+})
 
-const onSubmit = () => {
+const onSubmit = async () => {
     if (textData.style == "") {
         styleValid.value = false;
     } else {
@@ -72,6 +85,9 @@ const onSubmit = () => {
         Object.keys(data).forEach((v, i) => {
             textSetting.value[v] = data[v];
         })
+        textUpdate.value = true;
+        await nextTick();
+        textUpdate.value = false;
     }
 }
 const onReset = () => {
@@ -94,7 +110,7 @@ const closeBtn = () => {
             align: "left",
             style: "",
             text: "",
-            mt: 0, mb: 54
+            mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0
         }
     }
     showEdit.value = false;
@@ -102,8 +118,8 @@ const closeBtn = () => {
 }
 </script>
 <template>
-    <div class="g-text" :class="[textSetting.align]" :style="[colors[textSetting.style],cssVar]">
-        <div class="g-text-container">
+    <div class="g-text" :class="[textSetting.align]" :style="[colors[textSetting.style], cssVar]">
+        <div class="g-text-container" v-if="!textUpdate">
             <div class="g-text__content" v-html="textSetting.text"></div>
             <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
         </div>
@@ -133,10 +149,16 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="間距上:" type="number" v-model="textData.mt" />
+                        <g-input label="PC間距上:" type="number" v-model="textData.mt" @change="handleNumber" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="間距下:" type="number" v-model="textData.mb" />
+                        <g-input label="PC間距下:" type="number" v-model="textData.mb" @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile間距上:" type="number" v-model="textData.mobile_mt" @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile間距下:" type="number" v-model="textData.mobile_mb" @change="handleNumber" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

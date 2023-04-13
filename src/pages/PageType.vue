@@ -26,6 +26,7 @@ onMounted(() => {
         if (code != 1) {
             messageText.value = message;
             messageLightbox.value = true;
+            loadingHide()
             return;
         }
         typeList.value = listData;

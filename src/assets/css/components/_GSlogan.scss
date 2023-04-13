@@ -8,8 +8,8 @@
 	@include media {
 		max-width: vw(728);
 		margin: 0 auto;
-		margin-top: calc(var(--mt, 250) / 768 * 100vw);
-		margin-bottom: calc(var(--mb, 24) / 768 * 100vw);
+		margin-top: calc(var(--mobile_mt, 250) / 768 * 100vw);
+		margin-bottom: calc(var(--mobile_mb, 24) / 768 * 100vw);
 	}
 	&-container {
 		background-position: center 0;

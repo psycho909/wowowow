@@ -54,16 +54,62 @@ const eventDataSlice = computed(() => {
 
 const onSearch = () => {
     loadingShow()
+    if (eventFilter.beginDate == null) {
+        eventFilter.beginDate = "";
+    }
+    if (eventFilter.endDate == null) {
+        eventFilter.endDate = "";
+    }
     let data = { ...eventFilter };
     let { eventName, beginDate, endDate, gameSeq, approvedSeq } = data;
     GetApprovedEvent(store.otp, { eventName, beginDate, endDate, gameSeq, approvedSeq }).then((res) => {
         let { code, message, url, listData } = res.data;
+        // let sortData = [];
+        // let showData = [];
+        // let hideData = [];
+        // let waitData = [];
+        // let endData = [];
         if (code != 1) {
             messageText.value = message;
             messageLightbox.value = true;
+            loadingHide()
             return;
         }
-        eventData.value = listData || [];
+        // if (listData) {
+        //     listData.forEach((v, i) => {
+        //         v.status = eventStatus(v.beginDate, v.endDate, v.show)
+        //     })
+        //     showData = listData.filter((v, i) => {
+        //         return v.status == "已上線";
+        //     }).sort((a, b) => {
+        //         return +new Date(a.endDate) > +new Date(b.endDate) ? -1 : 1
+        //     })
+        //     waitData = listData.filter((v, i) => {
+        //         return v.status == "待上線";
+        //     }).sort((a, b) => {
+        //         return +new Date(a.endDate) > +new Date(b.endDate) ? -1 : 1
+        //     })
+        //     endData = listData.filter((v, i) => {
+        //         return v.status == "已結束";
+        //     }).sort((a, b) => {
+        //         return +new Date(a.endDate) > +new Date(b.endDate) ? -1 : 1
+        //     })
+        //     hideData = listData.filter((v, i) => {
+        //         return v.show == 0
+        //     }).sort((a, b) => {
+        //         return +new Date(a.endDate) > +new Date(b.endDate) ? -1 : 1
+        //     })
+        // }
+        listData.sort((a, b) => {
+            if (a.show == 1 && b.show == 0) {
+                return -1;
+            } else if (a.show != 1 && b.show != 0) {
+                return 1;
+            } else {
+                return +new Date(b.endDate) - +new Date(a.endDate);
+            }
+        });
+        eventData.value = listData;
         currentPage.value = 1;
         totalPage.value = Math.ceil(eventData.value.length / total.value);
         store.setApproveListFilter(data, currentPage.value, listData);
@@ -80,7 +126,7 @@ const gameSeqName = (gameseq) => {
 
 const dateFormat = (date) => {
     let dateTime = new Date(date)
-    return `${dateTime.getFullYear()}/${dateTime.getMonth() + 1}/${dateTime.getDate()}`
+    return `${dateTime.getFullYear()}/${dateTime.getMonth() + 1}/${dateTime.getDate()} ${dateTime.getHours()}:${dateTime.getMinutes()}`
 }
 
 const onSaveTemp = () => {
@@ -126,6 +172,7 @@ const onSubmit = () => {
         if (code != 1) {
             messageText.value = message;
             messageLightbox.value = true;
+            loadingHide()
             return;
         }
         eventData.value.forEach((v, i) => {
@@ -157,9 +204,10 @@ onMounted(async () => {
         if (code != 1) {
             messageText.value = message;
             messageLightbox.value = true;
+            loadingHide()
             return;
         }
-        gameSeqOptions.value = listData;
+        gameSeqOptions.value = [{ guid: "", gameName: "" }, ...listData];
         if (Object.keys(store.approveListFilter).length) {
             Object.keys(eventFilter).forEach((v, i) => {
                 eventFilter[v] = store.approveListFilter[v];
@@ -171,16 +219,15 @@ onMounted(async () => {
             } else {
                 totalPage.value = 0;
             }
+            loadingHide()
         } else {
             onSearch();
         }
-    }).finally(() => {
-        loadingHide()
     })
 })
 </script>
 <template>
-    <div class="container">
+    <div class="container event-list__container approve-list__container">
         <g-home />
         <div class="page-title">
             <span class="page-title--style">網柑達</span>
@@ -238,10 +285,11 @@ onMounted(async () => {
                     <div class="event-list__item">
                         <div class="event-list__status">
                             <div class="event-list__status-item" :class="[event.show == 0 ? '' : 'end']">{{
-                                    eventStatus(event.beginDate, event.endDate,
-                                        event.show)
-                            }}</div>
-                            <div class="event-list__status-item" v-if="(event.show == 1)"><a class="event-list__btn-off"
+        eventStatus(event.beginDate, event.endDate,
+            event.show)
+}}</div>
+                            <div class="event-list__status-item" v-if="(event.show == 1) && (eventStatus(event.beginDate, event.endDate,
+    event.show) == '已上線')"><a class="event-list__btn-off"
                                    href="javascript:;"
                                    @click="eventOff(event)">下架</a></div>
                         </div>

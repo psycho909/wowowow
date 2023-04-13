@@ -20,6 +20,7 @@
 		}
 		&.on {
 			display: block;
+			z-index: 10000;
 			&:before {
 				content: "";
 				width: 100vw;
@@ -61,7 +62,7 @@
 		top: vw(28);
 		left: vw(28);
 		display: none;
-		z-index: 1;
+		z-index: 9999;
 		&:before {
 			content: "";
 			width: vw(4);
@@ -95,6 +96,7 @@
 			z-index: 2;
 			position: relative;
 			background-color: var(--bg, rgba(#474747, 0.9));
+			max-height: 100vh;
 		}
 	}
 	&__list {
@@ -131,6 +133,13 @@
 		background-color: var(--bg, rgba(#474747, 0.9));
 		max-width: 100%;
 		min-width: 100%;
+		position: absolute;
+		&.fixed {
+			position: fixed;
+		}
+		@include media {
+			position: fixed;
+		}
 		.g-fixed {
 			&-container {
 				max-width: 1000px;
@@ -178,6 +187,10 @@
 				flex-direction: row;
 			}
 		}
+		.g-modify {
+			right: unset;
+			left: 6px;
+		}
 	}
 	&.left {
 		top: 100px;
@@ -188,6 +201,9 @@
 		.g-fixed-container {
 			max-height: calc(100vh - 118px);
 			overflow-y: auto;
+			@include media {
+				max-height: 100vh;
+			}
 			&::-webkit-scrollbar {
 				width: 10px;
 				@include media {
@@ -228,6 +244,9 @@
 		.g-fixed-container {
 			max-height: calc(100vh - 118px);
 			overflow-y: auto;
+			@include media {
+				max-height: 100vh;
+			}
 		}
 		.g-fixed {
 			&__menu {

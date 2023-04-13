@@ -15,25 +15,34 @@ const store = mainStore()
 let state = null;
 
 if (window.sessionStorage.getItem("state")) {
-    state = JSON.parse(window.sessionStorage.getItem("state"))
+    // state = JSON.parse(window.sessionStorage.getItem("state"));
+    state = JSON.parse(window.localStorage.getItem("state"));
     store.setState(state);
 }
-let { content } = storeToRefs(store);
+let { previewConfig, previewContent } = storeToRefs(store);
 let footer = {}
 
 onMounted(async () => {
-    document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
-    footer.prod = store.config.gameName;
-    footer.theme = store.config.footer == 1 ? 'light' : 'dark';
+    document.getElementsByTagName("HTML")[0].setAttribute("data-type", previewConfig.value.pageTypeSeq);
+    document.querySelector("body").className = "preview";
+    footer.prod = previewConfig.value.gameName;
+    footer.theme = previewConfig.value.footer == 1 ? 'light' : 'dark';
     gameFooter(footer);
-    pageInfo(store.config);
-    if (store.config.header == 1) {
-        topBar(store.config.gameName)
+    pageInfo(previewConfig);
+    document.title = previewConfig.value.webtitle;
+    if (Number(previewConfig.value.cookie) == 1) {
+        if (document.querySelector("#cookieBarWrap")) {
+            document.querySelector("#cookieBarWrap").classList.add("on");
+        }
     }
+    if (previewConfig.value.header == 1) {
+        topBar(previewConfig.value.gameName)
+    }
+
 })
 const cssVar = computed(() => {
-    if (content?.value.length > 0) {
-        let bg = content.value.filter((c, i) => {
+    if (previewContent?.value.length > 0) {
+        let bg = previewContent.value.filter((c, i) => {
             return c.component == "GBg"
         })
         return {
@@ -47,25 +56,13 @@ const cssVar = computed(() => {
         }
     }
 })
-const onEvent = (type) => {
-    switch (type) {
-        case "editPage":
-            store.setStorageState(store.$state, "EditPage");
-            store.setPage("EditPage", true);
-            break;
-        case "eventList":
-            store.setStorageState(store.$state, "EventList");
-            store.setPage("EventList", true);
-            break;
-    }
-}
 </script>
 <template>
-    <section class="page-preview">(此頁面內容尚未儲存 ， 如需保留請記得存檔)</section>
-    <section class="wrap" :data-type="store.config.pageTypeSeq" :style="cssVar">
-        <template v-for="block in content">
+    <!-- <section class="page-preview">(預覽模式)</section> -->
+    <section class="wrap" :data-type="previewConfig.pageTypeSeq" :style="cssVar">
+        <template v-for="block in previewContent">
             <component :is="block.component" :data="block"></component>
         </template>
     </section>
-    <GCookie v-if="(store.config.cookie == 1)" :data="store.config"></GCookie>
+    <GCookie v-if="(previewConfig.cookie == 1)" :data="previewConfig"></GCookie>
 </template>
