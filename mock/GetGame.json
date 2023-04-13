@@ -1,0 +1,128 @@
+{
+	"listData": [
+		{
+			"guid": 1,
+			"gameName": "便利商店口袋版",
+			"serviceCode": "611647",
+			"serviceRegion": "T0"
+		},
+		{
+			"guid": 2,
+			"gameName": "魔力寶貝M",
+			"serviceCode": "611646",
+			"serviceRegion": "I0"
+		},
+		{
+			"guid": 3,
+			"gameName": "召喚圖板",
+			"serviceCode": "611640",
+			"serviceRegion": "G0"
+		},
+		{
+			"guid": 4,
+			"gameName": "天堂M",
+			"serviceCode": "611644",
+			"serviceRegion": "T0"
+		},
+		{
+			"guid": 5,
+			"gameName": "櫻桃小丸子",
+			"serviceCode": "611648",
+			"serviceRegion": "I0"
+		},
+		{
+			"guid": 6,
+			"gameName": "小森生活",
+			"serviceCode": "611649",
+			"serviceRegion": "G0"
+		},
+		{
+			"guid": 1003,
+			"gameName": "新楓之谷",
+			"serviceCode": "610074",
+			"serviceRegion": "T9"
+		},
+		{
+			"guid": 2003,
+			"gameName": "龍之谷新世界",
+			"serviceCode": "611652",
+			"serviceRegion": "T0"
+		},
+		{
+			"guid": 2005,
+			"gameName": "月光雕刻師",
+			"serviceCode": "611656",
+			"serviceRegion": "T0"
+		},
+		{
+			"guid": 2006,
+			"gameName": "彈射世界",
+			"serviceCode": "611657",
+			"serviceRegion": "T0"
+		},
+		{
+			"guid": 2008,
+			"gameName": "天堂",
+			"serviceCode": "600035",
+			"serviceRegion": "T7"
+		},
+		{
+			"guid": 2010,
+			"gameName": "天堂免服",
+			"serviceCode": "600041",
+			"serviceRegion": "BE"
+		},
+		{
+			"guid": 2011,
+			"gameName": "天堂國際服",
+			"serviceCode": "611639",
+			"serviceRegion": "T0"
+		},
+		{
+			"guid": 2012,
+			"gameName": "曖昧瞬間",
+			"serviceCode": "611654",
+			"serviceRegion": "G0"
+		},
+		{
+			"guid": 2013,
+			"gameName": "跑跑卡丁車",
+			"serviceCode": "610096",
+			"serviceRegion": "TE"
+		},
+		{
+			"guid": 2015,
+			"gameName": "bf!遊戲",
+			"serviceCode": "99999",
+			"serviceRegion": "T0"
+		},
+		{
+			"guid": 2016,
+			"gameName": "絕對武力",
+			"serviceCode": "610153",
+			"serviceRegion": "TN"
+		},
+		{
+			"guid": 2017,
+			"gameName": "新瑪奇",
+			"serviceCode": "600309",
+			"serviceRegion": "A2"
+		},
+		{
+			"guid": 8,
+			"gameName": "罪惡童話:集體崩壞的公主",
+			"serviceCode": "611651",
+			"serviceRegion": "T0"
+		},
+		{
+			"guid": 2018,
+			"gameName": "艾爾之光",
+			"serviceCode": "300148",
+			"serviceRegion": "AF"
+		}
+	],
+	"data": null,
+	"code": 1,
+	"message": null,
+	"url": null
+}

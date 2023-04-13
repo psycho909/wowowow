@@ -1,0 +1,14 @@
+{
+	"listData": [
+		{
+			"pageTypeSeq": 1,
+			"subject": "一頁式版型",
+			"directions": "可選擇首頁背景、標題置中、一頁式版型</BR>背景寬度限制1000以上、高度不限",
+			"image": "/img/1.jpg"
+		}
+	],
+	"data": null,
+	"code": 1,
+	"message": null,
+	"url": null
+}
