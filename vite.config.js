@@ -42,6 +42,11 @@ export default defineConfig(({ mode }) => {
 					secure: false,
 					ws: true,
 					rewrite: (path) => path.replace(/^\/agent/, "")
+				},
+				"/json": {
+					target: "http://localhost:3000",
+					changeOrigin: true,
+					rewrite: (path) => path.replace(/^\/json/, "")
 				}
 			}
 		},

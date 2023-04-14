@@ -5,11 +5,11 @@ import EventList from "./pages/EventList.vue";
 import ApproveList from "./pages/ApproveList.vue";
 import Home from "./pages/Home.vue";
 import EditPage from "./pages/EditPage.vue";
-import Page from "./pages/Page.vue";
 import Preview from "./pages/Preview.vue";
 import PageType from "./pages/PageType.vue";
-import axios from "axios";
 import { mainStore } from "./store/index";
+import { UpdateEventContent, ApproveEvent } from "./api";
+
 const store = mainStore()
 const { page } = storeToRefs(store);
 let state = null;
@@ -27,21 +27,7 @@ if (import.meta.env.MODE == "development") {
 
 
 if (!pathName) {
-	// if (window.sessionStorage.getItem("state")) {
-	// 	state = JSON.parse(window.sessionStorage.getItem("state"));
-	// 	if (state.page == 'Preview') {
-	// 		window.sessionStorage.removeItem("state")
-	// 	}
-	// 	if (state.page == 'EditPage') {
-	// 		store.setState(state);
-	// 	}
-	// }
 } else {
-	// if (window.sessionStorage.getItem("state")) {
-	// 	state = JSON.parse(window.sessionStorage.getItem("state"));
-	// 	state.page = "Preview";
-	// 	store.setState(state);
-	// }
 	if (window.localStorage.getItem("state")) {
 		state = JSON.parse(window.localStorage.getItem("state"));
 		state.page = "Preview";
@@ -50,13 +36,6 @@ if (!pathName) {
 
 }
 onMounted(() => {
-	let data = {
-		"title": "My test",
-		"author": "10codeing"
-	}
-	axios.post("http://localhost:3000/user/", data).then((res) => {
-		console.log(res)
-	})
 	console.log(page.value)
 	document.querySelector("#app").classList.add("edit");
 })

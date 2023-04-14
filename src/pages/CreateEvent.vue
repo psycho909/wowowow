@@ -6,9 +6,7 @@ import GDate from '../elements/GDate.vue';
 import GInput from '../elements/GInput.vue';
 import GSelect from '../elements/GSelect.vue';
 import GTime from '../elements/GTime.vue';
-import GTextarea from '../elements/GTextarea.vue';
 import GHome from "../components/GHome.vue";
-import axios from "axios";
 import { mainStore } from "../store/index";
 import { templateStore } from "../store/template";
 import { GetGames, AddEventList, UpdateEvent } from "../api";
@@ -359,12 +357,12 @@ const onEvent = (type) => {
                 <g-checkbox label="HEADER" v-model="eventConfig.header" trueValue="1" falseValue="0" />(手機版不會顯示HEADER)
             </div>
             <!-- <div class="create-config__col">
-                <g-checkbox label="Footer" v-model="eventConfig.footer.open" trueValue="1" falseValue="0" />
-                <div class="create-config__col" v-if="eventConfig.footer.open == 1">
-                    <g-radio label="dark" name="theme" value="dark" v-model="eventConfig.footer.theme" />
-                    <g-radio label="light" name="theme" value="light" v-model="eventConfig.footer.theme" />
-                </div>
-            </div> -->
+                        <g-checkbox label="Footer" v-model="eventConfig.footer.open" trueValue="1" falseValue="0" />
+                        <div class="create-config__col" v-if="eventConfig.footer.open == 1">
+                            <g-radio label="dark" name="theme" value="dark" v-model="eventConfig.footer.theme" />
+                            <g-radio label="light" name="theme" value="light" v-model="eventConfig.footer.theme" />
+                        </div>
+                    </div> -->
             <div class="create-config__col">
                 <g-input label="網頁標題" placeholder="輸入內容" v-model="eventConfig.webtitle" :valid="valid.webtitle"
                          max="200" :required="true" />
@@ -399,8 +397,8 @@ const onEvent = (type) => {
                 </div>
             </div>
             <!-- <div class="create-config__col">
-                <g-textarea label="其它行銷script" v-model="eventConfig.script" />
-            </div> -->
+                        <g-textarea label="其它行銷script" v-model="eventConfig.script" />
+                    </div> -->
             <div class="create-btn__group">
                 <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
                 <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>

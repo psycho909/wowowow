@@ -5,10 +5,11 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
+		"dev:test": "vite --mode test",
 		"build": "vite build",
 		"devbuild": "vite build --watch --mode devBuild",
 		"preview": "vite preview",
-		"db": "json-server --watch db.json"
+		"db": "json-server --watch db.json --routes routes.json --middlewares middle.cjs"
 	},
 	"dependencies": {
 		"@ckeditor/ckeditor5-vue": "^4.0.1",
