@@ -14,22 +14,13 @@ import 'vue-color-kit/dist/vue-color-kit.css';
 import GInput from "../elements/GInput.vue";
 import { mainStore } from "../store/index";
 import { CheckImage } from "../Tool";
+import { cloneDeep } from 'lodash-es'
 const props = defineProps(["data"])
 const store = mainStore()
 const { content, MODE, page } = storeToRefs(store);
 let showEdit = ref(false);
 let showColor = ref(false)
-let bgData = reactive({
-    color: "#fff",
-    pc: "",
-    mobile: "",
-    w: "",
-    h: "",
-    mw: "",
-    mh: "",
-    validPC: true,
-    validMobile: true,
-})
+let bgData = reactive({})
 const initData = () => {
     return {
         color: "#fff",
@@ -43,6 +34,9 @@ const initData = () => {
         validMobile: true,
     }
 };
+
+Object.assign(bgData, initData());
+
 const imageInfo = async (type, url) => {
     return new Promise((resolve, reject) => {
         var elem = new Image();
@@ -71,9 +65,7 @@ watchEffect(() => {
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            bgData[v] = props.data.content[v];
-        })
+        Object.assign(bgData, cloneDeep(props.data.content));
     }
 })
 const updateColor = (color) => {
@@ -143,17 +135,7 @@ const closeBtn = () => {
             bgData[v] = props.data.content[v];
         })
     } else {
-        bgData = {
-            color: "#fff",
-            pc: "",
-            mobile: "",
-            w: "",
-            h: "",
-            mw: "",
-            mh: "",
-            validPC: true,
-            validMobile: true,
-        }
+        Object.assign(bgData, initData());
     }
     showEdit.value = false;
     props.data.update = false;

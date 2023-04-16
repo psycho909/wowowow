@@ -14,18 +14,14 @@ import GInput from "../elements/GInput.vue";
 import { mainStore } from "../store/index";
 import colors, { style1, style2 } from "../colors";
 import { handleNumber } from "../Tool";
+import { cloneDeep } from 'lodash-es'
 
 const props = defineProps(["data"])
 let showEdit = ref(false);
-let textSetting = ref({})
+let textSetting = reactive({})
 let styleValid = ref(true);
 let textUpdate = ref(false);
-let textData = reactive({
-    align: "left",
-    style: "",
-    text: "",
-    mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0
-})
+let textData = reactive({})
 const initData = () => {
     return {
         align: "left",
@@ -35,7 +31,10 @@ const initData = () => {
     }
 };
 const store = mainStore()
-const { content, page } = storeToRefs(store);
+const { page } = storeToRefs(store);
+let content = cloneDeep(props.data.content);
+
+Object.assign(textData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
@@ -44,7 +43,6 @@ watchEffect(async () => {
         showEdit.value = false;
     }
     if (!props.data.update) {
-        console.log("Text")
         textUpdate.value = true;
         await nextTick();
         textUpdate.value = false;
@@ -52,19 +50,17 @@ watchEffect(async () => {
 })
 const cssVar = computed(() => {
     return {
-        "--mt": props.data.content.mt,
-        "--mb": props.data.content.mb,
-        "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
-        "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
+        "--mt": content.mt,
+        "--mb": content.mb,
+        "--mobile_mt": content.mobile_mt ? content.mobile_mt : content.mt,
+        "--mobile_mb": content.mobile_mb ? content.mobile_mb : content.mb,
     }
 })
 onMounted(async () => {
     await nextTick()
-    if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            textData[v] = props.data.content[v];
-            textSetting.value[v] = props.data.content[v];
-        })
+    if (Object.keys(content).length > 0) {
+        Object.assign(textData, cloneDeep(props.data.content));
+        Object.assign(textSetting, cloneDeep(props.data.content));
     }
 })
 
@@ -78,13 +74,11 @@ const onSubmit = async () => {
     } else {
         styleValid.value = true;
     }
-    let data = { ...textData }
+    let data = cloneDeep(textData);
     if (styleValid.value) {
         $("#loadingProgress").show();
         store.updateCpt(props.data.uid, data);
-        Object.keys(data).forEach((v, i) => {
-            textSetting.value[v] = data[v];
-        })
+        Object.assign(textSetting, data);
         textUpdate.value = true;
         await nextTick();
         textUpdate.value = false;
@@ -101,17 +95,9 @@ const closeBtn = () => {
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            textData[v] = props.data.content[v];
-            textSetting.value[v] = props.data.content[v];
-        })
+        Object.assign(textData, cloneDeep(props.data.content));
     } else {
-        textData = {
-            align: "left",
-            style: "",
-            text: "",
-            mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0
-        }
+        Object.assign(textData, initData());
     }
     showEdit.value = false;
     props.data.update = false;

@@ -12,20 +12,15 @@ import { reactive, watchEffect } from 'vue';
 import GInput from "../elements/GInput.vue";
 import { mainStore } from "../store/index";
 import { CheckImage, CheckUrl, handleNumber } from "../Tool";
+import { cloneDeep } from 'lodash-es'
+
 const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
-const { content, page } = storeToRefs(store);
-let sloganSetting = ref({})
-let sloganData = reactive({
-    link: "",
-    mt: "250",
-    mb: "24",
-    mobile_mt: 0,
-    mobile_mb: 0,
-    pc: "",
-    mobile: "", validPC: true, validMobile: true, validUrl: true
-})
+const { page } = storeToRefs(store);
+let content = cloneDeep(props.data.content);
+let sloganSetting = reactive({})
+let sloganData = reactive({})
 const initData = () => {
     return {
         link: "",
@@ -37,6 +32,9 @@ const initData = () => {
         mobile: "", validPC: true, validMobile: true, validUrl: true
     }
 };
+
+Object.assign(sloganData, initData());
+
 watchEffect(() => {
     if (props.data.update) {
         showEdit.value = true;
@@ -57,10 +55,8 @@ const cssVar = computed(() => {
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            sloganData[v] = props.data.content[v];
-            sloganSetting.value[v] = props.data.content[v];
-        })
+        Object.assign(sloganData, cloneDeep(props.data.content));
+        Object.assign(sloganSetting, cloneDeep(props.data.content));
     }
 })
 
@@ -100,11 +96,9 @@ const onSubmit = async () => {
 
     if (sloganData.validPC && sloganData.validMobile && sloganData.validUrl) {
         $("#loadingProgress").show();
-        data = { ...sloganData };
+        data = cloneDeep(sloganData);
         store.updateCpt(props.data.uid, data);
-        Object.keys(data).forEach((v, i) => {
-            sloganSetting.value[v] = data[v];
-        })
+        Object.assign(sloganSetting, data);
     }
 }
 const onReset = () => {
@@ -118,19 +112,9 @@ const closeBtn = () => {
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
-        Object.keys(props.data.content).forEach((v, i) => {
-            sloganData[v] = props.data.content[v];
-        })
+        Object.assign(sloganData, cloneDeep(props.data.content));
     } else {
-        sloganData = {
-            link: "",
-            mt: "250",
-            mb: "24",
-            mobile_mt: 0,
-            mobile_mb: 0,
-            pc: "",
-            mobile: "", validPC: true, validMobile: true, validUrl: true
-        }
+        Object.assign(sloganData, initData);
     }
     showEdit.value = false;
     props.data.update = false;

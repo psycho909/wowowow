@@ -3,21 +3,23 @@ lockfileVersion: 5.4
 specifiers:
   '@ckeditor/ckeditor5-vue': ^4.0.1
   '@rollup/plugin-alias': ^3.1.9
-  '@vitejs/plugin-vue': ^3.2.0
-  '@vitejs/plugin-vue-jsx': ^2.1.1
-  '@vuepic/vue-datepicker': ^3.6.8
+  '@vitejs/plugin-vue': ^3.0.3
+  '@vitejs/plugin-vue-jsx': ^2.0.0
+  '@vuepic/vue-datepicker': ^3.4.8
   axios: ^0.27.2
   json-server: ^0.17.3
-  pinia: ^2.0.34
-  sass: ^1.62.0
-  swiper: ^8.4.7
-  unplugin-auto-import: ^0.11.5
-  unplugin-vue-components: ^0.22.12
+  lodash-es: ^4.17.21
+  pinia: ^2.0.20
+  sass: ^1.54.5
+  swiper: ^8.4.2
+  unplugin-auto-import: ^0.11.2
+  unplugin-vue-components: ^0.22.4
   uuid: ^9.0.0
   vite: ^3.2.5
-  vue: ^3.2.47
+  vue: ^3.2.37
   vue-color-kit: ^1.0.5
-  youtube-player: ^5.6.0
+  vuedraggable: ^4.1.0
+  youtube-player: ^5.5.2
 
 dependencies:
   '@ckeditor/ckeditor5-vue': 4.0.1
@@ -26,11 +28,13 @@ dependencies:
   '@vuepic/vue-datepicker': 3.6.8_vue@3.2.47
   axios: 0.27.2
   json-server: 0.17.3
+  lodash-es: 4.17.21
   pinia: 2.0.34_vue@3.2.47
   swiper: 8.4.7
   uuid: 9.0.0
   vue: 3.2.47
   vue-color-kit: 1.0.5_vue@3.2.47
+  vuedraggable: 4.1.0_vue@3.2.47
   youtube-player: 5.6.0
 
 devDependencies:
@@ -2412,6 +2416,10 @@ packages:
       p-locate: 5.0.0
     dev: false
 
+  /lodash-es/4.17.21:
+    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
+    dev: false
+
   /lodash-id/0.14.1:
     resolution: {integrity: sha512-ikQPBTiq/d5m6dfKQlFdIXFzvThPi2Be9/AHxktOnDSfSxE1j9ICbBT5Elk1ke7HSTgM38LHTpmJovo9/klnLg==}
     engines: {node: '>= 4'}
@@ -3113,6 +3121,10 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
+  /sortablejs/1.14.0:
+    resolution: {integrity: sha512-pBXvQCs5/33fdN1/39pPL0NZF20LeRbLQ5jtnheIPN9JQAaufGjKdWduZn4U7wCtVuzKhmRkI0DFYHYRbB2H1w==}
+    dev: false
+
   /source-map-js/1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
     engines: {node: '>=0.10.0'}
@@ -3518,6 +3530,15 @@ packages:
       '@vue/runtime-dom': 3.2.47
       '@vue/server-renderer': 3.2.47_vue@3.2.47
       '@vue/shared': 3.2.47
+
+  /vuedraggable/4.1.0_vue@3.2.47:
+    resolution: {integrity: sha512-FU5HCWBmsf20GpP3eudURW3WdWTKIbEIQxh9/8GE806hydR9qZqRRxRE3RjqX7PkuLuMQG/A7n3cfj9rCEchww==}
+    peerDependencies:
+      vue: ^3.0.1
+    dependencies:
+      sortablejs: 1.14.0
+      vue: 3.2.47
+    dev: false
 
   /webpack-sources/3.2.3:
     resolution: {integrity: sha512-/DyMEOrDgLKKIG0fmvtz+4dUX/3Ghozwgm6iPp8KRhvn+eQf9+Q7GWxVNMk3+uCPWfdXYC4ExGBckIXdFEfH1w==}

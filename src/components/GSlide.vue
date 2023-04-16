@@ -12,23 +12,17 @@ import GRadio from '../elements/GRadioo.vue';
 import GSwiper from '../elements/GSwiper.vue';
 import { mainStore } from "../store/index";
 import { CheckImage, CheckUrl, imgLoading, handleNumber } from "../Tool";
+import { cloneDeep } from 'lodash-es'
+
 const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
-const { content, page } = storeToRefs(store);
+const { page } = storeToRefs(store);
+let content = cloneDeep(props.data.content);
 let slideSetting = reactive({});
 let slideUpdate = ref(false);
 let loading = ref(true);
-let slideData = reactive({
-    num: 1, mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0, autoplay: {
-        open: false,
-        delay: 2,
-        validDelay: true
-    },
-    slides: [{
-        pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
-    }],
-})
+let slideData = reactive({})
 let slideNumValid = ref(true);
 const initData = () => {
     return {
@@ -42,6 +36,8 @@ const initData = () => {
         }],
     }
 };
+Object.assign(slideData, initData());
+
 if (window.sessionStorage.getItem("state")) {
     window.sessionStorage.removeItem("state")
 }
@@ -53,14 +49,8 @@ watchEffect(async () => {
     }
     if (!props.data.update) {
         if (Object.keys(props.data.content).length > 0) {
-            let _temp = JSON.parse(JSON.stringify(props.data.content));
-            let _temp2 = JSON.parse(JSON.stringify(props.data.content));
-            Object.keys(_temp).forEach((v, i) => {
-                slideData[v] = _temp[v];
-            })
-            Object.keys(_temp2).forEach((v, i) => {
-                slideSetting[v] = _temp2[v];
-            })
+            Object.assign(slideData, cloneDeep(props.data.content));
+            Object.assign(slideSetting, cloneDeep(props.data.content));
             imgLoading(slideData.slides).then((res) => {
                 loading.value = false;
             })
@@ -73,14 +63,8 @@ watchEffect(async () => {
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        let _temp = JSON.parse(JSON.stringify(props.data.content));
-        let _temp2 = JSON.parse(JSON.stringify(props.data.content));
-        Object.keys(_temp).forEach((v, i) => {
-            slideData[v] = _temp[v];
-        })
-        Object.keys(_temp2).forEach((v, i) => {
-            slideSetting[v] = _temp2[v];
-        })
+        Object.assign(slideData, cloneDeep(props.data.content));
+        Object.assign(slideSetting, cloneDeep(props.data.content));
         imgLoading(slideData.slides).then((res) => {
             loading.value = false;
         })
@@ -209,20 +193,9 @@ const onSubmit = async () => {
     }
     if (validCheck && validDelay && slideNumValid.value) {
         $("#loadingProgress").show();
-        let { num, mt, mb, mobile_mt, mobile_mb, autoplay, slides } = slideData;
-        let autoplay2 = toRaw(autoplay)
-        let slides2 = toRaw(slides)
-        data.mb = mb;
-        data.mt = mt;
-        data.mobile_mt = mobile_mt ? mobile_mt : mt;
-        data.mobile_mb = mobile_mb ? mobile_mb : mb;
-        data.num = num;
-        data.autoplay = autoplay2;
-        data.slides = slides2;
+        let data = cloneDeep(slideData);
         store.updateCpt(props.data.uid, data);
-        Object.keys(data).forEach((v, i) => {
-            slideSetting[v] = data[v];
-        })
+        Object.assign(slideSetting, data);
         imgLoading(slideData.slides).then((res) => {
             loading.value = false;
         })
@@ -242,28 +215,12 @@ const closeBtn = () => {
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
-        let _temp = JSON.parse(JSON.stringify(props.data.content));
-        let _temp2 = JSON.parse(JSON.stringify(props.data.content));
-        Object.keys(_temp).forEach((v, i) => {
-            slideData[v] = _temp[v];
-        })
-        Object.keys(_temp2).forEach((v, i) => {
-            slideSetting[v] = _temp2[v];
-        })
+        Object.assign(slideData, cloneDeep(props.data.content));
         imgLoading(slideData.slides).then((res) => {
             loading.value = false;
         })
     } else {
-        slideData = {
-            num: 1, mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0, autoplay: {
-                open: false,
-                delay: 2,
-                validDelay: true
-            },
-            slides: [{
-                pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
-            }]
-        };
+        Object.assign(slideData, initData());
     }
     showEdit.value = false;
     props.data.update = false;

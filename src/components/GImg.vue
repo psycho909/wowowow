@@ -15,35 +15,17 @@ import { mainStore } from "../store/index";
 import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber } from "../Tool";
-import { toRaw } from 'vue';
+import { cloneDeep } from 'lodash-es'
 const props = defineProps(["data"])
 let showEdit = ref(false);
 let _imgDataLength = ref(1);
 const store = mainStore()
-const { content, page } = storeToRefs(store);
+const { page } = storeToRefs(store);
+let content = cloneDeep(props.data.content);
 let imgSetting = reactive({})
 let styleValid = ref(true);
 let loading = ref(true);
-let imgData = reactive({
-    num: 1,
-    imgs: [{
-        pc: "",
-        mobile: "",
-        type: "",
-        validPC: true,
-        validMobile: true,
-        pop: {
-            show: false, type: "text",
-            align: "left",
-            style: ""
-        },
-        target: {
-            link: "",
-            attribute: true, validUrl: true,
-        }
-    }],
-    mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
-});
+let imgData = reactive({});
 const initData = () => {
     return {
         num: 1,
@@ -66,6 +48,7 @@ const initData = () => {
         mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
     }
 }
+Object.assign(imgData, initData());
 watchEffect(() => {
     if (props.data.update) {
         showEdit.value = true;
@@ -74,33 +57,20 @@ watchEffect(() => {
     }
     if (!props.data.update) {
         if (Object.keys(props.data.content).length > 0) {
-            let _temp = JSON.parse(JSON.stringify(props.data.content));
-            let _temp2 = JSON.parse(JSON.stringify(props.data.content));
-            Object.keys(_temp).forEach((v, i) => {
-                imgData[v] = _temp[v];
-            })
-            Object.keys(_temp2).forEach((v, i) => {
-                imgSetting[v] = _temp2[v];
-            })
+            Object.assign(imgData, cloneDeep(props.data.content));
+            Object.assign(imgSetting, cloneDeep(props.data.content));
             _imgDataLength.value = imgData.num;
             imgLoading(imgData.imgs).then((res) => {
                 loading.value = false;
             })
-            console.log("update")
         }
     }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        let _temp = JSON.parse(JSON.stringify(props.data.content));
-        let _temp2 = JSON.parse(JSON.stringify(props.data.content));
-        Object.keys(_temp).forEach((v, i) => {
-            imgData[v] = _temp[v];
-        })
-        Object.keys(_temp2).forEach((v, i) => {
-            imgSetting[v] = _temp2[v];
-        })
+        Object.assign(imgData, cloneDeep(props.data.content));
+        Object.assign(imgSetting, cloneDeep(props.data.content));
         _imgDataLength.value = imgData.num;
         imgLoading(imgData.imgs).then((res) => {
             loading.value = false;
@@ -110,10 +80,10 @@ onMounted(async () => {
 
 const cssVar = computed(() => {
     return {
-        "--mt": props.data.content.mt,
-        "--mb": props.data.content.mb,
-        "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
-        "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
+        "--mt": imgData.mt,
+        "--mb": imgData.mb,
+        "--mobile_mt": imgData.mobile_mt ? imgData.mobile_mt : imgData.mt,
+        "--mobile_mb": imgData.mobile_mb ? imgData.mobile_mb : imgData.mb,
     }
 })
 
@@ -191,18 +161,9 @@ const onSubmit = async () => {
     })
     if (validCheck && styleValid.value) {
         $("#loadingProgress").show();
-        let { imgs, mb, mt, mobile_mt, mobile_mb, num } = imgData;
-        let imgs2 = toRaw(imgs)
-        data.mb = mb;
-        data.mt = mt;
-        data.mobile_mt = mobile_mt ? mobile_mt : mt;
-        data.mobile_mb = mobile_mb ? mobile_mb : mb;
-        data.num = num;
-        data.imgs = imgs2;
+        let data = cloneDeep(imgData);
         store.updateCpt(props.data.uid, data);
-        Object.keys(data).forEach((v, i) => {
-            imgSetting[v] = data[v];
-        })
+        Object.assign(imgSetting, data);
         imgLoading(imgData.imgs).then((res) => {
             loading.value = false;
         })
@@ -220,37 +181,13 @@ const closeBtn = () => {
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
-        let _temp = JSON.parse(JSON.stringify(props.data.content));
-        Object.keys(_temp).forEach((v, i) => {
-            imgData[v] = _temp[v];
-            imgSetting[v] = _temp[v];
-        })
+        Object.assign(imgData, cloneDeep(props.data.content));
         _imgDataLength.value = imgData.num;
         imgLoading(imgData.imgs).then((res) => {
             loading.value = false;
         })
     } else {
-        imgData = {
-            num: 1,
-            imgs: [{
-                pc: "",
-                mobile: "",
-                type: "",
-                validPC: true,
-                validMobile: true, validUrl: true,
-                pop: {
-                    show: false,
-                    type: "text",
-                    align: "align-left",
-                    style: "",
-                },
-                target: {
-                    link: "",
-                    attribute: true, validUrl: true,
-                }
-            }],
-            mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
-        }
+        Object.assign(imgData, initData());
     }
     showEdit.value = false;
     props.data.update = false;

@@ -64,42 +64,12 @@ const onSearch = () => {
     let { eventName, beginDate, endDate, gameSeq, approvedSeq } = data;
     GetApprovedEvent(store.otp, { eventName, beginDate, endDate, gameSeq, approvedSeq }).then((res) => {
         let { code, message, url, listData } = res.data;
-        // let sortData = [];
-        // let showData = [];
-        // let hideData = [];
-        // let waitData = [];
-        // let endData = [];
         if (code != 1) {
             messageText.value = message;
             messageLightbox.value = true;
             loadingHide()
             return;
         }
-        // if (listData) {
-        //     listData.forEach((v, i) => {
-        //         v.status = eventStatus(v.beginDate, v.endDate, v.show)
-        //     })
-        //     showData = listData.filter((v, i) => {
-        //         return v.status == "已上線";
-        //     }).sort((a, b) => {
-        //         return +new Date(a.endDate) > +new Date(b.endDate) ? -1 : 1
-        //     })
-        //     waitData = listData.filter((v, i) => {
-        //         return v.status == "待上線";
-        //     }).sort((a, b) => {
-        //         return +new Date(a.endDate) > +new Date(b.endDate) ? -1 : 1
-        //     })
-        //     endData = listData.filter((v, i) => {
-        //         return v.status == "已結束";
-        //     }).sort((a, b) => {
-        //         return +new Date(a.endDate) > +new Date(b.endDate) ? -1 : 1
-        //     })
-        //     hideData = listData.filter((v, i) => {
-        //         return v.show == 0
-        //     }).sort((a, b) => {
-        //         return +new Date(a.endDate) > +new Date(b.endDate) ? -1 : 1
-        //     })
-        // }
         listData.sort((a, b) => {
             if (a.show == 1 && b.show == 0) {
                 return -1;
@@ -285,11 +255,11 @@ onMounted(async () => {
                     <div class="event-list__item">
                         <div class="event-list__status">
                             <div class="event-list__status-item" :class="[event.show == 0 ? '' : 'end']">{{
-        eventStatus(event.beginDate, event.endDate,
-            event.show)
-}}</div>
+                                eventStatus(event.beginDate, event.endDate,
+                                    event.show)
+                            }}</div>
                             <div class="event-list__status-item" v-if="(event.show == 1) && (eventStatus(event.beginDate, event.endDate,
-    event.show) == '已上線')"><a class="event-list__btn-off"
+                                event.show) == '已上線')"><a class="event-list__btn-off"
                                    href="javascript:;"
                                    @click="eventOff(event)">下架</a></div>
                         </div>

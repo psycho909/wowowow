@@ -10,13 +10,14 @@ import GMenu from "../components/GMenu.vue";
 import { mainStore } from "../store/index";
 import { templateStore } from "../store/template";
 import GLightbox from "../components/GLightbox.vue";
+import { InsertCookie, InsertScript, InsertHeader, InsertGA, InsertGTM } from "../Tool";
+import axios from "axios";
 import { loadingShow, loadingHide } from "../Tool";
 import { UpdateEventContent, ApproveEvent } from "../api";
-import draggable from "vuedraggable";
 
 const store = mainStore()
 const t = templateStore()
-const { content } = storeToRefs(store);
+const { content, move } = storeToRefs(store);
 let saveLightbox = ref(false);
 let approveLightbox = ref(false);
 let approveEndLightbox = ref(false);
@@ -89,12 +90,6 @@ const menu = computed(() => {
             order: components[m].order
         }
     });
-})
-
-const contentFilter = computed(() => {
-    return content.value.filter((com, i) => {
-        return com.component !== 'GBg'
-    })
 })
 
 const onEvent = (type) => {
@@ -214,27 +209,12 @@ const onCancel = (type) => {
         eventListLightbox.value = false;
     }
 }
-const log = (e) => {
-    console.log(e)
-}
-const end = (e) => {
-    console.log(e)
-}
 </script>
 <template>
     <section class="wrap development" :data-type="store.config.pageTypeSeq" :style="cssVar">
-        <component is="GBg" :data="content[0]"></component>
-        <draggable
-                   class="dragArea list-group"
-                   :list="contentFilter"
-                   @change="log"
-                   @end="end"
-                   group="people"
-                   item-key="uid">
-            <template #item="{ element }">
-                <component :is="element.component" :data="element"></component>
-            </template>
-        </draggable>
+        <template v-for="block in content" :key="block.uid">
+            <component :is="block.component" :data="block"></component>
+        </template>
         <img v-if="!checkInit" style="display:block;margin:0 auto;max-width: 100%;"
              src="https://alpha-tw.beanfun.com/3KO/removable/pchome/images/component.png" alt="">
     </section>

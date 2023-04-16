@@ -8,8 +8,7 @@ import EditPage from "./pages/EditPage.vue";
 import Preview from "./pages/Preview.vue";
 import PageType from "./pages/PageType.vue";
 import { mainStore } from "./store/index";
-import { UpdateEventContent, ApproveEvent } from "./api";
-
+import { reactive } from "vue";
 const store = mainStore()
 const { page } = storeToRefs(store);
 let state = null;
@@ -33,7 +32,6 @@ if (!pathName) {
 		state.page = "Preview";
 		store.setState(state);
 	}
-
 }
 onMounted(() => {
 	console.log(page.value)

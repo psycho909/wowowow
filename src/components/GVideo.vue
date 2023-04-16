@@ -12,22 +12,17 @@ import GRadio from '../elements/GRadioo.vue';
 import GYoutube from '../elements/GYoutube.vue';
 import { mainStore } from "../store/index";
 import { extractVideoID, handleNumber } from "../Tool";
+import { cloneDeep } from 'lodash-es'
+
 const props = defineProps(["data"])
 let showEdit = ref(false);
 let _videoDataLength = ref(1);
 let videoUpdate = ref(false);
 const store = mainStore()
-const { content, page } = storeToRefs(store);
+const { page } = storeToRefs(store);
+let content = cloneDeep(props.data.content);
 let videoSetting = reactive({})
-let videoData = reactive({
-    num: 1,
-    preview: false,
-    type: "click",
-    videos: [{
-        url: "", show: false, validUrl: true
-    }],
-    mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
-})
+let videoData = reactive({})
 const initData = () => {
     return {
         num: 1,
@@ -40,6 +35,8 @@ const initData = () => {
     }
 };
 
+Object.assign(videoData, initData());
+
 watchEffect(async () => {
     if (props.data.update) {
         showEdit.value = true;
@@ -48,17 +45,11 @@ watchEffect(async () => {
     }
     if (!props.data.update) {
         if (Object.keys(props.data.content).length > 0) {
-            let _temp = JSON.parse(JSON.stringify(props.data.content));
-            let _temp2 = JSON.parse(JSON.stringify(props.data.content));
-            Object.keys(_temp).forEach((v, i) => {
-                videoData[v] = _temp[v];
-            })
-            Object.keys(_temp2).forEach((v, i) => {
-                videoSetting[v] = _temp2[v];
-            })
+            Object.assign(videoData, cloneDeep(props.data.content));
+            Object.assign(videoSetting, cloneDeep(props.data.content));
+
             _videoDataLength.value = videoData.num;
         }
-        console.log("Video Update")
         videoUpdate.value = true;
         await nextTick();
         videoUpdate.value = false;
@@ -67,14 +58,8 @@ watchEffect(async () => {
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
-        let _temp = JSON.parse(JSON.stringify(props.data.content));
-        let _temp2 = JSON.parse(JSON.stringify(props.data.content));
-        Object.keys(_temp).forEach((v, i) => {
-            videoData[v] = _temp[v];
-        })
-        Object.keys(_temp2).forEach((v, i) => {
-            videoSetting[v] = _temp2[v];
-        })
+        Object.assign(videoData, cloneDeep(props.data.content));
+        Object.assign(videoSetting, cloneDeep(props.data.content));
         _videoDataLength.value = videoData.num;
     }
 })
@@ -124,20 +109,10 @@ const onSubmit = async () => {
         if (videoData.type == "pop") {
             videoData.preview = true;
         }
-        let { num, type, videos, mt, mb, mobile_mt, mobile_mb, preview } = videoData;
-        let videos2 = toRaw(videos)
-        data.num = num;
-        data.preview = preview,
-            data.type = type;
-        data.mt = mt;
-        data.mb = mb;
-        data.mobile_mt = mobile_mt ? mobile_mt : mt;
-        data.mobile_mb = mobile_mb ? mobile_mb : mb;
-        data.videos = videos2;
+        let data = cloneDeep(videoData)
         store.updateCpt(props.data.uid, data);
-        Object.keys(data).forEach((v, i) => {
-            videoSetting[v] = data[v];
-        })
+        Object.assign(videoSetting, data);
+
         videoUpdate.value = true;
         await nextTick();
         videoUpdate.value = false;
@@ -155,25 +130,10 @@ const closeBtn = () => {
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
-        let _temp = JSON.parse(JSON.stringify(props.data.content));
-        let _temp2 = JSON.parse(JSON.stringify(props.data.content));
-        Object.keys(_temp).forEach((v, i) => {
-            videoData[v] = _temp[v];
-        })
-        Object.keys(_temp2).forEach((v, i) => {
-            videoSetting[v] = _temp2[v];
-        })
+        Object.assign(videoData, cloneDeep(props.data.content));
         _videoDataLength.value = videoData.num;
     } else {
-        videoData = {
-            num: 1,
-            type: "click",
-            preview: false,
-            videos: [{
-                url: "", show: false, validUrl: true
-            }],
-            mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
-        }
+        Object.assign(videoData, initData());
     }
     showEdit.value = false;
     props.data.update = false;

@@ -17,7 +17,7 @@
         "gtm": "",
         "url": "",
         "pageTypeSeq": 1,
-        "detail": "[{\"component\":\"GBg\",\"uid\":1,\"content\":{\"color\":\"#fff\",\"pc\":\"\",\"mobile\":\"\",\"w\":1920,\"h\":958,\"mw\":\"\",\"mh\":\"\",\"validPC\":true,\"validMobile\":true},\"update\":false,\"init\":true},{\"component\":\"GSlogan\",\"uid\":2,\"content\":{\"link\":\"\",\"mt\":\"250\",\"mb\":\"24\",\"pc\":\"https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slogan.png\",\"mobile\":\"\",\"validPC\":true,\"validMobile\":true,\"validUrl\":true},\"update\":false,\"init\":true},{\"component\":\"GText\",\"uid\":\"59447da0-df4f-4ab8-9a00-8ce939ab40a7\",\"content\":{\"align\":\"left\",\"style\":\"red2\",\"text\":\"<p>sadasd</p>\",\"mt\":0,\"mb\":54,\"mobile_mt\":0,\"mobile_mb\":0},\"update\":false,\"init\":false}]",
+        "detail": "[{\"component\":\"GBg\",\"uid\":1,\"content\":{\"color\":\"#fff\",\"pc\":\"\",\"mobile\":\"\",\"w\":1920,\"h\":958,\"mw\":\"\",\"mh\":\"\",\"validPC\":true,\"validMobile\":true},\"update\":false,\"init\":true},{\"component\":\"GText\",\"uid\":\"59447da0-df4f-4ab8-9a00-8ce939ab40a7\",\"content\":{\"align\":\"left\",\"style\":\"blue2\",\"text\":\"<p>sadccccaxas</p>\",\"mt\":0,\"mb\":54,\"mobile_mt\":0,\"mobile_mb\":0},\"update\":false,\"init\":false},{\"component\":\"GImg\",\"uid\":\"c738e760-4650-4440-a7fd-1633e545fa05\",\"content\":{\"num\":\"2\",\"imgs\":[{\"pc\":\"https://p2.bahamut.com.tw/B/2KU/43/40ad2a8b1b3059553d59f2b71b1l9u75.JPG?w=1000\",\"mobile\":\"\",\"type\":\"link\",\"validPC\":true,\"validMobile\":true,\"pop\":{\"show\":false,\"type\":\"text\",\"align\":\"left\",\"style\":\"\"},\"target\":{\"link\":\"https://gnn.gamer.com.tw/detail.php?sn=248233\",\"attribute\":true,\"validUrl\":true}},{\"pc\":\"https://p2.bahamut.com.tw/B/2KU/96/f5f76f884c1cfcbdad9514f68a1irog5.JPG?w=1000\",\"mobile\":\"\",\"type\":\"\",\"validPC\":true,\"validMobile\":true,\"pop\":{\"show\":false,\"type\":\"text\",\"align\":\"left\",\"style\":\"\"},\"target\":{\"link\":\"\",\"attribute\":true,\"validUrl\":true}}],\"mt\":0,\"mb\":54,\"mobile_mt\":0,\"mobile_mb\":54},\"update\":false,\"init\":false},{\"component\":\"GText\",\"uid\":\"df8dd0b7-278b-4747-a5bc-8aac7a2bcf2c\",\"content\":{\"align\":\"left\",\"style\":\"indigo2\",\"text\":\"<p>CCCCC</p>\",\"mt\":0,\"mb\":54,\"mobile_mt\":0,\"mobile_mb\":0},\"update\":false,\"init\":false}]",
         "createUser": "Test",
         "createTime": "2023-04-13T18:06:49.657",
         "updateUser": "Test",
@@ -133,7 +133,7 @@
         "gtm": "",
         "url": "A5FEBFE97901912932F1DF28AB7AFCC3",
         "pageTypeSeq": 1,
-        "detail": "[{\"component\":\"GFixed\",\"uid\":\"41ac6730-09dc-4aaf-ad6a-b60f367f399f\",\"content\":{\"position\":\"left\",\"hamburger\":\"hamburger-left\",\"style\":\"blue2\",\"menus\":[{\"text\":\"111\",\"link\":\"http://127.0.0.1:5173/\",\"target\":false,\"validText\":true,\"validUrl\":true}]},\"update\":false,\"init\":false},{\"component\":\"GBg\",\"uid\":1,\"content\":{\"color\":\"#fff\",\"pc\":\"\",\"mobile\":\"\",\"w\":1920,\"h\":958,\"mw\":\"\",\"mh\":\"\",\"validPC\":true,\"validMobile\":true},\"update\":false,\"init\":false},{\"component\":\"GSlogan\",\"uid\":2,\"content\":{\"link\":\"\",\"mt\":\"250\",\"mb\":\"24\",\"mobile_mt\":\"0\",\"mobile_mb\":\"16\",\"pc\":\"https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slogan.png\",\"mobile\":\"\",\"validPC\":true,\"validMobile\":true,\"validUrl\":true},\"update\":false,\"init\":false},{\"component\":\"GImg\",\"uid\":\"0baf3232-8173-4a49-9276-fd8033c1969b\",\"content\":{\"mb\":54,\"mt\":0,\"num\":1,\"imgs\":[{\"pc\":\"https://p2.bahamut.com.tw/B/2KU/22/bdabd8edd5e8ec0ee83b70c0ab1jnya5.WEBP?w=1000\",\"mobile\":\"\",\"type\":\"\",\"validPC\":true,\"validMobile\":true,\"pop\":{\"show\":false,\"type\":\"text\",\"align\":\"left\",\"style\":\"\"},\"target\":{\"link\":\"\",\"attribute\":true,\"validUrl\":true}}]},\"update\":false,\"init\":false},{\"component\":\"GImg\",\"uid\":\"30b193d0-a50f-45e1-ae9f-4c03c21950f4\",\"content\":{\"mb\":54,\"mt\":0,\"num\":1,\"imgs\":[{\"pc\":\"https://p2.bahamut.com.tw/B/2KU/19/8bdb58a39d0b662a66e13a403c1jp135.JPG?w=1000\",\"mobile\":\"\",\"type\":\"\",\"validPC\":true,\"validMobile\":true,\"pop\":{\"show\":false,\"type\":\"text\",\"align\":\"left\",\"style\":\"\"},\"target\":{\"link\":\"\",\"attribute\":true,\"validUrl\":true}}]},\"update\":false,\"init\":false},{\"component\":\"GText\",\"uid\":\"9c7b3e9f-1647-4044-8948-78586474db1b\",\"content\":{\"align\":\"left\",\"style\":\"orange2\",\"text\":\"<p>射世界｜（ World Flipper）<br>日系大廠Cygames打造全新遊玩感受彈珠遊戲「彈射世界」，乘上世界彈射台，目標是另一個神作領域！一同與異世界中相遇的夥伴</p>\",\"mt\":0,\"mb\":54},\"update\":false,\"init\":false},{\"component\":\"GText\",\"uid\":\"39d69ddc-04fe-4cbf-9d1b-084c57bfef49\",\"content\":{\"align\":\"left\",\"style\":\"orange1\",\"text\":\"<p>測試沒有遊戲測試沒有遊戲測試沒有遊戲測試沒有遊戲測試沒有遊戲</p>\",\"mt\":0,\"mb\":54},\"update\":false,\"init\":false},{\"component\":\"GVideo\",\"uid\":\"4fa8900a-67e6-4919-ae4f-adcdd07f83d2\",\"content\":{\"num\":\"2\",\"preview\":false,\"type\":\"click\",\"mt\":0,\"videos\":[{\"url\":\"https://www.youtube.com/watch?v=ksB5QYzfarw&t=1s\",\"show\":false,\"validUrl\":true},{\"url\":\"https://www.youtube.com/watch?v=XAUEysSKg4E\",\"show\":false,\"validUrl\":true}]},\"update\":false,\"init\":false},{\"component\":\"GVideo\",\"uid\":\"e175bebb-a691-4d7c-8ee2-0483d547e6a5\",\"content\":{\"num\":1,\"preview\":true,\"type\":\"pop\",\"mt\":0,\"videos\":[{\"url\":\"https://www.youtube.com/watch?v=XAUEysSKg4E\",\"show\":false,\"validUrl\":true}]},\"update\":false,\"init\":false}]",
+        "detail": "[{\"component\":\"GFixed\",\"uid\":\"41ac6730-09dc-4aaf-ad6a-b60f367f399f\",\"content\":{\"position\":\"left\",\"hamburger\":\"hamburger-left\",\"style\":\"blue2\",\"menus\":[{\"text\":\"111\",\"link\":\"http://127.0.0.1:5173/\",\"target\":false,\"validText\":true,\"validUrl\":true}]},\"update\":false,\"init\":false},{\"component\":\"GBg\",\"uid\":1,\"content\":{\"color\":\"#fff\",\"pc\":\"\",\"mobile\":\"\",\"w\":1920,\"h\":958,\"mw\":\"\",\"mh\":\"\",\"validPC\":true,\"validMobile\":true},\"update\":false,\"init\":false},{\"component\":\"GSlogan\",\"uid\":2,\"content\":{\"link\":\"\",\"mt\":\"250\",\"mb\":\"24\",\"mobile_mt\":\"0\",\"mobile_mb\":\"16\",\"pc\":\"https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slogan.png\",\"mobile\":\"\",\"validPC\":true,\"validMobile\":true,\"validUrl\":true},\"update\":false,\"init\":false},{\"component\":\"GImg\",\"uid\":\"0baf3232-8173-4a49-9276-fd8033c1969b\",\"content\":{\"mb\":54,\"mt\":0,\"num\":1,\"imgs\":[{\"pc\":\"https://p2.bahamut.com.tw/B/2KU/22/bdabd8edd5e8ec0ee83b70c0ab1jnya5.WEBP?w=1000\",\"mobile\":\"\",\"type\":\"\",\"validPC\":true,\"validMobile\":true,\"pop\":{\"show\":false,\"type\":\"text\",\"align\":\"left\",\"style\":\"\"},\"target\":{\"link\":\"\",\"attribute\":true,\"validUrl\":true}}]},\"update\":false,\"init\":false},{\"component\":\"GImg\",\"uid\":\"30b193d0-a50f-45e1-ae9f-4c03c21950f4\",\"content\":{\"mb\":54,\"mt\":0,\"num\":1,\"imgs\":[{\"pc\":\"https://p2.bahamut.com.tw/B/2KU/19/8bdb58a39d0b662a66e13a403c1jp135.JPG?w=1000\",\"mobile\":\"\",\"type\":\"\",\"validPC\":true,\"validMobile\":true,\"pop\":{\"show\":false,\"type\":\"text\",\"align\":\"left\",\"style\":\"\"},\"target\":{\"link\":\"\",\"attribute\":true,\"validUrl\":true}}]},\"update\":false,\"init\":false},{\"component\":\"GText\",\"uid\":\"9c7b3e9f-1647-4044-8948-78586474db1b\",\"content\":{\"align\":\"left\",\"style\":\"orange2\",\"text\":\"<p>射世界｜（ World Flipper）<br>日系大廠Cygames打造全新遊玩感受彈珠遊戲「彈射世界」，乘上世界彈射台，目標是另一個神作領域！一同與異世界中相遇的夥伴</p>\",\"mt\":0,\"mb\":54},\"update\":false,\"init\":false},{\"component\":\"GText\",\"uid\":\"39d69ddc-04fe-4cbf-9d1b-084c57bfef49\",\"content\":{\"align\":\"left\",\"style\":\"orange1\",\"text\":\"<p>測試沒有遊戲測試沒有遊戲測試沒有遊戲測試沒有遊戲測試沒有遊戲</p>\",\"mt\":0,\"mb\":54},\"update\":false,\"init\":false},{\"component\":\"GVideo\",\"uid\":\"4fa8900a-67e6-4919-ae4f-adcdd07f83d2\",\"content\":{\"num\":\"2\",\"preview\":false,\"type\":\"click\",\"videos\":[{\"url\":\"https://www.youtube.com/watch?v=a261zvxavKU\",\"show\":false,\"validUrl\":true},{\"url\":\"https://www.youtube.com/watch?v=XAUEysSKg4E\",\"show\":false,\"validUrl\":true}],\"mt\":0,\"mb\":54,\"mobile_mt\":0,\"mobile_mb\":0},\"update\":false,\"init\":false},{\"component\":\"GVideo\",\"uid\":\"e175bebb-a691-4d7c-8ee2-0483d547e6a5\",\"content\":{\"num\":1,\"preview\":true,\"type\":\"pop\",\"mt\":0,\"videos\":[{\"url\":\"https://www.youtube.com/watch?v=XAUEysSKg4E\",\"show\":false,\"validUrl\":true}]},\"update\":false,\"init\":false}]",
         "createUser": "Test",
         "createTime": "2022-12-20T11:46:49.87",
         "updateUser": "Test",
@@ -142,7 +142,15 @@
         "endDate": "2022-12-27T11:47:00",
         "flag": 0,
         "footer": 0,
-        "approvedUrl": "https://gama-event.beanfun.com/index?Url=A5FEBFE97901912932F1DF28AB7AFCC3&Id=57&pageTypeSeq=1"
+        "approvedUrl": "https://gama-event.beanfun.com/index?Url=A5FEBFE97901912932F1DF28AB7AFCC3&Id=57&pageTypeSeq=1",
+        "beginTime": {
+          "hours": 11,
+          "minutes": 47
+        },
+        "endTime": {
+          "hours": 11,
+          "minutes": 47
+        }
       },
       {
         "eventSeq": 56,
@@ -1792,11 +1800,11 @@
     "url": null
   },
   "GetApprovedEvent": {
-    "listData": [],
-    "data": null,
-    "code": 1,
-    "message": null,
-    "url": null
+    "eventName": "",
+    "beginDate": "",
+    "endDate": "",
+    "gameSeq": "",
+    "approvedSeq": 0
   },
   "UpdateApprovedEvent": {
     "listData": [],
