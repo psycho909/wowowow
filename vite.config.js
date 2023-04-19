@@ -30,19 +30,6 @@ export default defineConfig(({ mode }) => {
 					secure: false,
 					ws: true
 				},
-				"/GamaEvent/api": {
-					target: "https://localhost:7259",
-					changeOrigin: true,
-					secure: false,
-					ws: true
-				},
-				"/agent": {
-					target: "https://localhost:7259",
-					changeOrigin: true,
-					secure: false,
-					ws: true,
-					rewrite: (path) => path.replace(/^\/agent/, "")
-				},
 				"/json": {
 					target: "http://localhost:3000",
 					changeOrigin: true,

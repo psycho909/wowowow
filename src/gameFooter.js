@@ -1,18 +1,19 @@
 const gameFooter = (game) => {
-	let imgPath = "https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/images/footer/";
-	let stylePath = "https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/style/footer/";
+	let gf_imgPath = "https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/script/footer/images/";
+	let gf_stylePath = "https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/script/footer/style/";
+
 	//動態引入CSS
-	var newCssObj = document.createElement("link");
-	newCssObj.type = "text/css";
-	newCssObj.rel = "stylesheet";
-	newCssObj.href = stylePath + "UNI-footer.css";
-	document.head.appendChild(newCssObj);
+	var gf_newCssObj = document.createElement("link");
+	gf_newCssObj.type = "text/css";
+	gf_newCssObj.rel = "stylesheet";
+	gf_newCssObj.href = gf_stylePath + "UNI-footer.css";
+	document.head.appendChild(gf_newCssObj);
 	//Element
-	var mainTarget = game;
-	var UA = navigator.userAgent;
+	var gf_mainTarget = game;
+	var gf_UA = navigator.userAgent;
 
 	//判斷是否為[行動裝置]
-	function isMobile() {
+	function gf_isMobile() {
 		try {
 			document.createEvent("TouchEvent");
 			return true;
@@ -22,7 +23,7 @@ const gameFooter = (game) => {
 	}
 
 	//判斷是否是為[一版到底]版型
-	function is750() {
+	function gf_is750() {
 		var mates = document.getElementsByTagName("meta");
 		for (var i = 0; i < mates.length; i++) {
 			if (mates[i].getAttribute("name") === "viewport") {
@@ -32,7 +33,8 @@ const gameFooter = (game) => {
 	}
 
 	//判斷是否有[BF列](官網頁面)
-	function isOfficial() {
+	function gf_isOfficial() {
+		//<script type="text/javascript" src="BFActBar.js"></script>
 		var scripts = document.getElementsByTagName("script");
 		for (var s = 0; s < scripts.length; s++) {
 			if (scripts[s].getAttribute("src") !== null && scripts[s].getAttribute("src").match(/BFActBar/)) {
@@ -42,28 +44,31 @@ const gameFooter = (game) => {
 	}
 
 	//設置 Footer 參數
-	function setOption() {
+	function gf_setOption() {
 		//抓取Script tag屬性
-		var currentProd = game.prod || "天堂M";
-		var currentTheme = game.theme || "dark";
-		var hasGroupLogo = game.groupLogo || null;
+		var currentProd = gf_mainTarget.prod;
+		var currentTheme = gf_mainTarget.theme;
+		var hasGroupLogo = gf_mainTarget.groupLogo || null;
+		var showInH5 = gf_mainTarget.showH5 || null;
 		var option = {
 			product: currentProd,
 			theme: currentTheme,
 			hasGroupLogo: JSON.parse(hasGroupLogo),
-			isMobile: isMobile(),
-			isOfficial: isOfficial(),
-			is750: is750()
+			showInH5: JSON.parse(showInH5),
+			isMobile: gf_isMobile(),
+			isOfficial: gf_isOfficial(),
+			is750: gf_is750()
 		};
 		return option;
 	}
 
 	//組合Footer
-	function componentFooter(options) {
-		var option = options;
-		if (option.product == "天堂月服") {
-			option.product = "天堂";
+	function gf_componentFooter(option) {
+		//頁面在H5內不生成Footer (有showInH5例外)
+		if (!option.showInH5) {
+			if (/BeanGo/.test(gf_UA)) return;
 		}
+
 		//html模板，{{名稱}}代表要套入的地方
 		var logoArea_html = '<div class="logoArea">{{logoLinks}}</div>';
 		var copyrightArea_html = '<div class="copyrightArea"><p class="m-hide">{{copyrightD}}</p><p class="m-show">{{copyrightM}}</p></div>';
@@ -71,7 +76,7 @@ const gameFooter = (game) => {
 		/*集團LOGO區塊*/
 		var groupLogoArea_html = '<div class="groupLogoArea"><a href="https://www.gamania.com/" target="_blank"><img src="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/images/footer/logos/logo-gamania-g.png"></a></div>';
 
-		var item = jsonData[option.product];
+		var item = gf_jsonData[option.product];
 		var theme = option.theme;
 		//Copyright年份
 		var nowTime = new Date();
@@ -80,7 +85,7 @@ const gameFooter = (game) => {
 		/*遊戲Logo區塊生成*/
 		var logo_links = "";
 		for (var l = 0; l < item.logoLink.length; l++) {
-			logo_links += "<a href=" + item.logoLink[l] + ' target="_blank" class="logoArea__link"><img src=' + imgPath + item.logoImg[theme][l] + ' alt=""></a>';
+			logo_links += "<a href=" + item.logoLink[l] + ' target="_blank" class="logoArea__link"><img src=' + gf_imgPath + item.logoImg[theme][l] + ' alt=""></a>';
 		}
 		var componentLogoArea = logoArea_html.replace("{{logoLinks}}", logo_links);
 
@@ -95,7 +100,7 @@ const gameFooter = (game) => {
 		for (var g = 0; g < item.gradeInfo.length; g++) {
 			gradeInfo_items += "<li>" + item.gradeInfo[g] + "</li>";
 		}
-		var componentGradeArea = gradeArea_html.replace("{{gradeImgSrc}}", imgPath + item.gradeImg).replace("{{gradeItem}}", gradeInfo_items);
+		var componentGradeArea = gradeArea_html.replace("{{gradeImgSrc}}", gf_imgPath + item.gradeImg).replace("{{gradeItem}}", gradeInfo_items);
 
 		/*集團Logo區塊*/
 		var componentGroupLogoArea = "";
@@ -107,8 +112,8 @@ const gameFooter = (game) => {
 		var otherClass = [];
 
 		//IE8+9 Hack
-		var isIE8 = UA.indexOf("MSIE 8.0");
-		var isIE9 = UA.indexOf("MSIE 9.0");
+		var isIE8 = gf_UA.indexOf("MSIE 8.0");
+		var isIE9 = gf_UA.indexOf("MSIE 9.0");
 		if (isIE8 > 0) {
 			otherClass.push("ie8");
 			otherClass.push("ieLet10");
@@ -137,19 +142,18 @@ const gameFooter = (game) => {
 
 		//將組合Footer加入至頁面
 		document.body.insertAdjacentHTML("beforeEnd", componentHtml);
-		// if (mainTarget.getAttribute("appendTo") == null) {
+		// if (gf_mainTarget.getAttribute("appendTo") == null) {
 		// 	document.body.insertAdjacentHTML("beforeEnd", componentHtml);
 		// } else {
-		// 	var appendTarget = mainTarget.getAttribute("appendTo");
+		// 	var appendTarget = gf_mainTarget.getAttribute("appendTo");
 		// 	document.getElementById(appendTarget).insertAdjacentHTML("beforeEnd", componentHtml);
 		// }
+		// if (item.gradeImg.indexOf("empty.gif") != -1) document.querySelector(".gradeArea").remove();
 	}
 
-	var jsonData;
-	//頁面在H5內不生成Footer
-	if (/BeanGo/.test(UA)) return;
 	//各產品資料
-	jsonData = {
+	var gf_jsonData;
+	gf_jsonData = {
 		天堂M: {
 			logoImg: {
 				dark: ["logos/logo-gama.png", "logos/logo-ncsoft.png", "logos/logo-beanfun.png"],
@@ -182,7 +186,7 @@ const gameFooter = (game) => {
 				dark: ["logos/logo-gama.png", "logos/logo-ncsoft.png", "logos/logo-beanfun.png"],
 				light: ["logos/logo-gama.png", "logos/logo-ncsoft-w.png", "logos/logo-beanfun-w.png"]
 			},
-			logoLink: ["", "https://global.ncsoft.com/global/", "https://tw.beanfun.com/"],
+			logoLink: ["https://www.gamania.com/", "https://global.ncsoft.com/global/", "https://tw.beanfun.com/"],
 			copyright: {
 				desktop: "© CyearS Gamania Digital Entertainment Co., Ltd. All Rights Reserved. <br>© CyearS NCsoft Corporation. All Rights Reserved. <br> Licensed to Gamania Digital Entertainment co., Ltd. the right to publish, distribute and transmit Lineage in Taiwan.",
 				mobile: "© CyearS NCSOFT & Gamania."
@@ -335,16 +339,16 @@ const gameFooter = (game) => {
 		},
 		召喚圖板: {
 			logoImg: {
-				dark: ["logos/logo-ghosb.png"],
-				light: ["logos/logo-ghosb-w.png"]
+				dark: ["logos/logo-gama.png", "logos/logo-gungho2.png", "logos/logo-beanfun.png"],
+				light: ["logos/logo-gama.png", "logos/logo-gungho2-w.png", "logos/logo-beanfun-w.png"]
 			},
-			logoLink: ["javascript:;"],
+			logoLink: ["https://www.gamania.com/", "javascript:;", "https://tw.beanfun.com/"],
 			copyright: {
-				desktop: "© GungHo Gamania Co., Ltd. All Rights Reserved.<br>© GungHo Online Entertainment,Inc. All Rights Reserved. ",
-				mobile: "© GungHo &  GungHo Gamania"
+				desktop: "© CyearS Gamania Digital Entertainment Co., Ltd. All Rights Reserved.<br>© GungHo Online Entertainment, Inc. All Rights Reserved.",
+				mobile: "© CyearS Gamania Digital Entertainment Co., Ltd. All Rights Reserved.<br>© GungHo Online Entertainment, Inc. All Rights Reserved."
 			},
 			gradeImg: "grade/class_6.gif",
-			gradeInfo: ["可愛人物打鬥之非血腥畫面。", "請避免沉迷遊戲。", "本遊戲部份內容需另行支付費用。", "未成年或無行為能力人，需由法定代理人同意後方得使用本遊戲服務。"],
+			gradeInfo: ["本遊戲部份內容涉及棋奕娛樂。", "請避免沉迷遊戲。", "不得利用本遊戲進行遊戲賭博或有違反法令之行為 ", "本遊戲部份內容需另行支付費用。", "未成年或無行為能力人，需由法定代理人同意後方得使用本遊戲服務。"],
 			favicon: "favicon/icon-SB-32.ico"
 		},
 		發射吧少女: {
@@ -471,16 +475,31 @@ const gameFooter = (game) => {
 		},
 		櫻桃小丸子: {
 			logoImg: {
-				dark: ["logos/logo-gama.png", "logos/logo-sakura.png", "logos/logo-hapod-2.png", "logos/logo-beanfun.png"],
-				light: ["logos/logo-gama.png", "logos/logo-sakura.png", "logos/logo-hapod-2.png", "logos/logo-beanfun-w.png"]
+				dark: ["logos/logo-gama.png", "logos/logo-beanfun.png"],
+				light: ["logos/logo-gama.png", "logos/logo-beanfun-w.png"]
 			},
-			logoLink: ["https://www.gamania.com/", "https://www.kakaogamescorp.com/", "https://www.xlgames.com/", "https://tw.beanfun.com/"],
+			logoLink: ["https://www.gamania.com/", "https://tw.beanfun.com/"],
 			copyright: {
-				desktop: "© SAKURA PRODUCTION/NIPPON ANIMATION Licensed by King Enterprises.<br>© 2020 HaPod Digital Technology Co., Ltd. All Rights Reserved.",
-				mobile: "© SAKURA PRODUCTION/NIPPON ANIMATION Licensed by King Enterprises.<br>© 2020 HaPod Digital Technology Co., Ltd. All Rights Reserved."
+				desktop: "© S.P/N.A<br>All Rights Resserved. Published in Hongkong<br>by Gamania Digital Entertainment Co.,Ltd.",
+				mobile: "© S.P/N.A<br>All Rights Resserved. Published in Hongkong<br>by Gamania Digital Entertainment Co.,Ltd."
 			},
 			gradeImg: "grade/class_0.gif",
-			gradeInfo: ["任何年齡皆得使用。", "無任何裸露、暴力、血腥、恐怖、不當言語、不當行為等情節畫面。", "非使用虛擬遊戲幣或遊戲結果不直接影響虛擬幣增減的棋奕類遊戲軟體。"]
+			gradeInfo: ["此軟體為普遍級，任何年齡皆得使用", "本遊戲為免費使用，遊戲內另提供購買虛擬遊戲幣、道具等付費服務", "請注意遊戲時間，避免沉迷"],
+			favicon: "favicon/icon-cmclf.ico"
+		},
+		櫻桃小丸子EN: {
+			logoImg: {
+				dark: ["logos/logo-gama.png", "logos/logo-beanfun.png"],
+				light: ["logos/logo-gama.png", "logos/logo-beanfun-w.png"]
+			},
+			logoLink: ["https://www.gamania.com/", "https://tw.beanfun.com/"],
+			copyright: {
+				desktop: "© S.P/N.A<br>All Rights Resserved. Published in Hongkong<br>by Gamania Digital Entertainment Co.,Ltd.",
+				mobile: "© S.P/N.A<br>All Rights Resserved. Published in Hongkong<br>by Gamania Digital Entertainment Co.,Ltd."
+			},
+			gradeImg: "grade/empty.gif",
+			gradeInfo: [],
+			favicon: "favicon/icon-cmclf.ico"
 		},
 		彈射世界: {
 			logoImg: {
@@ -511,16 +530,16 @@ const gameFooter = (game) => {
 			favicon: "favicon/icon-SMP-32.ico"
 		}
 	};
-	var option = setOption();
-	componentFooter(option);
+	// 取參數
+	var gf_option = gf_setOption();
 	/* favicon */
-	function setFavicon(option) {
-		var item = jsonData[option.product];
+	function gf_setFavicon(option) {
+		var item = gf_jsonData[option.product];
 		var optionFavicon = "";
 		if (!item.favicon) {
-			optionFavicon = imgPath + "favicon/favicon.ico";
+			optionFavicon = gf_imgPath + "favicon/favicon.ico";
 		} else {
-			optionFavicon = imgPath + item.favicon;
+			optionFavicon = gf_imgPath + item.favicon;
 		}
 		var newIcon = document.createElement("link");
 		newIcon.rel = "shortcut icon";
@@ -528,8 +547,20 @@ const gameFooter = (game) => {
 		newIcon.href = optionFavicon;
 		document.head.appendChild(newIcon);
 	}
-	/* favicon */
-	setFavicon(option);
-};
 
+	document.addEventListener("DOMContentLoaded", function (event) {
+		gf_componentFooter(gf_option);
+		gf_setFavicon(gf_option);
+	});
+
+	function gf_updateFooter(arg) {
+		document.querySelector(".UNI-footer").remove();
+		var myScript = document.querySelector("#game-footer");
+		myScript.setAttribute("prod", arg.prod);
+		myScript.setAttribute("theme", arg.theme);
+		gf_option = gf_setOption();
+		gf_setFavicon(gf_option);
+		gf_componentFooter(gf_option);
+	}
+};
 export default gameFooter;

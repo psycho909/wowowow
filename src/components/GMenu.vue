@@ -40,7 +40,7 @@ const menuFilter1 = computed(() => {
                 v.status = true
             }
             return v;
-        }).filter((v, i) => v.title == "GBg" || v.title == "GSlogan").sort((a, b) => {
+        }).filter((v, i) => v.title == "GBg" || v.title == "GSlogan" || v.title == "GFixed").sort((a, b) => {
             return a.order - b.order
         })
     }
@@ -55,7 +55,7 @@ const menuFilter2 = computed(() => {
                 v.status = true
             }
             return v;
-        }).filter((v, i) => v.title != "GBg" && v.title != "GSlogan").sort((a, b) => {
+        }).filter((v, i) => v.title != "GBg" && v.title != "GSlogan" && v.title != "GFixed").sort((a, b) => {
             return a.order - b.order
         })
     }
@@ -91,7 +91,13 @@ const onClose = () => {
 const log = (evt) => {
     window.console.log(evt);
 }
-const clone = (e) => {
+const moveLog = () => {
+    console.log("move")
+}
+const start = (e) => {
+    console.log("start")
+}
+const end = (e) => {
     console.log(e)
 }
 </script>
@@ -101,22 +107,28 @@ const clone = (e) => {
             <a href="javascript:;" class="g-menu__open icon-open" @click="onOpen"></a>
             <a href="javascript:;" class="g-menu__close icon-close" @click="onClose"></a>
 
-            <a href="javascript:;" class="g-menu__add"
-               :class="[m.title == 'GBg' ? bgStatus?.content?.pc ? 'disabled' : '' : m.status ? '' : 'disabled']"
-               v-for="m in menuFilter1"
-               @click="add(m)">{{ m.label }}</a>
-            <draggable
-                       class="list-group"
-                       :list="menuFilter2"
-                       :group="{ name: 'people', pull: 'clone', put: false }"
-                       @change="log"
-                       itemKey="label">
-                <template #item="{ element, index }">
-                    <a href="javascript:;" class="g-menu__add"
-                       :class="[element.title == 'GBg' ? bgStatus?.content?.pc ? 'disabled' : '' : element.status ? '' : 'disabled']"
-                       @click="add(element)">{{ element.label }}</a>
-                </template>
-            </draggable>
+            <div class="g-menu__wrap">
+                <a href="javascript:;" class="g-menu__add"
+                   :class="[m.title == 'GBg' ? bgStatus?.content?.pc ? 'disabled' : '' : m.status ? '' : 'disabled']"
+                   v-for="m in menuFilter1"
+                   @click="add(m)">{{ m.label }}</a>
+                <draggable
+                           class="list-group"
+                           :list="menuFilter2"
+                           :group="{ name: 'people', pull: 'clone', put: false }"
+                           :sort="false"
+                           @start="start"
+                           @end="end"
+                           @change="log"
+                           @move="moveLog"
+                           itemKey="label">
+                    <template #item="{ element, index }">
+                        <a href="javascript:;" class="g-menu__add"
+                           :class="[element.title == 'GBg' ? bgStatus?.content?.pc ? 'disabled' : '' : element.status ? '' : 'disabled']"
+                           @click="add(element)">{{ element.label }}</a>
+                    </template>
+                </draggable>
+            </div>
         </div>
     </Teleport>
 </template>

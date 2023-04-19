@@ -84,10 +84,6 @@ const status = computed(() => {
     return store.page == "EditPage" ? false : true;
 })
 
-const openPop = (data) => {
-    data.show = true
-}
-
 const addInsertMenu = (index) => {
     if (index == slideData.slides.length) {
         slideData.slides.push({

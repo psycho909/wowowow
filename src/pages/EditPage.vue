@@ -138,7 +138,6 @@ const onEvent = (type) => {
             break;
         case "eventList":
             eventListLightbox.value = true;
-            // store.setPage("EventList");
             break;
     }
 }
@@ -215,10 +214,37 @@ const onCancel = (type) => {
     }
 }
 const log = (e) => {
-    console.log(e)
+    let cpt;
+    let cptIndex;
+    let uid;
+    if (e.added) {
+        cpt = e.added.element;
+        cptIndex = e.added.newIndex + 1;
+        if (!cpt.status) {
+            return;
+        }
+        let data = {
+            cpt: cpt.title
+        };
+        store.drgAddCpt(data, cptIndex);
+        store.setUpdateTime();
+        if (store.first) {
+            store.setFirst(false);
+        }
+    }
+    if (e.moved) {
+        cpt = e.moved;
+        uid = e.moved.element.uid;
+        cptIndex = e.moved.newIndex + 1;
+        store.dragMoveCpt(uid, cptIndex);
+    }
 }
-const end = (e) => {
-    console.log(e)
+
+const moveLog = () => {
+    console.log("move")
+}
+const startLog = () => {
+    console.log("start")
 }
 </script>
 <template>
@@ -227,10 +253,12 @@ const end = (e) => {
         <draggable
                    class="dragArea list-group"
                    :list="contentFilter"
+                   @start="startLog"
                    @change="log"
-                   @end="end"
+                   @move="moveLog"
                    group="people"
                    item-key="uid">
+
             <template #item="{ element }">
                 <component :is="element.component" :data="element"></component>
             </template>

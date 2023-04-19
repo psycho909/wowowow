@@ -90,7 +90,7 @@
 	}
 	&__title {
 		position: relative;
-		text-align: center;
+		// text-align: center;
 		padding: 18px 0;
 		a {
 			color: #fff;
@@ -128,7 +128,7 @@
 		display: grid;
 		grid-template-columns: 240px 200px 1fr 360px;
 		// align-items: flex-start;
-		text-align: center;
+		// text-align: center;
 		color: #fff;
 		font-size: 22px;
 		// margin-bottom: 20px;
@@ -171,6 +171,8 @@
 			display: flex;
 			// justify-content: center;
 			align-items: center;
+			flex-wrap: wrap;
+			gap: 6px;
 			&:first-child {
 				margin-bottom: 6px;
 			}
@@ -196,9 +198,9 @@
 		display: inline-block;
 		font-size: 18px;
 		border-radius: 6px;
-		& + .event-list__btn {
-			margin-left: 6px;
-		}
+		// & + .event-list__btn {
+		// 	margin-left: 6px;
+		// }
 		&-edit {
 			background-color: #0d6efd;
 		}

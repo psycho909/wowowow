@@ -31,6 +31,12 @@ export const mainStore = defineStore("main", {
 		}
 	},
 	actions: {
+		drgAddCpt(data, index) {
+			var uid = uuidv4();
+			let component = { component: data.cpt, uid, content: {}, update: true, init: true };
+			let temp = [...this.content.slice(0, index), component, ...this.content.slice(index)];
+			this.content = temp;
+		},
 		addCpt(data) {
 			var uid = uuidv4();
 			if (data.cpt == "GFixed") {
@@ -72,6 +78,14 @@ export const mainStore = defineStore("main", {
 			if (_index > -1) {
 				this.content[_index].update = false;
 			}
+		},
+		dragMoveCpt(uid, index) {
+			var _index = this.getIndex(uid);
+			this.move = true;
+			var component = this.content[_index];
+			var _content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
+			this.content = _content;
+			this.content.splice(index, 0, component);
 		},
 		upCpt(data) {
 			var _index = this.getIndex(data);

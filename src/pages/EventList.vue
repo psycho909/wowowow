@@ -6,11 +6,12 @@ import GInput from "../elements/GInput.vue";
 import GSelect from "../elements/GSelect.vue";
 import GHome from "../components/GHome.vue";
 import { loadingShow, loadingHide } from "../Tool";
-import { GetGames, GetEventList, ApproveEvent } from "../api";
+import { GetGames, GetEventList, ApproveEvent, AddEventList, UpdateEvent } from "../api";
 
 const store = mainStore()
 let approveLightbox = ref(false)
 let approvedLightbox = ref(false)
+let copyLightbox = ref(false)
 let eventFilter = reactive({
     eventName: "",
     beginDate: ref(""),
@@ -24,7 +25,7 @@ let gameSeqOptions = ref([])
 let flagOptions = ref([{ value: "", text: "" }, { value: 0, text: "編輯中" }, { value: "1", text: "審核中" }, { value: "2", text: "審核通過" }])
 let eventData = ref([])
 let totalPage = ref(0)
-let total = ref(5)
+let total = ref(30)
 let currentPage = ref(1)
 let approveTemp = ref({});
 let messageText = ref("");
@@ -139,7 +140,7 @@ const flagFormat = (flag) => {
 
 const dateFormat = (date) => {
     let dateTime = new Date(date)
-    return `${dateTime.getFullYear()}/${dateTime.getMonth() + 1}/${dateTime.getDate()} ${dateTime.getHours()}:${dateTime.getMinutes()}`
+    return `${dateTime.getFullYear()}/${("" + (dateTime.getMonth() + 1)).padStart(2, 0)}/${("" + dateTime.getDate()).padStart(2, 0)} ${("" + dateTime.getHours()).padStart(2, 0)}:${("" + dateTime.getMinutes()).padStart(2, 0)}`
 }
 
 const onSaveTemp = () => {
@@ -312,6 +313,40 @@ const onSubmit = (type) => {
             loadingHide()
         })
     }
+    if (type == "複製活動") {
+        data.flag = 0;
+        data.eventName = "副本-" + data.eventName;
+        AddEventList(store.otp, data).then((res) => {
+            let { code, message, url, data: eventSeq } = res.data;
+            if (code != 1) {
+                messageText.value = message;
+                messageLightbox.value = true;
+                loadingHide()
+                return code;
+            }
+            data.eventName = data.eventName + "-" + eventSeq;
+            data.eventSeq = eventSeq;
+            return UpdateEvent(store.otp, data);
+        }).then((res) => {
+            let { code, message, url, listData } = res.data;
+            if (code != 1) {
+                messageText.value = message;
+                messageLightbox.value = true;
+                loadingHide()
+                return;
+            }
+            return code
+        }).then((res) => {
+            if (res) {
+                messageText.value = "複製活動成功";
+                messageLightbox.value = true;
+                onSearch();
+            }
+        }).finally(() => {
+            copyLightbox.value = false;
+            loadingHide()
+        })
+    }
 }
 
 const onCancel = (type) => {
@@ -321,8 +356,15 @@ const onCancel = (type) => {
     if (type == "審核") {
         approvedLightbox.value = false;
     }
+    if (type == "複製活動") {
+        copyLightbox.value = false;
+    }
 }
 
+const onCopy = (event) => {
+    approveTemp.value = event;
+    copyLightbox.value = true;
+}
 
 onMounted(async () => {
     await nextTick()
@@ -415,8 +457,8 @@ onMounted(async () => {
             <div class="event-list__body">
                 <div class="event-list__box" v-for="event in eventDataSlice">
                     <div class="event-list__item" :class="[gameSeqName(event.gameseq)[0]?.gameName ? '' : 'end']">{{
-        gameSeqName(event.gameseq)[0]?.gameName || "遊戲已下架"
-}}</div>
+                        gameSeqName(event.gameseq)[0]?.gameName || "遊戲已下架"
+                    }}</div>
                     <div class="event-list__item">
                         <div class="event-list__date">{{ dateFormat(event.beginDate) }}-{{ dateFormat(event.endDate) }}
                         </div>
@@ -428,9 +470,12 @@ onMounted(async () => {
                     <div class="event-list__item">
                         <div class="event-list__status">
                             <div class="event-list__status-item" :data-status="flagFormat(event.flag)">{{
-        flagFormat(event.flag)
-}}</div>
+                                flagFormat(event.flag)
+                            }}</div>
                             <div class="event-list__status-item">
+                                <a href="javascript:;" class="event-list__btn event-list__btn-copy"
+                                   v-if="(event.flag != 1)"
+                                   @click="onCopy(event)">複製活動</a>
                                 <a href="javascript:;" class="event-list__btn event-list__btn-edit"
                                    v-if="(event.flag != 1)"
                                    @click="onEditEvent(event)">編輯活動</a>
@@ -489,6 +534,16 @@ onMounted(async () => {
                 <a href="javascript:;" class="btn btn__unapprove" @click="onSubmit('審核不通過')">審核不通過</a>
             </template>
         </g-lightbox>
+        <g-lightbox v-model:showLightbox="copyLightbox">
+            <template #lightbox-title>
+                <div>是否確認要複製此活動？</div>
+            </template>
+            <template #lightbox-btn>
+                <a href="javascript:;" class="btn btn__submit" @click="onSubmit('複製活動')">確認</a>
+                <a href="javascript:;" class="btn btn__reset" @click="onCancel('複製活動')">取消</a>
+            </template>
+        </g-lightbox>
+
         <g-lightbox v-model:showLightbox="messageLightbox">
             <template #lightbox-content>
                 <div>{{ messageText }}</div>

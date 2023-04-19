@@ -96,7 +96,7 @@ const gameSeqName = (gameseq) => {
 
 const dateFormat = (date) => {
     let dateTime = new Date(date)
-    return `${dateTime.getFullYear()}/${dateTime.getMonth() + 1}/${dateTime.getDate()} ${dateTime.getHours()}:${dateTime.getMinutes()}`
+    return `${dateTime.getFullYear()}/${("" + (dateTime.getMonth() + 1)).padStart(2, 0)}/${("" + dateTime.getDate()).padStart(2, 0)} ${("" + dateTime.getHours()).padStart(2, 0)}:${("" + dateTime.getMinutes()).padStart(2, 0)}`
 }
 
 const onSaveTemp = () => {

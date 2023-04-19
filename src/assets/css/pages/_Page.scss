@@ -65,6 +65,25 @@ body {
 		clear: both;
 		display: block;
 	}
+	&.development {
+		.g-menu__add {
+			&.sortable-chosen.sortable-ghost {
+				width: 1000px;
+				background-color: #da6900;
+				font-size: 12;
+				padding: 0;
+				margin: 12px auto;
+				color: #fff;
+				text-align: center;
+			}
+		}
+		.flip-list-move {
+			transition: transform 0.5s;
+		}
+		.no-move {
+			transition: transform 0s;
+		}
+	}
 }
 #cookieBarWrap {
 	// display: none;
