@@ -80,10 +80,10 @@ onMounted(async () => {
 
 const cssVar = computed(() => {
     return {
-        "--mt": imgData.mt,
-        "--mb": imgData.mb,
-        "--mobile_mt": imgData.mobile_mt ? imgData.mobile_mt : imgData.mt,
-        "--mobile_mb": imgData.mobile_mb ? imgData.mobile_mb : imgData.mb,
+        "--mt": props.data.content.mt,
+        "--mb": props.data.content.mb,
+        "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
+        "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
     }
 })
 

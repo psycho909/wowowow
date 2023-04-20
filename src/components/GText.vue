@@ -50,10 +50,10 @@ watchEffect(async () => {
 })
 const cssVar = computed(() => {
     return {
-        "--mt": content.mt,
-        "--mb": content.mb,
-        "--mobile_mt": content.mobile_mt ? content.mobile_mt : content.mt,
-        "--mobile_mb": content.mobile_mb ? content.mobile_mb : content.mb,
+        "--mt": props.data.content.mt,
+        "--mb": props.data.content.mb,
+        "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
+        "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
     }
 })
 onMounted(async () => {
