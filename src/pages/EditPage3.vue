@@ -6,12 +6,12 @@ export default {
 <script setup>
 import { storeToRefs } from "pinia";
 import components from "../Components.js";
-import GMenu from "../components/GMenu.vue";
+import GMenu from "../components/GMenu.vue.js";
 import { mainStore } from "../store/index";
-import { templateStore } from "../store/template";
-import GLightbox from "../components/GLightbox.vue";
-import { loadingShow, loadingHide } from "../Tool";
-import { UpdateEventContent, ApproveEvent } from "../api";
+import { templateStore } from "../store/template.js";
+import GLightbox from "../components/GLightbox.vue.js";
+import { loadingShow, loadingHide } from "../Tool.js";
+import { UpdateEventContent, ApproveEvent } from "../api.js";
 import draggable from "vuedraggable";
 
 const store = mainStore()
@@ -253,7 +253,6 @@ const startLog = () => {
         <draggable
                    class="dragArea list-group"
                    :list="contentFilter"
-                   :force-fallback="true"
                    @start="startLog"
                    @change="log"
                    @move="moveLog"
