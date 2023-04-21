@@ -57,6 +57,7 @@ const onEdit = () => {
     <div class="g-modify">
         <div class="g-modify-title">{{ title }}</div>
         <div class="g-modify-btn__group" v-if="move">
+            <a href="javascript:;" class="icon icon-drag">drag</a>
             <a href="javascript:;" class="icon icon-up" @click="onUp" v-if="checkComponent">up</a>
             <a href="javascript:;" class="icon icon-down" @click="onDown"
                v-if="index + 1 < store.content.length">down</a>

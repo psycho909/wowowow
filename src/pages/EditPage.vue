@@ -214,6 +214,7 @@ const onCancel = (type) => {
     }
 }
 const log = (e) => {
+    console.log("change")
     let cpt;
     let cptIndex;
     let uid;
@@ -254,6 +255,9 @@ const startLog = () => {
                    class="dragArea list-group"
                    :list="contentFilter"
                    :force-fallback="true"
+                   :fallback-tolerance="1"
+                   :scroll-sensitivity="100"
+                   :animation="300"
                    @start="startLog"
                    @change="log"
                    @move="moveLog"
