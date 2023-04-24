@@ -483,8 +483,8 @@ const gameFooter = (game) => {
 			},
 			logoLink: ["https://www.gamania.com/", "https://tw.beanfun.com/"],
 			copyright: {
-				desktop: "© S.P/N.A<br>All Rights Resserved. Published in Hongkong<br>by Gamania Digital Entertainment Co.,Ltd.",
-				mobile: "© S.P/N.A<br>All Rights Resserved. Published in Hongkong<br>by Gamania Digital Entertainment Co.,Ltd."
+				desktop: "© S.P/N.A<br>Published by Gamania Digital Entertainment Co.,Ltd in Hong Kong. All rights reserved.",
+				mobile: "© S.P/N.A<br>Published by Gamania Digital Entertainment Co.,Ltd in Hong Kong. All rights reserved."
 			},
 			gradeImg: "grade/class_0.gif",
 			gradeInfo: ["此軟體為普遍級，任何年齡皆得使用", "本遊戲為免費使用，遊戲內另提供購買虛擬遊戲幣、道具等付費服務", "請注意遊戲時間，避免沉迷"],
@@ -497,8 +497,8 @@ const gameFooter = (game) => {
 			},
 			logoLink: ["https://www.gamania.com/", "https://tw.beanfun.com/"],
 			copyright: {
-				desktop: "© S.P/N.A<br>All Rights Resserved. Published in Hongkong<br>by Gamania Digital Entertainment Co.,Ltd.",
-				mobile: "© S.P/N.A<br>All Rights Resserved. Published in Hongkong<br>by Gamania Digital Entertainment Co.,Ltd."
+				desktop: "© S.P/N.A<br>Published by Gamania Digital Entertainment Co.,Ltd in Hong Kong. All rights reserved.",
+				mobile: "© S.P/N.A<br>Published by Gamania Digital Entertainment Co.,Ltd in Hong Kong. All rights reserved."
 			},
 			gradeImg: "grade/empty.gif",
 			gradeInfo: [],
