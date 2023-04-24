@@ -4,6 +4,7 @@ const gameFooter = (game) => {
 
 	//動態引入CSS
 	var gf_newCssObj = document.createElement("link");
+	// console.log(game);
 	gf_newCssObj.type = "text/css";
 	gf_newCssObj.rel = "stylesheet";
 	gf_newCssObj.href = gf_stylePath + "UNI-footer.css";
@@ -68,7 +69,9 @@ const gameFooter = (game) => {
 		if (!option.showInH5) {
 			if (/BeanGo/.test(gf_UA)) return;
 		}
-
+		if (document.querySelector(".UNI-footer")) {
+			document.querySelector(".UNI-footer").remove();
+		}
 		//html模板，{{名稱}}代表要套入的地方
 		var logoArea_html = '<div class="logoArea">{{logoLinks}}</div>';
 		var copyrightArea_html = '<div class="copyrightArea"><p class="m-hide">{{copyrightD}}</p><p class="m-show">{{copyrightM}}</p></div>';
@@ -548,10 +551,8 @@ const gameFooter = (game) => {
 		document.head.appendChild(newIcon);
 	}
 
-	document.addEventListener("DOMContentLoaded", function (event) {
-		gf_componentFooter(gf_option);
-		gf_setFavicon(gf_option);
-	});
+	gf_componentFooter(gf_option);
+	gf_setFavicon(gf_option);
 
 	function gf_updateFooter(arg) {
 		document.querySelector(".UNI-footer").remove();
