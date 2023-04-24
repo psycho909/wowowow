@@ -22,7 +22,8 @@ export const mainStore = defineStore("main", {
 			save: false,
 			move: false,
 			previewConfig: {},
-			previewContent: []
+			previewContent: [],
+			forcefallback: true
 		};
 	},
 	getters: {
@@ -31,6 +32,9 @@ export const mainStore = defineStore("main", {
 		}
 	},
 	actions: {
+		forcefallbackChange(data) {
+			this.forcefallback = data;
+		},
 		drgAddCpt(data, index) {
 			var uid = uuidv4();
 			let component = { component: data.cpt, uid, content: {}, update: true, init: true };

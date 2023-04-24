@@ -92,10 +92,10 @@ const log = (evt) => {
     window.console.log(evt);
 }
 const moveLog = () => {
-    console.log("move")
+    console.log("menu move")
 }
 const start = (e) => {
-    console.log("start")
+    console.log("menu start")
 }
 const end = (e) => {
     console.log(e)
@@ -117,6 +117,9 @@ const end = (e) => {
                            :list="menuFilter2"
                            :group="{ name: 'people', pull: 'clone', put: false }"
                            :sort="false"
+                           :force-fallback="true"
+                           :fallback-tolerance="1"
+                           :scroll-sensitivity="100"
                            @start="start"
                            @end="end"
                            @change="log"
