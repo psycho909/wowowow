@@ -38,9 +38,6 @@ const initData = () => {
 };
 Object.assign(slideData, initData());
 
-if (window.sessionStorage.getItem("state")) {
-    window.sessionStorage.removeItem("state")
-}
 watchEffect(async () => {
     if (props.data.update) {
         showEdit.value = true;

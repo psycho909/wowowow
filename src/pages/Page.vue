@@ -7,10 +7,12 @@ export default {
 import { storeToRefs } from "pinia";
 import components from "../Components.js";
 import { mainStore } from "../store/index";
-import { loadingShow, loadingHide } from "../Tool";
+import { loadingShow, loadingHide, getBrowserLocales, getUrlSearchParams } from "../Tool";
 import gameFooter from "../gameFooter";
 const store = mainStore()
 const { content } = storeToRefs(store);
+let lanBrowser = getBrowserLocales()[0];
+let lanParams = getUrlSearchParams("lan");
 
 const cssVar = computed(() => {
     if (content.value.length > 0) {
@@ -33,7 +35,24 @@ onMounted(() => {
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
     footer.prod = store.config.gameName || '天堂M';
     footer.theme = store.config.footer == 1 ? 'light' : 'dark';
-    gameFooter(footer);
+    if (footer.prod == "櫻桃小丸子") {
+        if (lanParams) {
+            if (lanParams == "zh") {
+                footer.prod = "櫻桃小丸子";
+            } else {
+                footer.prod = "櫻桃小丸子EN";
+            }
+        } else {
+            if (lanBrowser == "zh") {
+                footer.prod = "櫻桃小丸子";
+            } else {
+                footer.prod = "櫻桃小丸子EN";
+            }
+        }
+        gameFooter(footer);
+    } else {
+        gameFooter(footer);
+    }
 })
 
 </script>

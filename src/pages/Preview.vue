@@ -8,13 +8,15 @@ import { storeToRefs } from "pinia";
 import components from "../Components.js";
 import GCookie from "../components/GCookie.vue";
 import { mainStore } from "../store/index";
-import { loadingShow, loadingHide, pageInfo } from "../Tool";
+import { loadingShow, loadingHide, pageInfo, getBrowserLocales, getUrlSearchParams } from "../Tool";
 import gameFooter from "../gameFooter";
 import topBar from "../topBar";
 const store = mainStore()
 let state = null;
+let lanBrowser = getBrowserLocales()[0];
+let lanParams = getUrlSearchParams("lan");
 
-if (window.sessionStorage.getItem("state")) {
+if (window.localStorage.getItem("state")) {
     // state = JSON.parse(window.sessionStorage.getItem("state"));
     state = JSON.parse(window.localStorage.getItem("state"));
     store.setState(state);
@@ -27,8 +29,26 @@ onMounted(async () => {
     document.querySelector("body").className = "preview";
     footer.prod = previewConfig.value.gameName;
     footer.theme = previewConfig.value.footer == 1 ? 'light' : 'dark';
-    gameFooter(footer);
+
     pageInfo(previewConfig);
+    if (footer.prod == "櫻桃小丸子") {
+        if (lanParams) {
+            if (lanParams == "zh") {
+                footer.prod = "櫻桃小丸子";
+            } else {
+                footer.prod = "櫻桃小丸子EN";
+            }
+        } else {
+            if (lanBrowser == "zh") {
+                footer.prod = "櫻桃小丸子";
+            } else {
+                footer.prod = "櫻桃小丸子EN";
+            }
+        }
+        gameFooter(footer);
+    } else {
+        gameFooter(footer);
+    }
     document.title = previewConfig.value.webtitle;
     if (Number(previewConfig.value.cookie) == 1) {
         if (document.querySelector("#cookieBarWrap")) {

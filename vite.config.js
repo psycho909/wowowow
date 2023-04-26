@@ -38,7 +38,7 @@ export default defineConfig(({ mode }) => {
 			}
 		},
 		esbuild: {
-			drop: ["debugger"]
+			drop: ["console", "debugger"]
 		},
 		build: {
 			target: "modules",

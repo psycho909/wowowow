@@ -32,10 +32,6 @@ let messageText = ref("");
 let messageLightbox = ref(false);
 let messageAccess = ref(0);
 
-if (window.sessionStorage.getItem("state")) {
-    window.sessionStorage.removeItem("state")
-}
-
 const prev = () => {
     let temp = currentPage.value;
     temp -= 1;
