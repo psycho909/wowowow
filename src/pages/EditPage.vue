@@ -261,7 +261,7 @@ const startLog = () => {
                    @start="startLog"
                    @change="log"
                    @move="moveLog"
-                   group="people"
+                   group="component"
                    item-key="uid">
 
             <template #item="{ element }">

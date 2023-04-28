@@ -89,13 +89,13 @@ const onClose = () => {
     menuToggle.value = false
 }
 const log = (evt) => {
-    window.console.log(evt);
+    console.log("evt", evt);
 }
-const moveLog = () => {
-    console.log("menu move")
+const moveLog = (e) => {
+    console.log("menu move", e)
 }
 const start = (e) => {
-    console.log("menu start")
+    console.log("menu start", e)
 }
 const end = (e) => {
     console.log(e)
@@ -115,7 +115,7 @@ const end = (e) => {
                 <draggable
                            class="list-group"
                            :list="menuFilter2"
-                           :group="{ name: 'people', pull: 'clone', put: false }"
+                           :group="store.group"
                            :sort="false"
                            :force-fallback="true"
                            :fallback-tolerance="1"
