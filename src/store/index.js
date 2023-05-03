@@ -23,7 +23,7 @@ export const mainStore = defineStore("main", {
 			move: false,
 			previewConfig: {},
 			previewContent: [],
-			forcefallback: true
+			group: { name: "component", pull: "clone", put: false }
 		};
 	},
 	getters: {
@@ -32,13 +32,22 @@ export const mainStore = defineStore("main", {
 		}
 	},
 	actions: {
-		forcefallbackChange(data) {
-			this.forcefallback = data;
+		changeDrgGroup(data) {
+			this.group.name = data;
 		},
 		drgAddCpt(data, index) {
 			var uid = uuidv4();
 			let component = { component: data.cpt, uid, content: {}, update: true, init: true };
 			let temp = [...this.content.slice(0, index), component, ...this.content.slice(index)];
+			this.content = temp;
+		},
+		drgAddSubCpt(uid, data, index) {
+			var subUid = uuidv4();
+			var _index = this.getIndex(uid);
+			let subComponent = { component: data.cpt, subUid, content: {}, update: true, init: true };
+			let tempContent = this.content[_index].content;
+			tempContent.subContent.push(subComponent);
+			let temp = [...this.content.slice(0, _index), tempContent, ...this.content.slice(_index)];
 			this.content = temp;
 		},
 		addCpt(data) {
@@ -52,6 +61,13 @@ export const mainStore = defineStore("main", {
 					return v.component == "GBg";
 				});
 				this.content = [...this.content.slice(0, bgIndex + 1), { component: data.cpt, uid, content: {}, update: true, init: true }, ...this.content.slice(bgIndex + 1)];
+				return;
+			}
+			if (data.cpt == "GArea") {
+				this.content.push({ component: data.cpt, uid, content: {}, update: true, init: true, name: uid });
+				return;
+			}
+			if (this.group.name != "component") {
 				return;
 			}
 			this.content.push({ component: data.cpt, uid, content: {}, update: true, init: true });

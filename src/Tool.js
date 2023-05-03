@@ -109,9 +109,6 @@ export const loadingHide = () => {
 export const pageInfo = (data) => {
 	document.title = data.webtitle || data.eventName;
 	document.querySelectorAll("meta[name='description']")[0].setAttribute("content", data.webDescription);
-	// document.querySelectorAll("meta[property='og:title']")[0].setAttribute("content", data.ogTitle);
-	// document.querySelectorAll("meta[property='og:description']")[0].setAttribute("content", data.ogDescription);
-	// document.querySelectorAll("meta[property='og:image']")[0].setAttribute("content", data.ogUrl);
 	if (Number(data.cookie) == 1) {
 		if (document.querySelector("#cookieBarWrap")) {
 			document.querySelector("#cookieBarWrap").classList.add("on");
@@ -150,4 +147,30 @@ export const imgLoading = async (data) => {
 
 export const handleNumber = (e) => {
 	return (e.target.value = e.target.value.replace(/[^\d]+/g, ""));
+};
+export const getBrowserLocales = (options = {}) => {
+	const defaultOptions = {
+		languageCodeOnly: true
+	};
+	const opt = {
+		...defaultOptions,
+		...options
+	};
+	const browserLocales = navigator.languages === undefined ? [navigator.language] : navigator.languages;
+	if (!browserLocales) {
+		return undefined;
+	}
+	return browserLocales.map((locale) => {
+		const trimmedLocale = locale.trim();
+		return opt.languageCodeOnly ? trimmedLocale.split(/-|_/)[0] : trimmedLocale;
+	});
+};
+export const getUrlSearchParams = (params) => {
+	let param = new URL(location.href).searchParams.get(params);
+	if (param) {
+		let lan_param = param.toLowerCase();
+		return lan_param;
+	} else {
+		return false;
+	}
 };

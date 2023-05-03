@@ -25,8 +25,7 @@ if (import.meta.env.MODE == "development") {
 }
 
 
-if (!pathName) {
-} else {
+if (pathName) {
 	if (window.localStorage.getItem("state")) {
 		state = JSON.parse(window.localStorage.getItem("state"));
 		state.page = "Preview";

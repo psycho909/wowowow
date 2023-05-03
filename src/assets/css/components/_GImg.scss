@@ -20,18 +20,19 @@
 		font-size: 0;
 		display: grid;
 		grid-gap: 12px;
-		justify-items: center;
+		place-items: center;
+		place-content: center;
 		&[data-num="1"] {
-			grid-template-columns: repeat(1, 1fr);
+			grid-template-columns: repeat(1, minmax(1px, max-content));
 		}
 		&[data-num="2"] {
-			grid-template-columns: repeat(2, 1fr);
+			grid-template-columns: repeat(2, minmax(1px, max-content));
 		}
 		&[data-num="3"] {
-			grid-template-columns: repeat(3, 1fr);
+			grid-template-columns: repeat(3, minmax(1px, max-content));
 		}
 		&[data-num="4"] {
-			grid-template-columns: repeat(4, 1fr);
+			grid-template-columns: repeat(4, minmax(1px, max-content));
 		}
 		@include media {
 			max-width: 100%;
