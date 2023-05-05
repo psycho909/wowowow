@@ -2,7 +2,7 @@
 import Page from "./pages/Page.vue";
 import { mainStore } from "./store/index";
 import { GetApprovedEventMain } from "./api";
-import { loadingShow, loadingHide, pageInfo, getUrlSearchParams } from "./Tool";
+import { loadingShow, loadingHide, pageInfo } from "./Tool";
 import topBar from "./topBar";
 import GLightbox from "./components/GLightbox.vue";
 import GCookie from "./components/GCookie.vue";
@@ -11,13 +11,22 @@ let messageText = ref("");
 let messageLightbox = ref(false);
 let cookieLightbox = ref(false);
 let configData = ref("");
+const getUrlSearchParams = (params) => {
+	let param = new URL(location.href).searchParams.get(params);
+	if (param) {
+		return param
+	} else {
+		return false;
+	}
+};
 
 onMounted(() => {
 	loadingShow();
 	let Url = getUrlSearchParams("Url");
 	let Id = getUrlSearchParams("Id");
-	if (Url && Id) {
-		GetApprovedEventMain(Url, Id).then((res) => {
+	let Eventid = getUrlSearchParams("Eventid");
+	if ((Url && Id) || Eventid) {
+		GetApprovedEventMain(Url, Id, Eventid).then((res) => {
 			let { code, message, url, data } = res.data;
 			if (code != 1) {
 				messageText.value = message;
