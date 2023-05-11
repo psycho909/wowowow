@@ -92,13 +92,14 @@ const closeBtn = () => {
     props.data.update = false;
 }
 
-
+const handleArea = () => {
+    store.setCurrentArea(uid.value)
+}
 
 const log = (e) => {
     let cpt;
     let cptIndex;
     let uid;
-    console.log(e)
     if (e.added) {
         cpt = e.added.element;
         cptIndex = e.added.newIndex + 1;
@@ -123,7 +124,8 @@ const log = (e) => {
 }
 </script>
 <template>
-    <div class="g-area" :style="cssVar" :class="[loading ? 'loading' : '']">
+    <div class="g-area" :style="cssVar" :class="[loading ? 'loading' : '']"
+         v-if="page != 'EditPage'">
         <div class="g-area-container">
             <draggable
                        class="dragArea list-group"
@@ -138,7 +140,32 @@ const log = (e) => {
                        v-if="store.page == 'EditPage'">
 
                 <template #item="{ element }">
-                    <component :is="element.component" :data="element"></component>
+                    <component :is="element.component" :data="element" :sub="true"></component>
+                </template>
+            </draggable>
+            <template v-for="block in areaSetting.subContent" :key="block.uid" v-else>
+                <component :is="block.component" :data="block"></component>
+            </template>
+        </div>
+    </div>
+    <label class="g-area" :id="uid" :style="cssVar"
+           :class="[loading ? 'loading' : '', store.group.name == uid ? 'focus' : '']" v-else>
+        <input type="radio" name="area" :id="uid" :value="uid" @change="handleArea">
+        <div class="g-area-container">
+            <draggable
+                       class="dragArea list-group"
+                       :list="areaSetting.subContent"
+                       :force-fallback="true"
+                       :fallback-tolerance="1"
+                       :scroll-sensitivity="100"
+                       :animation="300"
+                       :group="uid"
+                       item-key="uid"
+                       @change="log"
+                       v-if="store.page == 'EditPage'">
+
+                <template #item="{ element }">
+                    <component :is="element.component" :data="element" :sub="true"></component>
                 </template>
             </draggable>
             <template v-for="block in areaSetting.subContent" :key="block.uid" v-else>
@@ -177,5 +204,5 @@ const log = (e) => {
                 </div>
             </template>
         </g-edit>
-    </div>
+    </label>
 </template>

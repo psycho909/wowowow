@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
+import { cloneDeep } from "lodash-es";
 
 export const mainStore = defineStore("main", {
 	state: () => {
@@ -23,7 +24,7 @@ export const mainStore = defineStore("main", {
 			move: false,
 			previewConfig: {},
 			previewContent: [],
-			group: { name: "component", pull: "clone", put: false }
+			group: { name: "component", pull: "clone", put: false } // name:component
 		};
 	},
 	getters: {
@@ -32,6 +33,9 @@ export const mainStore = defineStore("main", {
 		}
 	},
 	actions: {
+		setCurrentArea(data) {
+			this.group.name = data;
+		},
 		changeDrgGroup(data) {
 			this.group.name = data;
 		},
@@ -44,10 +48,12 @@ export const mainStore = defineStore("main", {
 		drgAddSubCpt(uid, data, index) {
 			var subUid = uuidv4();
 			var _index = this.getIndex(uid);
-			let subComponent = { component: data.cpt, subUid, content: {}, update: true, init: true };
-			let tempContent = this.content[_index].content;
-			tempContent.subContent.push(subComponent);
-			let temp = [...this.content.slice(0, _index), tempContent, ...this.content.slice(_index)];
+			let subComponent = { component: data.cpt, uid: subUid, content: {}, update: true, init: true };
+			let tempContent = cloneDeep(this.content[_index]);
+			let start = cloneDeep(this.content.slice(0, _index));
+			let end = cloneDeep(this.content.slice(_index + 1));
+			tempContent.content.subContent.push(subComponent);
+			let temp = [...start, tempContent, ...end];
 			this.content = temp;
 		},
 		addCpt(data) {
@@ -68,6 +74,8 @@ export const mainStore = defineStore("main", {
 				return;
 			}
 			if (this.group.name != "component") {
+				var _index = this.getIndex(this.group.name);
+				console.log(_index);
 				return;
 			}
 			this.content.push({ component: data.cpt, uid, content: {}, update: true, init: true });
@@ -78,12 +86,26 @@ export const mainStore = defineStore("main", {
 				this.content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
 			}
 		},
-		updateCpt(uid, data) {
-			var _index = this.getIndex(uid);
-			if (_index > -1) {
-				this.content[_index].content = JSON.parse(JSON.stringify(data));
-				this.content[_index].update = false;
-				this.content[_index].init = false;
+		updateCpt(uid, data, sub) {
+			let _index, findComponent;
+			if (sub) {
+				findComponent = this.content.find((item) => {
+					if (item.content.subContent) {
+						return item.content.subContent.find((subItem) => subItem.uid === uid);
+					}
+					return item.uid === uid;
+				});
+				_index = findComponent.content.subContent.findIndex((v, i) => v.uid == uid);
+				findComponent.content.subContent[_index].content = JSON.parse(JSON.stringify(data));
+				findComponent.content.subContent[_index].update = false;
+				findComponent.content.subContent[_index].init = false;
+			} else {
+				_index = this.getIndex(uid);
+				if (_index > -1) {
+					this.content[_index].content = JSON.parse(JSON.stringify(data));
+					this.content[_index].update = false;
+					this.content[_index].init = false;
+				}
 			}
 			$("#loadingProgress").hide();
 		},

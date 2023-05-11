@@ -247,9 +247,15 @@ const moveLog = () => {
 const startLog = () => {
     console.log("start")
 }
+
+const handleArea = () => {
+    store.setCurrentArea("component")
+}
 </script>
 <template>
-    <section class="wrap development" :data-type="store.config.pageTypeSeq" :style="cssVar">
+    <label for="component" class="wrap development" :class="[store.group.name == 'component' ? 'focus' : '']"
+           :data-type="store.config.pageTypeSeq" :style="cssVar">
+        <input id="component" type="radio" name="area" value="component" checked @change="handleArea">
         <component is="GBg" :data="content[0]"></component>
         <draggable
                    class="dragArea list-group"
@@ -270,7 +276,7 @@ const startLog = () => {
         </draggable>
         <img v-if="!checkInit" style="display:block;margin:0 auto;max-width: 100%;"
              src="https://alpha-tw.beanfun.com/3KO/removable/pchome/images/component.png" alt="">
-    </section>
+    </label>
     <g-menu :menu="menu" />
     <div class="page-control__group">
         <a href="javascript:;" class="page-control__btn" @click="onEvent('save')">存檔</a>

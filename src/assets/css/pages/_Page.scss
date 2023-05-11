@@ -67,6 +67,10 @@ body {
 		display: block;
 	}
 	&.development {
+		display: block;
+		&.focus {
+			box-shadow: inset 1px 0 0 3px red;
+		}
 		.g-menu__add {
 			&.sortable-chosen.sortable-ghost {
 				width: 1000px;

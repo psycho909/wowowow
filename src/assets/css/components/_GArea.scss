@@ -4,3 +4,10 @@
 		padding: 1rem;
 	}
 }
+.g-area {
+	position: relative;
+	display: block;
+	&.focus {
+		box-shadow: inset 1px 0 0 3px red;
+	}
+}

@@ -16,7 +16,7 @@ import colors, { style1, style2 } from "../colors";
 import { handleNumber } from "../Tool";
 import { cloneDeep } from 'lodash-es'
 
-const props = defineProps(["data"])
+const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 let textSetting = reactive({})
 let styleValid = ref(true);
@@ -64,9 +64,6 @@ onMounted(async () => {
     }
 })
 
-onUnmounted(() => {
-    console.log("did")
-})
 
 const onSubmit = async () => {
     if (textData.style == "") {
@@ -75,9 +72,15 @@ const onSubmit = async () => {
         styleValid.value = true;
     }
     let data = cloneDeep(textData);
+
     if (styleValid.value) {
         $("#loadingProgress").show();
-        store.updateCpt(props.data.uid, data);
+        if (props.sub) {
+            store.updateCpt(props.data.uid, data, true);
+        } else {
+            store.updateCpt(props.data.uid, data);
+        }
+
         Object.assign(textSetting, data);
         textUpdate.value = true;
         await nextTick();

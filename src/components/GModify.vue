@@ -20,7 +20,7 @@ const props = defineProps({
     remove: {
         type: Boolean,
         default: true
-    }
+    },
 })
 let messageText = ref("");
 let messageLightbox = ref(false);
