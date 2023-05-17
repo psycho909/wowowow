@@ -93,10 +93,14 @@ const menu = computed(() => {
 
 const contentFilter = computed(() => {
     return content.value.filter((com, i) => {
-        return com.component !== 'GBg'
+        return com.component !== 'GBg' && com.component != 'GFixed'
     })
 })
-
+const contentFixed = computed(() => {
+    return content.value.filter((com, i) => {
+        return com.component == 'GFixed'
+    })
+})
 const onEvent = (type) => {
     var data = store.config;
     data.detail = JSON.stringify(store.content);
@@ -236,7 +240,8 @@ const log = (e) => {
     if (e.moved) {
         cpt = e.moved;
         uid = e.moved.element.uid;
-        cptIndex = e.moved.newIndex + 1;
+        cptIndex = e.moved.newIndex + 2;
+        console.log(e, uid, cptIndex)
         store.dragMoveCpt(uid, cptIndex);
     }
 }
@@ -257,6 +262,10 @@ const handleArea = () => {
            :data-type="store.config.pageTypeSeq" :style="cssVar">
         <input id="component" type="radio" name="area" value="component" checked @change="handleArea">
         <component is="GBg" :data="content[0]"></component>
+        <template v-if="contentFixed.length">
+            <component is="GFixed" :data="contentFixed[0]"></component>
+        </template>
+
         <draggable
                    class="dragArea list-group"
                    :list="contentFilter"

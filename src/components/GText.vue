@@ -110,7 +110,7 @@ const closeBtn = () => {
     <div class="g-text" :class="[textSetting.align]" :style="[colors[textSetting.style], cssVar]">
         <div class="g-text-container" v-if="!textUpdate">
             <div class="g-text__content" v-html="textSetting.text"></div>
-            <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
+            <g-modify :uid="data.uid" :sub="sub" v-if="page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
             <template #edit-close>
