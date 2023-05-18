@@ -6,7 +6,7 @@ import GInput from "../elements/GInput.vue";
 import GSelect from "../elements/GSelect.vue";
 import GHome from "../components/GHome.vue";
 import { loadingShow, loadingHide } from "../Tool";
-import { GetGames, GetEventList, ApproveEvent, AddEventList, UpdateEvent } from "../api";
+import { CopyEvent, GetGames, GetEventList, ApproveEvent, AddEventList, UpdateEvent } from "../api";
 
 const store = mainStore()
 let approveLightbox = ref(false)
@@ -31,6 +31,10 @@ let approveTemp = ref({});
 let messageText = ref("");
 let messageLightbox = ref(false);
 let messageAccess = ref(0);
+
+if (window.sessionStorage.getItem("state")) {
+    window.sessionStorage.removeItem("state")
+}
 
 const prev = () => {
     let temp = currentPage.value;
@@ -310,35 +314,19 @@ const onSubmit = (type) => {
         })
     }
     if (type == "複製活動") {
-        data.flag = 0;
-        data.eventName = "副本-" + data.eventName;
-        AddEventList(store.otp, data).then((res) => {
-            let { code, message, url, data: eventSeq } = res.data;
-            if (code != 1) {
-                messageText.value = message;
-                messageLightbox.value = true;
-                loadingHide()
-                return code;
-            }
-            data.eventName = data.eventName + "-" + eventSeq;
-            data.eventSeq = eventSeq;
-            return UpdateEvent(store.otp, data);
-        }).then((res) => {
+        CopyEvent(store.top, data).then((res) => {
             let { code, message, url, listData } = res.data;
             if (code != 1) {
                 messageText.value = message;
                 messageLightbox.value = true;
                 loadingHide()
-                return;
+                return
             }
-            return code
-        }).then((res) => {
-            if (res) {
-                messageText.value = "複製活動成功";
-                messageLightbox.value = true;
-                onSearch();
-            }
+            store.setSave(true);
+            onSaveTemp();
+            onSearch();
         }).finally(() => {
+            approveTemp.value = {};
             copyLightbox.value = false;
             loadingHide()
         })

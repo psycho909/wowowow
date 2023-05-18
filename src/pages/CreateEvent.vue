@@ -63,7 +63,7 @@ let eventConfig = reactive({
     updateTime: "",
     ga: "",
     gtm: "",
-    url: "",
+    url: "", gA4Name: ""
 })
 let messageText = ref("");
 let messageLightbox = ref(false);
@@ -276,6 +276,7 @@ const onReset = () => {
     eventConfig.updateTime = "";
     eventConfig.ga = "";
     eventConfig.gtm = "";
+    eventConfig.gA4Name = "";
     GAToggle.value = false;
     GTMToggle.value = false;
 }

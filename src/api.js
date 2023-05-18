@@ -166,6 +166,18 @@ export const UpdateEvent = (otp = 1, data) => {
 		}
 	});
 };
+// 複製活動
+export const CopyEvent = (otp = 1, data) => {
+	return apiRequest({
+		method: "post",
+		url: "CopyEvent",
+		headers: { "Content-Type": "application/json" },
+		data,
+		params: {
+			otp
+		}
+	});
+};
 export const GetApprovedEventMain = (url, eventSeq) => {
 	return apiRequest({
 		method: "post",

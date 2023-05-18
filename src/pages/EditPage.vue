@@ -126,12 +126,16 @@ const onEvent = (type) => {
                     loadingHide()
                     return;
                 }
-                return data;
+                return {
+                    code, data
+                };
             }).then((res) => {
-                store.setStorageState(store.$state, "EditPage");
-                store.setUpdateTime();
-                store.setSave(true);
-                saveLightbox.value = true;
+                if (res.code == 1) {
+                    store.setStorageState(store.$state, "EditPage");
+                    store.setUpdateTime();
+                    store.setSave(true);
+                    saveLightbox.value = true;
+                }
             }).finally(() => {
                 loadingHide()
             })
@@ -237,6 +241,7 @@ const log = (e) => {
         cpt = e.moved;
         uid = e.moved.element.uid;
         cptIndex = e.moved.newIndex + 1;
+        console.log(uid, cptIndex)
         store.dragMoveCpt(uid, cptIndex);
     }
 }

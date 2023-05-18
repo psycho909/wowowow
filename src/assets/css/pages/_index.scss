@@ -1,7 +1,7 @@
 body {
 	position: relative;
 	width: 100%;
-	min-width: 1200px;
+	min-width: 1000px;
 	@include media {
 		min-width: auto;
 	}
@@ -21,7 +21,7 @@ body {
 	background-color: #3b3b3b;
 }
 .container {
-	width: 1200px;
+	width: 1000px;
 	min-height: 100vh;
 	margin: 0 auto;
 	position: relative;
