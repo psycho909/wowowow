@@ -21,6 +21,10 @@ const props = defineProps({
         type: Boolean,
         default: true
     },
+    sub: {
+        type: Boolean,
+        default: false
+    }
 })
 let messageText = ref("");
 let messageLightbox = ref(false);
@@ -38,7 +42,7 @@ const index = computed(() => {
     return store.getIndex(props.uid);
 })
 const onRemove = async () => {
-    store.removeCpt(props.uid);
+    store.removeCpt(props.uid, props.sub);
     await nextTick();
     messageLightbox.value = false;
 }

@@ -80,10 +80,25 @@ export const mainStore = defineStore("main", {
 			}
 			this.content.push({ component: data.cpt, uid, content: {}, update: true, init: true });
 		},
-		removeCpt(data) {
-			var _index = this.getIndex(data);
-			if (_index > -1) {
-				this.content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
+		removeCpt(uid, sub = false) {
+			if (sub) {
+				let Area = this.content.filter((c, i) => {
+					return c.component == "GArea";
+				});
+
+				let findComponent = this.content.find((item) => {
+					if (item.content.subContent) {
+						return item.content.subContent.find((subItem) => subItem.uid === uid);
+					}
+					return item.uid === uid;
+				});
+				let _index = findComponent.content.subContent.findIndex((v, i) => v.uid == uid);
+				findComponent.content.subContent = [...findComponent.content.subContent.slice(0, _index), ...findComponent.content.subContent.slice(_index + 1)];
+			} else {
+				var _index = this.getIndex(uid);
+				if (_index > -1) {
+					this.content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
+				}
 			}
 		},
 		updateCpt(uid, data, sub) {
