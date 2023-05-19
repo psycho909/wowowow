@@ -60,7 +60,7 @@ const checkInit = computed(() => {
         var checkSlogan = a.find((v, i) => {
             return v == "GSlogan";
         });
-        if (Object.keys(content.value).length > 3 || Object.keys(content.value).length == 1) {
+        if (Object.keys(content.value).length >= 3 || Object.keys(content.value).length == 1) {
             return true;
         } else {
             if (checkBG && checkSlogan) {
