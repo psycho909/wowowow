@@ -25,10 +25,13 @@ let eventListLightbox = ref(false);
 let messageText = ref("");
 let messageLightbox = ref(false);
 
+if (store.content.length == 0 && (store.config.flag == 0 || store.config.flag == 4)) {
+    store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
+}
+if (store.config.flag == 2 && store.content.length == 0) {
+    store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
+}
 onMounted(() => {
-    if (store.content.length == 0 && (store.config.flag == 0 || store.config.flag == 4)) {
-        store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
-    }
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
 })
 
@@ -93,7 +96,13 @@ const menu = computed(() => {
 
 const contentFilter = computed(() => {
     return content.value.filter((com, i) => {
-        return com.component !== 'GBg' && com.component != 'GFixed'
+        return com.component !== 'GBg' && com.component !== 'GFixed' && com.component !== 'GSlogan'
+    })
+})
+
+const contentBg = computed(() => {
+    return content.value.filter((com, i) => {
+        return com.component == 'GBg'
     })
 })
 const contentFixed = computed(() => {
@@ -261,7 +270,12 @@ const handleArea = () => {
     <label for="component" class="wrap development" :class="[store.group.name == 'component' ? 'focus' : '']"
            :data-type="store.config.pageTypeSeq" :style="cssVar">
         <input id="component" type="radio" name="area" value="component" checked @change="handleArea">
-        <component is="GBg" :data="content[0]"></component>
+        <template v-if="contentBg.length">
+            <component is="GBg" :data="contentBg[0]"></component>
+        </template>
+        <template v-if="contentSlogan.length">
+            <component is="GSlogan" :data="contentSlogan[0]"></component>
+        </template>
         <template v-if="contentFixed.length">
             <component is="GFixed" :data="contentFixed[0]"></component>
         </template>
