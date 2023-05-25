@@ -140,6 +140,7 @@ export const mainStore = defineStore("main", {
 			var _index = this.getIndex(uid);
 			this.move = true;
 			var component = this.content[_index];
+			// console.log(_index);
 			var _content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
 			this.content = _content;
 			this.content.splice(index, 0, component);

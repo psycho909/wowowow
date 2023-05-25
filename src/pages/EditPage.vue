@@ -239,10 +239,10 @@ const log = (e) => {
     let cptIndex;
     let uid;
     let temp = 1;
-    if (contentSlogan.length) {
+    if (contentSlogan.value.length) {
         temp += 1;
     }
-    if (contentFixed.length) {
+    if (contentFixed.value.length) {
         temp += 1;
     }
     if (e.added) {
@@ -264,7 +264,7 @@ const log = (e) => {
         cpt = e.moved;
         uid = e.moved.element.uid;
         cptIndex = e.moved.newIndex + temp;
-        console.log(e, uid, cptIndex)
+        console.log(temp, uid, cptIndex)
         store.dragMoveCpt(uid, cptIndex);
     }
 }
