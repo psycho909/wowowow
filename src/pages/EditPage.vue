@@ -105,6 +105,13 @@ const contentBg = computed(() => {
         return com.component == 'GBg'
     })
 })
+
+const contentSlogan = computed(() => {
+    return content.value.filter((com, i) => {
+        return com.component == 'GSlogan'
+    })
+})
+
 const contentFixed = computed(() => {
     return content.value.filter((com, i) => {
         return com.component == 'GFixed'
@@ -231,6 +238,13 @@ const log = (e) => {
     let cpt;
     let cptIndex;
     let uid;
+    let temp = 1;
+    if (contentSlogan.length) {
+        temp += 1;
+    }
+    if (contentFixed.length) {
+        temp += 1;
+    }
     if (e.added) {
         cpt = e.added.element;
         cptIndex = e.added.newIndex + 1;
@@ -249,7 +263,7 @@ const log = (e) => {
     if (e.moved) {
         cpt = e.moved;
         uid = e.moved.element.uid;
-        cptIndex = e.moved.newIndex + 2;
+        cptIndex = e.moved.newIndex + temp;
         console.log(e, uid, cptIndex)
         store.dragMoveCpt(uid, cptIndex);
     }
