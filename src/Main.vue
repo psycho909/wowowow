@@ -11,22 +11,39 @@ let messageText = ref("");
 let messageLightbox = ref(false);
 let cookieLightbox = ref(false);
 let configData = ref("");
-const getUrlSearchParams = (params) => {
-	let param = new URL(location.href).searchParams.get(params);
-	if (param) {
-		return param
+const getUrlSearchParams = (url, params) => {
+	let hostname = new URL(url).hostname;
+	let param = new URL(url).pathname;
+	let paramIndex = new URL(url).pathname.indexOf("Url");
+	if (paramIndex > 0) {
+		return {
+			hostname,
+			param
+		};
 	} else {
 		return false;
 	}
 };
-
 onMounted(() => {
 	loadingShow();
-	let Url = getUrlSearchParams("Url");
-	let Id = getUrlSearchParams("Id");
-	let Eventid = getUrlSearchParams("Eventid");
-	if ((Url && Id) || Eventid) {
-		GetApprovedEventMain(Url, Id, Eventid).then((res) => {
+	let UrlList = getUrlSearchParams(location.href, "Url");
+	let data = {
+		url: "",
+		eventSeq: 0,
+		gA4Name: ""
+	};
+	if ((UrlList)) {
+		if (UrlList.param.match(/Id=([a-zA-Z0-9]+)/)) {
+			data.url = UrlList.param.match(/Url=([a-zA-Z0-9]+)/)[1];
+			data.eventSeq = UrlList.param.match(/Id=([a-zA-Z0-9]+)/)[1];
+		} else {
+			data.url = UrlList.param.match(/Url=([a-zA-Z0-9]+)/)[1];
+			data.eventSeq = UrlList.param.split(".")[1];
+			if (UrlList.hostname.split("-").length > 2) {
+				data.gA4Name = UrlList.hostname.split("-")[0];
+			}
+		}
+		GetApprovedEventMain(data).then((res) => {
 			let { code, message, url, data } = res.data;
 			if (code != 1) {
 				messageText.value = message;
@@ -66,6 +83,9 @@ onMounted(() => {
 		messageText.value = "錯誤網址資訊!";
 		messageLightbox.value = true;
 	}
+
+
+
 })
 </script>
     

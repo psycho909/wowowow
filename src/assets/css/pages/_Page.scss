@@ -49,7 +49,7 @@ body {
 	background-color: var(--color);
 	background-size: calc(var(--w) * 1px) calc(var(--h) * 1px);
 	width: 100%;
-	min-height: var(calc(var(--h) * 1px), 100dvh);
+	min-height: 100dvh;
 	position: relative;
 	background-repeat: no-repeat;
 	padding-bottom: 100px;
