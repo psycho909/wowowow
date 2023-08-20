@@ -1,7 +1,7 @@
 <script setup>
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
-import draggable from "vuedraggable";
+import nestedDraggable from "./nested.vue";
 
 const props = defineProps(["menu"])
 const store = mainStore();
@@ -48,18 +48,42 @@ const menuFilter1 = computed(() => {
 
 const menuFilter2 = computed(() => {
     if (menuList) {
-        return props.menu.map((v, i) => {
+        const filteredMenu = props.menu.map((v, i) => {
             if (total.value[v.title] == v.limit) {
-                v.status = false
+                v.status = false;
             } else {
-                v.status = true
+                v.status = true;
             }
             return v;
-        }).filter((v, i) => v.title != "GBg" && v.title != "GSlogan" && v.title != "GFixed").sort((a, b) => {
-            return a.order - b.order
-        })
+        }).filter(v => v.title != "GBg" && v.title != "GSlogan" && v.title != "GFixed").sort((a, b) => {
+            return a.order - b.order;
+        });
+
+        const groupedMenu = [];
+        let currentGroup = null;
+
+        for (const element of filteredMenu) {
+            if (element.title.startsWith("GSlide")) {
+                if (!currentGroup || currentGroup.title !== "輪播區塊") {
+                    currentGroup = { title: "輪播區塊", elements: [] };
+                    groupedMenu.push(currentGroup);
+                }
+                currentGroup.elements.push(element);
+            } else if (element.title.startsWith("GImg")) {
+                if (!currentGroup || currentGroup.title !== "圖片區塊") {
+                    currentGroup = { title: "圖片區塊", elements: [] };
+                    groupedMenu.push(currentGroup);
+                }
+                currentGroup.elements.push(element);
+            } else {
+                groupedMenu.push(element);
+            }
+        }
+
+        return groupedMenu;
     }
-})
+});
+
 const add = (cpt) => {
     if (cpt.title == "GBg") {
         if (bgStatus.value?.content?.pc) {
@@ -112,25 +136,7 @@ const end = (e) => {
                    :class="[m.title == 'GBg' ? bgStatus?.content?.pc ? 'disabled' : '' : m.status ? '' : 'disabled']"
                    v-for="m in menuFilter1"
                    @click="add(m)">{{ m.label }}</a>
-                <draggable
-                           class="list-group"
-                           :list="menuFilter2"
-                           :group="store.group"
-                           :sort="false"
-                           :force-fallback="true"
-                           :fallback-tolerance="1"
-                           :scroll-sensitivity="100"
-                           @start="start"
-                           @end="end"
-                           @change="log"
-                           @move="moveLog"
-                           itemKey="label">
-                    <template #item="{ element, index }">
-                        <a href="javascript:;" class="g-menu__add"
-                           :class="[element.title == 'GBg' ? bgStatus?.content?.pc ? 'disabled' : '' : element.status ? '' : 'disabled']"
-                           @click="add(element)">{{ element.label }}</a>
-                    </template>
-                </draggable>
+                <nested-draggable :tasks="menuFilter2" />
             </div>
         </div>
     </Teleport>
