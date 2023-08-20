@@ -146,12 +146,16 @@ const onEvent = (type) => {
                     loadingHide()
                     return;
                 }
-                return data;
+                return {
+                    code, data
+                };
             }).then((res) => {
-                store.setStorageState(store.$state, "EditPage");
-                store.setUpdateTime();
-                store.setSave(true);
-                saveLightbox.value = true;
+                if (res.code == 1) {
+                    store.setStorageState(store.$state, "EditPage");
+                    store.setUpdateTime();
+                    store.setSave(true);
+                    saveLightbox.value = true;
+                }
             }).finally(() => {
                 loadingHide()
             })
@@ -247,7 +251,7 @@ const log = (e) => {
     }
     if (e.added) {
         cpt = e.added.element;
-        cptIndex = e.added.newIndex + 1;
+        cptIndex = e.added.newIndex + temp;
         if (!cpt.status) {
             return;
         }

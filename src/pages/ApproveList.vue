@@ -21,7 +21,7 @@ let eventFilter = reactive({
 let gameSeqOptions = ref([])
 let eventData = ref([])
 let totalPage = ref(0)
-let total = ref(5)
+let total = ref(30)
 let currentPage = ref(1)
 let messageText = ref("");
 let messageLightbox = ref(false);
@@ -259,7 +259,7 @@ onMounted(async () => {
                                     event.show)
                             }}</div>
                             <div class="event-list__status-item" v-if="(event.show == 1) && (eventStatus(event.beginDate, event.endDate,
-                                event.show) == '已上線')"><a class="event-list__btn-off"
+                                        event.show) == '已上線')"><a class="event-list__btn-off"
                                    href="javascript:;"
                                    @click="eventOff(event)">下架</a></div>
                         </div>

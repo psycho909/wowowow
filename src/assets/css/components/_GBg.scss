@@ -1,16 +1,9 @@
 .g-bg {
-	position: relative;
-	width: 100%;
-	padding-top: 180px;
-	@include media {
-		padding-top: vw(180);
-	}
 	.g-modify {
 		position: absolute;
-		// top: 50%;
 		top: 0;
 		left: 50%;
 		right: unset;
-		transform: translate(-50%, 0%);
+		transform: translate(-50%, 0);
 	}
 }
