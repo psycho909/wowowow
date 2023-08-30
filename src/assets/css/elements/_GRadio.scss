@@ -14,8 +14,8 @@
 					&:before {
 						content: "";
 						background-color: #ebac50;
-						width: 10px;
-						height: 10px;
+						width: 8px;
+						height: 8px;
 						border-radius: 50%;
 						position: absolute;
 						top: 50%;
@@ -36,13 +36,14 @@
 			}
 		}
 		&__style {
-			width: 16px;
-			height: 16px;
+			width: 12px;
+			height: 12px;
 			background-color: #fff;
 			border-radius: 50%;
 			border: 1px solid #5b5b5b;
 			position: relative;
-			margin: 0 6px;
+			margin: 0 3px;
+			flex-shrink: 0;
 		}
 		&__label {
 			// margin-left: 6px;

@@ -58,7 +58,6 @@ onMounted(async () => {
     if (previewConfig.value.header == 1) {
         topBar(previewConfig.value.gameName)
     }
-
 })
 const cssVar = computed(() => {
     if (previewContent?.value.length > 0) {

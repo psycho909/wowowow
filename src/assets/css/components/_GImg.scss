@@ -1,6 +1,8 @@
 .g-img {
 	margin-top: calc(var(--mt, 0) * 1px);
 	margin-bottom: calc(var(--mb, 54) * 1px);
+	position: relative;
+	z-index: 1;
 	&.loading {
 		.g-img__box {
 			height: 200px;
@@ -44,8 +46,16 @@
 	&__box {
 		width: 100%;
 		display: inline-block;
+		position: relative;
 		&.none {
 			cursor: default;
+		}
+		&.edit {
+			@include hover {
+				.g-img__img {
+					opacity: 1;
+				}
+			}
 		}
 		@include media {
 			margin-bottom: vw(20);
@@ -58,6 +68,62 @@
 			max-width: 100%;
 			position: relative;
 			margin: 0 auto;
+		}
+	}
+	&__img {
+		position: relative;
+		z-index: 1;
+		transition: all 0.3s;
+		&-box {
+			position: relative;
+			&.effectImg {
+				@include hover {
+					.g-img__img {
+						opacity: 0;
+					}
+					.g-img__effectImg {
+						opacity: 1;
+					}
+				}
+			}
+		}
+	}
+	&__effectImg {
+		position: absolute !important;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 0;
+		opacity: 0;
+		transition: all 0.3s;
+		width: 100%;
+	}
+	&__card {
+		&-body {
+			border: 1px solid #000;
+			padding: 12px;
+			text-align: left;
+			background-color: #fff;
+		}
+		&-title {
+			font-weight: bold;
+			font-size: 28px;
+			text-decoration: none;
+			color: #6e6e6e;
+		}
+		&-text {
+			font-size: 16px;
+		}
+		&-link {
+			text-align: center;
+			color: red;
+			font-size: 20px;
+			font-weight: bold;
+			text-decoration: none;
+			width: 100%;
+			border-top: 1px solid #000;
+			padding: 12px 0 0px;
+			margin-top: 12px;
 		}
 	}
 }

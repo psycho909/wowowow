@@ -18,6 +18,38 @@ export default {
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
 const store = mainStore();
+const { content } = storeToRefs(store);
+let toggle = ref(false);
+
+const bgStatus = computed(() => {
+    if (content.value) {
+        return content.value.filter((c, i) => {
+            return c.component == "GBg";
+        })[0]
+    }
+    return {}
+})
+const add = (cpt) => {
+    if (cpt.title == "GBg") {
+        if (bgStatus.value?.content?.pc) {
+            return;
+        } else {
+            bgStatus.value.update = true;
+            return;
+        }
+    }
+    if (!cpt.status) {
+        return;
+    }
+    let data = {
+        cpt: cpt.title
+    };
+    store.addCpt(data);
+    store.setUpdateTime();
+    if (store.first) {
+        store.setFirst(false);
+    }
+}
 const log = (evt) => {
     console.log("evt", evt);
 }
@@ -29,6 +61,13 @@ const start = (e) => {
 }
 const end = (e) => {
     console.log(e)
+}
+
+const toggleMenu = (e) => {
+    let gMenuTitle = e.target;
+    const currentValue = gMenuTitle.getAttribute('data-toggle');
+    const newValue = currentValue === 'false' ? 'true' : 'false';
+    gMenuTitle.setAttribute('data-toggle', newValue);
 }
 </script>
 <template>
@@ -47,20 +86,17 @@ const end = (e) => {
                @move="moveLog"
                item-key="label">
         <template #item="{ element }">
-            <div>
-                <p v-if="element.label">{{ element.label }}</p>
+            <div @click="add(element)"
+                 class="g-menu__add"
+                 :class="[element.title == 'GBg' ? bgStatus?.content?.pc ? 'disabled' : '' : element.status ? '' : 'disabled']"
+                 :data-title="[element?.elements ? 'true' : 'false']">
+                <template v-if="element.label">{{ element.label }}</template>
                 <template v-if="element?.elements">
-                    <span class="g-menu__title filtered">{{ element.title }}</span>
+                    <span class="g-menu__title filtered" @click="toggleMenu" data-toggle="false" data-draggable="false">{{
+                        element.title }}</span>
                     <nested-draggable :tasks="element.elements" />
                 </template>
             </div>
         </template>
     </draggable>
 </template>
-
-<style scoped>
-.dragArea {
-    min-height: 50px;
-    outline: 1px dashed;
-}
-</style>

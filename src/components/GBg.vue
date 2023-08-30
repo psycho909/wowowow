@@ -15,7 +15,7 @@ import GInput from "../elements/GInput.vue";
 import { mainStore } from "../store/index";
 import { CheckImage } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-const props = defineProps(["data"])
+const props = defineProps(["data", "sub"])
 const store = mainStore()
 const { content, MODE, page } = storeToRefs(store);
 let showEdit = ref(false);
@@ -111,7 +111,8 @@ const onSubmit = async () => {
         await imageInfo("mobile", bgData.mobile);
         await imageInfo("pc", bgData.pc);
         data = { ...bgData };
-        store.updateCpt(props.data.uid, data)
+        store.updateCpt(props.data.uid, data, props.sub);
+
     }
 }
 const onReset = () => {
@@ -138,12 +139,12 @@ const closeBtn = () => {
         Object.assign(bgData, initData());
     }
     showEdit.value = false;
-    props.data.update = false;
+    store.editCptClose(props.data.uid, props.sub)
 }
 </script>
 <template>
     <div class="g-bg">
-        <g-modify :uid="data.uid" title="背景" :move="false" :remove="false"
+        <g-modify :uid="data.uid" title="背景" :move="false" :remove="false" :sub="sub"
                   v-if="page == 'EditPage'" />
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'"
                 :func="enterColor">

@@ -1,10 +1,12 @@
 .g-slogan {
 	position: relative;
+	z-index: 1;
 	width: 100%;
 	max-width: 1000px;
 	margin: 0 auto;
 	margin-top: calc(var(--mt, 250) * 1px);
 	margin-bottom: calc(var(--mb, 24) * 1px);
+
 	@include media {
 		max-width: vw(728);
 		margin: 0 auto;

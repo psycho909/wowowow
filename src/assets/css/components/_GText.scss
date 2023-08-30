@@ -16,6 +16,8 @@
 	--ck-todo-list-checkmark-size: 16px;
 }
 .g-text {
+	position: relative;
+	z-index: 1;
 	margin-top: calc(var(--mt, 0) * 1px);
 	margin-bottom: calc(var(--mb, 54) * 1px);
 	@include media {
@@ -85,6 +87,35 @@
 				padding: vw(4);
 			}
 		}
+	}
+	&__box {
+		transition: max-height 0.6s linear;
+		max-height: calc(var(--max-height) * 1px);
+		will-change: transform;
+		&.collapse {
+			position: relative;
+			max-height: calc(var(--collapse) * 1.5 * 24px); /* 控制三行高度 */
+			overflow: hidden;
+		}
+		&.scrollbar {
+			position: relative;
+			max-height: calc(var(--scrollbar) * 1.5 * 24px); /* 控制三行高度 */
+			overflow: auto;
+			&::-webkit-scrollbar {
+				width: var(--scroll-width, 5px);
+				height: var(--scroll-height, 8px);
+				background-color: var(--scroll-bar-color, #ddd);
+			}
+			&::-webkit-scrollbar-thumb {
+				background: var(--scroll-bar-thumb, #000);
+			}
+		}
+	}
+	&__collapse-btn {
+		width: 100%;
+		text-decoration: none;
+		background-color: red;
+		text-align: center;
 	}
 	img {
 		max-width: 100%;

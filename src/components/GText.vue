@@ -75,11 +75,7 @@ const onSubmit = async () => {
 
     if (styleValid.value) {
         $("#loadingProgress").show();
-        if (props.sub) {
-            store.updateCpt(props.data.uid, data, true);
-        } else {
-            store.updateCpt(props.data.uid, data);
-        }
+        store.updateCpt(props.data.uid, data, props.sub);
 
         Object.assign(textSetting, data);
         textUpdate.value = true;
@@ -93,7 +89,7 @@ const onReset = () => {
 const closeBtn = () => {
     if (props.data.init) {
         showEdit.value = false;
-        store.removeCpt(props.data.uid);
+        store.removeCpt(props.data.uid, props.sub);
         document.querySelector("body").classList.remove("ov-hidden");
         return;
     }
@@ -103,7 +99,7 @@ const closeBtn = () => {
         Object.assign(textData, initData());
     }
     showEdit.value = false;
-    props.data.update = false;
+    store.editCptClose(props.data.uid, props.sub)
 }
 </script>
 <template>
@@ -112,7 +108,7 @@ const closeBtn = () => {
             <div class="g-text__content" v-html="textSetting.text"></div>
             <g-modify :uid="data.uid" :sub="sub" v-if="page == 'EditPage'" />
         </div>
-        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
+        <g-edit v-model:showEdit="showEdit" :uid="data.uid" :sub="sub" v-if="page == 'EditPage'">
             <template #edit-close>
                 <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
             </template>

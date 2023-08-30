@@ -1,0 +1,31 @@
+.g-top {
+	cursor: pointer;
+	position: fixed;
+	bottom: 0;
+	z-index: 10000;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	&[data-align="left"] {
+		left: 0;
+	}
+	&[data-align="right"] {
+		right: 0;
+	}
+	&[data-type="style"] {
+		font-size: 24px;
+		color: #fff;
+		width: 60px;
+		height: 60px;
+		background-color: #000;
+		border-radius: 100vmax;
+	}
+	&[data-type="img"] {
+		max-width: 100%;
+		font-size: 0;
+	}
+	.g-modify {
+		top: 0;
+		right: 0;
+	}
+}

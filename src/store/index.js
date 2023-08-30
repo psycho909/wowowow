@@ -58,6 +58,22 @@ export const mainStore = defineStore("main", {
 		},
 		addCpt(data) {
 			var uid = uuidv4();
+			if (data.cpt == "GLang") {
+				this.content = [{ component: data.cpt, uid, content: {}, update: true, init: true }, ...this.content];
+				return;
+			}
+			if (data.cpt == "GWatermark") {
+				this.content = [{ component: data.cpt, uid, content: {}, update: true, init: true }, ...this.content];
+				return;
+			}
+			if (data.cpt == "GMusic") {
+				this.content = [{ component: data.cpt, uid, content: {}, update: true, init: true }, ...this.content];
+				return;
+			}
+			if (data.cpt == "GTop") {
+				this.content = [{ component: data.cpt, uid, content: {}, update: true, init: true }, ...this.content];
+				return;
+			}
 			if (data.cpt == "GFixed") {
 				this.content = [{ component: data.cpt, uid, content: {}, update: true, init: true }, ...this.content];
 				return;
@@ -70,32 +86,73 @@ export const mainStore = defineStore("main", {
 				return;
 			}
 			if (data.cpt == "GArea") {
-				this.content.push({ component: data.cpt, uid, content: {}, update: true, init: true, name: uid });
+				this.content.push({
+					component: data.cpt,
+					uid,
+					content: {
+						subContent: [
+							{
+								component: "GBg",
+								uid: uid + 1,
+								content: {
+									color: "#fff",
+									pc: "",
+									mobile: "",
+									w: 1920,
+									h: 958,
+									mw: "",
+									mh: "",
+									validPC: true,
+									validMobile: true
+								},
+								update: false,
+								init: false
+							},
+							{
+								component: "GSlogan",
+								uid: uid + 2,
+								content: {
+									link: "",
+									mt: "250",
+									mb: "24",
+									pc: "https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slogan.png",
+									mobile: "",
+									validPC: true,
+									validMobile: true,
+									validUrl: true
+								},
+								update: false,
+								init: false
+							}
+						]
+					},
+					update: true,
+					init: true,
+					name: uid
+				});
 				return;
 			}
 			if (this.group.name != "component") {
 				var _index = this.getIndex(this.group.name);
-				console.log(_index);
+				this.content[_index].content.subContent.push({ component: data.cpt, uid, content: {}, update: true, init: true });
 				return;
 			}
 			this.content.push({ component: data.cpt, uid, content: {}, update: true, init: true });
 		},
-		removeCpt(uid, sub = false) {
+		removeCpt(data, sub = false) {
 			if (sub) {
-				let Area = this.content.filter((c, i) => {
-					return c.component == "GArea";
-				});
-
-				let findComponent = this.content.find((item) => {
-					if (item.content.subContent) {
-						return item.content.subContent.find((subItem) => subItem.uid === uid);
+				for (let i = 0; i < this.content.length; i++) {
+					if (this.content[i].component === "GArea") {
+						const subContentIndex = this.content[i].content.subContent.findIndex((subItem) => subItem.uid === data);
+						if (subContentIndex !== -1) {
+							this.content[i].content.subContent.splice(subContentIndex, 1);
+							return true; // Return true to indicate the deletion was successful
+						}
 					}
-					return item.uid === uid;
-				});
-				let _index = findComponent.content.subContent.findIndex((v, i) => v.uid == uid);
-				findComponent.content.subContent = [...findComponent.content.subContent.slice(0, _index), ...findComponent.content.subContent.slice(_index + 1)];
+				}
+				return false; // Return false if deletion was not possible
 			} else {
-				var _index = this.getIndex(uid);
+				var _index = this.getIndex(data);
 				if (_index > -1) {
 					this.content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
 				}
@@ -124,48 +181,101 @@ export const mainStore = defineStore("main", {
 			}
 			$("#loadingProgress").hide();
 		},
-		editCptOpen(data) {
-			var _index = this.getIndex(data);
-			if (_index > -1) {
-				this.content[_index].update = true;
+		editCptOpen(data, sub = false) {
+			if (sub) {
+				for (let i = 0; i < this.content.length; i++) {
+					if (this.content[i].component === "GArea") {
+						const subContentIndex = this.content[i].content.subContent.findIndex((subItem) => subItem.uid === data);
+						if (subContentIndex !== -1) {
+							this.content[i].content.subContent[subContentIndex].update = true;
+							return true; // Return true to indicate the update was successful
+						}
+					}
+				}
+				return false;
+			} else {
+				var _index = this.getIndex(data);
+				if (_index > -1) {
+					this.content[_index].update = true;
+				}
 			}
 		},
-		editCptClose(data) {
-			var _index = this.getIndex(data);
-			if (_index > -1) {
-				this.content[_index].update = false;
+		editCptClose(data, sub = false) {
+			if (sub) {
+				for (let i = 0; i < this.content.length; i++) {
+					if (this.content[i].component === "GArea") {
+						const subContentIndex = this.content[i].content.subContent.findIndex((subItem) => subItem.uid === data);
+						if (subContentIndex !== -1) {
+							this.content[i].content.subContent[subContentIndex].update = false;
+							return true; // Return true to indicate the update was successful
+						}
+					}
+				}
+				return false;
+			} else {
+				var _index = this.getIndex(data);
+				if (_index > -1) {
+					this.content[_index].update = false;
+				}
 			}
 		},
 		dragMoveCpt(uid, index) {
 			var _index = this.getIndex(uid);
 			this.move = true;
 			var component = this.content[_index];
-			// console.log(_index);
 			var _content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
 			this.content = _content;
 			this.content.splice(index, 0, component);
 		},
-		upCpt(data) {
-			var _index = this.getIndex(data);
-			if (_index - 1 < 0 || this.content[_index - 1].component == "GBg" || this.content[_index - 1].component == "GSlogan") {
-				return;
+		upCpt(data, sub) {
+			if (sub) {
+				for (let i = 0; i < this.content.length; i++) {
+					if (this.content[i].component === "GArea") {
+						const subContentIndex = this.content[i].content.subContent.findIndex((subItem) => subItem.uid === data);
+						if (subContentIndex > 0) {
+							const removedSubContent = this.content[i].content.subContent.splice(subContentIndex, 1)[0];
+							this.content[i].content.subContent.splice(subContentIndex - 1, 0, removedSubContent);
+							return true; // Return true to indicate the move was successful
+						}
+					}
+				}
+				return false;
+			} else {
+				var _index = this.getIndex(data);
+				if (_index - 1 < 0 || this.content[_index - 1].component == "GBg" || this.content[_index - 1].component == "GSlogan") {
+					return;
+				}
+				this.move = true;
+				var _temp = this.content[_index];
+				var _content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
+				this.content = _content;
+				this.content.splice(_index - 1, 0, _temp);
 			}
-			this.move = true;
-			var _temp = this.content[_index];
-			var _content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
-			this.content = _content;
-			this.content.splice(_index - 1, 0, _temp);
 		},
-		downCpt(data) {
-			var _index = this.getIndex(data);
-			if (_index + 1 >= this.content.length) {
-				return;
+		downCpt(data, sub) {
+			if (sub) {
+				for (let i = 0; i < this.content.length; i++) {
+					if (this.content[i].component === "GArea") {
+						const subContentIndex = this.content[i].content.subContent.findIndex((subItem) => subItem.uid === data);
+						if (subContentIndex !== -1 && subContentIndex < this.content[i].content.subContent.length - 1) {
+							const removedSubContent = this.content[i].content.subContent.splice(subContentIndex, 1)[0];
+							this.content[i].content.subContent.splice(subContentIndex + 1, 0, removedSubContent);
+							return true; // Return true to indicate the move was successful
+						}
+					}
+				}
+				return false;
+			} else {
+				var _index = this.getIndex(data);
+				if (_index + 1 >= this.content.length) {
+					return;
+				}
+				this.move = true;
+				var _temp = this.content[_index];
+				var _content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
+				this.content = _content;
+				this.content.splice(_index + 1, 0, _temp);
 			}
-			this.move = true;
-			var _temp = this.content[_index];
-			var _content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
-			this.content = _content;
-			this.content.splice(_index + 1, 0, _temp);
 		},
 		setUpdateTime(data) {
 			this.updateTime = data || new Date();
@@ -202,14 +312,19 @@ export const mainStore = defineStore("main", {
 			this.updateTime = "";
 		},
 		setStorageState(state, page) {
-			let { content, config } = state;
-			// let temp = { ...state };
-			let temp = {};
-			temp.page = page;
-			temp.previewContent = content;
-			temp.previewConfig = config;
-			// window.sessionStorage.setItem("state", JSON.stringify(temp));
-			window.localStorage.setItem("state", JSON.stringify(temp));
+			return new Promise((resolve, reject) => {
+				let { content, config } = state;
+				let temp = {};
+				temp.page = page;
+				temp.previewContent = content;
+				temp.previewConfig = config;
+				try {
+					window.localStorage.setItem("state", JSON.stringify(temp));
+					resolve(true);
+				} catch (e) {
+					reject(e);
+				}
+			});
 		},
 		async setState(data) {
 			const pathName = window.location.href.includes("Preview");

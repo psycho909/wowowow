@@ -1,4 +1,6 @@
 .g-video {
+	position: relative;
+	z-index: 1;
 	margin-top: calc(var(--mt, 0) * 1px);
 	margin-bottom: calc(var(--mb, 54) * 1px);
 	@include media {

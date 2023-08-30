@@ -25,9 +25,11 @@
 		}
 		&__label {
 			color: #fff;
-			margin-right: 12px;
+			// margin-right: 12px;
 			flex-shrink: 0;
 			position: relative;
+			min-width: 110px;
+			text-align: left;
 			&.required {
 				&:before {
 					content: "*";

@@ -203,7 +203,7 @@ const onReset = () => {
 const closeBtn = () => {
     if (props.data.init) {
         showEdit.value = false;
-        store.removeCpt(props.data.uid);
+        store.removeCpt(props.data.uid, props.sub);
         document.querySelector("body").classList.remove("ov-hidden");
         return;
     }

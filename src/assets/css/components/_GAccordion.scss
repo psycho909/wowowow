@@ -1,0 +1,44 @@
+.g-accordion {
+	position: relative;
+	z-index: 1;
+	margin-top: calc(var(--mt, 0) * 1px);
+	margin-bottom: calc(var(--mb, 54) * 1px);
+	@include media {
+		margin-top: calc(var(--mobile_mt, 0) / 768 * 100vw);
+		margin-bottom: calc(var(--mobile_mb, 54) / 768 * 100vw);
+	}
+	width: 100%;
+	position: relative;
+	&-container {
+		position: relative;
+		max-width: 1000px;
+		margin: 0 auto;
+		@include media {
+			max-width: 100%;
+		}
+	}
+	&__body {
+		word-break: break-all;
+	}
+	&__item {
+	}
+	&__header {
+		background-color: #f1f1f1;
+		padding: 10px;
+		cursor: pointer;
+	}
+	&__body {
+		// padding: 10px;
+		background-color: #ffffff;
+		will-change: auto;
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.5s;
+		&.active {
+			max-height: calc(var(--max-height) * 1px);
+		}
+	}
+	&__content {
+		padding: 16px;
+	}
+}

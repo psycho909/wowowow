@@ -1,13 +1,38 @@
 .edit {
 	.g-area {
 		border: 1px solid #000;
-		padding: 1rem;
+		// padding: 1rem;
 	}
 }
 .g-area {
+	background-position: center 0;
+	background-image: var(--area-pc);
+	background-color: var(--area-color);
+	background-size: calc(var(--area-w) * 1px) calc(var(--area-h) * 1px);
+	background-repeat: no-repeat;
+	margin-top: calc(var(--mt, 0) * 1px);
+	margin-bottom: calc(var(--mb, 54) * 1px);
 	position: relative;
+	z-index: 1;
 	display: block;
+	overflow: hidden;
+	&.loading {
+		.g-area__box {
+			height: 200px;
+			background-color: #ddd;
+			position: relative;
+		}
+	}
+	@include media {
+		margin-top: calc(var(--mobile_mt, 0) / 768 * 100vw);
+		margin-bottom: calc(var(--mobile_mb, 54) / 768 * 100vw);
+		background-image: var(--area-mobile);
+		background-size: calc(var(--area-mw) / 768 * 100vw) calc(var(--area-mh) / 768 * 100vw);
+		min-height: var(calc(var(--area-mh) / 768 * 100vw));
+	}
 	&.focus {
 		box-shadow: inset 1px 0 0 3px red;
+	}
+	&-container {
 	}
 }

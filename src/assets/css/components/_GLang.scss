@@ -1,0 +1,19 @@
+.g-lang {
+	position: relative;
+	z-index: 1;
+	background-color: #fff;
+	.g-lang-container {
+		display: flex;
+		font-size: 16px;
+		padding: 12px 0;
+		max-width: 1000px;
+		margin: 0 auto;
+		position: relative;
+		@include media {
+			max-width: 100%;
+		}
+		a {
+			text-decoration: none;
+		}
+	}
+}

@@ -34,7 +34,6 @@ if (pathName) {
 }
 onMounted(() => {
 	console.log(page.value)
-	document.querySelector("#app").classList.add("edit");
 })
 </script>
     

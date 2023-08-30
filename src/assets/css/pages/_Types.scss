@@ -1,9 +1,18 @@
 html {
 	&[data-type="1"] {
+		body {
+			display: flex;
+			flex-direction: column;
+		}
+		#app {
+			order: 1;
+		}
 		.g-bg {
-			position: relative;
+			position: absolute;
 			width: 100%;
-			padding-top: 180px;
+			height: 100%;
+			z-index: 1;
+			// padding-top: 180px;
 			@include media {
 				padding-top: vw(180);
 			}
@@ -17,6 +26,12 @@ html {
 		.g-slide {
 		}
 		.g-text {
+		}
+		.UNI-footer {
+			order: 2;
+		}
+		.g-lang {
+			order: 3;
 		}
 	}
 	&[data-type="2"] {

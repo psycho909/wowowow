@@ -14,7 +14,7 @@ import { mainStore } from "../store/index";
 import { CheckImage, CheckUrl, handleNumber } from "../Tool";
 import { cloneDeep } from 'lodash-es'
 
-const props = defineProps(["data"])
+const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 const store = mainStore()
 const { page } = storeToRefs(store);
@@ -97,7 +97,7 @@ const onSubmit = async () => {
     if (sloganData.validPC && sloganData.validMobile && sloganData.validUrl) {
         $("#loadingProgress").show();
         data = cloneDeep(sloganData);
-        store.updateCpt(props.data.uid, data);
+        store.updateCpt(props.data.uid, data, props.sub);
         Object.assign(sloganSetting, data);
     }
 }
@@ -107,7 +107,7 @@ const onReset = () => {
 const closeBtn = () => {
     if (props.data.init) {
         showEdit.value = false;
-        store.removeCpt(props.data.uid);
+        store.removeCpt(props.data.uid, props.sub);
         document.querySelector("body").classList.remove("ov-hidden");
         return;
     }
@@ -117,7 +117,7 @@ const closeBtn = () => {
         Object.assign(sloganData, initData);
     }
     showEdit.value = false;
-    props.data.update = false;
+    store.editCptClose(props.data.uid, props.sub)
 }
 </script>
 <template>
@@ -128,7 +128,7 @@ const closeBtn = () => {
                     <source media="(max-width:768px)" :srcset="sloganSetting.mobile || sloganSetting.pc" />
                     <img :srcset="sloganSetting.pc" :src="sloganSetting.pc" alt="" />
                 </picture>
-                <g-modify :uid="data.uid" title="主標圖" :move="false" v-if="page == 'EditPage'" />
+                <g-modify :uid="data.uid" title="主標圖" :move="false" v-if="page == 'EditPage'" :sub="sub" />
             </a>
         </template>
         <template v-else>
@@ -138,7 +138,7 @@ const closeBtn = () => {
                     <source media="(max-width:768px)" :srcset="sloganSetting.mobile || sloganSetting.pc" />
                     <img :srcset="sloganSetting.pc" :src="sloganSetting.pc" alt="" />
                 </picture>
-                <g-modify :uid="data.uid" title="主標圖" :move="false" v-if="page == 'EditPage'" />
+                <g-modify :uid="data.uid" title="主標圖" :move="false" v-if="page == 'EditPage'" :sub="sub" />
             </a>
         </template>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">

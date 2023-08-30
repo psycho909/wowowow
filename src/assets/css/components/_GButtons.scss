@@ -1,27 +1,26 @@
-.g-slide {
+.g-buttons {
 	position: relative;
 	z-index: 1;
 	margin-top: calc(var(--mt, 0) * 1px);
 	margin-bottom: calc(var(--mb, 54) * 1px);
 	@include media {
-		margin-bottom: vw(54);
-		overflow: hidden;
 		margin-top: calc(var(--mobile_mt, 0) / 768 * 100vw);
 		margin-bottom: calc(var(--mobile_mb, 54) / 768 * 100vw);
 	}
+	width: 100%;
+	position: relative;
 	&-container {
-		position: relative;
-		width: 100%;
 		max-width: 1000px;
 		margin: 0 auto;
-		@include media {
-			max-width: 100%;
+		position: relative;
+		&[data-align="left"] {
+		}
+		&[data-align="center"] {
+		}
+		&[data-align="right"] {
 		}
 	}
-	&.loading {
-		.g-swiper {
-			height: 200px;
-			background-color: #ddd;
-		}
+	&__btn {
+		text-decoration: none;
 	}
 }

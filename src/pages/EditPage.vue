@@ -25,12 +25,14 @@ let eventListLightbox = ref(false);
 let messageText = ref("");
 let messageLightbox = ref(false);
 
-if (store.content.length == 0 && (store.config.flag == 0 || store.config.flag == 4)) {
+const shouldCopyContent =
+    (store.content.length === 0 && (store.config.flag === 0 || store.config.flag === 4)) ||
+    (store.config.flag === 2 && store.content.length === 0);
+
+if (shouldCopyContent) {
     store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
 }
-if (store.config.flag == 2 && store.content.length == 0) {
-    store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
-}
+
 onMounted(() => {
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
 })

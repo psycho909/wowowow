@@ -31,13 +31,47 @@ let messageLightbox = ref(false);
 
 const store = mainStore();
 const checkComponent = computed(() => {
-    let component = store.content[store.getIndex(props.uid) - 1]?.component;
-    if (component == 'GSlogan' || component == 'GBg' || component == 'component') {
+    if (props.sub) {
+        for (let i = 0; i < store.content.length; i++) {
+            if (store.content[i].component === "GArea") {
+                const subContentIndex = store.content[i].content.subContent.findIndex(subItem => subItem.uid === props.uid);
+                if (subContentIndex === store.content[i].content.subContent.length - 1 && store.content[i].content.subContent.length > 1) {
+                    return true;
+                }
+            }
+        }
         return false;
     } else {
-        return true;
+        let component = store.content[store.getIndex(props.uid) - 1]?.component;
+        if (component == 'GSlogan' || component == 'GBg' || component == 'component') {
+            return false;
+        } else {
+            return true;
+        }
     }
 })
+
+const checkDown = computed(() => {
+    if (props.sub) {
+        for (let i = 0; i < store.content.length; i++) {
+            if (store.content[i].component === "GArea") {
+                const subContentIndex = store.content[i].content.subContent.findIndex(subItem => subItem.uid === props.uid);
+                if (subContentIndex === 0 && store.content[i].content.subContent.length > 1) {
+                    return true; // Return true if targetUID is first or last
+                }
+            }
+        }
+        return false;
+    } else {
+        let index = store.getIndex(props.uid);
+        if (index + 1 < store.content.length) {
+            return true
+        } else {
+            return false
+        }
+    }
+})
+
 const index = computed(() => {
     return store.getIndex(props.uid);
 })
@@ -47,13 +81,13 @@ const onRemove = async () => {
     messageLightbox.value = false;
 }
 const onUp = () => {
-    store.upCpt(props.uid);
+    store.upCpt(props.uid, props.sub);
 }
 const onDown = () => {
-    store.downCpt(props.uid);
+    store.downCpt(props.uid, props.sub);
 }
 const onEdit = () => {
-    store.editCptOpen(props.uid);
+    store.editCptOpen(props.uid, props.sub);
 }
 
 </script>
@@ -64,7 +98,7 @@ const onEdit = () => {
             <a href="javascript:;" class="icon icon-drag">drag</a>
             <a href="javascript:;" class="icon icon-up" @click="onUp" v-if="checkComponent">up</a>
             <a href="javascript:;" class="icon icon-down" @click="onDown"
-               v-if="index + 1 < store.content.length">down</a>
+               v-if="checkDown">down</a>
         </div>
         <div class="g-modify-btn__group" v-if="edit">
             <a href="javascript:;" class="icon icon-edit" @click="onEdit">edit</a>

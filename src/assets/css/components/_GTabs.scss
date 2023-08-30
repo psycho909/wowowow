@@ -1,27 +1,39 @@
-.g-slide {
+.g-tabs {
 	position: relative;
 	z-index: 1;
 	margin-top: calc(var(--mt, 0) * 1px);
 	margin-bottom: calc(var(--mb, 54) * 1px);
 	@include media {
-		margin-bottom: vw(54);
-		overflow: hidden;
 		margin-top: calc(var(--mobile_mt, 0) / 768 * 100vw);
 		margin-bottom: calc(var(--mobile_mb, 54) / 768 * 100vw);
 	}
+	width: 100%;
+	position: relative;
 	&-container {
-		position: relative;
-		width: 100%;
 		max-width: 1000px;
 		margin: 0 auto;
+		position: relative;
 		@include media {
 			max-width: 100%;
 		}
 	}
-	&.loading {
-		.g-swiper {
-			height: 200px;
-			background-color: #ddd;
+	&__tab {
+		&-list {
+			display: flex;
+			list-style: none;
 		}
+		&-li {
+		}
+	}
+	&__box {
+	}
+	&__title {
+		display: flex;
+		&:nth-child(1) {
+		}
+		&:nth-child(2) {
+		}
+	}
+	&__pane {
 	}
 }

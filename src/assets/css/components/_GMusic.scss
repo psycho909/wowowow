@@ -1,0 +1,23 @@
+.g-music {
+	position: fixed;
+	z-index: 9999;
+	&[data-position="left-bottom"] {
+		left: 0;
+		bottom: 0;
+		.g-modify {
+			top: 0;
+			left: 100%;
+		}
+	}
+	&[data-position="right-bottom"] {
+		right: 0;
+		bottom: 0;
+		.g-modify {
+			top: 0;
+			right: -100%;
+		}
+	}
+	&-container {
+		position: relative;
+	}
+}

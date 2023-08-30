@@ -40,7 +40,7 @@ const menuFilter1 = computed(() => {
                 v.status = true
             }
             return v;
-        }).filter((v, i) => v.title == "GBg" || v.title == "GSlogan" || v.title == "GFixed").sort((a, b) => {
+        }).filter((v, i) => v.title == "GBg" || v.title == "GSlogan" || v.title == "GFixed" || v.title == "GLang" || v.title == "GMusic" || v.title == "GTop" || v.title == "GWatermark").sort((a, b) => {
             return a.order - b.order
         })
     }
@@ -55,7 +55,7 @@ const menuFilter2 = computed(() => {
                 v.status = true;
             }
             return v;
-        }).filter(v => v.title != "GBg" && v.title != "GSlogan" && v.title != "GFixed").sort((a, b) => {
+        }).filter(v => v.title != "GBg" && v.title != "GSlogan" && v.title != "GFixed" && v.title != "GLang" && v.title != "GMusic" && v.title != "GTop" && v.title != "GWatermark").sort((a, b) => {
             return a.order - b.order;
         });
 
@@ -83,7 +83,6 @@ const menuFilter2 = computed(() => {
         return groupedMenu;
     }
 });
-
 const add = (cpt) => {
     if (cpt.title == "GBg") {
         if (bgStatus.value?.content?.pc) {
@@ -137,6 +136,25 @@ const end = (e) => {
                    v-for="m in menuFilter1"
                    @click="add(m)">{{ m.label }}</a>
                 <nested-draggable :tasks="menuFilter2" />
+                <!-- <draggable
+                           class="list-group"
+                           :list="menuFilter2"
+                           :group="store.group"
+                           :sort="false"
+                           :force-fallback="true"
+                           :fallback-tolerance="1"
+                           :scroll-sensitivity="100"
+                           @start="start"
+                           @end="end"
+                           @change="log"
+                           @move="moveLog"
+                           itemKey="label">
+                    <template #item="{ element, index }">
+                        <a href="javascript:;" class="g-menu__add"
+                           :class="[element.title == 'GBg' ? bgStatus?.content?.pc ? 'disabled' : '' : element.status ? '' : 'disabled', element.title]"
+                           @click="add(element)">{{ element.label }}</a>
+                    </template>
+                </draggable> -->
             </div>
         </div>
     </Teleport>
