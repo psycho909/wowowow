@@ -1,0 +1,44 @@
+.g-icon {
+	position: absolute;
+	top: 24px;
+	right: 26px;
+	z-index: 1;
+	@include media {
+		top: vw(32);
+		right: vw(29);
+	}
+	&-container {
+		display: flex;
+		@include media {
+			flex-direction: column;
+			align-items: flex-end;
+		}
+		.g-modify {
+			right: unset;
+			left: 0;
+			transform: translateX(-100%);
+		}
+	}
+	&-item {
+		background-position: center 0;
+		background-image: var(--icon-pc);
+		background-color: var(--icon-color);
+		background-size: calc(var(--icon-w) * 1px) calc(var(--icon-h) * 1px);
+		background-repeat: no-repeat;
+		width: calc(var(--icon-w) * 1px);
+		height: calc(var(--icon-h) * 1px);
+		@include media {
+			background-image: var(--icon-mobile);
+			background-size: calc(var(--icon-mw) / 768 * 100vw) calc(var(--icon-mh) / 768 * 100vw);
+			width: calc(var(--icon-w) / 768 * 100vw);
+			height: calc(var(--icon-h) / 768 * 100vw);
+		}
+	}
+	&-item + .g-icon-item {
+		margin-left: 16px;
+		@include media {
+			margin-left: 0;
+			margin-top: vw(20);
+		}
+	}
+}
