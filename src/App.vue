@@ -4,11 +4,14 @@ import CreateEvent from "./pages/CreateEvent.vue";
 import EventList from "./pages/EventList.vue";
 import ApproveList from "./pages/ApproveList.vue";
 import Home from "./pages/Home.vue";
+// import EditPage from "./pages/EditPage1.vue";
 import EditPage from "./pages/EditPage.vue";
+import Page from "./pages/Page.vue";
 import Preview from "./pages/Preview.vue";
+// import Preview from "./pages/Preview1.vue";
 import PageType from "./pages/PageType.vue";
+import axios from "axios";
 import { mainStore } from "./store/index";
-import { reactive } from "vue";
 const store = mainStore()
 const { page } = storeToRefs(store);
 let state = null;
@@ -32,9 +35,7 @@ if (pathName) {
 		store.setState(state);
 	}
 }
-onMounted(() => {
-	console.log(page.value)
-})
+
 </script>
     
 <template>

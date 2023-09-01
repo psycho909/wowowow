@@ -1,18 +1,22 @@
 <script>
 export default {
-    name: "GSlide2",
-    label: "輪播區塊2",
+    name: "GSlide",
+    label: "輪播區塊",
     order: 4
 }
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
+import GCkedit from '../elements/GCkedit.vue';
 import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
+import GSelect from '../elements/GSelect.vue';
 import GSwiper from '../elements/GSwiper.vue';
 import { mainStore } from "../store/index";
 import { CheckImage, CheckUrl, imgLoading, handleNumber } from "../Tool";
 import { cloneDeep } from 'lodash-es'
+import GLightbox from './GLightbox.vue';
+import colors, { style1, style2 } from "../colors";
 
 const props = defineProps(["data"])
 let showEdit = ref(false);
@@ -24,15 +28,47 @@ let slideUpdate = ref(false);
 let loading = ref(true);
 let slideData = reactive({})
 let slideNumValid = ref(true);
+let styleValid = ref(true);
 const initData = () => {
     return {
+        group: true,
+        control: 'all',
         num: 1, mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0, autoplay: {
             open: false,
             delay: 2,
             validDelay: true
         },
         slides: [{
-            pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
+            pc: "", mobile: "", type: "", url: "", attribute: false, validPC: true, validMobile: true, validUrl: true,
+            card: {
+                title: "",
+                text: "",
+                style: "",
+                url: ""
+            },
+            pop: {
+                show: false, type: "text",
+                align: "left",
+                style: "",
+                slides: [{
+                    pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
+                }],
+                closeCheckRedirect: false,
+                closeRedirect: "",
+                num: 1,
+                control: 'all',
+                autoplay: {
+                    open: false,
+                    delay: 2,
+                    validDelay: true
+                },
+            },
+            target: {
+                link: "",
+                attribute: true, validUrl: true,
+            },
+            effectCheck: false,
+            effectImg: "", validEffectImg: true
         }],
     }
 };
@@ -48,6 +84,16 @@ watchEffect(async () => {
         if (Object.keys(props.data.content).length > 0) {
             Object.assign(slideData, cloneDeep(props.data.content));
             Object.assign(slideSetting, cloneDeep(props.data.content));
+            slideData.slides.forEach((slide, index) => {
+                if (!slide.card) {
+                    slide.card = {
+                        title: "",
+                        text: "",
+                        style: "",
+                        url: ""
+                    }
+                }
+            })
             imgLoading(slideData.slides).then((res) => {
                 loading.value = false;
             })
@@ -62,6 +108,16 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(slideData, cloneDeep(props.data.content));
         Object.assign(slideSetting, cloneDeep(props.data.content));
+        slideData.slides.forEach((slide, index) => {
+            if (!slide.card) {
+                slide.card = {
+                    title: "",
+                    text: "",
+                    style: "",
+                    url: ""
+                }
+            }
+        })
         imgLoading(slideData.slides).then((res) => {
             loading.value = false;
         })
@@ -84,7 +140,37 @@ const status = computed(() => {
 const addInsertMenu = (index) => {
     if (index == slideData.slides.length) {
         slideData.slides.push({
-            pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
+            pc: "", mobile: "", type: "", url: "", attribute: false, validPC: true, validMobile: true, validUrl: true,
+            card: {
+                title: "",
+                text: "",
+                style: "",
+                url: ""
+            },
+            pop: {
+                show: false, type: "text",
+                align: "left",
+                style: "",
+                slides: [{
+                    pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
+                }],
+                closeCheckRedirect: false,
+                closeRedirect: "",
+                num: 1,
+                control: 'all',
+                autoplay: {
+                    open: false,
+                    delay: 2,
+                    validDelay: true
+                },
+            },
+            target: {
+                link: "",
+                attribute: true, validUrl: true,
+            },
+            effectCheck: false,
+            effectImg: "", validEffectImg: true
+
         })
         if (slideData.num > slideData.slides.length) {
             slideData.num = slideData.slides.length;
@@ -92,7 +178,37 @@ const addInsertMenu = (index) => {
         return;
     }
     slideData.slides = [...slideData.slides.slice(0, index + 1), {
-        pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
+        pc: "", mobile: "", type: "", url: "", attribute: false, validPC: true, validMobile: true, validUrl: true,
+        card: {
+            title: "",
+            text: "",
+            style: "",
+            url: ""
+        },
+        pop: {
+            show: false, type: "text",
+            align: "left",
+            style: "",
+            slides: [{
+                pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
+            }],
+            closeCheckRedirect: false,
+            closeRedirect: "",
+            num: 1,
+            control: 'all',
+            autoplay: {
+                open: false,
+                delay: 2,
+                validDelay: true
+            },
+        },
+        target: {
+            link: "",
+            attribute: true, validUrl: true,
+        },
+        effectCheck: false,
+        effectImg: "", validEffectImg: true
+
     }, ...slideData.slides.slice(index + 1)];
     if (slideData.num > slideData.slides.length) {
         slideData.num = slideData.slides.length;
@@ -128,6 +244,42 @@ const onDown = (index) => {
     var _content = [...slideData.slides.slice(0, index), ...slideData.slides.slice(index + 1)];
     slideData.slides = _content;
     slideData.slides.splice(index + 1, 0, _temp);
+}
+
+// pop slide使用
+const addInsertMenu2 = (imgIndex, slideIndex) => {
+    const newSlide = {
+        pc: "", mobile: "", open: false, url: "", attribute: false,
+        validPC: true, validMobile: true, validUrl: true
+    };
+
+    slideData.slides[imgIndex].pop.slides.push(newSlide)
+};
+
+const removeMenu2 = (imgIndex, deleteIndex) => {
+    if (slideData.slides[imgIndex].pop.slides.length > 1) {
+        slideData.slides[imgIndex].pop.slides.splice(deleteIndex, 1);
+    }
+
+}
+
+const onUp2 = (imgIndex, slideIndex) => {
+    if (slideIndex > 0) {
+        const slides = slideData.slides[imgIndex].pop.slides;
+        const currentSlide = slides[slideIndex];
+        slides[slideIndex] = slides[slideIndex - 1];
+        slides[slideIndex - 1] = currentSlide;
+    }
+}
+
+const onDown2 = (imgIndex, slideIndex) => {
+    const slides = slideData.slides[imgIndex].pop.slides;
+
+    if (slideIndex < slides.length - 1) {
+        const currentSlide = slides[slideIndex];
+        slides[slideIndex] = slides[slideIndex + 1];
+        slides[slideIndex + 1] = currentSlide;
+    }
 }
 
 const onSubmit = async () => {
@@ -216,14 +368,16 @@ const closeBtn = () => {
         Object.assign(slideData, initData());
     }
     showEdit.value = false;
-    props.data.update = false;
+    store.editCptClose(props.data.uid, props.sub)
 }
 
 </script>
 <template>
     <div class="g-slide" :style="cssVar" :class="[loading ? 'loading' : '']">
         <div class="g-slide-container" :data-num="slideSetting.num">
-            <template v-if="!loading"><g-swiper :data="slideSetting" :status="status" v-if="!slideUpdate" /></template>
+            <template v-if="!loading">
+                <g-swiper :data="slideSetting" :status="status" v-if="!slideUpdate" />
+            </template>
             <template v-else>
                 <div class="g-swiper"></div>
             </template>
@@ -249,6 +403,11 @@ const closeBtn = () => {
                     <div class="error" v-if="!slideNumValid">放置圖片數量不得小於所選輪播數量</div>
                 </div>
                 <div class="g-edit__row">
+                    <div class="input-group__label required">切換方式:</div>
+                    <g-radio label="一次換一組" name="group" :value="true" v-model="slideData.group" />
+                    <g-radio label="一次換一張" name="group" :value="false" v-model="slideData.group" />
+                </div>
+                <div class="g-edit__row">
                     <div class="g-edit__col">
                         <div class="input-group__label required">自動輪播:</div>
                         <g-radio label="開啟" name="open" :value="true" v-model="slideData.autoplay.open" />
@@ -258,6 +417,13 @@ const closeBtn = () => {
                         <g-input label="秒數:" v-model="slideData.autoplay.delay" :valid="slideData.autoplay.validDelay"
                                  :required="true" />
                     </div>
+                </div>
+                <div class="g-edit__row">
+                    <div class="input-group__label required">輪播切換按鈕:</div>
+                    <g-radio label="左右箭頭" name="control" value="navigation" v-model="slideData.control" />
+                    <g-radio label="下方點點" name="control" value="pagination" v-model="slideData.control" />
+                    <g-radio label="都不顯示" name="control" value="no" v-model="slideData.control" />
+                    <g-radio label="都要顯示" name="control" value="all" v-model="slideData.control" />
                 </div>
                 <div class="g-edit__row" v-for="(slide, index) in slideData.slides">
                     <div class="g-edit__col">
@@ -274,11 +440,140 @@ const closeBtn = () => {
                                          :required="true" />
                             </div>
                             <div class="g-edit__col">
-                                <div class="input-group__label required">開啟方式:</div>
-                                <g-radio label="無" :name="'open' + index" :value="false" v-model="slide.open" />
-                                <g-radio label="連結跳轉" :name="'open' + index" :value="true" v-model="slide.open" />
+                                <g-input label="手機版圖片網址:" v-model.trim="slide.mobile" :preview="slide.mobile" />
                             </div>
-                            <template v-if="slide.open == 'true'">
+                            <div class="g-edit__col">
+                                <g-input label="標題文字:" v-model.trim="slide.card.title" />
+                            </div>
+                            <div class="g-edit__col">
+                                <g-select label="主題顏色" :group="true" :options="[style1, style2]"
+                                          v-model="slide.card.style" />
+                            </div>
+                            <div class="g-edit__col">
+                                <g-ckedit v-model="slide.card.text" />
+                            </div>
+                            <div class="g-edit__col">
+                                <g-input label="超連結文字:" v-model.trim="slide.card.url" />
+                            </div>
+                            <div class="g-edit__col">
+                                <div class="input-group__label required">圖片特效:</div>
+                                <g-radio label="無" :name="'effect' + index" :value="false" v-model="slide.effectCheck" />
+                                <g-radio label="換圖" :name="'effect' + index" :value="true" v-model="slide.effectCheck" />
+                            </div>
+                            <div class="g-edit__col" v-if="slide.effectCheck == 'true'">
+                                <g-input label="更換圖片網址:" v-model.trim="slide.effectImg" :preview="slide.effectImg"
+                                         :required="true"
+                                         :valid="slide.validEffectImg" />
+                            </div>
+                            <div class="g-edit__col">
+                                <div class="input-group__label required">開啟方式:</div>
+                                <g-radio label="無" :name="'type' + index" value="" v-model="slide.type" />
+                                <g-radio label="POP視窗" :name="'type' + index" value="pop" v-model="slide.type" />
+                                <g-radio label="連結跳轉" :name="'type' + index" value="link" v-model="slide.type" />
+                            </div>
+                            <template v-if="slide.type == 'pop'">
+                                <div class="g-edit__col">
+                                    <div class="input-group__label required">POP內容:</div>
+                                    <g-radio label="純文字" :name="'popType' + index" value="text" v-model="slide.pop.type" />
+                                    <g-radio label="圖片" :name="'popType' + index" value="img" v-model="slide.pop.type" />
+                                    <g-radio label="POP SLIDE" :name="'popType' + index" value="slide"
+                                             v-model="slide.pop.type" />
+                                </div>
+
+                                <template v-if="slide.pop.type == 'text'">
+                                    <div class="g-edit__col">
+                                        <g-input label="POP標題:" v-model="slide.pop.title" />
+                                    </div>
+                                    <div class="g-edit__row">
+                                        <div class="input-group__label required">對齊方向:</div>
+                                        <g-radio label="左" :name="'align' + index" value="left" v-model="slide.pop.align" />
+                                        <g-radio label="中" :name="'align' + index" value="center"
+                                                 v-model="slide.pop.align" />
+                                    </div>
+                                    <div class="g-edit__col">
+                                        <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
+                                                  :valid="styleValid"
+                                                  v-model="slide.pop.style" />
+                                    </div>
+                                    <div class="g-edit__col">
+                                        <g-ckedit v-model="slide.pop.text" />
+                                    </div>
+                                </template>
+                                <template v-if="slide.pop.type == 'img'">
+                                    <div class="g-edit__col">
+                                        <g-input label="POP圖片網址:" v-model.trim="slide.pop.img" :preview="slide.pop.img"
+                                                 :required="true" />
+                                    </div>
+                                    <div class="g-edit__col">
+                                        <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
+                                                  :valid="styleValid"
+                                                  v-model="slide.pop.style" />
+                                    </div>
+                                </template>
+                                <template v-if="slide.pop.type == 'slide'">
+                                    <div class="g-edit__row" v-for="(popSlide, slideIndex) in slide.pop.slides">
+                                        <div class="g-edit__col">
+                                            <div class="g-edit__group">
+                                                <a href="javascript:;" class="icon icon-add"
+                                                   @click="addInsertMenu2(index, slideIndex)"></a>
+                                                <a href="javascript:;" class="icon icon-remove"
+                                                   @click="removeMenu2(index, slideIndex)"></a>
+                                                <a href="javascript:;" class="icon icon-up"
+                                                   @click="onUp2(index, slideIndex)">up</a>
+                                                <a href="javascript:;" class="icon icon-down"
+                                                   @click="onDown2(index, slideIndex)">down</a>
+                                            </div>
+                                            <div class="g-edit__group">
+                                                <div class="g-edit__col">
+                                                    <g-input label="圖片網址:" v-model.trim="popSlide.pc"
+                                                             :valid="popSlide.validPC"
+                                                             :preview="popSlide.pc"
+                                                             :required="true" />
+                                                </div>
+                                                <div class="g-edit__col">
+                                                    <g-input label="手機版圖片網址" v-model.trim="popSlide.mobile"
+                                                             :preview="popSlide.mobile"
+                                                             :valid="popSlide.validMobile" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="g-edit__col">
+                                            <div class="input-group__label required">自動輪播:</div>
+                                            <g-radio label="開啟" :name="'popAutoplay' + index" :value="true"
+                                                     v-model="slide.pop.autoplay.open" />
+                                            <g-radio label="關閉" :name="'popAutoplay' + index" :value="false"
+                                                     v-model="slide.pop.autoplay.open" />
+                                        </div>
+                                        <div class="g-edit__col" v-if="slide.pop.autoplay.open == 'true'">
+                                            <g-input label="秒數:" v-model="slide.pop.autoplay.delay"
+                                                     :valid="slide.pop.autoplay.validDelay"
+                                                     :required="true" />
+                                        </div>
+                                        <div class="g-edit__col">
+                                            <div class="input-group__label required">輪播切換方式:</div>
+                                            <g-radio label="左右箭頭" :name="'popControl' + index" value="navigation"
+                                                     v-model="slide.pop.control" />
+                                            <g-radio label="下方點點" :name="'popControl' + index" value="pagination"
+                                                     v-model="slide.pop.control" />
+                                            <g-radio label="都不顯示" :name="'popControl' + index" value="no"
+                                                     v-model="slide.pop.control" />
+                                            <g-radio label="都要顯示" :name="'popControl' + index" value="all"
+                                                     v-model="slide.pop.control" />
+                                        </div>
+                                    </div>
+                                </template>
+                                <div class="g-edit__col">
+                                    <div class="input-group__label required">POP視窗關閉是否跳轉:</div>
+                                    <g-radio label="是" :name="'redirect' + index" :value="true"
+                                             v-model="slide.pop.closeCheckRedirect" />
+                                    <g-radio label="否" :name="'redirect' + index" :value="false"
+                                             v-model="slide.pop.closeCheckRedirect" />
+                                </div>
+                                <div class="g-edit__col" v-if="slide.pop.closeCheckRedirect == 'true'">
+                                    <g-input label="跳轉連結:" v-model.trim="slide.pop.closeRedirect" />
+                                </div>
+                            </template>
+                            <template v-if="slide.type == 'link'">
                                 <div class="g-edit__col">
                                     <g-input label="連結" v-model.trim="slide.url" :valid="slide.validUrl" />
                                 </div>

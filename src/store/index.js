@@ -24,7 +24,8 @@ export const mainStore = defineStore("main", {
 			move: false,
 			previewConfig: {},
 			previewContent: [],
-			group: { name: "component", pull: "clone", put: false } // name:component
+			group: { name: "main", pull: "clone", put: false },
+			tempGroup: {}
 		};
 	},
 	getters: {
@@ -79,13 +80,24 @@ export const mainStore = defineStore("main", {
 				return;
 			}
 			if (data.cpt == "GSlogan") {
-				let bgIndex = this.content.findIndex((v, i) => {
-					return v.component == "GBg";
-				});
-				this.content = [...this.content.slice(0, bgIndex + 1), { component: data.cpt, uid, content: {}, update: true, init: true }, ...this.content.slice(bgIndex + 1)];
-				return;
+				if (this.pageTypeSeq == 2) {
+					var _index = this.getIndex(this.group.name);
+					let bgIndex = this.content[_index].content.subContent.findIndex((v, i) => {
+						return v.component == "GBg";
+					});
+					this.content[_index].content.subContent = [...this.content[_index].content.subContent.slice(0, bgIndex + 1), { component: data.cpt, uid, content: {}, update: true, init: true }, ...this.content[_index].content.subContent.slice(bgIndex + 1)];
+					return;
+				} else {
+					let bgIndex = this.content.findIndex((v, i) => {
+						return v.component == "GBg";
+					});
+					this.content = [...this.content.slice(0, bgIndex + 1), { component: data.cpt, uid, content: {}, update: true, init: true }, ...this.content.slice(bgIndex + 1)];
+					return;
+				}
 			}
 			if (data.cpt == "GArea") {
+				this.tempGroup = { ...this.group };
+				this.group.name = "main";
 				this.content.push({
 					component: data.cpt,
 					uid,
@@ -113,8 +125,8 @@ export const mainStore = defineStore("main", {
 								uid: uid + 2,
 								content: {
 									link: "",
-									mt: "250",
-									mb: "24",
+									mt: 0,
+									mb: 0,
 									pc: "https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slogan.png",
 									mobile: "",
 									validPC: true,
@@ -132,7 +144,7 @@ export const mainStore = defineStore("main", {
 				});
 				return;
 			}
-			if (this.group.name != "component") {
+			if (this.group.name != "main") {
 				var _index = this.getIndex(this.group.name);
 				this.content[_index].content.subContent.push({ component: data.cpt, uid, content: {}, update: true, init: true });
 				return;
@@ -241,10 +253,12 @@ export const mainStore = defineStore("main", {
 				}
 				return false;
 			} else {
-				var _index = this.getIndex(data);
-				if (_index - 1 < 0 || this.content[_index - 1].component == "GBg" || this.content[_index - 1].component == "GSlogan") {
+				const validPreviousComponents = ["GFixed", "GBg", "GSlogan", "GTop", "GWatermark", "GMusic"];
+				const _index = this.getIndex(data);
+				if (_index - 1 <= 0 || validPreviousComponents.includes(this.content[_index - 1].component)) {
 					return;
 				}
+
 				this.move = true;
 				var _temp = this.content[_index];
 				var _content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
@@ -253,6 +267,7 @@ export const mainStore = defineStore("main", {
 			}
 		},
 		downCpt(data, sub) {
+			console.log(data, sub);
 			if (sub) {
 				for (let i = 0; i < this.content.length; i++) {
 					if (this.content[i].component === "GArea") {

@@ -21,22 +21,28 @@ const { page } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let showEdit = ref(false);
 let menuToggle = ref(false);
+let fixedData = reactive({})
 let fixedSetting = reactive({});
 let fixedMenuValid = ref(true);
 let styleValid = ref(true);
-let fixedData = reactive({})
+let toggleStatus = ref(false)
 const initData = () => {
     return {
         position: "left",
         hamburger: "hamburger-left",
         style: "",
-        menus: []
+        menus: [],
+        type: "normal",
+        top: true,
+        collapse: false,
+        status: true,
+        collapseText: ""
     }
 };
 
 Object.assign(fixedData, initData());
 
-watchEffect(() => {
+watchEffect(async () => {
     if (props.data.update) {
         showEdit.value = true;
     } else {
@@ -44,16 +50,52 @@ watchEffect(() => {
     }
     if (!props.data.update) {
         if (Object.keys(props.data.content).length > 0) {
+            if (props.data.content.type === undefined) {
+                props.data.content.type = "normal"
+            }
+            if (props.data.content.top === undefined) {
+                props.data.content.top = true
+            }
+            if (props.data.content.collapse === undefined) {
+                props.data.content.collapse = false
+            }
             Object.assign(fixedData, cloneDeep(props.data.content));
             Object.assign(fixedSetting, cloneDeep(props.data.content));
+            toggleStatus.value = content.status;
+            await nextTick()
+            if (!isMobile.any) {
+                let height = 0;
+                let area = document.querySelector(".g-area[data-page='main']");
+                if (document.querySelector(".g-fixed.top")) {
+                    height = document.querySelector(".g-fixed.top").clientHeight;
+                    area.style.marginTop = height + 'px'
+                } else {
+                    area.style.marginTop = height + 'px'
+                }
+            }
+        }
+    }
+    if (fixedData.position) {
+        if (fixedData.position == 'top' || fixedData.position == 'bottom') {
+            fixedData.collapse = false;
         }
     }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
+        if (props.data.content.type === undefined) {
+            props.data.content.type = "normal"
+        }
+        if (props.data.content.top === undefined) {
+            props.data.content.top = true
+        }
+        if (props.data.content.collapse === undefined) {
+            props.data.content.collapse = false
+        }
         Object.assign(fixedData, cloneDeep(props.data.content));
         Object.assign(fixedSetting, cloneDeep(props.data.content));
+        toggleStatus.value = content.status;
         if (fixedSetting.position == 'top') {
             $(window).on("scroll", function () {
                 let scrollTop = $(this).scrollTop();
@@ -66,6 +108,17 @@ onMounted(async () => {
         }
     }
 })
+
+onUnmounted(() => {
+    if (fixedData.position == 'top') {
+        if (!isMobile.any) {
+            let height = 0;
+            let area = document.querySelector(".g-area[data-page='main']");
+            area.style.marginTop = height + 'px'
+        }
+    }
+})
+
 const addPushMenu = () => {
     if (fixedData.menus.length > 15) {
         fixedMenuValid.value = false;
@@ -160,7 +213,7 @@ const closeBtn = () => {
 
     }
     showEdit.value = false;
-    props.data.update = false;
+    store.editCptClose(props.data.uid, props.sub)
 }
 
 const openMenu = () => {
@@ -172,13 +225,27 @@ const closeMenu = () => {
     menuToggle.value = false;
     document.querySelector("body").classList.remove("ov-hidden");
 }
+const toggleMenu = () => {
+    toggleStatus.value = !toggleStatus.value
+}
+
+const goTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // 平滑滾動效果
+    });
+}
+
 </script>
 <template>
     <div class="g-fixed__hamburger" :class="[fixedSetting.hamburger]" @click="openMenu"></div>
-    <div class="g-fixed" :class="[fixedSetting.position, fixedSetting.hamburger, menuToggle ? 'on' : '']"
-         :style="colors[fixedSetting.style]">
+    <div class="g-fixed"
+         :class="[fixedSetting.position, fixedSetting.hamburger, menuToggle ? 'on' : '', fixedSetting.collapse ? 'collapse' : '']"
+         :style="colors[fixedSetting.style]" :data-collapse="toggleStatus">
         <a href="javascript:;" class="g-fixed__close" @click="closeMenu"></a>
         <div class="g-fixed-container">
+            <a href="javascript:;" class="g-fixed__collapse" v-if="fixedSetting.collapse == 'true'" @click="toggleMenu">{{
+                fixedSetting.collapseText }}</a>
             <div class="g-fixed__list">
                 <template v-if="store.status == 'edit'">
                     <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
@@ -192,6 +259,8 @@ const closeMenu = () => {
                            menu.text
                        }}</a>
                 </template>
+                <a href="javascript:;" class="g-fixed__menu g-fixed__top" @click="goTop"
+                   v-if="fixedSetting.top == 'true' || fixedSetting.top">TOP</a>
             </div>
         </div>
         <g-modify :uid="data.uid" :move="false" v-if="page == 'EditPage'" />
@@ -210,8 +279,36 @@ const closeMenu = () => {
                     <div class="input-group__label required">出現位置:</div>
                     <g-radio label="左" name="position" value="left" v-model="fixedData.position" />
                     <g-radio label="右" name="position" value="right" v-model="fixedData.position" />
-                    <g-radio label="上" name="position" value="top" v-model="fixedData.position" />
+                    <g-radio label=" 上" name="position" value="top" v-model="fixedData.position" />
                     <g-radio label="下" name="position" value="bottom" v-model="fixedData.position" />
+                </div>
+                <div class="g-edit__row">
+                    <div class="input-group__label required">樣式:</div>
+                    <g-radio label="一般文字" name="type" value="normal" v-model="fixedData.type" />
+                    <g-radio label="可收合" name="type" value="collapse" v-model="fixedData.type" />
+                </div>
+                <template
+                          v-if="fixedData.type == 'collapse' && (fixedData.position != 'top' && fixedData.position != 'bottom')">
+                    <div class="g-edit__row">
+                        <div class="input-group__label required">是否需要開合選單:</div>
+                        <g-radio label="是" name="collapse" :value="true" v-model="fixedData.collapse" />
+                        <g-radio label="否" name="collapse" :value="false" v-model="fixedData.collapse" />
+                    </div>
+                    <template v-if="fixedData.collapse == 'true'">
+                        <div class="g-edit__row">
+                            <div class="input-group__label required">預設狀態:</div>
+                            <g-radio label="展開" name="status" :value="true" v-model="fixedData.status" />
+                            <g-radio label="收合" name="status" :value="false" v-model="fixedData.status" />
+                        </div>
+                        <div class="g-edit__row">
+                            <g-input label="收合側欄文字:" v-model="fixedData.collapseText" :valid="fixedData.collapseText" />
+                        </div>
+                    </template>
+                </template>
+                <div class="g-edit__row">
+                    <div class="input-group__label required">開啟回到最上面按鈕:</div>
+                    <g-radio label="是" name="top" :value="true" v-model="fixedData.top" />
+                    <g-radio label="否" name="top" :value="false" v-model="fixedData.top" />
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">手機版漢堡選單出現位置:</div>

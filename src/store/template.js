@@ -51,13 +51,26 @@ export const templateStore = defineStore("template", {
 							uid: "1",
 							content: {
 								subContent: [
-									{ component: "GBg", uid: "2", content: { color: "#fff", pc: "", mobile: "", w: 1920, h: 958, mw: "", mh: "", validPC: true, validMobile: true }, update: false, init: false },
-									{ component: "GSlogan", uid: "3", content: { link: "", mt: "250", mb: "24", pc: "https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slogan.png", mobile: "", validPC: true, validMobile: true, validUrl: true }, update: false, init: false }
+									{ component: "GBg", uid: "2", content: { color: "#fff", pc: "", mobile: "", w: 1920, h: 958, mw: "", mh: "", validPC: true, validMobile: true }, update: false, init: true },
+									{ component: "GIcon", uid: "c8c5e0f7-8030-4b05-80f4-845f3f740869", content: { icons: [{ pc: "https://tw.hicdn.beanfun.com/beanfun/GamaWWW/DragonNest/E20230718/assets/css/images/event3/btn-home.png", mobile: "", link: "", validPC: true, validMobile: true, validLink: true, w: 68, h: 68 }] }, update: false, init: true },
+									{ component: "GLogo", uid: "ec483aab-ad03-44e3-9f7e-c6299166c8c2", content: { link: "", pc: "https://tw.hicdn.beanfun.com/beanfun/GamaWWW/DragonNest/E20230718/assets/css/images/event3/logo.png", mobile: "", validPC: true, validMobile: true, validLink: true, w: 278, h: 118 }, update: false, init: true },
+									{
+										component: "GDNNav",
+										uid: "58ece568-b6d3-489a-a47e-32a5a0a5238b",
+										content: {
+											navs: [
+												{ pc: "https://tw.hicdn.beanfun.com/beanfun/promo/DragonNest/E20230821/css/img/btn-pc1.png", mobile: "", w: 723, h: 133, mw: "", mh: "", link: "", validPC: true, validMobile: true, validLink: true },
+												{ pc: "https://tw.hicdn.beanfun.com/beanfun/promo/DragonNest/E20230821/css/img/btn-pc2.png", mobile: "", w: 723, h: 133, mw: "", mh: "", link: "", validPC: true, validMobile: true, validLink: true }
+											]
+										},
+										update: false,
+										init: true
+									}
 								]
 							},
-							update: true,
-							init: true,
-							name: "main"
+							update: false,
+							init: false,
+							name: "home"
 						}
 					]
 				}

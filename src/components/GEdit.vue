@@ -14,14 +14,12 @@ const props = defineProps({
         type: [String, Number]
     }, func: {
         type: Function
-    }, sub: {
-        type: Boolean, default: false
     }
 })
 const store = mainStore()
 const emit = defineEmits(["update:showEdit"])
 const closeBtn = () => {
-    store.editCptClose(props.uid, props.sub);
+    store.editCptClose(props.uid);
     emit("update:showEdit", false)
 }
 

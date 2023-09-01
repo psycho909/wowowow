@@ -14,7 +14,7 @@ import { mainStore } from "../store/index";
 import { extractVideoID, handleNumber } from "../Tool";
 import { cloneDeep } from 'lodash-es'
 
-const props = defineProps(["data"])
+const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 let _videoDataLength = ref(1);
 let videoUpdate = ref(false);
@@ -28,6 +28,7 @@ const initData = () => {
         num: 1,
         preview: false,
         type: "click",
+        app: true,
         videos: [{
             url: "", show: false, validUrl: true
         }],
@@ -110,7 +111,7 @@ const onSubmit = async () => {
             videoData.preview = true;
         }
         let data = cloneDeep(videoData)
-        store.updateCpt(props.data.uid, data);
+        store.updateCpt(props.data.uid, data, props.sub);
         Object.assign(videoSetting, data);
 
         videoUpdate.value = true;
@@ -127,6 +128,7 @@ const closeBtn = () => {
         showEdit.value = false;
         store.removeCpt(props.data.uid, props.sub);
         document.querySelector("body").classList.remove("ov-hidden");
+        loadingHide()
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
@@ -136,7 +138,7 @@ const closeBtn = () => {
         Object.assign(videoData, initData());
     }
     showEdit.value = false;
-    props.data.update = false;
+    store.editCptClose(props.data.uid, props.sub)
 }
 </script>
 <template>
@@ -144,21 +146,23 @@ const closeBtn = () => {
         <div class="g-video-container" :data-num="videoSetting.num">
             <template v-for="(videos, index) in videoSetting.videos" :key="index">
                 <a v-if="videoSetting.type == 'click'" href="javascript:;" class="g-video__box">
-                    <g-youtube :youtube="videos.url" v-if="!videoUpdate" />
+                    <g-youtube :youtube="videos.url" v-if="!videoUpdate" :openapp="videoSetting.app" />
                 </a>
                 <a v-if="videoSetting.type == 'pop'" href="javascript:;" class="g-video__box" @click="openPop(videos)">
-                    <g-youtube :youtube="videos.url" :pop="true" :preview="true" v-if="!videoUpdate" />
+                    <g-youtube :youtube="videos.url" :pop="true" :preview="true" :openapp="videoSetting.app"
+                               v-if="!videoUpdate" />
                     <g-lightbox v-model:showLightbox="videos.show" :style="videos.style" :action="false"
                                 class="lb-video">
                         <template #lightbox-content>
                             <div class="g-lightbox__video">
-                                <g-youtube :youtube="videos.url" :popopen="videos.show" :popstatus="true" />
+                                <g-youtube :youtube="videos.url" :popopen="videos.show" :popstatus="true"
+                                           :openapp="videoSetting.app" />
                             </div>
                         </template>
                     </g-lightbox>
                 </a>
             </template>
-            <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
+            <g-modify :uid="data.uid" :sub="sub" v-if="page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
             <template #edit-close>
@@ -187,6 +191,11 @@ const closeBtn = () => {
                     <div class="input-group__label required">播放方式:</div>
                     <g-radio label="點擊直接播放" name="type" value="click" v-model="videoData.type" />
                     <g-radio label="點擊跳出燈箱播放" name="type" value="pop" v-model="videoData.type" />
+                </div>
+                <div class="g-edit__row">
+                    <div class="input-group__label required">手機使用YoutubeAPP開啟:</div>
+                    <g-radio label="是" name="app" :value="true" v-model="videoData.app" />
+                    <g-radio label="否" name="app" :value="false" v-model="videoData.app" />
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">

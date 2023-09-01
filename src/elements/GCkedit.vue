@@ -5,7 +5,20 @@ export default {
 }
 </script>
 <script setup>
-const props = defineProps(["modelValue"])
+const props = defineProps({
+    modelValue: {
+        type: [String, Number],
+        default: ""
+    },
+    valid: {
+        type: Boolean,
+        default: true
+    },
+    warning: {
+        type: String,
+        default: ""
+    }
+})
 const emit = defineEmits(["update:modelValue"])
 let editor = ref(null)
 let editorConfig = ref({})
@@ -35,8 +48,11 @@ watchEffect(() => {
 </script>
             
 <template>
-    <div class="g-ckedit">
+    <div class="g-ckedit" :class="[valid ? '' : 'warning']">
         <ckeditor :editor="editor" :config="editorConfig" v-model="textValue"></ckeditor>
+        <template v-if="!valid">
+            <div class="input-group__warning" :data-warning="`${warning}`"></div>
+        </template>
     </div>
 </template>
             

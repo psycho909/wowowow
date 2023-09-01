@@ -13,7 +13,7 @@ import { ColorPicker } from 'vue-color-kit';
 import 'vue-color-kit/dist/vue-color-kit.css';
 import GInput from "../elements/GInput.vue";
 import { mainStore } from "../store/index";
-import { CheckImage } from "../Tool";
+import { CheckImage, getVideoInfo, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
 const props = defineProps(["data", "sub"])
 const store = mainStore()
@@ -21,6 +21,7 @@ const { content, MODE, page } = storeToRefs(store);
 let showEdit = ref(false);
 let showColor = ref(false)
 let bgData = reactive({})
+let bgSetting = reactive({})
 const initData = () => {
     return {
         color: "#fff",
@@ -32,6 +33,9 @@ const initData = () => {
         mh: "",
         validPC: true,
         validMobile: true,
+        type: {
+            pc: "img", mobile: "img"
+        }
     }
 };
 
@@ -61,11 +65,28 @@ watchEffect(() => {
     } else {
         showEdit.value = false;
     }
+    if (!props.data.update) {
+        if (Object.keys(props.data.content).length > 0) {
+            Object.assign(bgData, cloneDeep(props.data.content));
+            Object.assign(bgSetting, cloneDeep(props.data.content));
+            if (!bgData.type) {
+                bgData.type = {
+                    pc: "img", mobile: "img"
+                }
+            }
+        }
+    }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(bgData, cloneDeep(props.data.content));
+        Object.assign(bgSetting, cloneDeep(props.data.content));
+        if (!bgData.type) {
+            bgData.type = {
+                pc: "img", mobile: "img"
+            }
+        }
     }
 })
 const updateColor = (color) => {
@@ -79,40 +100,76 @@ const openColor = () => {
     }
 
 }
-const colorBlur = () => {
-    console.log("blurText")
+
+function isImageOrMp4(url) {
+    var ext = url.split('.').pop().toLowerCase();
+    return (ext === 'jpg' || ext === 'jpeg' || ext === 'png' || ext === 'gif' || ext === 'mp4');
 }
 
 const onSubmit = async () => {
+    loadingShow();
     let data = {};
     bgData.validMobile = true;
     if (bgData.pc.length == 0) {
         bgData.validPC = false;
     } else {
         if (!await CheckImage(bgData.pc)) {
-            bgData.validPC = false;
+            if (!isImageOrMp4(bgData.pc)) {
+                bgData.validPC = false;
+            } else {
+                try {
+                    let videoInfo = await getVideoInfo(bgData.pc);
+                    if (videoInfo.size > 5) {
+                        bgData.validPC = false;
+                    } else {
+                        bgData.validPC = true;
+                        bgData.type.pc = "video"
+                    }
+                } catch (err) {
+                    bgData.validPC = false;
+                }
+            }
         } else {
             bgData.validPC = true;
+            bgData.type.pc = "img"
         }
     }
     if (bgData.mobile.length > 0) {
         if (!await CheckImage(bgData.mobile)) {
-            bgData.validMobile = false;
+            if (!isImageOrMp4(bgData.mobile)) {
+                bgData.validMobile = false;
+            } else {
+                try {
+                    let videoInfo = await getVideoInfo(bgData.pc);
+                    if (videoInfo.size > 5) {
+                        bgData.validMobile = false;
+                    } else {
+                        bgData.validMobile = true;
+                        bgData.type.mobile = "video"
+                    }
+                } catch (err) {
+                    bgData.validPC = false;
+                }
+            }
         } else {
             bgData.validMobile = true;
-
+            bgData.type.mobile = "img"
         }
     } else {
         bgData.validMobile = true;
     }
 
     if (bgData.validPC && bgData.validMobile) {
-        $("#loadingProgress").show();
-        await imageInfo("mobile", bgData.mobile);
-        await imageInfo("pc", bgData.pc);
+        if (bgData.type.pc == "img") {
+            await imageInfo("mobile", bgData.mobile);
+        }
+        if (bgData.type.mobile == "img") {
+            await imageInfo("pc", bgData.pc);
+        }
         data = { ...bgData };
         store.updateCpt(props.data.uid, data, props.sub);
-
+    } else {
+        loadingHide();
     }
 }
 const onReset = () => {
@@ -144,6 +201,16 @@ const closeBtn = () => {
 </script>
 <template>
     <div class="g-bg">
+        <template v-if="bgSetting?.type?.pc == 'video'">
+            <video class="bg-video" autoplay="" loop="" playsinline="">
+                <source :src="bgSetting.pc" type="video/mp4">
+            </video>
+        </template>
+        <template v-if="bgSetting?.type?.mobile == 'video'">
+            <video class="bg-video" autoplay="" loop="" playsinline="">
+                <source :src="bgSetting.mobile" type="video/mp4">
+            </video>
+        </template>
         <g-modify :uid="data.uid" title="背景" :move="false" :remove="false" :sub="sub"
                   v-if="page == 'EditPage'" />
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'"
@@ -160,11 +227,11 @@ const closeBtn = () => {
                     </div>
                 </div>
                 <div class="g-edit__row">
-                    <g-input label="圖片網址:" v-model.trim="bgData.pc" :preview="bgData.pc" :valid="bgData.validPC"
+                    <g-input label="圖片/影片網址:" v-model.trim="bgData.pc" :preview="bgData.pc" :valid="bgData.validPC"
                              :required="true" />
                 </div>
                 <div class="g-edit__row">
-                    <g-input label="手機版圖片網址:" v-model.trim="bgData.mobile" :preview="bgData.mobile"
+                    <g-input label="手機版圖片/影片網址:" v-model.trim="bgData.mobile" :preview="bgData.mobile"
                              :valid="bgData.validMobile" />
                 </div>
                 <div class="g-edit__row">

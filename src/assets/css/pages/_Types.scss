@@ -6,6 +6,10 @@ html {
 		}
 		#app {
 			order: 1;
+			.wrap {
+				padding-bottom: 100px;
+				padding-top: 180px;
+			}
 		}
 		.g-bg {
 			position: absolute;
@@ -22,10 +26,16 @@ html {
 		.g-fixed {
 		}
 		.g-slogan {
+			&-contianer {
+			}
 		}
 		.g-slide {
+			&-contianer {
+			}
 		}
 		.g-text {
+			&-contianer {
+			}
 		}
 		.UNI-footer {
 			order: 2;
@@ -35,19 +45,116 @@ html {
 		}
 	}
 	&[data-type="2"] {
-		font-size: 768px;
-		@include media {
-			body: 100vw;
+		// font-size: 768px;
+		// @include media {
+		// 	body: 100vw;
+		// }
+		body {
+			display: flex;
+			flex-direction: column;
+		}
+		#app {
+			&.edit {
+				.wrap {
+				}
+			}
 		}
 		.wrap {
+			@include media {
+				padding-top: 0;
+				padding-bottom: 0;
+			}
 		}
 		.g-fixed {
+			&.top {
+				.g-fixed-container {
+					max-width: 1200px;
+					justify-content: flex-start;
+				}
+			}
+			&.bottom {
+				.g-fixed-container {
+					max-width: 1200px;
+					justify-content: flex-start;
+				}
+			}
 		}
 		.g-slogan {
+			&-container {
+				max-width: 1200px;
+			}
 		}
 		.g-slide {
+			&-container {
+				max-width: 1200px;
+				@include media {
+					width: vw(690);
+				}
+				.g-swiper .swiper {
+					@include media {
+						width: vw(690);
+					}
+				}
+			}
 		}
 		.g-text {
+			&-container {
+				max-width: 1200px;
+				@include media {
+					width: vw(690);
+				}
+			}
+			&__content {
+				font-size: 20px;
+				@include media {
+					font-size: vw(30);
+				}
+			}
+			&__box {
+				&.collapse {
+					max-height: calc(var(--collapse) * 1.5 * 20px);
+					@include media {
+						max-height: calc(var(--collapse) * 1.5 * vw(30));
+					}
+				}
+			}
+		}
+		.g-img {
+			&-container {
+				max-width: 1200px;
+				grid-gap: 0;
+				@include media {
+					width: vw(690);
+					&[data-num="1"] {
+						grid-template-columns: repeat(1, 1fr) !important;
+					}
+					&[data-num="2"] {
+						grid-template-columns: repeat(2, 1fr) !important;
+					}
+					&[data-num="3"] {
+						grid-template-columns: repeat(3, 1fr) !important;
+					}
+				}
+			}
+			&__box {
+				@include media {
+					margin-bottom: 0;
+				}
+			}
+		}
+		.g-video {
+			&-container {
+				max-width: 1200px;
+				@include media {
+					width: vw(690);
+				}
+			}
+			&__box {
+				max-width: 1200px;
+				.g-yt__box {
+					width: 100%;
+				}
+			}
 		}
 	}
 }

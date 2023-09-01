@@ -25,31 +25,31 @@ let eventListLightbox = ref(false);
 let messageText = ref("");
 let messageLightbox = ref(false);
 
-const shouldCopyContent =
-    (store.content.length === 0 && (store.config.flag === 0 || store.config.flag === 4)) ||
-    (store.config.flag === 2 && store.content.length === 0);
-
-if (shouldCopyContent) {
+if (store.content.length == 0 && (store.config.flag == 0 || store.config.flag == 4)) {
     store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
 }
-
+if (store.config.flag == 2 && store.content.length == 0) {
+    store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
+}
 onMounted(() => {
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
+    document.querySelector("#app").classList.add("edit");
 })
-
 const cssVar = computed(() => {
     if (content.value.length > 0) {
         let bg = content.value.filter((c, i) => {
             return c.component == "GBg"
         })
-        return {
-            "--color": bg[0].content.color,
-            "--pc": `url(${bg[0].content.pc})`,
-            "--mobile": `url(${bg[0].content.mobile ? bg[0].content.mobile : bg[0].content.pc})`,
-            "--w": bg[0].content.w,
-            "--h": bg[0].content.h,
-            "--mw": bg[0].content.mw,
-            "--mh": bg[0].content.mh,
+        if (bg.length) {
+            return {
+                "--color": bg[0].content.color,
+                "--pc": `url(${bg[0].content.pc})`,
+                "--mobile": `url(${bg[0].content.mobile ? bg[0].content.mobile : bg[0].content.pc})`,
+                "--w": bg[0].content.w,
+                "--h": bg[0].content.h,
+                "--mw": bg[0].content.mw,
+                "--mh": bg[0].content.mh,
+            }
         }
     }
 })
@@ -98,7 +98,7 @@ const menu = computed(() => {
 
 const contentFilter = computed(() => {
     return content.value.filter((com, i) => {
-        return com.component !== 'GBg' && com.component !== 'GFixed' && com.component !== 'GSlogan'
+        return com.component !== 'GBg' && com.component !== 'GFixed' && com.component !== 'GSlogan' && com.component !== 'GTop' && com.component !== 'GWatermark' && com.component !== 'GMusic' && com.component !== 'GLang'
     })
 })
 
@@ -108,17 +108,42 @@ const contentBg = computed(() => {
     })
 })
 
+const contentFixed = computed(() => {
+    return content.value.filter((com, i) => {
+        return com.component == 'GFixed'
+    })
+})
+
 const contentSlogan = computed(() => {
     return content.value.filter((com, i) => {
         return com.component == 'GSlogan'
     })
 })
 
-const contentFixed = computed(() => {
+const contentTop = computed(() => {
     return content.value.filter((com, i) => {
-        return com.component == 'GFixed'
+        return com.component == 'GTop'
     })
 })
+
+const contentWatermark = computed(() => {
+    return content.value.filter((com, i) => {
+        return com.component == 'GWatermark'
+    })
+})
+
+const contentMusic = computed(() => {
+    return content.value.filter((com, i) => {
+        return com.component == 'GMusic'
+    })
+})
+
+const contentLang = computed(() => {
+    return content.value.filter((com, i) => {
+        return com.component == 'GLang'
+    })
+})
+
 const onEvent = (type) => {
     var data = store.config;
     data.detail = JSON.stringify(store.content);
@@ -135,18 +160,34 @@ const onEvent = (type) => {
             approveLightbox.value = true;
             break;
         case "preview":
-            store.setStorageState(store.$state, "EditPage");
-            store.setPage("Preview");
+            if (!checkInit.value) {
+                messageText.value = "請先編輯內容";
+                messageLightbox.value = true;
+                return;
+            }
+            store.setStorageState(store.$state, "EditPage").then((res) => {
+                store.setPage("Preview", {
+                    eventSeq: store.$state.config.eventSeq,
+                    gameseq: store.$state.config.gameseq,
+                });
+            }).catch((err) => {
+                messageText.value = `文字區塊內使用的圖片容量過大</br>
+                無法正常使用預覽功能</br>
+                請改用圖片區塊+文字區塊來呈現，謝謝！`;
+                messageLightbox.value = true;
+            });
+
             break;
         case "save":
             loadingShow();
+            messageText.value = "";
             UpdateEventContent(store.otp, data).then((res) => {
                 let { code, message, url, listData } = res.data;
                 if (code != 1) {
                     messageText.value = message;
                     messageLightbox.value = true;
                     loadingHide()
-                    return;
+                    return { code };
                 }
                 return {
                     code, data
@@ -156,7 +197,11 @@ const onEvent = (type) => {
                     store.setStorageState(store.$state, "EditPage");
                     store.setUpdateTime();
                     store.setSave(true);
-                    saveLightbox.value = true;
+                    messageText.value = "已存檔完成";
+                    messageLightbox.value = true;
+                } else {
+                    messageText.value = "存檔失敗";
+                    messageLightbox.value = true;
                 }
             }).finally(() => {
                 loadingHide()
@@ -245,10 +290,22 @@ const log = (e) => {
     let cptIndex;
     let uid;
     let temp = 1;
+    if (contentFixed.value.length) {
+        temp += 1;
+    }
     if (contentSlogan.value.length) {
         temp += 1;
     }
-    if (contentFixed.value.length) {
+    if (contentTop.value.length) {
+        temp += 1;
+    }
+    if (contentWatermark.value.length) {
+        temp += 1;
+    }
+    if (contentMusic.value.length) {
+        temp += 1;
+    }
+    if (contentLang.value.length) {
         temp += 1;
     }
     if (e.added) {
@@ -270,26 +327,26 @@ const log = (e) => {
         cpt = e.moved;
         uid = e.moved.element.uid;
         cptIndex = e.moved.newIndex + temp;
-        console.log(temp, uid, cptIndex)
         store.dragMoveCpt(uid, cptIndex);
+        console.log(temp, cptIndex)
     }
 }
 
 const moveLog = () => {
-    console.log("move")
+    // console.log("move")
 }
 const startLog = () => {
-    console.log("start")
+    // console.log("start")
 }
 
 const handleArea = () => {
-    store.setCurrentArea("component")
+    store.setCurrentArea("main")
 }
 </script>
 <template>
-    <label for="component" class="wrap development" :class="[store.group.name == 'component' ? 'focus' : '']"
-           :data-type="store.config.pageTypeSeq" :style="cssVar">
-        <input id="component" type="radio" name="area" value="component" checked @change="handleArea">
+    <label for="component" class="wrap development"
+           :data-type="store.config.pageTypeSeq" :style="cssVar" :class="[store.group.name == 'component' ? 'focus' : '']">
+        <input id="component" type="radio" name="area" value="main" checked @change="handleArea">
         <template v-if="contentBg.length">
             <component is="GBg" :data="contentBg[0]"></component>
         </template>
@@ -299,26 +356,38 @@ const handleArea = () => {
         <template v-if="contentFixed.length">
             <component is="GFixed" :data="contentFixed[0]"></component>
         </template>
-
+        <template v-if="contentTop.length">
+            <component is="GTop" :data="contentTop[0]"></component>
+        </template>
+        <template v-if="contentWatermark.length">
+            <component is="GWatermark" :data="contentWatermark[0]"></component>
+        </template>
+        <template v-if="contentMusic.length">
+            <component is="GMusic" :data="contentMusic[0]"></component>
+        </template>
+        <template v-if="contentLang.length">
+            <component is="GLang" :data="contentLang[0]"></component>
+        </template>
         <draggable
                    class="dragArea list-group"
+                   :class="[checkInit ? '' : 'checkInit']"
                    :list="contentFilter"
                    :force-fallback="true"
                    :fallback-tolerance="1"
                    :scroll-sensitivity="100"
                    :animation="300"
+                   filter=".filtered"
                    @start="startLog"
                    @change="log"
                    @move="moveLog"
-                   group="component"
+                   group="main"
                    item-key="uid">
 
             <template #item="{ element }">
                 <component :is="element.component" :data="element"></component>
             </template>
         </draggable>
-        <img v-if="!checkInit" style="display:block;margin:0 auto;max-width: 100%;"
-             src="https://alpha-tw.beanfun.com/3KO/removable/pchome/images/component.png" alt="">
+
     </label>
     <g-menu :menu="menu" />
     <div class="page-control__group">
@@ -377,7 +446,7 @@ const handleArea = () => {
     </g-lightbox>
     <g-lightbox v-model:showLightbox="messageLightbox">
         <template #lightbox-content>
-            <div>{{ messageText }}</div>
+            <div v-html="messageText"></div>
         </template>
     </g-lightbox>
 </template>

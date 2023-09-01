@@ -1,7 +1,7 @@
 <script>
 export default {
-    name: "GImg1",
-    label: "圖片區塊1",
+    name: "GImg",
+    label: "圖片區塊",
     order: 5
 }
 </script>
@@ -190,7 +190,7 @@ const closeBtn = () => {
         Object.assign(imgData, initData());
     }
     showEdit.value = false;
-    props.data.update = false;
+    store.editCptClose(props.data.uid, props.sub)
 }
 </script>
 <template>

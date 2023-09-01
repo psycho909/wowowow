@@ -5,10 +5,10 @@ export default {
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
+// import components from "../Components1.js";
 import components from "../Components.js";
 import { mainStore } from "../store/index";
 import { loadingShow, loadingHide, getBrowserLocales, getUrlSearchParams } from "../Tool";
-import gameFooter from "../gameFooter";
 const store = mainStore()
 const { content } = storeToRefs(store);
 let lanBrowser = getBrowserLocales()[0];
@@ -33,7 +33,7 @@ const cssVar = computed(() => {
 let footer = {}
 onMounted(() => {
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
-    footer.prod = store.config.gameName || '天堂M';
+    footer.prod = store.config.gameName || 'bf!遊戲';
     footer.theme = store.config.footer == 1 ? 'light' : 'dark';
     if (footer.prod == "櫻桃小丸子") {
         if (lanParams) {
@@ -49,9 +49,16 @@ onMounted(() => {
                 footer.prod = "櫻桃小丸子EN";
             }
         }
-        gameFooter(footer);
+        // gameFooter(footer);
+        // 偵測Footer的加入
+        setTimeout(() => {
+            gf_updateFooter(footer)
+        }, 0);
     } else {
-        gameFooter(footer);
+        // 偵測Footer的加入
+        setTimeout(() => {
+            gf_updateFooter(footer)
+        }, 0);
     }
 })
 

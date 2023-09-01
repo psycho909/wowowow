@@ -1,14 +1,20 @@
 <script>
 import GVideo from "./GVideo.vue";
 import GText from "./GText.vue";
+import GSlide from "./GSlide.vue";
+import GImg from "./GImg.vue";
 import GBg from "./GBg.vue";
 import GSlogan from "./GSlogan.vue";
+import GIcon from "./GIcon.vue";
+import GLogo from "./GLogo.vue";
+import GDNImg from "./GDNImg.vue";
+import GDNNav from "./GDNNav.vue";
 export default {
     name: "GArea",
-    label: "區塊",
+    label: "增加頁面",
     order: 5,
     components: {
-        GVideo, GText, GBg, GSlogan
+        GVideo, GImg, GText, GBg, GSlogan, GIcon, GLogo, GDNImg, GDNNav, GSlide
     }
 }
 </script>
@@ -20,13 +26,14 @@ import GInput from "../elements/GInput.vue";
 import { cloneDeep } from 'lodash-es'
 import { handleNumber } from "../Tool";
 const store = mainStore()
-const { page, content } = storeToRefs(store);
+const { page, content, group, pageTypeSeq, tempGroup } = storeToRefs(store);
 const props = defineProps(["data"])
 let showEdit = ref(false);
 let loading = ref(true);
 let areaSetting = reactive({})
 let areaData = reactive({});
 let uid = ref(props.data.uid);
+const validPreviousComponents = ["GLang", "GBg", "GFixed", "GIcon", "GLogo", "GDNNav", "GDNImg"];
 const initData = () => {
     return {
         subContent: [],
@@ -34,7 +41,7 @@ const initData = () => {
     }
 }
 Object.assign(areaData, initData());
-watchEffect(() => {
+watchEffect(async () => {
     if (props.data.update) {
         showEdit.value = true;
     } else {
@@ -44,6 +51,17 @@ watchEffect(() => {
         if (Object.keys(props.data.content).length > 0) {
             Object.assign(areaData, cloneDeep(props.data.content));
             Object.assign(areaSetting, cloneDeep(props.data.content));
+            await nextTick()
+            if (!isMobile.any) {
+                let height = 0;
+                let area = document.querySelector(".g-area[data-page='main']");
+                if (document.querySelector(".g-fixed.top")) {
+                    height = document.querySelector(".g-fixed.top").clientHeight;
+                    area.style.marginTop = height + 'px'
+                } else {
+                    area.style.marginTop = height + 'px'
+                }
+            }
         }
     }
 })
@@ -52,6 +70,17 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(areaData, cloneDeep(props.data.content));
         Object.assign(areaSetting, cloneDeep(props.data.content));
+        await nextTick()
+        if (!isMobile.any) {
+            let height = 0;
+            let area = document.querySelector(".g-area[data-page='main']");
+            if (document.querySelector(".g-fixed.top")) {
+                height = document.querySelector(".g-fixed.top").clientHeight;
+                area.style.marginTop = height + 'px'
+            } else {
+                area.style.marginTop = height + 'px'
+            }
+        }
     }
 })
 
@@ -110,6 +139,20 @@ const contentSlogan = computed(() => {
 
 })
 
+const fixedFilter = computed(() => {
+    if (content.value) {
+        let area = content.value.filter((com, i) => {
+            return com.component == 'GArea' && com.uid == uid.value
+        })[0]
+
+        if (area) {
+            return area.content.subContent.filter((com, i) => {
+                return validPreviousComponents.includes(com.component)
+            })
+        }
+    }
+})
+
 const contentFilter = computed(() => {
     if (content.value) {
         let area = content.value.filter((com, i) => {
@@ -118,7 +161,7 @@ const contentFilter = computed(() => {
 
         if (area) {
             return area.content.subContent.filter((com, i) => {
-                return com.component !== 'GBg' && com.component !== 'GFixed' && com.component !== 'GSlogan'
+                return !validPreviousComponents.includes(com.component)
             })
         }
     }
@@ -131,7 +174,7 @@ const onSubmit = async () => {
 
     $("#loadingProgress").show();
     data = cloneDeep(areaData);
-    store.updateCpt(props.data.uid, data);
+    store.updateCpt(props.data.uid, data, props.sub);
     Object.assign(areaSetting, data);
 }
 const onReset = () => {
@@ -141,6 +184,7 @@ const closeBtn = () => {
     if (props.data.init) {
         showEdit.value = false;
         store.removeCpt(props.data.uid, props.sub);
+        store.setCurrentArea(tempGroup.value.name)
         document.querySelector("body").classList.remove("ov-hidden");
         return;
     }
@@ -185,7 +229,7 @@ const log = (e) => {
 }
 </script>
 <template>
-    <div class="g-area" :style="cssVar" :class="[loading ? 'loading' : '']"
+    <div class="g-area" :id="uid" :style="cssVar" :data-page="[uid == 1 ? 'main' : '']"
          v-if="page != 'EditPage'">
         <div class="g-area-container">
             <template v-for="block in areaSetting.subContent" :key="block.uid">
@@ -193,16 +237,19 @@ const log = (e) => {
             </template>
         </div>
     </div>
-    <label class="g-area" :id="uid" :style="cssVar"
-           :class="[loading ? 'loading' : '', store.group.name == uid ? 'focus' : '']" v-else>
+    <label :id="uid" :class="['g-area', uid == 1 ? 'filtered' : '', store.group.name == uid ? 'focus' : '']" :style="cssVar"
+           :data-page="[uid == 1 ? 'main' : '']"
+           v-else>
         <input type="radio" name="area" :id="uid" :value="uid" @change="handleArea">
-        <template v-if="contentBg.length">
+        <!-- <template v-if="contentBg.length">
             <component is="GBg" :data="contentBg[0]" :sub="true"></component>
-        </template>
-        <template v-if="contentSlogan.length">
-            <component is="GSlogan" :data="contentSlogan[0]" :sub="true"></component>
-        </template>
+        </template> -->
         <div class="g-area-container">
+            <template v-if="fixedFilter.length">
+                <template v-for="block in fixedFilter">
+                    <component :is="block.component" :data="block" :sub="true"></component>
+                </template>
+            </template>
             <draggable
                        class="dragArea list-group"
                        :list="contentFilter"
@@ -213,16 +260,21 @@ const log = (e) => {
                        :group="uid"
                        item-key="uid"
                        @change="log"
-                       v-if="store.page == 'EditPage'">
+                       v-if="store.page == 'EditPage' && props.data.uid != 1">
 
                 <template #item="{ element }">
                     <component :is="element.component" :data="element" :sub="true"></component>
                 </template>
             </draggable>
             <template v-for="block in contentFilter" :key="block.uid" v-else>
-                <component :is="block.component" :data="block"></component>
+                <component :is="block.component" :data="block" :sub="true"></component>
             </template>
-            <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
+            <template v-if="uid == 1">
+                <g-modify :uid="data.uid" :edit="false" :move="false" v-if="page == 'EditPage'" />
+            </template>
+            <template v-else>
+                <g-modify :uid="data.uid" :edit="false" v-if="page == 'EditPage'" />
+            </template>
         </div>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
             <template #edit-close>

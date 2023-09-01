@@ -17,15 +17,15 @@ import { cloneDeep } from 'lodash-es'
 const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, content: allContent, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let sloganSetting = reactive({})
 let sloganData = reactive({})
 const initData = () => {
     return {
         link: "",
-        mt: "250",
-        mb: "24",
+        mt: pageTypeSeq.value == 2 ? 0 : "250",
+        mb: pageTypeSeq.value == 2 ? 0 : "24",
         mobile_mt: 0,
         mobile_mb: 0,
         pc: "",
@@ -97,8 +97,12 @@ const onSubmit = async () => {
     if (sloganData.validPC && sloganData.validMobile && sloganData.validUrl) {
         $("#loadingProgress").show();
         data = cloneDeep(sloganData);
-        store.updateCpt(props.data.uid, data, props.sub);
         Object.assign(sloganSetting, data);
+        if (props.sub) {
+            store.updateCpt(props.data.uid, data, true)
+        } else {
+            store.updateCpt(props.data.uid, data)
+        }
     }
 }
 const onReset = () => {
@@ -107,7 +111,31 @@ const onReset = () => {
 const closeBtn = () => {
     if (props.data.init) {
         showEdit.value = false;
-        store.removeCpt(props.data.uid, props.sub);
+        if (store.content.length == 2) {
+            var a = store.content.map((v, i) => {
+                return v.component;
+            });
+            var checkBG = a.find((v, i) => {
+                return v == "GBg";
+            });
+            var checkSlogan = a.find((v, i) => {
+                return v == "GSlogan";
+            });
+            if (checkBG && checkSlogan) {
+                var b = store.content.filter((v, i) => {
+                    return (v.component == "GBg" && v.init) || (v.component == "GSlogan" && v.init);
+                });
+                if (b.length == 2) {
+                    showEdit.value = false;
+                    store.editCptClose(props.data.uid, props.sub)
+                    return;
+                }
+            } else {
+                store.removeCpt(props.data.uid, props.sub);
+            }
+        } else {
+            store.removeCpt(props.data.uid, props.sub);
+        }
         document.querySelector("body").classList.remove("ov-hidden");
         return;
     }
@@ -119,28 +147,61 @@ const closeBtn = () => {
     showEdit.value = false;
     store.editCptClose(props.data.uid, props.sub)
 }
+const checkInit = computed(() => {
+    if (page.value === "Preview") return true;
+    if (allContent.value.length > 0) {
+        var a = allContent.value.map((v, i) => {
+            return v.component;
+        });
+        var checkBG = a.find((v, i) => {
+            return v == "GBg";
+        });
+        var checkSlogan = a.find((v, i) => {
+            return v == "GSlogan";
+        });
+        if (Object.keys(allContent.value).length >= 3 || Object.keys(allContent.value).length == 1) {
+            return true;
+        } else {
+            if (checkBG && checkSlogan) {
+                var b = allContent.value.filter((v, i) => {
+                    return (v.component == "GBg" && !v.init) || (v.component == "GSlogan" && !v.init);
+                });
+                if (b.length > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        }
+    } else {
+        return true;
+    }
+})
 </script>
 <template>
-    <div class="g-slogan" :style="cssVar">
+    <div class="g-slogan" :class="[checkInit ? '' : 'checkInit']" :style="cssVar">
         <template v-if="store.status != 'edit'">
             <a :href="[sloganSetting.link ? sloganSetting.link : 'javascript:;']" class="g-slogan-container">
                 <picture>
                     <source media="(max-width:768px)" :srcset="sloganSetting.mobile || sloganSetting.pc" />
                     <img :srcset="sloganSetting.pc" :src="sloganSetting.pc" alt="" />
                 </picture>
-                <g-modify :uid="data.uid" title="主標圖" :move="false" v-if="page == 'EditPage'" :sub="sub" />
             </a>
         </template>
         <template v-else>
-            <a :href="[sloganSetting.link ? sloganSetting.link : 'javascript:;']" class="g-slogan-container"
-               target="_blank">
+            <a href="javascript:;" class="g-slogan-container">
                 <picture>
                     <source media="(max-width:768px)" :srcset="sloganSetting.mobile || sloganSetting.pc" />
                     <img :srcset="sloganSetting.pc" :src="sloganSetting.pc" alt="" />
                 </picture>
-                <g-modify :uid="data.uid" title="主標圖" :move="false" v-if="page == 'EditPage'" :sub="sub" />
+                <g-modify :uid="data.uid" title="主標圖" :move="false" :sub="sub" v-if="page == 'EditPage'" />
             </a>
         </template>
+        <img v-if="!checkInit" class="notice-img"
+             style="display:block;margin:16px auto 0;max-width: 100%;"
+             src="https://alpha-tw.beanfun.com/3KO/removable/pchome/images/component.png" alt="">
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
             <template #edit-close>
                 <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
@@ -158,10 +219,10 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <g-input label="手機版圖片網址:" v-model.trim="sloganData.mobile" :preview="sloganData.mobile"
-                             :valid="validMobile" />
+                             :valid="sloganData.validMobile" />
                 </div>
                 <div class="g-edit__row">
-                    <g-input label="連結:" v-model.trim="sloganData.link" :valid="validUrl" />
+                    <g-input label="連結:" v-model.trim="sloganData.link" :valid="sloganData.validUrl" />
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">

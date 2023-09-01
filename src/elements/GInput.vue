@@ -36,6 +36,10 @@ const props = defineProps({
     max: {
         type: [Number, String],
         default: ""
+    },
+    warning: {
+        type: String,
+        default: ""
     }
 })
 
@@ -52,7 +56,13 @@ const updateValue = (event) => {
         <div class="input-group__box">
             <input :type="type" class="input-group__control" :value="modelValue" @input="updateValue"
                    :placeholder="placeholder" v-show="!color" :maxlength="max">
-            <div class="input-group__warning" v-if="!valid" :data-warning="`請填寫正確 ${label || placeholder}`"></div>
+            <template v-if="warning">
+                <div class="input-group__warning" v-if="!valid" :data-warning="`${warning}`"></div>
+            </template>
+            <template v-else>
+                <div class="input-group__warning" v-if="!valid" :data-warning="`請填寫正確 ${label || placeholder}`"></div>
+            </template>
+
         </div>
         <div class="input-group__img" v-if="preview"><img :src="preview" alt="預覽圖"></div>
         <div class="input-group__color" v-if="color"><span :style="`--color:${color}`"></span></div>

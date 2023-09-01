@@ -109,6 +109,9 @@ export const loadingHide = () => {
 export const pageInfo = (data) => {
 	document.title = data.webtitle || data.eventName;
 	document.querySelectorAll("meta[name='description']")[0].setAttribute("content", data.webDescription);
+	// document.querySelectorAll("meta[property='og:title']")[0].setAttribute("content", data.ogTitle);
+	// document.querySelectorAll("meta[property='og:description']")[0].setAttribute("content", data.ogDescription);
+	// document.querySelectorAll("meta[property='og:image']")[0].setAttribute("content", data.ogUrl);
 	if (Number(data.cookie) == 1) {
 		if (document.querySelector("#cookieBarWrap")) {
 			document.querySelector("#cookieBarWrap").classList.add("on");
@@ -174,3 +177,36 @@ export const getUrlSearchParams = (params) => {
 		return false;
 	}
 };
+
+export function getVideoInfo(videoUrl) {
+	return new Promise((resolve, reject) => {
+		const videoElement = document.createElement("video");
+		videoElement.style.display = "none"; // Hide the video element
+		videoElement.setAttribute("id", "testVideo");
+		videoElement.addEventListener("loadedmetadata", () => {
+			const videoLength = videoElement.duration;
+			fetch(videoUrl)
+				.then((response) => response.headers.get("content-length"))
+				.then((contentLength) => {
+					const sizeInBytes = parseInt(contentLength);
+					const sizeInMB = sizeInBytes / (1024 * 1024);
+					document.querySelector("#testVideo").remove();
+					resolve({
+						size: sizeInMB.toFixed(2),
+						length: videoLength
+					});
+				})
+				.catch((error) => {
+					document.querySelector("#testVideo").remove();
+					reject(false);
+				});
+		});
+
+		videoElement.addEventListener("error", () => {
+			reject(new Error("Error loading video"));
+		});
+
+		videoElement.src = videoUrl;
+		document.body.appendChild(videoElement); // Append the hidden video element
+	});
+}

@@ -24,28 +24,42 @@ const props = defineProps({
     popstatus: {
         type: Boolean,
         default: false
+    },
+    openapp: {
+        type: [Boolean, String],
+        default: false
     }
 })
 let videoRef = ref(null)
 let player = ref(null)
 let videoImg = ref(null)
 let playStatus = ref(false)
+let mobile = ref(false);
 const emit = defineEmits(["update:modelValue"])
 
 
 onMounted(async () => {
     await nextTick()
-    if (!props.pop) {
-        if (videoRef.value) {
-            player = YouTubePlayer(videoRef.value, {
-                videoId: extractVideoID(props.youtube)
-            })
+    if (isMobile.any) {
+        mobile.value = true
+    } else {
+        mobile.value = false
+    }
+    if (mobile.value && props.openapp == 'true') {
+        videoImg.value = youtubePreview(extractVideoID(props.youtube))
+        return
+    } else {
+        if (!props.pop) {
+            if (videoRef.value) {
+                player = YouTubePlayer(videoRef.value, {
+                    videoId: extractVideoID(props.youtube)
+                })
+            }
+        }
+        if (props.popopen) {
+            player.playVideo();
         }
     }
-    if (props.popopen) {
-        player.playVideo();
-    }
-    console.log("YT Update")
     videoImg.value = youtubePreview(extractVideoID(props.youtube))
 })
 
@@ -66,9 +80,16 @@ defineExpose({ player, videoRef });
 </script>
 <template>
     <div class="g-yt">
-        <div class="g-yt__box" @click="onVideo" :data-type="[preview || popstatus?'pop':'video']">
-            <img class="g-yt__img" :class="[playStatus ? 'on' : 'off']" :src="videoImg?.hq" alt="" v-if="preview" />
-            <div class="g-yt__video" ref="videoRef" v-if="!pop"></div>
-        </div>
+        <template v-if="mobile && openapp == 'true'">
+            <a class="g-yt__box" :href="youtube">
+                <img class="g-yt__img" :class="[playStatus ? 'on' : 'off']" :src="videoImg?.hq" />
+            </a>
+        </template>
+        <template v-else>
+            <div class="g-yt__box" @click="onVideo" :data-type="[preview || popstatus ? 'pop' : 'video']">
+                <img class="g-yt__img" :class="[playStatus ? 'on' : 'off']" :src="videoImg?.hq" alt="" v-if="preview" />
+                <div class="g-yt__video" ref="videoRef" v-if="!pop"></div>
+            </div>
+        </template>
     </div>
 </template>

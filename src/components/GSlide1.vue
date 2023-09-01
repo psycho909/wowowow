@@ -1,7 +1,7 @@
 <script>
 export default {
-    name: "GSlide1",
-    label: "輪播區塊1",
+    name: "GSlide",
+    label: "輪播區塊",
     order: 4
 }
 </script>
@@ -9,7 +9,7 @@ export default {
 import { storeToRefs } from "pinia";
 import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
-import GSwiper from '../elements/GSwiper.vue';
+import GSwiper from '../elements/GSwiper1.vue';
 import { mainStore } from "../store/index";
 import { CheckImage, CheckUrl, imgLoading, handleNumber } from "../Tool";
 import { cloneDeep } from 'lodash-es'
@@ -216,7 +216,7 @@ const closeBtn = () => {
         Object.assign(slideData, initData());
     }
     showEdit.value = false;
-    props.data.update = false;
+    store.editCptClose(props.data.uid, props.sub)
 }
 
 </script>

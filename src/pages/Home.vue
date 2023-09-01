@@ -10,6 +10,9 @@ const changePage = (page) => {
     })
 }
 
+if (window.sessionStorage.getItem("state")) {
+    window.sessionStorage.removeItem("state")
+}
 </script>
 <template>
     <div class="container">

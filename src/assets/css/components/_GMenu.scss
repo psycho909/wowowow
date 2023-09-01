@@ -94,6 +94,12 @@
 				transform: translateY(-50%);
 			}
 		}
+		&.filtered {
+			cursor: default !important;
+			&:before {
+				content: none !important;
+			}
+		}
 	}
 	&__title {
 		margin-bottom: 15px;

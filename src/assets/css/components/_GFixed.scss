@@ -5,9 +5,10 @@
 	min-width: 140px;
 	background-color: var(--bg, rgba(#474747, 0.9));
 	@include media {
-		max-width: vw(420);
-		min-width: vw(320);
-		height: 100vh;
+		max-width: vw(768);
+		width: 100%;
+		min-width: unset;
+		// height: 100vh;
 		display: none;
 		background-color: transparent;
 		&.hamburger-right {
@@ -35,27 +36,27 @@
 	}
 
 	&__hamburger {
-		width: vw(79);
-		height: vw(79);
+		width: vw(92);
+		height: vw(73);
 		background-size: 100%;
 		background-image: url("./img/hambuger.png");
 		position: absolute;
-		top: vw(20);
+		top: vw(17);
 		display: none;
 		z-index: 9;
 		&.hamburger-right {
-			right: vw(20);
+			right: vw(19);
 		}
 		&.hamburger-left {
-			left: vw(20);
+			left: vw(19);
 		}
 		@include media {
 			display: block;
 		}
 	}
 	&__close {
-		width: vw(50);
-		height: vw(50);
+		width: vw(64);
+		height: vw(64);
 		position: absolute;
 		// top: vw(28);
 		// left: vw(28);
@@ -65,8 +66,9 @@
 		z-index: 9999;
 		&:before {
 			content: "";
-			width: vw(4);
-			height: 80%;
+			width: vw(10);
+			height: 100%;
+			border-radius: 100vmax;
 			background-color: var(--btnBg, #000);
 			position: absolute;
 			top: 50%;
@@ -75,8 +77,9 @@
 		}
 		&:after {
 			content: "";
-			width: vw(4);
-			height: 80%;
+			width: vw(10);
+			height: 100%;
+			border-radius: 100vmax;
 			background-color: var(--btnBg, #000);
 			position: absolute;
 			top: 50%;
@@ -91,28 +94,28 @@
 		@include media {
 			padding-top: vw(48);
 			flex-direction: column;
-			height: 100vh;
+			// height: 100vh;
 			overflow-y: auto;
 			z-index: 2;
 			position: relative;
 			background-color: var(--bg, rgba(#474747, 0.9));
-			max-height: 100vh;
+			// max-height: 100vh;
 		}
 	}
 	&__list {
 		display: flex;
 		flex-direction: column;
 		@include media {
-			padding-top: vw(48);
+			// padding-top: vw(48);
 			flex-direction: column !important;
-			height: 100vh;
+			// height: 100vh;
 			overflow-y: auto;
 			z-index: 2;
 			position: relative;
 		}
 	}
 	&__menu {
-		font-size: 14px;
+		font-size: 20px;
 		display: block;
 		text-decoration: none;
 		color: var(--text, #fff);
@@ -123,8 +126,29 @@
 			color: var(--hoverText, #3d3a3a);
 		}
 		@include media {
-			font-size: vw(36);
+			font-size: vw(42);
 			padding: vw(30) vw(16);
+		}
+	}
+	&__collapse {
+		width: 20px;
+		padding: 20px;
+		font-size: 20px;
+		cursor: pointer;
+		text-decoration: none;
+		color: var(--text, #fff);
+		@include media {
+			display: none;
+		}
+	}
+	&__top {
+		font-size: 20px;
+		text-decoration: none;
+		color: var(--text, #fff);
+		text-align: center;
+		padding: 20px 0;
+		@include media {
+			display: none;
 		}
 	}
 	&.top {
@@ -195,12 +219,16 @@
 	&.left {
 		top: 100px;
 		left: 0;
+		border-radius: 0 10px 10px 0;
 		@include media {
 			top: 0;
 		}
 		.g-fixed-container {
 			max-height: calc(100vh - 118px);
 			overflow-y: auto;
+			overflow-x: hidden;
+			display: flex;
+			flex-direction: row-reverse;
 			@include media {
 				max-height: 100vh;
 			}
@@ -226,6 +254,26 @@
 				background: #555;
 			}
 		}
+		&.collapse {
+			transform: translateX(0);
+			transition: all 0.3s;
+			&[data-collapse="true"] {
+				transform: translateX(0);
+			}
+			&[data-collapse="false"] {
+				transform: translateX(calc(-100% + 60px));
+			}
+		}
+		.g-fixed {
+			&__menu {
+				width: 164px;
+				padding: 18px 20px 18px 20px;
+				box-sizing: border-box;
+				@include media {
+					// padding: vw(30) vw(16);
+				}
+			}
+		}
 		.g-fixed {
 			&__menu {
 				padding: 12px 16px 12px 36px;
@@ -238,21 +286,38 @@
 	&.right {
 		top: 100px;
 		right: 0;
+		border-radius: 10px 0 0 10px;
 		@include media {
 			top: 0;
 		}
 		.g-fixed-container {
 			max-height: calc(100vh - 118px);
 			overflow-y: auto;
+			overflow-x: hidden;
+			display: flex;
 			@include media {
 				max-height: 100vh;
 			}
 		}
+		&.collapse {
+			transform: translateX(0);
+			transition: all 0.3s;
+			&[data-collapse="true"] {
+				transform: translateX(0);
+			}
+			&[data-collapse="false"] {
+				transform: translateX(calc(100% - 60px));
+			}
+		}
 		.g-fixed {
 			&__menu {
-				padding: 12px 36px 12px 16px;
+				width: 164px;
+				padding: 18px 20px 18px 20px;
+				box-sizing: border-box;
 				@include media {
-					padding: vw(30) vw(16);
+					width: 100%;
+					padding: vw(42) 0;
+					// padding: vw(30) vw(16);
 				}
 			}
 		}

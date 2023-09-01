@@ -9,7 +9,7 @@ import components from "../Components.js";
 import GCookie from "../components/GCookie.vue";
 import { mainStore } from "../store/index";
 import { loadingShow, loadingHide, pageInfo, getBrowserLocales, getUrlSearchParams } from "../Tool";
-import gameFooter from "../gameFooter";
+// import gameFooter from "../gameFooter";
 import topBar from "../topBar";
 const store = mainStore()
 let state = null;
@@ -31,6 +31,7 @@ onMounted(async () => {
     footer.theme = previewConfig.value.footer == 1 ? 'light' : 'dark';
 
     pageInfo(previewConfig);
+
     if (footer.prod == "櫻桃小丸子") {
         if (lanParams) {
             if (lanParams == "zh") {
@@ -45,9 +46,15 @@ onMounted(async () => {
                 footer.prod = "櫻桃小丸子EN";
             }
         }
-        gameFooter(footer);
+        // 偵測Footer的加入
+        setTimeout(() => {
+            gf_updateFooter(footer)
+        }, 0);
     } else {
-        gameFooter(footer);
+        // 偵測Footer的加入
+        setTimeout(() => {
+            gf_updateFooter(footer)
+        }, 0);
     }
     document.title = previewConfig.value.webtitle;
     if (Number(previewConfig.value.cookie) == 1) {
@@ -56,23 +63,51 @@ onMounted(async () => {
         }
     }
     if (previewConfig.value.header == 1) {
-        topBar(previewConfig.value.gameName)
+        // topBar(previewConfig.value.gameName)
+        if (previewConfig.value.gameName == "新瑪奇B") {
+            previewConfig.value.gameName = "新瑪奇"
+        }
+        setTimeout(function () {
+            (function (gobal) {
+                var s = document.createElement("script");
+                s.async = 1;
+                s.src = "https://alpha-tw.beanfun.com/3KO/removable/pchome/js/topbar.js";
+                s.id = "top-bar";
+                //產品
+                s.setAttribute("prod", previewConfig.value.gameName);
+
+                $("head")
+                    .append(s)
+                    .ready(function () {
+                        gobal.callTopBar;
+                    });
+            })(window);
+        }, 0);
     }
+
+})
+const bg = computed(() => {
+    return previewContent.value.filter((c, i) => {
+        return c.component == "GBg"
+    })[0].content
 })
 const cssVar = computed(() => {
     if (previewContent?.value.length > 0) {
         let bg = previewContent.value.filter((c, i) => {
             return c.component == "GBg"
         })
-        return {
-            "--color": bg[0].content.color,
-            "--pc": `url(${bg[0].content.pc})`,
-            "--mobile": `url(${bg[0].content.mobile ? bg[0].content.mobile : bg[0].content.pc})`,
-            "--w": bg[0].content.w,
-            "--h": bg[0].content.h,
-            "--mw": bg[0].content.mw,
-            "--mh": bg[0].content.mh,
+        if (bg.length) {
+            return {
+                "--color": bg[0].content.color,
+                "--pc": `url(${bg[0].content.pc})`,
+                "--mobile": `url(${bg[0].content.mobile ? bg[0].content.mobile : bg[0].content.pc})`,
+                "--w": bg[0].content.w,
+                "--h": bg[0].content.h,
+                "--mw": bg[0].content.mw,
+                "--mh": bg[0].content.mh,
+            }
         }
+
     }
 })
 </script>

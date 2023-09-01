@@ -187,24 +187,31 @@ const onEditDetail = (event) => {
     data.endTime.minutes = new Date(data.endDate).getMinutes()
     data.endTime.hours = new Date(data.endDate).getHours()
     data.endTime.minutes = new Date(data.endDate).getMinutes()
-
     store.setData(data).then((res) => {
         store.setStatus("edit");
         store.setPage("EditPage");
         onSaveTemp();
     });
 }
-const onPreview = (event) => {
+const onPreview = async (event) => {
     if (event.detail == null) {
         messageText.value = "請先編輯內容";
         messageLightbox.value = true;
         return;
     }
-    store.setData(event).then((res) => {
-        store.setStorageState(store.$state, "EventList");
-        store.setPage("Preview");
-        onSaveTemp();
-    })
+    await store.setData(event)
+    store.setStorageState(store.$state, "EventList").then((res) => {
+        store.setPage("Preview", {
+            eventSeq: event.eventSeq,
+            gameseq: event.gameseq,
+        })
+    }).catch((err) => {
+        messageText.value = `文字區塊內使用的圖片容量過大</br>
+                無法正常使用預覽功能</br>
+                請改用圖片區塊+文字區塊來呈現，謝謝！`;
+        messageLightbox.value = true;
+    });
+
 }
 
 const onApprove = (event, type) => {
@@ -314,7 +321,7 @@ const onSubmit = (type) => {
         })
     }
     if (type == "複製活動") {
-        CopyEvent(store.top, data).then((res) => {
+        CopyEvent(store.otp, data).then((res) => {
             let { code, message, url, listData } = res.data;
             if (code != 1) {
                 messageText.value = message;
@@ -323,8 +330,10 @@ const onSubmit = (type) => {
                 return
             }
             store.setSave(true);
-            onSaveTemp();
+            // onSaveTemp();
             onSearch();
+            messageText.value = `<h2>已複製成功</h2><br/>請記得調整相關活動時間與活動名稱等資訊`;
+            messageLightbox.value = true;
         }).finally(() => {
             approveTemp.value = {};
             copyLightbox.value = false;
@@ -422,12 +431,15 @@ onMounted(async () => {
         <div class="event-list__content" v-if="eventData.length > 0">
             <div class="event-list__head">
                 <div class="event-list__title">
+                    <a href="javascript:;">編號</a>
+                </div>
+                <div class="event-list__title">
                     <a href="javascript:;" class="arrow" :class="[eventFilter.sort == 'gameseq' ? 'on' : '']"
                        @click="onSort('gameseq')">遊戲名稱</a>
                 </div>
                 <div class="event-list__title">
-                    <a href="javascript:;" class="arrow" :class="[eventFilter.sort == 'date' ? 'on' : '']"
-                       @click="onSort('date')">活動區間</a>
+                    <a href="javascript:;" class="arrow" :class="[eventFilter.sort == 'beginDate' ? 'on' : '']"
+                       @click="onSort('beginDate')">活動區間</a>
                 </div>
                 <div class="event-list__title">
                     <a href="javascript:;" class="arrow" :class="[eventFilter.sort == 'eventName' ? 'on' : '']"
@@ -440,6 +452,9 @@ onMounted(async () => {
             </div>
             <div class="event-list__body">
                 <div class="event-list__box" v-for="event in eventDataSlice">
+                    <div class="event-list__item">{{
+                        event.eventSeq
+                    }}</div>
                     <div class="event-list__item" :class="[gameSeqName(event.gameseq)[0]?.gameName ? '' : 'end']">{{
                         gameSeqName(event.gameseq)[0]?.gameName || "遊戲已下架"
                     }}</div>
@@ -530,7 +545,7 @@ onMounted(async () => {
 
         <g-lightbox v-model:showLightbox="messageLightbox">
             <template #lightbox-content>
-                <div>{{ messageText }}</div>
+                <div v-html="messageText"></div>
             </template>
         </g-lightbox>
     </div>

@@ -31,19 +31,25 @@ let messageLightbox = ref(false);
 
 const store = mainStore();
 const checkComponent = computed(() => {
+    const validPreviousComponents = ["GFixed", "GBg", "GSlogan", "GTop", "GWatermark", "GMusic"];
     if (props.sub) {
         for (let i = 0; i < store.content.length; i++) {
             if (store.content[i].component === "GArea") {
                 const subContentIndex = store.content[i].content.subContent.findIndex(subItem => subItem.uid === props.uid);
-                if (subContentIndex === store.content[i].content.subContent.length - 1 && store.content[i].content.subContent.length > 1) {
+                if (subContentIndex - 1 <= 0 || validPreviousComponents.includes(store.content[i].content.subContent[subContentIndex - 1]?.component)) {
+                    return false;
+                } else {
                     return true;
                 }
+                // if (subContentIndex === store.content[i].content.subContent.length - 1 && store.content[i].content.subContent.length > 1) {
+                //     return true;
+                // }
             }
         }
-        return false;
+        // return false;
     } else {
-        let component = store.content[store.getIndex(props.uid) - 1]?.component;
-        if (component == 'GSlogan' || component == 'GBg' || component == 'component') {
+        const index = store.getIndex(props.uid)
+        if (index - 1 <= 0 || validPreviousComponents.includes(store.content[index - 1]?.component) || store.content[index - 1]?.name == 'main') {
             return false;
         } else {
             return true;
