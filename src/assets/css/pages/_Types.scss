@@ -53,6 +53,9 @@ html {
 			display: flex;
 			flex-direction: column;
 		}
+		input[name="area"] {
+			display: none;
+		}
 		#app {
 			&.edit {
 				.wrap {
@@ -63,6 +66,13 @@ html {
 			@include media {
 				padding-top: 0;
 				padding-bottom: 0;
+			}
+		}
+		.g-area {
+			&-container {
+				& > .g-modify {
+					transform: translateX(-25%);
+				}
 			}
 		}
 		.g-fixed {

@@ -220,12 +220,11 @@ const log = (e) => {
             store.setFirst(false);
         }
     }
-    // if (e.moved) {
-    //     cpt = e.moved;
-    //     uid = e.moved.element.uid;
-    //     cptIndex = e.moved.newIndex + 1;
-    //     store.dragMoveCpt(uid, cptIndex);
-    // }
+    if (e.moved) {
+        uid = e.moved.element.uid;
+        cptIndex = e.moved.newIndex + 1;
+        store.dragMoveCpt(uid, cptIndex, true);
+    }
 }
 </script>
 <template>
@@ -273,7 +272,7 @@ const log = (e) => {
                 <g-modify :uid="data.uid" :edit="false" :move="false" v-if="page == 'EditPage'" />
             </template>
             <template v-else>
-                <g-modify :uid="data.uid" :edit="false" v-if="page == 'EditPage'" />
+                <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
             </template>
         </div>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">

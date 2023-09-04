@@ -231,13 +231,29 @@ export const mainStore = defineStore("main", {
 				}
 			}
 		},
-		dragMoveCpt(uid, index) {
-			var _index = this.getIndex(uid);
-			this.move = true;
-			var component = this.content[_index];
-			var _content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
-			this.content = _content;
-			this.content.splice(index, 0, component);
+		dragMoveCpt(uid, index, sub = false) {
+			if (sub) {
+				for (let i = 0; i < this.content.length; i++) {
+					if (this.content[i].component === "GArea") {
+						const subContentIndex = this.content[i].content.subContent.findIndex((subItem) => subItem.uid === uid);
+						if (subContentIndex > 0) {
+							this.move = true;
+							let component = this.content[i].content.subContent[subContentIndex];
+							var _content = [...this.content[i].content.subContent.slice(0, subContentIndex), ...this.content[i].content.subContent.slice(subContentIndex + 1)];
+							this.content[i].content.subContent = _content;
+							this.content[i].content.subContent.splice(index, 0, component);
+						}
+					}
+				}
+				return false;
+			} else {
+				var _index = this.getIndex(uid);
+				this.move = true;
+				var component = this.content[_index];
+				var _content = [...this.content.slice(0, _index), ...this.content.slice(_index + 1)];
+				this.content = _content;
+				this.content.splice(index, 0, component);
+			}
 		},
 		upCpt(data, sub) {
 			if (sub) {

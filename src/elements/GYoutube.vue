@@ -51,6 +51,7 @@ onMounted(async () => {
     } else {
         if (!props.pop) {
             if (videoRef.value) {
+                await nextTick()
                 player = YouTubePlayer(videoRef.value, {
                     videoId: extractVideoID(props.youtube)
                 })
@@ -80,10 +81,18 @@ defineExpose({ player, videoRef });
 </script>
 <template>
     <div class="g-yt">
-        <template v-if="mobile && openapp == 'true'">
-            <a class="g-yt__box" :href="youtube">
-                <img class="g-yt__img" :class="[playStatus ? 'on' : 'off']" :src="videoImg?.hq" />
-            </a>
+        <template v-if="mobile">
+            <template v-if="openapp == 'true'">
+                <a class="g-yt__box" :href="youtube" data-openapp="1">
+                    <img class="g-yt__img" :class="[playStatus ? 'on' : 'off']" :src="videoImg?.hq" />
+                </a>
+            </template>
+            <template v-else>
+                <div class="g-yt__box" @click="onVideo" :data-type="[preview || popstatus ? 'pop' : 'video']">
+                    <img class="g-yt__img" :class="[playStatus ? 'on' : 'off']" :src="videoImg?.hq" alt="" v-if="preview" />
+                    <div class="g-yt__video" ref="videoRef" v-if="!pop"></div>
+                </div>
+            </template>
         </template>
         <template v-else>
             <div class="g-yt__box" @click="onVideo" :data-type="[preview || popstatus ? 'pop' : 'video']">

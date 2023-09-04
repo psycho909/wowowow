@@ -36,17 +36,15 @@ const checkComponent = computed(() => {
         for (let i = 0; i < store.content.length; i++) {
             if (store.content[i].component === "GArea") {
                 const subContentIndex = store.content[i].content.subContent.findIndex(subItem => subItem.uid === props.uid);
-                if (subContentIndex - 1 <= 0 || validPreviousComponents.includes(store.content[i].content.subContent[subContentIndex - 1]?.component)) {
-                    return false;
-                } else {
-                    return true;
+                if (subContentIndex > -1) {
+                    if (subContentIndex - 1 <= 0 || validPreviousComponents.includes(store.content[i].content.subContent[subContentIndex - 1]?.component)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
                 }
-                // if (subContentIndex === store.content[i].content.subContent.length - 1 && store.content[i].content.subContent.length > 1) {
-                //     return true;
-                // }
             }
         }
-        // return false;
     } else {
         const index = store.getIndex(props.uid)
         if (index - 1 <= 0 || validPreviousComponents.includes(store.content[index - 1]?.component) || store.content[index - 1]?.name == 'main') {
@@ -59,15 +57,20 @@ const checkComponent = computed(() => {
 
 const checkDown = computed(() => {
     if (props.sub) {
+        let valid = false;
         for (let i = 0; i < store.content.length; i++) {
             if (store.content[i].component === "GArea") {
                 const subContentIndex = store.content[i].content.subContent.findIndex(subItem => subItem.uid === props.uid);
-                if (subContentIndex === 0 && store.content[i].content.subContent.length > 1) {
-                    return true; // Return true if targetUID is first or last
+                if (subContentIndex > -1) {
+                    if (subContentIndex + 1 < store.content[i].content.subContent.length) {
+                        valid = true
+                    } else {
+                        valid = false
+                    }
                 }
             }
         }
-        return false;
+        return valid
     } else {
         let index = store.getIndex(props.uid);
         if (index + 1 < store.content.length) {

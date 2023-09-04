@@ -244,8 +244,9 @@ const goTop = () => {
          :style="colors[fixedSetting.style]" :data-collapse="toggleStatus">
         <a href="javascript:;" class="g-fixed__close" @click="closeMenu"></a>
         <div class="g-fixed-container">
-            <a href="javascript:;" class="g-fixed__collapse" v-if="fixedSetting.collapse == 'true'" @click="toggleMenu">{{
-                fixedSetting.collapseText }}</a>
+            <a href="javascript:;" class="g-fixed__collapse" v-if="fixedSetting.collapse == 'true'" @click="toggleMenu">
+                {{ fixedSetting.collapseText }}
+            </a>
             <div class="g-fixed__list">
                 <template v-if="store.status == 'edit'">
                     <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
