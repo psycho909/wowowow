@@ -219,7 +219,8 @@ const closeBtn = () => {
     <div class="g-icon">
         <div class="g-icon-container">
             <template v-for="item in iconSetting.icons">
-                <a href="javascript:;" class="g-icon-item" :style="transformNavsToCSSProps(item)"></a>
+                <a href="javascript:;" class="g-icon-item" :style="transformNavsToCSSProps(item)"
+                   :data-init="data.init"></a>
             </template>
             <g-modify :uid="data.uid" :sub="sub" :move=false v-if="page == 'EditPage'" />
         </div>

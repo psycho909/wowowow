@@ -186,7 +186,7 @@ const closeBtn = () => {
             <a :href="[logoSetting.link ? logoSetting.link : 'javascript:;']" class="g-logo-container" :style="cssVar"></a>
         </template>
         <template v-else>
-            <a href="javascript:;" class="g-logo-container" :style="cssVar"></a>
+            <a href="javascript:;" class="g-logo-container" :style="cssVar" :data-init="data.init"></a>
         </template>
         <g-modify :uid="data.uid" :move="false" :sub="sub" v-if="page == 'EditPage'" />
         <g-edit v-model:showEdit="showEdit">

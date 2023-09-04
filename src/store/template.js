@@ -51,16 +51,136 @@ export const templateStore = defineStore("template", {
 							uid: "1",
 							content: {
 								subContent: [
-									{ component: "GBg", uid: "2", content: { color: "#fff", pc: "", mobile: "", w: 1920, h: 958, mw: "", mh: "", validPC: true, validMobile: true }, update: false, init: true },
-									{ component: "GIcon", uid: "c8c5e0f7-8030-4b05-80f4-845f3f740869", content: { icons: [{ pc: "https://tw.hicdn.beanfun.com/beanfun/GamaWWW/DragonNest/E20230718/assets/css/images/event3/btn-home.png", mobile: "", link: "", validPC: true, validMobile: true, validLink: true, w: 68, h: 68 }] }, update: false, init: true },
-									{ component: "GLogo", uid: "ec483aab-ad03-44e3-9f7e-c6299166c8c2", content: { link: "", pc: "https://tw.hicdn.beanfun.com/beanfun/GamaWWW/DragonNest/E20230718/assets/css/images/event3/logo.png", mobile: "", validPC: true, validMobile: true, validLink: true, w: 278, h: 118 }, update: false, init: true },
+									{
+										component: "GBg",
+										uid: "2",
+										content: {
+											color: "#fff",
+											pc: "",
+											mobile: "",
+											w: 1920,
+											h: 958,
+											mw: "",
+											mh: "",
+											validPC: true,
+											validMobile: true
+										},
+										update: false,
+										init: true
+									},
+									{
+										component: "GIcon",
+										uid: "3",
+										content: {
+											icons: [
+												{
+													pc: "",
+													mobile: "",
+													link: "",
+													validPC: true,
+													validMobile: true,
+													validLink: true,
+													w: 0,
+													h: 0
+												},
+												{
+													pc: "",
+													mobile: "",
+													link: "",
+													validPC: true,
+													validMobile: true,
+													validLink: true,
+													w: 0,
+													h: 0
+												}
+											]
+										},
+										update: false,
+										init: true
+									},
+									{
+										component: "GLogo",
+										uid: "4",
+										content: {
+											link: "",
+											pc: "",
+											mobile: "",
+											validPC: true,
+											validMobile: true,
+											validLink: true,
+											w: 0,
+											h: 0
+										},
+										update: false,
+										init: true
+									},
 									{
 										component: "GDNNav",
-										uid: "58ece568-b6d3-489a-a47e-32a5a0a5238b",
+										uid: "5",
 										content: {
 											navs: [
-												{ pc: "https://tw.hicdn.beanfun.com/beanfun/promo/DragonNest/E20230821/css/img/btn-pc1.png", mobile: "", w: 723, h: 133, mw: "", mh: "", link: "", validPC: true, validMobile: true, validLink: true },
-												{ pc: "https://tw.hicdn.beanfun.com/beanfun/promo/DragonNest/E20230821/css/img/btn-pc2.png", mobile: "", w: 723, h: 133, mw: "", mh: "", link: "", validPC: true, validMobile: true, validLink: true }
+												{
+													pc: "",
+													mobile: "",
+													w: 0,
+													h: 0,
+													mw: "",
+													mh: "",
+													link: "",
+													validPC: true,
+													validMobile: true,
+													validLink: true
+												},
+												{
+													pc: "",
+													mobile: "",
+													w: 0,
+													h: 0,
+													mw: "",
+													mh: "",
+													link: "",
+													validPC: true,
+													validMobile: true,
+													validLink: true
+												},
+												{
+													pc: "",
+													mobile: "",
+													w: 0,
+													h: 0,
+													mw: "",
+													mh: "",
+													link: "",
+													validPC: true,
+													validMobile: true,
+													validLink: true
+												},
+												{
+													pc: "",
+													mobile: "",
+													w: 0,
+													h: 0,
+													mw: "",
+													mh: "",
+													link: "",
+													validPC: true,
+													validMobile: true,
+													validLink: true
+												}
+											]
+										},
+										update: false,
+										init: true
+									},
+									{
+										component: "GDNImg",
+										uid: "dffac781-ab90-49cf-9e3a-cc9efa3ec7f0",
+										content: {
+											imgs: [
+												{ pc: "", mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true },
+												{ pc: "", mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true },
+												{ pc: "", mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true },
+												{ pc: "", mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true }
 											]
 										},
 										update: false,

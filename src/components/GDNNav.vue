@@ -226,7 +226,8 @@ const closeBtn = () => {
     <div class="g-dn_nav">
         <div class="g-dn_nav-container">
             <template v-for="(item, index) in navSetting.navs">
-                <a href="javascript:;" class="g-dn_nav-item" :style="transformNavsToCSSProps(item)"></a>
+                <a href="javascript:;" class="g-dn_nav-item" :style="transformNavsToCSSProps(item)"
+                   :data-init="data.init"></a>
             </template>
             <g-modify :uid="data.uid" :sub="sub" :move='false' v-if="page == 'EditPage'" />
         </div>

@@ -32,6 +32,11 @@
 		&:last-child {
 			margin-bottom: 0;
 		}
+		&[data-init="true"] {
+			width: 723px;
+			height: 110px;
+			background-color: #c9c9c9;
+		}
 		@include media {
 			background-image: var(--nav-mobile);
 			background-size: calc(var(--nav-mw) / 768 * 100vw) calc(var(--nav-mh) / 768 * 100vw);
