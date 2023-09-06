@@ -28,6 +28,11 @@ const initData = () => {
     return {
         imgs: [{
             pc: "",
+            effectCheck: false,
+            effectImg: "",
+            effectImgW: "",
+            effectImgH: "",
+            validEffectImg: true,
             mobile: "",
             w: "",
             h: "",
@@ -62,6 +67,11 @@ onMounted(async () => {
 const addInsertMenu = (index) => {
     const nav = {
         pc: "",
+        effectCheck: false,
+        effectImg: "",
+        effectImgW: "",
+        effectImgH: "",
+        validEffectImg: true,
         mobile: "",
         w: "",
         h: "",
@@ -166,6 +176,23 @@ async function validateAll(data) {
                 item.validMobile = true;
             }
         }
+        if (item.effectCheck) {
+            if (item.effectImg) {
+                const pcImageValid = await CheckImage(item.effectImg);
+                if (!pcImageValid) {
+                    item.validEffectImg = false;
+                    isValid = false;
+                } else {
+                    const pcImageDimensions = await imageInfo("pc", item.effectImg);
+                    item.effectImgW = pcImageDimensions.width;
+                    item.effectImgH = pcImageDimensions.height;
+                    item.validEffectImg = true;
+                }
+            } else {
+                item.validEffectImg = false;
+                isValid = false;
+            }
+        }
         if (item.link && !CheckUrl(item.link)) {
             item.validLink = false;
             isValid = false;
@@ -179,11 +206,14 @@ async function validateAll(data) {
 function transformNavsToCSSProps(item) {
     const cssProps = {
         "--dn-img-pc": `url(${item.pc})`,
+        "--dn-img-effectImg": item.effectImg ? `url(${item.effectImg})` : undefined,
         "--dn-img-mobile": item.mobile ? `url(${item.mobile})` : "",
         "--dn-img-w": `${item.w}`,
         "--dn-img-h": `${item.h}`,
         "--dn-img-mw": item.mw ? `${item.mw}` : "",
         "--dn-img-mh": item.mh ? `${item.mh}` : "",
+        "--dn-img-effectImg-w": item.effectImgW ? `${item.effectImgW}` : "",
+        "--dn-img-effectImg-h": item.effectImgH ? `${item.effectImgH}` : "",
     };
 
     return {
@@ -226,10 +256,27 @@ const closeBtn = () => {
 <template>
     <div class="g-dn_img">
         <div class="g-dn_img-container">
-            <template v-for="(item, index) in imgSetting.imgs">
-                <a href="javascript:;" class="g-dn_img-item" :style="transformNavsToCSSProps(item)"
-                   :data-init="data.init"></a>
+            <template v-if="store.status == 'edit'">
+                <template v-for="(item, index) in imgSetting.imgs">
+                    <a href="javascript:;" class="g-dn_img-item" :data-init="data.init" :data-effect="item.effectCheck">
+                        <span class="g-dn_img-item1" :style="transformNavsToCSSProps(item)"></span>
+                        <span class="g-dn_img-item2" v-if="item.effectCheck != 'false'"
+                              :style="transformNavsToCSSProps(item)"></span>
+                    </a>
+                </template>
             </template>
+            <template v-else>
+                <template v-for="(item, index) in imgSetting.imgs">
+                    <a :href="item.link ? item.link : 'javascript:;'" :target="item.link ? '_blank' : ''"
+                       class="g-dn_img-item"
+                       :data-init="data.init" :data-effect="item.effectCheck">
+                        <span class="g-dn_img-item1" :style="transformNavsToCSSProps(item)"></span>
+                        <span class="g-dn_img-item2" v-if="item.effectCheck != 'false'"
+                              :style="transformNavsToCSSProps(item)"></span>
+                    </a>
+                </template>
+            </template>
+
             <g-modify :uid="data.uid" :sub="sub" :move="false" v-if="page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit">
@@ -256,6 +303,16 @@ const closeBtn = () => {
                                 <div class="g-edit__col">
                                     <g-input label="圖片網址:" v-model.trim="item.pc" :preview="item.pc" :required="true"
                                              :valid="item.validPC" />
+                                </div>
+                                <div class="g-edit__col">
+                                    <div class="input-group__label">圖片特效:</div>
+                                    <g-radio label="無" :name="'effect' + index" :value="false" v-model="item.effectCheck" />
+                                    <g-radio label="換圖" :name="'effect' + index" :value="true" v-model="item.effectCheck" />
+                                </div>
+                                <div class="g-edit__col" v-if="item.effectCheck == 'true'">
+                                    <g-input label="更換圖片網址:" v-model.trim="item.effectImg" :preview="item.effectImg"
+                                             :required="true"
+                                             :valid="item.validEffectImg" />
                                 </div>
                                 <div class="g-edit__col">
                                     <g-input label="手機版圖片網址:" v-model.trim="item.mobile" :preview="item.mobile"

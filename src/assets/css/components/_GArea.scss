@@ -1,6 +1,6 @@
 .edit {
 	.g-area {
-		border: 1px solid #000;
+		border: 1px solid rgba(#ddd, 0.25);
 		// padding: 1rem;
 	}
 }
@@ -30,11 +30,11 @@
 	}
 	&[data-page="main"] {
 		.g-area-container {
-			padding-top: 80px;
-			padding-bottom: 80px;
+			padding-top: calc(var(--pc-padding-top, 80) * 1px);
+			padding-bottom: calc(var(--pc-padding-bottom, 80) * 1px);
 			@include media {
-				padding-top: vw(100);
-				padding-bottom: vw(100);
+				padding-top: calc(var(--mobile-padding-top, 100) / 768 * 100vw);
+				padding-bottom: calc(var(--mobile-padding-bottom, 100) / 768 * 100vw);
 				display: flex;
 				flex-direction: column;
 				.g-dn_img {
@@ -47,11 +47,11 @@
 		}
 	}
 	&-container {
-		padding-top: 80px;
-		padding-bottom: 80px;
+		padding-top: calc(var(--pc-padding-top, 80) * 1px);
+		padding-bottom: calc(var(--pc-padding-bottom, 80) * 1px);
 		@include media {
-			padding-top: vw(100);
-			padding-bottom: vw(100);
+			padding-top: calc(var(--mobile-padding-top, 100) / 768 * 100vw);
+			padding-bottom: calc(var(--mobile-padding-bottom, 100) / 768 * 100vw);
 		}
 	}
 }
@@ -60,11 +60,11 @@
 		padding-top: 0;
 		padding-bottom: 0;
 		.list-group {
-			padding-top: 80px;
-			padding-bottom: 80px;
+			padding-top: calc(var(--pc-padding-top, 80) * 1px);
+			padding-bottom: calc(var(--pc-padding-bottom, 80) * 1px);
 			@include media {
-				padding-top: vw(100);
-				padding-bottom: vw(100);
+				padding-top: calc(var(--mobile-padding-top, 100) / 768 * 100vw);
+				padding-bottom: calc(var(--mobile-padding-bottom, 100) / 768 * 100vw);
 			}
 		}
 	}

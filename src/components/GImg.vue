@@ -48,7 +48,7 @@ const initData = () => {
             },
             autoplay: {
                 open: false,
-                delay: 2,
+                delay: 3,
                 validDelay: true
             },
             pop: {
@@ -62,7 +62,8 @@ const initData = () => {
                 closeCheckRedirect: false,
                 closeRedirect: "",
                 num: 1,
-                control: 'all'
+                control: 'all',
+                thumb: true
             },
             target: {
                 link: "",
@@ -92,6 +93,9 @@ watchEffect(async () => {
                         url: ""
                     }
                 }
+                if (img.pop.thumb == undefined) {
+                    img.pop.thumb = true;
+                }
             })
             _imgDataLength.value = imgData.num;
             imgLoading(imgData.imgs).then((res) => {
@@ -116,6 +120,9 @@ onMounted(async () => {
                     style: "",
                     url: ""
                 }
+            }
+            if (img.pop.thumb == undefined) {
+                img.pop.thumb = true;
             }
         })
         _imgDataLength.value = imgData.num;
@@ -210,7 +217,8 @@ const onChange = (e) => {
                     closeCheckRedirect: false,
                     closeRedirect: "",
                     num: 1,
-                    control: 'all'
+                    control: 'all',
+                    thumb: true
                 },
                 target: {
                     link: "",
@@ -298,7 +306,7 @@ const closeBtn = () => {
     loadingShow()
     if (props.data.init) {
         showEdit.value = false;
-        store.removeCpt(props.data.uid, props.sub, props.sub);
+        store.removeCpt(props.data.uid, props.sub);
         document.querySelector("body").classList.remove("ov-hidden");
         loadingHide()
         return;
@@ -457,7 +465,9 @@ const closePop = (data, url) => {
                                         </div>
                                     </template>
                                     <template v-else>
-                                        <g-swiper :data="imgs.pop" :status="status" v-if="!slideUpdate" />
+                                        <g-swiper :data="imgs.pop" :status="status" :pagination="imgs.pop.pagination"
+                                                  :type="imgs.pop.type"
+                                                  v-if="!slideUpdate" />
                                     </template>
                                 </template>
                             </g-lightbox>
@@ -565,13 +575,22 @@ const closePop = (data, url) => {
                                     <div class="input-group__label required">輪播切換方式:</div>
                                     <g-radio label="左右箭頭" :name="'control' + index" value="navigation"
                                              v-model="img.pop.control" />
-                                    <g-radio label="下方點點" :name="'control' + index" value="pagination"
+                                    <g-radio label="下方點點(或預覽)" :name="'control' + index" value="pagination"
                                              v-model="img.pop.control" />
                                     <g-radio label="都不顯示" :name="'control' + index" value="no"
                                              v-model="img.pop.control" />
                                     <g-radio label="都要顯示" :name="'control' + index" value="all"
                                              v-model="img.pop.control" />
                                 </div>
+                                <template v-if="img.pop.control == 'pagination'">
+                                    <div class="g-edit__col">
+                                        <div class="input-group__label required">點點改為預覽圖:</div>
+                                        <g-radio label="是" :name="'thumb' + index" :value="true"
+                                                 v-model="img.pop.thumb" />
+                                        <g-radio label="否" :name="'thumb' + index" :value="false"
+                                                 v-model="img.pop.thumb" />
+                                    </div>
+                                </template>
                             </div>
                             <div class="g-edit__row" v-for="(slide, slideIndex) in img.pop.slides">
                                 <div class="g-edit__col">

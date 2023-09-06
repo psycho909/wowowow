@@ -35,7 +35,7 @@ const initData = () => {
         control: 'all',
         num: 1, mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0, autoplay: {
             open: false,
-            delay: 2,
+            delay: 3,
             validDelay: true
         },
         slides: [{
@@ -57,6 +57,7 @@ const initData = () => {
                 closeRedirect: "",
                 num: 1,
                 control: 'all',
+                thumb: true,
                 autoplay: {
                     open: false,
                     delay: 2,
@@ -93,6 +94,9 @@ watchEffect(async () => {
                         url: ""
                     }
                 }
+                if (slide.pop.thumb == undefined) {
+                    slide.pop.thumb = true;
+                }
             })
             imgLoading(slideData.slides).then((res) => {
                 loading.value = false;
@@ -116,6 +120,9 @@ onMounted(async () => {
                     style: "",
                     url: ""
                 }
+            }
+            if (slide.pop.thumb == undefined) {
+                slide.pop.thumb = true;
             }
         })
         imgLoading(slideData.slides).then((res) => {
@@ -158,6 +165,7 @@ const addInsertMenu = (index) => {
                 closeRedirect: "",
                 num: 1,
                 control: 'all',
+                thumb: true,
                 autoplay: {
                     open: false,
                     delay: 2,
@@ -514,6 +522,40 @@ const closeBtn = () => {
                                     </div>
                                 </template>
                                 <template v-if="slide.pop.type == 'slide'">
+                                    <div class="g-edit__row">
+                                        <div class="g-edit__col">
+                                            <div class="input-group__label required">自動輪播:</div>
+                                            <g-radio label="開啟" :name="'popAutoplay' + index" :value="true"
+                                                     v-model="slide.pop.autoplay.open" />
+                                            <g-radio label="關閉" :name="'popAutoplay' + index" :value="false"
+                                                     v-model="slide.pop.autoplay.open" />
+                                        </div>
+                                        <div class="g-edit__col" v-if="slide.pop.autoplay.open == 'true'">
+                                            <g-input label="秒數:" v-model="slide.pop.autoplay.delay"
+                                                     :valid="slide.pop.autoplay.validDelay"
+                                                     :required="true" />
+                                        </div>
+                                        <div class="g-edit__col">
+                                            <div class="input-group__label required">輪播切換方式:</div>
+                                            <g-radio label="左右箭頭" :name="'popControl' + index" value="navigation"
+                                                     v-model="slide.pop.control" />
+                                            <g-radio label="下方點點(或預覽)" :name="'popControl' + index" value="pagination"
+                                                     v-model="slide.pop.control" />
+                                            <g-radio label="都不顯示" :name="'popControl' + index" value="no"
+                                                     v-model="slide.pop.control" />
+                                            <g-radio label="都要顯示" :name="'popControl' + index" value="all"
+                                                     v-model="slide.pop.control" />
+                                        </div>
+                                        <template v-if="slide.pop.control == 'pagination'">
+                                            <div class="g-edit__col">
+                                                <div class="input-group__label required">點點改為預覽圖:</div>
+                                                <g-radio label="是" :name="'thumb' + index" :value="true"
+                                                         v-model="slide.pop.thumb" />
+                                                <g-radio label="否" :name="'thumb' + index" :value="false"
+                                                         v-model="slide.pop.thumb" />
+                                            </div>
+                                        </template>
+                                    </div>
                                     <div class="g-edit__row" v-for="(popSlide, slideIndex) in slide.pop.slides">
                                         <div class="g-edit__col">
                                             <div class="g-edit__group">
@@ -539,29 +581,6 @@ const closeBtn = () => {
                                                              :valid="popSlide.validMobile" />
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="g-edit__col">
-                                            <div class="input-group__label required">自動輪播:</div>
-                                            <g-radio label="開啟" :name="'popAutoplay' + index" :value="true"
-                                                     v-model="slide.pop.autoplay.open" />
-                                            <g-radio label="關閉" :name="'popAutoplay' + index" :value="false"
-                                                     v-model="slide.pop.autoplay.open" />
-                                        </div>
-                                        <div class="g-edit__col" v-if="slide.pop.autoplay.open == 'true'">
-                                            <g-input label="秒數:" v-model="slide.pop.autoplay.delay"
-                                                     :valid="slide.pop.autoplay.validDelay"
-                                                     :required="true" />
-                                        </div>
-                                        <div class="g-edit__col">
-                                            <div class="input-group__label required">輪播切換方式:</div>
-                                            <g-radio label="左右箭頭" :name="'popControl' + index" value="navigation"
-                                                     v-model="slide.pop.control" />
-                                            <g-radio label="下方點點" :name="'popControl' + index" value="pagination"
-                                                     v-model="slide.pop.control" />
-                                            <g-radio label="都不顯示" :name="'popControl' + index" value="no"
-                                                     v-model="slide.pop.control" />
-                                            <g-radio label="都要顯示" :name="'popControl' + index" value="all"
-                                                     v-model="slide.pop.control" />
                                         </div>
                                     </div>
                                 </template>

@@ -10,6 +10,7 @@ import colors, { style1, style2 } from "../colors";
 const props = defineProps(["data", "status"]);
 const store = mainStore()
 let breakpoints = ref({})
+let slidesPerViewThumb = ref(null)
 let autoplay = ref({});
 let isMobile = ref(false);
 let navigation = ref(true);
@@ -18,6 +19,7 @@ let pagination = ref({
     clickable: true,
     enabled: true
 });
+let thumbsSwiper = ref(null)
 if (window.innerWidth < 769) {
     isMobile.value = true;
 } else {
@@ -46,7 +48,13 @@ if (props.data?.control) {
         pagination.value.enabled = false;
     }
     if (props.data.control == 'pagination') {
-        navigation.value = false;
+        if (props.data.thumb != 'false') {
+            navigation.value = false;
+            pagination.value.enabled = false;
+            slidesPerViewThumb.value = props.data.slides.length
+        } else {
+            navigation.value = false;
+        }
     }
     if (props.data.control == 'no') {
         navigation.value = false;
@@ -81,11 +89,7 @@ watchEffect(async () => {
         <template v-if="isMobile">
             <swiper
                     :modules="modules"
-                    :effect="'coverflow'"
-                    :grabCursor="false"
-                    :slidesPerView="'auto'"
-                    :centered-slides="true"
-                    :coverflowEffect="{ rotate: 50, depth: 200, modifier: 1, slideShadows: false }"
+                    :slidesPerView="1"
                     :loop="true"
                     :navigation="navigation"
                     :pagination="pagination"

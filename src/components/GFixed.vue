@@ -61,7 +61,11 @@ watchEffect(async () => {
             }
             Object.assign(fixedData, cloneDeep(props.data.content));
             Object.assign(fixedSetting, cloneDeep(props.data.content));
-            toggleStatus.value = content.status;
+            if (fixedSetting.type == 'collapse') {
+                toggleStatus.value = fixedSetting.status;
+            } else {
+                toggleStatus.value = true;
+            }
             await nextTick()
             if (!isMobile.any) {
                 let height = 0;
@@ -80,6 +84,13 @@ watchEffect(async () => {
             fixedData.collapse = false;
         }
     }
+    if (fixedData.type) {
+        if (fixedData.type == 'normal') {
+            fixedData.collapseText = "";
+            fixedData.collapse = false;
+            fixedData.status = false;
+        }
+    }
 })
 onMounted(async () => {
     await nextTick()
@@ -95,7 +106,11 @@ onMounted(async () => {
         }
         Object.assign(fixedData, cloneDeep(props.data.content));
         Object.assign(fixedSetting, cloneDeep(props.data.content));
-        toggleStatus.value = content.status;
+        if (fixedSetting.type == 'collapse') {
+            toggleStatus.value = fixedSetting.status;
+        } else {
+            toggleStatus.value = true;
+        }
         if (fixedSetting.position == 'top') {
             $(window).on("scroll", function () {
                 let scrollTop = $(this).scrollTop();
@@ -244,7 +259,7 @@ const goTop = () => {
          :style="colors[fixedSetting.style]" :data-collapse="toggleStatus">
         <a href="javascript:;" class="g-fixed__close" @click="closeMenu"></a>
         <div class="g-fixed-container">
-            <a href="javascript:;" class="g-fixed__collapse" v-if="fixedSetting.collapse == 'true'" @click="toggleMenu">
+            <a href="javascript:;" class="g-fixed__collapse" v-if="fixedSetting.type == 'collapse'" @click="toggleMenu">
                 {{ fixedSetting.collapseText }}
             </a>
             <div class="g-fixed__list">
@@ -261,7 +276,7 @@ const goTop = () => {
                        }}</a>
                 </template>
                 <a href="javascript:;" class="g-fixed__menu g-fixed__top" @click="goTop"
-                   v-if="fixedSetting.top == 'true' || fixedSetting.top">TOP</a>
+                   v-if="fixedSetting.top != 'false'">TOP</a>
             </div>
         </div>
         <g-modify :uid="data.uid" :move="false" v-if="page == 'EditPage'" />

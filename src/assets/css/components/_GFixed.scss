@@ -55,18 +55,16 @@
 		}
 	}
 	&__close {
-		width: vw(64);
-		height: vw(64);
+		width: vw(70);
+		height: vw(70);
 		position: absolute;
-		// top: vw(28);
-		// left: vw(28);
 		top: vw(28);
 		left: vw(28);
 		display: none;
 		z-index: 9999;
 		&:before {
 			content: "";
-			width: vw(10);
+			width: vw(8);
 			height: 100%;
 			border-radius: 100vmax;
 			background-color: var(--btnBg, #000);
@@ -77,7 +75,7 @@
 		}
 		&:after {
 			content: "";
-			width: vw(10);
+			width: vw(8);
 			height: 100%;
 			border-radius: 100vmax;
 			background-color: var(--btnBg, #000);
@@ -134,9 +132,6 @@
 			padding: vw(30) vw(16);
 			margin-bottom: 1px;
 			background-color: var(--bg, #fff);
-			&:last-child {
-				margin-bottom: 0;
-			}
 		}
 	}
 	&__collapse {
@@ -252,7 +247,8 @@
 					margin-right: 0;
 				}
 				@include hover {
-					background-color: var(--menu-item-bg, #fff);
+					background-color: var(--hoverBg, #fff);
+					color: var(--menu-item-text, --text);
 				}
 				@include media {
 					padding: vw(30) 0;
@@ -375,6 +371,11 @@
 				}
 			}
 		}
+		.g-modify {
+			position: absolute;
+			top: -12px;
+			transform: translateX(100%);
+		}
 	}
 	&.right {
 		top: 180px;
@@ -449,6 +450,13 @@
 				overflow: hidden;
 				border-radius: 10px 0 0 10px;
 			}
+		}
+		.g-modify {
+			position: absolute;
+			top: -12px;
+			right: unset;
+			left: 0;
+			transform: translateX(-100%);
 		}
 	}
 	.g-modify {

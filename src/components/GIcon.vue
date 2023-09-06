@@ -30,6 +30,11 @@ const initData = () => {
     return {
         icons: [{
             pc: "",
+            effectCheck: false,
+            effectImg: "",
+            effectImgW: "",
+            effectImgH: "",
+            validEffectImg: true,
             mobile: "",
             link: "",
             validPC: true,
@@ -60,6 +65,8 @@ onMounted(async () => {
 const addInsertMenu = (index) => {
     const icon = {
         pc: "",
+        effectImg: "",
+        validEffectImg: true,
         mobile: "",
         link: "",
         validPC: true,
@@ -158,6 +165,23 @@ async function validateAll(data) {
                 item.validMobile = true;
             }
         }
+        // if (item.effectCheck) {
+        //     if (item.effectImg) {
+        //         const pcImageValid = await CheckImage(item.effectImg);
+        //         if (!pcImageValid) {
+        //             item.validEffectImg = false;
+        //             isValid = false;
+        //         } else {
+        //             const pcImageDimensions = await imageInfo("pc", item.effectImg);
+        //             item.effectImgW = pcImageDimensions.width;
+        //             item.effectImgH = pcImageDimensions.height;
+        //             item.validEffectImg = true;
+        //         }
+        //     } else {
+        //         item.validEffectImg = false;
+        //         isValid = false;
+        //     }
+        // }
         if (item.link && !CheckUrl(item.link)) {
             item.validLink = false;
             isValid = false;
@@ -171,11 +195,14 @@ async function validateAll(data) {
 function transformNavsToCSSProps(item) {
     const cssProps = {
         "--icon-pc": `url(${item.pc})`,
+        "--icon-effectImg": item.effectImg ? `url(${item.effectImg})` : undefined,
         "--icon-mobile": item.mobile ? `url(${item.mobile})` : "",
         "--icon-w": `${item.w}`,
         "--icon-h": `${item.h}`,
         "--icon-mw": item.mw ? `${item.mw}` : "",
         "--icon-mh": item.mh ? `${item.mh}` : "",
+        "--icon-effectImg-w": item.effectImgW ? `${item.effectImgW}` : "",
+        "--icon-effectImg-h": item.effectImgH ? `${item.effectImgH}` : "",
     };
 
     return {
@@ -218,9 +245,23 @@ const closeBtn = () => {
 <template>
     <div class="g-icon">
         <div class="g-icon-container">
-            <template v-for="item in iconSetting.icons">
-                <a href="javascript:;" class="g-icon-item" :style="transformNavsToCSSProps(item)"
-                   :data-init="data.init"></a>
+            <template v-if="store.status == 'edit'">
+                <template v-for="item in iconSetting.icons">
+                    <a href="javascript:;" class="g-icon-item" :data-init="data.init">
+                        <span class="g-icon-item1" :style="transformNavsToCSSProps(item)"></span>
+                        <span class="g-icon-item2" v-if="item.effectImg"></span>
+                    </a>
+                </template>
+            </template>
+            <template v-else>
+                <template v-for="item in iconSetting.icons">
+                    <a :href="item.link ? item.link : 'javascript:;'" :target="item.link ? '_blank' : ''"
+                       class="g-icon-item"
+                       :data-init="data.init">
+                        <span class="g-icon-item1" :style="transformNavsToCSSProps(item)"></span>
+                        <span class="g-icon-item2" v-if="item.effectImg"></span>
+                    </a>
+                </template>
             </template>
             <g-modify :uid="data.uid" :sub="sub" :move=false v-if="page == 'EditPage'" />
         </div>

@@ -328,7 +328,6 @@ const log = (e) => {
         uid = e.moved.element.uid;
         cptIndex = e.moved.newIndex + temp;
         store.dragMoveCpt(uid, cptIndex);
-        console.log(temp, cptIndex)
     }
 }
 

@@ -18,14 +18,15 @@ export default {
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
 const store = mainStore();
-const { content, pageTypeSeq, group } = storeToRefs(store);
+const { content, pageTypeSeq, group, targetArea } = storeToRefs(store);
 let toggle = ref(false);
 
 const bgStatus = computed(() => {
     if (content.value) {
         if (pageTypeSeq.value == 2) {
+
             let currentArea = content.value.filter((c, i) => {
-                return c.uid == group.value.name
+                return c.uid == targetArea.value
             })[0]
             return currentArea.content.subContent.filter((c, i) => {
                 return c.component == "GBg";
@@ -42,7 +43,7 @@ const logoStatus = computed(() => {
     if (content.value) {
         if (pageTypeSeq.value == 2) {
             let currentArea = content.value.filter((c, i) => {
-                return c.uid == group.value.name
+                return c.uid == targetArea.value
             })[0]
             return currentArea.content.subContent.filter((c, i) => {
                 return c.component == "GLogo";
@@ -59,7 +60,7 @@ const iconStatus = computed(() => {
     if (content.value) {
         if (pageTypeSeq.value == 2) {
             let currentArea = content.value.filter((c, i) => {
-                return c.uid == group.value.name
+                return c.uid == targetArea.value
             })[0]
             return currentArea.content.subContent.filter((c, i) => {
                 return c.component == "GIcon";
@@ -76,7 +77,7 @@ const navStatus = computed(() => {
     if (content.value) {
         if (pageTypeSeq.value == 2) {
             let currentArea = content.value.filter((c, i) => {
-                return c.uid == group.value.name
+                return c.uid == targetArea.value
             })[0]
             return currentArea.content.subContent.filter((c, i) => {
                 return c.component == "GDNNav";
@@ -93,7 +94,7 @@ const imgStatus = computed(() => {
     if (content.value) {
         if (pageTypeSeq.value == 2) {
             let currentArea = content.value.filter((c, i) => {
-                return c.uid == group.value.name
+                return c.uid == targetArea.value
             })[0]
             return currentArea.content.subContent.filter((c, i) => {
                 return c.component == "GDNImg";
@@ -111,7 +112,7 @@ const sloganStatus = computed(() => {
     if (content.value) {
         if (pageTypeSeq.value == 2) {
             let currentArea = content.value.filter((c, i) => {
-                return c.uid == group.value.name
+                return c.uid == targetArea.value
             })[0]
             return currentArea.content.subContent.filter((c, i) => {
                 return c.component == "GSlogan";
@@ -226,7 +227,7 @@ const toggleMenu = (e) => {
         <template #item="{ element }">
             <div @click="add(element)"
                  class="g-menu__add"
-                 :class="[element.title == 'GBg' || element.title == 'GSlogan' ? 'filtered' : '', element.title == 'GBg' ? bgStatus?.content?.init ? '' : 'disabled' : '', element.group == '1' ? 'filtered' : '', element.status ? '' : 'disabled']"
+                 :class="[element.title == 'GBg' || element.title == 'GSlogan' ? 'filtered' : '', element.status ? '' : 'disabled']"
                  :data-title="[element?.elements ? 'true' : 'false']">
                 <template v-if="element.label">{{ element.label }}</template>
                 <template v-if="element?.elements">

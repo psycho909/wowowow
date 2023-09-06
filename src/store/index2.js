@@ -24,13 +24,12 @@ export const mainStore = defineStore("main", {
 			move: false,
 			previewConfig: {},
 			previewContent: [],
-			group: { name: "1", pull: "clone", put: false },
+			group: { name: "main", pull: "clone", put: false },
 			tempGroup: {},
 			position: {
 				from: null,
 				to: null
-			},
-			targetArea: 1
+			}
 		};
 	},
 	getters: {
@@ -48,9 +47,6 @@ export const mainStore = defineStore("main", {
 		setCurrentArea(data) {
 			this.group.name = data;
 		},
-		setTargetArea(data) {
-			this.targetArea = data;
-		},
 		changeDrgGroup(data) {
 			this.group.name = data;
 		},
@@ -60,31 +56,21 @@ export const mainStore = defineStore("main", {
 			let temp = [...this.content.slice(0, index), component, ...this.content.slice(index)];
 			this.content = temp;
 		},
-		async drgAddSubCpt(uid, data, index) {
+		drgAddSubCpt(uid, data, index) {
 			var subUid = uuidv4();
+			var _index = this.getIndex(uid);
 			let subComponent;
-			let areaIndex = this.content.findIndex((item) => item.uid == uid);
 			if (data.cpt) {
-				if (this.content[areaIndex].content.subContent[index] != undefined) {
-					if (this.content[areaIndex].content.subContent[index].component == "GSlogan") {
-						return;
-					}
-				}
 				subComponent = { component: data.cpt, uid: subUid, content: {}, update: true, init: true };
-				this.content[areaIndex].content.subContent.splice(index, 0, subComponent);
 			} else {
 				subComponent = data;
-				this.move = true;
-				if (this.content[areaIndex].content.subContent.filter((item) => item.component == "GBg").length > 0) {
-					index += 1;
-				}
-				if (this.content[areaIndex].content.subContent[index] != undefined) {
-					if (this.content[areaIndex].content.subContent[index].component == "GSlogan") {
-						return;
-					}
-				}
-				this.content[areaIndex].content.subContent.splice(index, 0, subComponent);
 			}
+			let tempContent = cloneDeep(this.content[_index]);
+			let start = cloneDeep(this.content.slice(0, _index));
+			let end = cloneDeep(this.content.slice(_index + 1));
+			tempContent.content.subContent.push(subComponent);
+			let temp = [...start, tempContent, ...end];
+			this.content = temp;
 		},
 		addCpt(data) {
 			var uid = uuidv4();
@@ -110,7 +96,7 @@ export const mainStore = defineStore("main", {
 			}
 			if (data.cpt == "GSlogan") {
 				if (this.pageTypeSeq == 2) {
-					var _index = this.getIndex(this.targetArea);
+					var _index = this.getIndex(this.group.name);
 					let bgIndex = this.content[_index].content.subContent.findIndex((v, i) => {
 						return v.component == "GBg";
 					});
@@ -132,14 +118,6 @@ export const mainStore = defineStore("main", {
 					uid,
 					group: "child",
 					content: {
-						pc: {
-							paddingTop: 80,
-							paddingBottom: 80
-						},
-						mobile: {
-							paddingTop: 100,
-							paddingBottom: 100
-						},
 						subContent: [
 							{
 								component: "GBg",
@@ -183,32 +161,23 @@ export const mainStore = defineStore("main", {
 				return;
 			}
 			if (this.group.name != "main") {
-				var _index = this.getIndex(this.targetArea);
+				var _index = this.getIndex(this.group.name);
 				this.content[_index].content.subContent.push({ component: data.cpt, uid, content: {}, update: true, init: true });
 				return;
 			}
 			this.content.push({ component: data.cpt, uid, content: {}, update: true, init: true });
 		},
-		removeCpt(data, sub = false, areaUid = null) {
+		removeCpt(data, sub = false) {
 			if (sub) {
-				if (areaUid) {
-					let areaIndex = this.content.findIndex((item) => item.uid == areaUid);
-					const subContentIndex = this.content[areaIndex].content.subContent.findIndex((subItem) => subItem.uid === data);
-					if (subContentIndex !== -1) {
-						this.content[areaIndex].content.subContent.splice(subContentIndex, 1);
-					}
-				} else {
-					for (let i = 0; i < this.content.length; i++) {
-						if (this.content[i].component === "GArea") {
-							const subContentIndex = this.content[i].content.subContent.findIndex((subItem) => subItem.uid === data);
-							if (subContentIndex !== -1) {
-								this.content[i].content.subContent.splice(subContentIndex, 1);
-								return true; // Return true to indicate the deletion was successful
-							}
+				for (let i = 0; i < this.content.length; i++) {
+					if (this.content[i].component === "GArea") {
+						const subContentIndex = this.content[i].content.subContent.findIndex((subItem) => subItem.uid === data);
+						if (subContentIndex !== -1) {
+							this.content[i].content.subContent.splice(subContentIndex, 1);
+							return true; // Return true to indicate the deletion was successful
 						}
 					}
 				}
-
 				return false; // Return false if deletion was not possible
 			} else {
 				var _index = this.getIndex(data);

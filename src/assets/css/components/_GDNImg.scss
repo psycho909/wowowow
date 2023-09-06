@@ -14,34 +14,61 @@
 			row-gap: vw(24);
 			max-width: vw(690);
 		}
-		&[data-align="left"] {
-		}
-		&[data-align="center"] {
-		}
-		&[data-align="right"] {
-		}
 	}
 	&-item {
-		background-position: center 0;
-		background-image: var(--dn-img-pc);
-		background-color: var(--dn-img-color);
-		background-size: calc(var(--dn-img-w) * 1px) calc(var(--dn-img-h) * 1px);
-		background-repeat: no-repeat;
-		width: calc(var(--dn-img-w) * 1px);
-		height: calc(var(--dn-img-h) * 1px);
+		position: relative;
 		&:last-child {
 			margin-bottom: 0;
 		}
-		@include media {
-			background-image: var(--dn-img-mobile);
-			background-size: calc(var(--dn-img-mw) / 768 * 100vw) calc(var(--dn-img-mh) / 768 * 100vw);
-			width: calc(var(--dn-img-mw) / 768 * 100vw);
-			height: calc(var(--dn-img-mh) / 768 * 100vw);
-		}
+
 		&[data-init="true"] {
 			width: 282px;
 			height: 137px;
 			background-color: #c9c9c9;
+		}
+		&[data-effect="true"] {
+			@include hover {
+				.g-dn_img-item1 {
+					opacity: 0;
+				}
+				.g-dn_img-item2 {
+					opacity: 1;
+				}
+			}
+		}
+		&1 {
+			display: block;
+			background-position: center 0;
+			background-image: var(--dn-img-pc);
+			background-size: calc(var(--dn-img-w) * 1px) calc(var(--dn-img-h) * 1px);
+			background-repeat: no-repeat;
+			width: calc(var(--dn-img-w) * 1px);
+			height: calc(var(--dn-img-h) * 1px);
+			position: relative;
+			z-index: 1;
+			@include media {
+				background-image: var(--dn-img-mobile);
+				background-size: calc(var(--dn-img-mw) / 768 * 100vw) calc(var(--dn-img-mh) / 768 * 100vw);
+				width: calc(var(--dn-img-mw) / 768 * 100vw);
+				height: calc(var(--dn-img-mh) / 768 * 100vw);
+			}
+		}
+		&2 {
+			display: block;
+			background-position: center 0;
+			background-image: var(--dn-img-effectImg);
+			background-size: calc(var(--dn-img-effectImg-w) * 1px) calc(var(--dn-img-effectImg-h) * 1px);
+			background-repeat: no-repeat;
+			width: calc(var(--dn-img-effectImg-w) * 1px);
+			height: calc(var(--dn-img-effectImg-h) * 1px);
+			position: absolute;
+			z-index: 0;
+			top: 0;
+			left: 0;
+			opacity: 0;
+			@include media {
+				display: none;
+			}
 		}
 	}
 }

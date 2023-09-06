@@ -26,15 +26,13 @@ import GInput from "../elements/GInput.vue";
 import { cloneDeep } from 'lodash-es'
 import { handleNumber } from "../Tool";
 const store = mainStore()
-const { page, content, group, pageTypeSeq, tempGroup, position } = storeToRefs(store);
+const { page, content, group, pageTypeSeq, tempGroup } = storeToRefs(store);
 const props = defineProps(["data"])
 let showEdit = ref(false);
 let loading = ref(true);
 let areaSetting = reactive({})
 let areaData = reactive({});
 let uid = ref(props.data.uid);
-let gr = ref(props.data.group);
-let targetArea = ref(null);
 const validPreviousComponents = ["GLang", "GBg", "GFixed", "GIcon", "GLogo", "GDNNav", "GDNImg"];
 const initData = () => {
     return {
@@ -215,44 +213,26 @@ const closeBtn = () => {
 }
 
 const handleArea = () => {
-    store.setCurrentArea(gr.value)
-    store.setTargetArea(targetArea.value)
+    store.setCurrentArea(uid.value)
 }
 
-const log = async (e) => {
+const log = (e) => {
     let cpt;
     let cptIndex;
     let uid;
     let temp = 0;
-    if (contentBg.value.length) {
+    if (contentSlogan.value.length) {
         temp += 1;
     }
-    // if (contentSlogan.value.length) {
-    //     temp += 1;
-    // }
     if (e.added) {
         cpt = e.added.element;
-        let data = {
-            cpt: cpt.title
-        };
-        if (position.value.from != null) {
-            if (position.value.from == position.value.to) {
-                store.position.from = null;
-                store.position.to = null;
-            } else {
-                cptIndex = e.added.newIndex;
-                await store.drgAddSubCpt(props.data.uid, e.added.element, cptIndex);
-                store.removeCpt(e.added.element.uid, true, store.position.from);
-                store.position.from = null;
-                store.position.to = null;
-                // store.drgAddSubCpt(props.data.uid, data, cptIndex);
-            }
-        }
+        cptIndex = e.added.newIndex + temp;
         if (!cpt.status) {
             return;
         }
-        cptIndex = e.added.newIndex + temp;
-        console.log("cptIndex", cptIndex)
+        let data = {
+            cpt: cpt.title
+        };
         store.drgAddSubCpt(props.data.uid, data, cptIndex);
         store.setUpdateTime();
         if (store.first) {
@@ -265,12 +245,6 @@ const log = async (e) => {
         store.dragMoveCpt(uid, cptIndex, true);
     }
 }
-const start = (evt) => {
-    store.position.from = evt.to.parentElement.getAttribute("data-uid");
-}
-const move = (evt) => {
-    store.position.to = evt.to.parentElement.getAttribute("data-uid");
-}
 </script>
 <template>
     <div class="g-area" :id="uid" :style="cssVar" :data-page="[uid == 1 ? 'main' : '']"
@@ -281,15 +255,14 @@ const move = (evt) => {
             </template>
         </div>
     </div>
-    <label :id="uid" :class="['g-area', gr == 1 ? 'filtered' : '', store.targetArea == uid ? 'focus' : '']"
-           :style="cssVar"
-           :data-page="[gr == 1 ? 'main' : '']"
+    <label :id="uid" :class="['g-area', uid == 1 ? 'filtered' : '', store.group.name == uid ? 'focus' : '']" :style="cssVar"
+           :data-page="[uid == 1 ? 'main' : '']"
            v-else>
-        <input type="radio" name="area" :id="uid" :value="uid" v-model="targetArea" @change="handleArea">
+        <input type="radio" name="area" :id="uid" :value="uid" @change="handleArea">
         <!-- <template v-if="contentBg.length">
             <component is="GBg" :data="contentBg[0]" :sub="true"></component>
         </template> -->
-        <div class="g-area-container" :data-uid="uid">
+        <div class="g-area-container">
             <template v-if="fixedFilter.length">
                 <template v-for="block in fixedFilter">
                     <component :is="block.component" :data="block" :sub="true"></component>
@@ -302,11 +275,9 @@ const move = (evt) => {
                        :fallback-tolerance="1"
                        :scroll-sensitivity="100"
                        :animation="300"
-                       :group="gr"
+                       :group="uid"
                        item-key="uid"
-                       @start="start"
                        @change="log"
-                       @move="move"
                        v-if="store.page == 'EditPage' && props.data.uid != 1">
 
                 <template #item="{ element }">

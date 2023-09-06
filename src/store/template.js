@@ -49,7 +49,16 @@ export const templateStore = defineStore("template", {
 						{
 							component: "GArea",
 							uid: "1",
+							group: "1",
 							content: {
+								pc: {
+									paddingTop: 80,
+									paddingBottom: 80
+								},
+								mobile: {
+									paddingTop: 100,
+									paddingBottom: 100
+								},
 								subContent: [
 									{
 										component: "GBg",
@@ -121,6 +130,11 @@ export const templateStore = defineStore("template", {
 											navs: [
 												{
 													pc: "",
+													effectCheck: false,
+													effectImg: "",
+													effectImgW: "",
+													effectImgH: "",
+													validEffectImg: true,
 													mobile: "",
 													w: 0,
 													h: 0,
@@ -133,6 +147,11 @@ export const templateStore = defineStore("template", {
 												},
 												{
 													pc: "",
+													effectCheck: false,
+													effectImg: "",
+													effectImgW: "",
+													effectImgH: "",
+													validEffectImg: true,
 													mobile: "",
 													w: 0,
 													h: 0,
@@ -145,6 +164,11 @@ export const templateStore = defineStore("template", {
 												},
 												{
 													pc: "",
+													effectCheck: false,
+													effectImg: "",
+													effectImgW: "",
+													effectImgH: "",
+													validEffectImg: true,
 													mobile: "",
 													w: 0,
 													h: 0,
@@ -157,6 +181,11 @@ export const templateStore = defineStore("template", {
 												},
 												{
 													pc: "",
+													effectCheck: false,
+													effectImg: "",
+													effectImgW: "",
+													effectImgH: "",
+													validEffectImg: true,
 													mobile: "",
 													w: 0,
 													h: 0,
@@ -174,13 +203,13 @@ export const templateStore = defineStore("template", {
 									},
 									{
 										component: "GDNImg",
-										uid: "dffac781-ab90-49cf-9e3a-cc9efa3ec7f0",
+										uid: "6",
 										content: {
 											imgs: [
-												{ pc: "", mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true },
-												{ pc: "", mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true },
-												{ pc: "", mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true },
-												{ pc: "", mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true }
+												{ pc: "", effectCheck: false, effectImg: "", effectImgW: "", effectImgH: "", validEffectImg: true, mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true },
+												{ pc: "", effectCheck: false, effectImg: "", effectImgW: "", effectImgH: "", validEffectImg: true, mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true },
+												{ pc: "", effectCheck: false, effectImg: "", effectImgW: "", effectImgH: "", validEffectImg: true, mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true },
+												{ pc: "", effectCheck: false, effectImg: "", effectImgW: "", effectImgH: "", validEffectImg: true, mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true }
 											]
 										},
 										update: false,

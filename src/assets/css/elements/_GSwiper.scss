@@ -6,7 +6,7 @@
 	}
 	.swiper {
 		@include media {
-			width: vw(768);
+			width: 100%;
 			overflow: hidden;
 			margin-left: auto;
 			margin-right: auto;

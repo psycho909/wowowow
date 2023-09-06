@@ -184,7 +184,7 @@ const end = (e) => {
                    :class="[m.title == 'GBg' ? bgStatus?.content?.pc ? 'disabled 1' : '' : m.status ? '' : 'disabled 2']"
                    v-for="m in menuFilter1"
                    @click="add(m)">{{ m.label }}</a>
-                <nested-draggable :tasks="menuFilter2" />
+                <nested-draggable :tasks="menuFilter2" v-if="menuFilter2" />
                 <!-- <draggable
                            class="list-group"
                            :list="menuFilter2"

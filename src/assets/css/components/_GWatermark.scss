@@ -28,6 +28,7 @@
 	}
 	&__box {
 		width: 100%;
+		max-width: 500px;
 		display: inline-block;
 		position: relative;
 		&.none {
@@ -41,6 +42,7 @@
 			}
 		}
 		@include media {
+			max-width: vw(500);
 			margin-bottom: vw(20);
 			&:last-child {
 				margin-bottom: 0;
