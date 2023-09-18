@@ -3,7 +3,8 @@ export default {
     name: "Background",
     label: "背景圖",
     limit: 1,
-    order: 1
+    order: 1,
+    type: [1, 2]
 }
 </script>
 <script setup>

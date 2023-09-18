@@ -2,7 +2,7 @@
 export default {
     name: "GImgText",
     label: "圖片-上圖下文",
-    order: 5
+    order: 5, type: [1]
 }
 </script>
 <script setup>

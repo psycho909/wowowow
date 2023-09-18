@@ -2,7 +2,8 @@
 export default {
     name: "GTabs",
     label: "頁籤區塊物件",
-    order: 5
+    order: 5,
+    type:[1]
 }
 </script>
 <script setup>
@@ -65,6 +66,7 @@ const initData = () => {
                     validRedirect: true,
                     num: 1,
                     control: 'all',
+                    thumb: true,
                     autoplay: {
                         open: false,
                         delay: 2,
@@ -167,6 +169,7 @@ const addInsertMenu = (index) => {
                 validRedirect: true,
                 num: 1,
                 control: 'all',
+                thumb: true,
                 autoplay: {
                     open: false,
                     delay: 2,
@@ -668,7 +671,7 @@ const closePop = (data, url) => {
                                                     <div class="input-group__label required">輪播切換方式:</div>
                                                     <g-radio label="左右箭頭" :name="'control' + index" value="navigation"
                                                              v-model="tab.img.pop.control" />
-                                                    <g-radio label="下方點點" :name="'control' + index" value="pagination"
+                                                    <g-radio label="下方點點(或預覽)" :name="'control' + index" value="pagination"
                                                              v-model="tab.img.pop.control" />
                                                     <g-radio label="都不顯示" :name="'control' + index" value="no"
                                                              v-model="tab.img.pop.control" />

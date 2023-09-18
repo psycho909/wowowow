@@ -2,7 +2,8 @@
 export default {
     name: "GSlide",
     label: "輪播-純圖片",
-    order: 4
+    order: 4,
+    type: [1, 2]
 }
 </script>
 <script setup>

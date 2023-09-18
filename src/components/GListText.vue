@@ -2,7 +2,7 @@
 export default {
     name: "GListText",
     label: "區塊條列式文字",
-    order: 5
+    order: 5, type: [1]
 }
 </script>
 <script setup>
@@ -310,8 +310,9 @@ const closeBtn = () => {
                     <div class="g-listText-row">
                         <div class="g-listText__title">{{ list.title }}</div>
                         <div class="g-listText-col" v-for="nest in listTextSetting.listTexts[index].nested">
-                            <a :href="nest.url" class="g-listText__text" :target="[nest.open ? '_blank' : '']">{{ nest.text
-                            }}</a>
+                            <a :href="[page == 'EditPage' ? 'javascript:;' : nest.url]" class="g-listText__text"
+                               :target="[page == 'EditPage' ? '' : nest.open ? '_blank' : '']">{{ nest.text
+                               }}</a>
                         </div>
                     </div>
                 </template>

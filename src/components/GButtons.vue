@@ -2,7 +2,7 @@
 export default {
     name: "GButtons",
     label: "快速按鈕物件",
-    order: 5
+    order: 5, type: [1]
 }
 </script>
 <script setup>

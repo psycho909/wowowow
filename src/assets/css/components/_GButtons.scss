@@ -13,11 +13,15 @@
 		max-width: 1000px;
 		margin: 0 auto;
 		position: relative;
+		display: flex;
 		&[data-align="left"] {
+			justify-content: flex-start;
 		}
 		&[data-align="center"] {
+			justify-content: space-around;
 		}
 		&[data-align="right"] {
+			justify-content: flex-end;
 		}
 	}
 	&__btn {

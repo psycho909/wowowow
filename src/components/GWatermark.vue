@@ -3,7 +3,7 @@ export default {
     name: "GWatermark",
     label: "浮水印物件",
     limit: 1,
-    order: 5
+    order: 5, type: [1]
 }
 </script>
 <script setup>

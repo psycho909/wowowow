@@ -2,7 +2,8 @@
 export default {
     name: "GImg",
     label: "圖片-純圖片",
-    order: 5
+    order: 5,
+    type: [1, 2]
 }
 </script>
 <script setup>

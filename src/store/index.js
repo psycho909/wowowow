@@ -24,7 +24,7 @@ export const mainStore = defineStore("main", {
 			move: false,
 			previewConfig: {},
 			previewContent: [],
-			group: { name: "1", pull: "clone", put: false },
+			group: { name: "main", pull: "clone", put: false },
 			tempGroup: {},
 			position: {
 				from: null,
@@ -125,12 +125,16 @@ export const mainStore = defineStore("main", {
 				}
 			}
 			if (data.cpt == "GArea") {
+				let group = uid;
 				this.tempGroup = { ...this.group };
 				this.group.name = "main";
+				if (this.pageTypeSeq == 2) {
+					group = "Child";
+				}
 				this.content.push({
 					component: data.cpt,
 					uid,
-					group: "child",
+					group: group,
 					content: {
 						pc: {
 							paddingTop: 80,

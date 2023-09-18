@@ -1,7 +1,7 @@
 .g-dn_nav {
-	margin-top: 104px;
+	margin-top: calc(var(--nav-margin-top, 104) * 1px);
 	@include media {
-		margin-top: vw(59);
+		margin-top: calc(var(--nav-m-margin-top, 59) / 768 * 100vw);
 	}
 	&-container {
 		min-width: 1200px;
@@ -21,10 +21,10 @@
 		}
 	}
 	&-item {
-		margin-bottom: 20px;
+		margin-bottom: calc(var(--nav-item-margin-bottom, 0) * 1px);
 		position: relative;
 		@include media {
-			margin-bottom: vw(30);
+			margin-bottom: calc(var(--nav-m-item-margin-bottom, 0) / 768 * 100vw);
 		}
 		&:last-child {
 			margin-bottom: 0;

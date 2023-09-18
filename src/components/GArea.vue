@@ -15,7 +15,8 @@ export default {
     order: 5,
     components: {
         GVideo, GImg, GText, GBg, GSlogan, GIcon, GLogo, GDNImg, GDNNav, GSlide
-    }
+    },
+    type: [2]
 }
 </script>
 <script setup>
@@ -64,11 +65,13 @@ watchEffect(async () => {
             if (!isMobile.any) {
                 let height = 0;
                 let area = document.querySelector(".g-area[data-page='main']");
-                if (document.querySelector(".g-fixed.top")) {
-                    height = document.querySelector(".g-fixed.top").clientHeight;
-                    area.style.marginTop = height + 'px'
-                } else {
-                    area.style.marginTop = height + 'px'
+                if (area) {
+                    if (document.querySelector(".g-fixed.top")) {
+                        height = document.querySelector(".g-fixed.top").clientHeight;
+                        area.style.marginTop = height + 'px'
+                    } else {
+                        area.style.marginTop = height + 'px'
+                    }
                 }
             }
             if (areaData.pc == undefined) {
@@ -88,14 +91,19 @@ onMounted(async () => {
         Object.assign(areaData, cloneDeep(props.data.content));
         Object.assign(areaSetting, cloneDeep(props.data.content));
         await nextTick()
+        if (gr.value == 1) {
+            handleArea()
+        }
         if (!isMobile.any) {
             let height = 0;
             let area = document.querySelector(".g-area[data-page='main']");
-            if (document.querySelector(".g-fixed.top")) {
-                height = document.querySelector(".g-fixed.top").clientHeight;
-                area.style.marginTop = height + 'px'
-            } else {
-                area.style.marginTop = height + 'px'
+            if (area) {
+                if (document.querySelector(".g-fixed.top")) {
+                    height = document.querySelector(".g-fixed.top").clientHeight;
+                    area.style.marginTop = height + 'px'
+                } else {
+                    area.style.marginTop = height + 'px'
+                }
             }
         }
     }

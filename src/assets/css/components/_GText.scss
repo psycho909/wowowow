@@ -140,7 +140,7 @@
 				max-height: calc(var(--collapse) * 1.5 * vw(30));
 			}
 			&::-webkit-scrollbar {
-				width: var(--scroll-width, 18px);
+				width: var(--scroll-width, 12px);
 				height: var(--scroll-height, 8px);
 				background-color: var(--scroll-bar-color, #c5c5c5);
 				@include media {

@@ -3,7 +3,7 @@ export default {
     name: "GLang",
     label: "多國語系物件",
     limit: 1,
-    order: 1
+    order: 1, type: [1]
 }
 </script>
 <script setup>

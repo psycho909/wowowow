@@ -2,7 +2,8 @@
 export default {
     name: "GText",
     label: "文字區塊",
-    order: 7
+    order: 7,
+    type: [1, 2]
 }
 </script>
 <script setup>
@@ -129,7 +130,7 @@ const collapseToggle = () => {
 <template>
     <div class="g-text" :class="[textSetting.align]" :style="[colors[textSetting.style], cssVar]">
         <div class="g-text-container" v-if="!textUpdate">
-            <div class="g-text__content" :class="[collapseStatus ? '' : 'collapse']">
+            <div class="g-text__content" :class="[textSetting.type == 'collapse' ? collapseStatus ? '' : 'collapse' : '']">
                 <template v-if="textSetting.type == 'all'">
                     <div class="g-text__box" v-html="textSetting.text"></div>
                 </template>

@@ -3,7 +3,8 @@ export default {
     name: "Slogan",
     label: "主標圖",
     limit: 1,
-    order: 2
+    order: 2,
+    type: [1, 2]
 }
 </script>
 <script setup>

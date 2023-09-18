@@ -275,7 +275,7 @@ watchEffect(async () => {
                     </template>
                     <template v-if="store.status != 'edit'">
                         <template v-if="slide.type == 'pop'">
-                            <div class="g-swiper__a" @click="openPop(slide)">
+                            <div class="g-swiper__a" @click="openPop(slide)" data-type="pop">
                                 <div class="g-swiper__img-box" :class="[slide.effectCheck == 'true' ? 'effectImg' : '']">
                                     <picture>
                                         <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
@@ -344,7 +344,7 @@ watchEffect(async () => {
                                 </a>
                             </template>
                             <template v-else>
-                                <div class="g-swiper__a">
+                                <div class="g-swiper__a" data-type="1">
                                     <div class="g-swiper__img-box"
                                          :class="[slide.effectCheck == 'true' ? 'effectImg' : '']">
                                         <picture>

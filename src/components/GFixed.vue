@@ -3,7 +3,8 @@ export default {
     name: "Fixed",
     label: "浮動選單",
     limit: 1,
-    order: 3
+    order: 3,
+    type: [1, 2]
 }
 </script>
 <script setup>
@@ -70,11 +71,13 @@ watchEffect(async () => {
             if (!isMobile.any) {
                 let height = 0;
                 let area = document.querySelector(".g-area[data-page='main']");
-                if (document.querySelector(".g-fixed.top")) {
-                    height = document.querySelector(".g-fixed.top").clientHeight;
-                    area.style.marginTop = height + 'px'
-                } else {
-                    area.style.marginTop = height + 'px'
+                if (area) {
+                    if (document.querySelector(".g-fixed.top")) {
+                        height = document.querySelector(".g-fixed.top").clientHeight;
+                        area.style.marginTop = height + 'px'
+                    } else {
+                        area.style.marginTop = height + 'px'
+                    }
                 }
             }
         }

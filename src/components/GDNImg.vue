@@ -2,7 +2,8 @@
 export default {
     name: "GDNImg",
     label: "DN圖片區塊",
-    order: 5
+    order: 5,
+    type: [2]
 }
 </script>
 <script setup>

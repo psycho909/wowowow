@@ -2,7 +2,7 @@
 export default {
     name: "GSlideText",
     label: "輪播-上圖下文",
-    order: 4
+    order: 4, type: [1]
 }
 </script>
 <script setup>

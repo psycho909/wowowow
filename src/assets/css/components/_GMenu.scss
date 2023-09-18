@@ -64,6 +64,9 @@
 		&.disabled {
 			color: #b7b7b7;
 			cursor: default;
+			&[data-title="true"] {
+				color: #fff;
+			}
 		}
 		&[data-title="true"] {
 			.list-group {

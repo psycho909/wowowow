@@ -3,7 +3,7 @@ export default {
     name: "GTop",
     label: "回到TOP物件",
     limit: 1,
-    order: 5
+    order: 5, type: [1]
 }
 </script>
 <script setup>

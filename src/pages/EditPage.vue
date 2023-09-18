@@ -34,6 +34,7 @@ if (store.config.flag == 2 && store.content.length == 0) {
 onMounted(() => {
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
     document.querySelector("#app").classList.add("edit");
+    handleArea()
 })
 const cssVar = computed(() => {
     if (content.value.length > 0) {
@@ -91,7 +92,8 @@ const menu = computed(() => {
             label: components[m].label,
             limit: components[m].limit || 0,
             status: true,
-            order: components[m].order
+            order: components[m].order,
+            type: components[m].type
         }
     });
 })
@@ -344,7 +346,7 @@ const handleArea = () => {
 </script>
 <template>
     <label for="component" class="wrap development"
-           :data-type="store.config.pageTypeSeq" :style="cssVar" :class="[store.group.name == 'component' ? 'focus' : '']">
+           :data-type="store.config.pageTypeSeq" :style="cssVar" :class="[store.group.name == 'main' ? 'focus' : '']">
         <input id="component" type="radio" name="area" value="main" checked @change="handleArea">
         <template v-if="contentBg.length">
             <component is="GBg" :data="contentBg[0]"></component>

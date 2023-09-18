@@ -75,7 +75,7 @@ const menuFilter1 = computed(() => {
 const menuFilter2 = computed(() => {
     if (menuList) {
         if (pageTypeSeq.value == 1) {
-            const filteredMenu = props.menu.map((v, i) => {
+            const filteredMenu = props.menu.filter((item, i) => item.type.includes(1)).map((v, i) => {
                 if (total.value[v.title] == v.limit) {
                     v.status = false;
                 } else {

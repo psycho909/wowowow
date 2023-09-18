@@ -3,7 +3,8 @@ export default {
     name: "GDNNav",
     label: "選單區塊",
     limit: 1,
-    order: 5
+    order: 5,
+    type: [2]
 }
 </script>
 <script setup>
@@ -27,6 +28,10 @@ let navSetting = reactive({})
 let loading = ref(true);
 const initData = () => {
     return {
+        pcMarginTop: 0,
+        mobileMarginTop: 0,
+        pcItemMarginBottom: 0,
+        mobileItemMarginBottom: 0,
         navs: [{
             pc: "",
             effectCheck: false,
@@ -213,6 +218,10 @@ function transformNavsToCSSProps(item) {
         "--nav-mh": item.mh ? `${item.mh}` : "",
         "--nav-effectImg-w": item.effectImgW ? `${item.effectImgW}` : "",
         "--nav-effectImg-h": item.effectImgH ? `${item.effectImgH}` : "",
+        "--nav-margin-top": item.pcMarginTop ? `${item.pcMarginTop}` : "",
+        "--nav-m-margin-top": item.mobileMarginTop ? `${item.mobileMarginTop}` : "",
+        "--nav-item-margin-bottom": item.pcItemMarginBottom ? `${item.pcItemMarginBottom}` : "",
+        "--nav-m-item-margin-bottom": item.mobileItemMarginBottom ? `${item.mobileItemMarginBottom}` : "",
     };
 
     return {
@@ -253,11 +262,12 @@ const closeBtn = () => {
 }
 </script>
 <template>
-    <div class="g-dn_nav">
+    <div class="g-dn_nav" :style="transformNavsToCSSProps(navSetting)">
         <div class="g-dn_nav-container">
             <template v-if="store.status == 'edit'">
                 <template v-for="(item, index) in navSetting.navs">
-                    <a href="javascript:;" class="g-dn_nav-item" :data-init="data.init" :data-effect="item.effectCheck">
+                    <a href="javascript:;" class="g-dn_nav-item" :data-init="data.init" :data-effect="item.effectCheck"
+                       :style="transformNavsToCSSProps(navSetting)">
                         <span class="g-dn_nav-item1" :style="transformNavsToCSSProps(item)"></span>
                         <span class="g-dn_nav-item2" v-if="item.effectCheck != 'false'"
                               :style="transformNavsToCSSProps(item)"></span>
@@ -267,7 +277,8 @@ const closeBtn = () => {
             <template v-else>
                 <template v-for="(item, index) in navSetting.navs">
                     <a :href="item.link ? item.link : 'javascript:;'" :target="item.link ? '_blank' : ''"
-                       class="g-dn_nav-item" :data-init="data.init" :data-effect="item.effectCheck">
+                       class="g-dn_nav-item" :data-init="data.init" :data-effect="item.effectCheck"
+                       :style="transformNavsToCSSProps(navSetting)">
                         <span class="g-dn_nav-item1" :style="transformNavsToCSSProps(item)"></span>
                         <span class="g-dn_nav-item2" v-if="item.effectCheck != 'false'"
                               :style="transformNavsToCSSProps(item)"></span>
@@ -323,6 +334,22 @@ const closeBtn = () => {
                         </div>
                     </div>
                 </template>
+                <div class="g-edit__row">
+                    <div class="g-edit__col w50">
+                        <g-input label="PC間距上:" type="number" v-model="navData.pcMarginTop" @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile間距上:" type="number" v-model="navData.mobileMarginTop"
+                                 @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="PC按鈕間距下:" type="number" v-model="navData.pcMarginBottom" @change="handleNumber" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile按鈕間距下:" type="number" v-model="navData.mobileMarginBottom"
+                                 @change="handleNumber" />
+                    </div>
+                </div>
                 <div class="edit-btn__box">
                     <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
                     <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>

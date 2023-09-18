@@ -2,7 +2,7 @@
 export default {
     name: "GAccordion",
     label: "手風琴文字",
-    order: 5
+    order: 5, type: [1]
 }
 </script>
 <script setup>

@@ -105,7 +105,7 @@ const setThumbsSwiper = (swiper) => {
                     </swiper-slide>
                 </swiper>
                 <swiper
-                        v-if="data.thumb != 'false'"
+                        v-if="data.control == 'pagination'"
                         :modules="modules"
                         :loop="true"
                         :slidesPerView="slidesPerViewThumb"
@@ -201,7 +201,7 @@ const setThumbsSwiper = (swiper) => {
                     </swiper-slide>
                 </swiper>
                 <swiper
-                        v-if="data.thumb != 'false'"
+                        v-if="data.control == 'pagination'"
                         :modules="modules"
                         :loop="true"
                         :slidesPerView="slidesPerViewThumb"
