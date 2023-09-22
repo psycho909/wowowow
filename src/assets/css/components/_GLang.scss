@@ -1,19 +1,50 @@
 .g-lang {
 	position: relative;
 	z-index: 1;
-	background-color: #fff;
+	&[data-theme="0"] {
+		border-top: 1px solid #393939;
+		background-color: #000;
+		.g-lang__link {
+			border-right: 1px solid #393939;
+		}
+		a {
+			color: #c5c5c5;
+		}
+	}
+	&[data-theme="1"] {
+		background-color: #fff;
+		border-top: 1px solid #e5e5e5;
+		.g-lang__link {
+			border-right: 1px solid #e5e5e5;
+		}
+		a {
+			color: #3a3a3a;
+		}
+	}
 	.g-lang-container {
 		display: flex;
-		font-size: 16px;
+		font-size: 13px;
 		padding: 12px 0;
 		max-width: 1000px;
 		margin: 0 auto;
 		position: relative;
 		@include media {
 			max-width: 100%;
+			font-size: vw(30);
+			padding: vw(20) 0;
+			justify-content: center;
 		}
-		a {
+	}
+	.g-lang {
+		&__link {
 			text-decoration: none;
+			padding: 0 8px;
+			@include media {
+				padding: 0 vw(16);
+			}
+			&:last-child {
+				border-right: none;
+			}
 		}
 	}
 }

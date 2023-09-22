@@ -15,7 +15,7 @@
 		max-width: 1000px;
 		margin: 0 auto;
 		@include media {
-			max-width: 100%;
+			max-width: vw(678);
 		}
 	}
 	&.loading {
@@ -23,5 +23,22 @@
 			height: 200px;
 			background-color: #ddd;
 		}
+	}
+}
+.g-slide-card {
+	.swiper-wrapper {
+		align-items: stretch;
+	}
+	.g-swiper__img {
+		aspect-ratio: 16/9;
+		object-fit: cover;
+	}
+	.swiper-slide {
+		height: auto;
+	}
+	.g-swiper__a {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
 	}
 }

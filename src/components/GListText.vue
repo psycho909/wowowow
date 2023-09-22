@@ -310,8 +310,8 @@ const closeBtn = () => {
                     <div class="g-listText-row">
                         <div class="g-listText__title">{{ list.title }}</div>
                         <div class="g-listText-col" v-for="nest in listTextSetting.listTexts[index].nested">
-                            <a :href="[page == 'EditPage' ? 'javascript:;' : nest.url]" class="g-listText__text"
-                               :target="[page == 'EditPage' ? '' : nest.open ? '_blank' : '']">{{ nest.text
+                            <a :href="[nest.url == '' ? 'javascript:;' : nest.url]" class="g-listText__text"
+                               :target="[page == 'EditPage' ? '_blank' : nest.open ? '_blank' : '']">{{ nest.text
                                }}</a>
                         </div>
                     </div>

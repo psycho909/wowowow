@@ -201,12 +201,13 @@ const toggleAccordion = (index) => {
 
 </script>
 <template>
-    <div class="g-accordion" :style="cssVar">
+    <div class="g-accordion" :style="[colors[accordionSetting.style], cssVar]">
         <div class="g-accordion-container">
             <template v-for="(accordion, index) in accordionSetting.accordions" :key="index">
-                <div class="g-accordion__item">
-                    <div class="g-accordion__header" @click="toggleAccordion(index)">{{ accordion.title }} {{
-                        accordion.collapse.toString() }}</div>
+                <div class="g-accordion__item" :data-accordion="accordion.collapse">
+                    <div class="g-accordion__header" @click="toggleAccordion(index)"><span
+                              class="g-accordion__header-prefix">{{
+                                  accordion.prefix }}</span>{{ accordion.title }}</div>
                     <div class="g-accordion__body" :class="[accordion.collapse.toString() == 'true' ? '' : 'active']"
                          ref="bodyRefs">
                         <div class="g-accordion__content" v-html="accordion.content"></div>

@@ -336,15 +336,12 @@ const onSubmit = async () => {
         } else {
             slideData.slides[i].validMobile = true;
         }
-
-        if (slideData.slides[i].url.length > 0) {
+        if (slideData.slides[i].type == 'link') {
             if (!CheckUrl(slideData.slides[i].url)) {
                 slideData.slides[i].validUrl = false;
             } else {
                 slideData.slides[i].validUrl = true;
             }
-        } else {
-            slideData.slides[i].validUrl = true;
         }
 
         if (slideData.slides[i].effectCheck) {
@@ -357,15 +354,6 @@ const onSubmit = async () => {
             slideData.slides[i].validEffectImg = true;
         }
 
-        if (slideData.slides[i].title != "") {
-            if (!await CheckImage(slideData.slides[i].effectImg)) {
-                slideData.slides[i].validEffectImg = false;
-            } else {
-                slideData.slides[i].validEffectImg = true;
-            }
-        } else {
-            slideData.slides[i].validEffectImg = true;
-        }
         if (validateCard(slideData.slides[i].card)) {
             slideData.slides[i].card.validCard = true;
         } else {
@@ -392,7 +380,9 @@ const onSubmit = async () => {
     } else {
         slideNumValid.value = false;
     }
+    console.log(validCheck, validDelay, slideNumValid.value);
     if (validCheck && validDelay && slideNumValid.value) {
+        console.log("SlideText")
         $("#loadingProgress").show();
         let data = cloneDeep(slideData);
         store.updateCpt(props.data.uid, data);
@@ -435,7 +425,7 @@ const closeBtn = () => {
 </script>
 <template>
     <div class="g-slide" :style="[colors[slideSetting.style], cssVar]" :class="[loading ? 'loading' : '']">
-        <div class="g-slide-container" :data-num="slideSetting.num">
+        <div class="g-slide-container g-slide-card" :data-num="slideSetting.num">
             <template v-if="!loading">
                 <g-swiper :data="slideSetting" :status="status" v-if="!slideUpdate" />
             </template>
@@ -516,10 +506,6 @@ const closeBtn = () => {
                                 <div class="input-group__label">內文:</div>
                                 <g-ckedit v-model="slide.card.text" :valid="slide.card.validCard" max="250"
                                           warning="標題、內文以及連結文字至少填寫一個，限制字數250字" />
-                            </div>
-                            <div class="g-edit__col">
-                                <g-input label="超連結文字:" v-model.trim="slide.card.url" :valid="slide.card.validCard"
-                                         max="50" warning="標題、內文以及連結文字至少填寫一個，限制字數50字" />
                             </div>
                             <div class="g-edit__col">
                                 <div class="input-group__label">圖片特效:</div>
@@ -640,6 +626,10 @@ const closeBtn = () => {
                                 </div>
                             </template>
                             <template v-if="slide.type == 'link'">
+                                <div class="g-edit__col">
+                                    <g-input label="超連結文字:" v-model.trim="slide.card.url" :valid="slide.card.validCard"
+                                             max="50" warning="標題、內文以及連結文字至少填寫一個，限制字數50字" />
+                                </div>
                                 <div class="g-edit__col">
                                     <g-input label="連結" v-model.trim="slide.url" :valid="slide.validUrl" />
                                 </div>

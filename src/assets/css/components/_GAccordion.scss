@@ -13,32 +13,106 @@
 		position: relative;
 		max-width: 1000px;
 		margin: 0 auto;
+		background-color: var(--bg);
+		padding: 24px;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		row-gap: 10px;
 		@include media {
-			max-width: 100%;
+			max-width: vw(678);
+			padding: vw(25);
+			row-gap: vw(10);
 		}
 	}
 	&__body {
 		word-break: break-all;
 	}
 	&__item {
+		position: relative;
+		&:before {
+			content: "";
+		}
+		&[data-accordion="true"] {
+			.g-accordion__header {
+				background-color: var(--accordion-header-bg-open);
+			}
+		}
+		&[data-accordion="false"] {
+			.g-accordion__header {
+				background-color: var(--accordion-header-bg-close);
+				&:before {
+					transform: translateY(-50%) scale(1);
+				}
+			}
+		}
 	}
 	&__header {
-		background-color: #f1f1f1;
-		padding: 10px;
+		color: var(--bg);
+		padding: 20px;
 		cursor: pointer;
+		font-size: 20px;
+		color: var(--accordion-text);
+		font-weight: bold;
+		position: relative;
+		padding-right: 62px;
+		@include media {
+			font-size: vw(30);
+			padding: vw(25);
+			padding-right: vw(72);
+		}
+		&:before {
+			content: "";
+			width: 25px;
+			height: 12px;
+			display: block;
+			-webkit-mask-image: url("./img/accordion-arrow.svg");
+			mask-image: url("./img/accordion-arrow.svg");
+			background-color: var(--bg);
+			position: absolute;
+			top: 50%;
+			right: 18px;
+			transform: translateY(-50%) scale(-1);
+			@include media {
+				width: vw(34);
+				height: vw(17);
+				right: vw(20);
+			}
+		}
+		&-prefix {
+			color: var(--accordion-prefix);
+			margin-right: 8px;
+			@include media {
+				margin-right: vw(8);
+			}
+		}
 	}
 	&__body {
 		// padding: 10px;
-		background-color: #ffffff;
+		background-color: var(--bg);
 		will-change: auto;
 		max-height: 0;
 		overflow: hidden;
 		transition: max-height 0.5s;
+		font-size: 20px;
+		@include media {
+			font-size: vw(30);
+		}
 		&.active {
 			max-height: calc(var(--max-height) * 1px);
 		}
 	}
 	&__content {
-		padding: 16px;
+		padding-top: 16px;
+		padding-bottom: 16px;
+		color: var(--text);
+		box-sizing: border-box;
+		@include media {
+			padding-top: vw(20);
+			padding-bottom: vw(20);
+		}
+		a {
+			color: var(--link);
+		}
 	}
 }

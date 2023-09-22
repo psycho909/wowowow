@@ -346,7 +346,8 @@ const handleArea = () => {
 </script>
 <template>
     <label for="component" class="wrap development"
-           :data-type="store.config.pageTypeSeq" :style="cssVar" :class="[store.group.name == 'main' ? 'focus' : '']">
+           :data-type="store.config.pageTypeSeq" :style="cssVar"
+           :class="[store.group.name == 'main' && store.config.pageTypeSeq != 1 ? 'focus' : '']">
         <input id="component" type="radio" name="area" value="main" checked @change="handleArea">
         <template v-if="contentBg.length">
             <component is="GBg" :data="contentBg[0]"></component>

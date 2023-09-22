@@ -29,6 +29,89 @@
 			text-align: center;
 		}
 	}
+	&.pop-slide {
+		.g-lightbox__wrap {
+			width: 100%;
+			max-width: 1000px;
+			@include media {
+				max-width: vw(728);
+			}
+		}
+		.g-lightbox__container {
+			width: 100%;
+			background-color: transparent;
+			font-size: 0;
+			border-radius: 0;
+			padding: 0;
+		}
+		.g-lightbox__btn-group {
+			display: none;
+		}
+		.g-swiper__img {
+			max-height: calc(100vh - 6px - 32px - 32px - 20px - 50px);
+			border: 1px solid #fff;
+			box-sizing: border-box;
+			@include media {
+				max-height: calc(100vh - calc(384 / 768 * 100vw));
+			}
+		}
+		.swiper-thumb {
+			&-box {
+				display: flex;
+				justify-content: center;
+				column-gap: 6px;
+				@include media {
+					column-gap: vw(6);
+				}
+			}
+			&__item {
+				filter: brightness(0.5);
+				&.active {
+					filter: brightness(1);
+				}
+			}
+			&__img {
+				width: 50px;
+				height: 50px;
+				object-fit: cover;
+				cursor: pointer;
+				border: 1px solid #fff;
+				box-sizing: border-box;
+				@include media {
+					width: vw(100);
+					height: vw(100);
+				}
+			}
+		}
+	}
+	&.lb-pop-tab {
+		.g-lightbox {
+			&__container {
+				background-color: transparent;
+				padding: 0;
+			}
+			&__tab {
+				&-list {
+					list-style: none;
+				}
+				&-li {
+					font-size: vw(36);
+					padding: vw(28) 0;
+					margin-bottom: vw(3);
+					background-color: var(--menu-item-bg);
+					color: var(--accordion-header-bg-open);
+					font-weight: bold;
+					&:last-child {
+						margin-bottom: 0;
+					}
+					&.active {
+						background-color: var(--bg);
+						color: var(--text);
+					}
+				}
+			}
+		}
+	}
 	&__module {
 		width: 100%;
 		height: 100%;
@@ -58,7 +141,7 @@
 			position: absolute;
 			top: 50%;
 			left: 50%;
-			background-color: var(--btnText, #fff);
+			background-color: var(--btnText, #fff) !important;
 			transform: translate(-50%, -50%) rotate(45deg);
 		}
 		&:after {
@@ -68,7 +151,7 @@
 			position: absolute;
 			top: 50%;
 			left: 50%;
-			background-color: var(--btnText, #fff);
+			background-color: var(--btnText, #fff) !important;
 			transform: translate(-50%, -50%) rotate(-45deg);
 		}
 	}
@@ -79,8 +162,8 @@
 		vertical-align: middle;
 		display: inline-block;
 		@include media {
-			width: vw(728);
-			margin: vw(180) auto;
+			width: vw(678);
+			margin: vw(120) auto;
 		}
 	}
 	&__title {

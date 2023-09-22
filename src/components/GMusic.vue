@@ -27,8 +27,7 @@ let musicSetting = reactive({})
 const audioPlayer = ref(null);
 const musicIndex = ref(0);
 const soundOn = ref(false);
-let styleValid = ref(true);
-let loading = ref(true);
+const toggleBox = ref(false)
 const initData = () => {
     return {
         style: "",
@@ -177,7 +176,11 @@ const next = async () => {
     if (musicSetting.musics.length === 0) {
         return; // Don't proceed if musics array is empty
     }
-    musicIndex.value = (musicIndex.value + 1) % musicSetting.musics.length;
+    if (musicSetting.musics.length === 1 && audioPlayer.currentTime > 0) {
+        audioPlayer.currentTime = 0;
+    } else {
+        musicIndex.value = (musicIndex.value + 1) % musicSetting.musics.length;
+    }
     if (soundOn.value) {
         audioPlayer.value.load();
         await nextTick();
@@ -218,17 +221,32 @@ const closeBtn = () => {
     showEdit.value = false;
     store.editCptClose(props.data.uid, props.sub)
 }
+
+const musicToggle = () => {
+    toggleBox.value = !toggleBox.value
+}
+
+
 </script>
 <template>
     <div class="g-music" :data-position="[musicSetting.position]" style="[colors[musicSetting.style]]">
         <div class="g-music-container">
-            <div class="g-music__box">
-                <div>{{ currentMusic.name }}</div>
-                <audio ref="audioPlayer" :src="currentMusic.url"></audio>
-                <a href="javascript:;" class="g-music__prev" @click="prev">上一首</a>
-                <a href="javascript:;" class="g-music__next" @click="next">下一首</a>
+            <div class="g-music__box" :class="[toggleBox ? 'closed' : '']">
+                <audio ref="audioPlayer" :src="currentMusic.url" @ended="next"></audio>
+                <a href="javascript:;" class="g-music__toggle" @click="musicToggle"></a>
+                <a href="javascript:;" class="g-music__prev" @click="prev" v-if="musicSetting.musics.length > 1">上一首</a>
+                <a href="javascript:;" @click="toggleSound" class="g-music__control"
+                   :class="[soundOn ? 'paused' : 'playing']"></a>
+                <a href="javascript:;" class="g-music__next" @click="next" v-if="musicSetting.musics.length > 1">下一首</a>
+                <div class="g-music__anim" :class="[soundOn ? 'moving' : '']" v-if="!toggleBox"></div>
+                <a href="javascript:;" class="g-music__anim " :class="[soundOn ? 'moving' : '']" @click="musicToggle"
+                   v-else></a>
+                <div class="g-music__title-box">
+                    <div :key="currentMusic.name" class="g-music__title" :class="[soundOn ? 'marquee' : '']">{{
+                        currentMusic.name
+                    }}</div>
+                </div>
             </div>
-            <button @click="toggleSound">音效 {{ soundOn ? 'ON' : 'OFF' }}</button>
             <g-modify :uid="data.uid" :move="false" v-if="page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit">

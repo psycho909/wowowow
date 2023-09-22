@@ -143,9 +143,9 @@ const goTop = () => {
 
 </script>
 <template>
-    <div class="g-top" :style="[colors[topSetting.style]]" :data-align="topSetting.align" :data-type="topSetting.type"
+    <div class="g-top" :data-align="topSetting.align" :data-type="topSetting.type"
          @click="goTop">
-        <div class="g-top__text" v-if="topSetting.type == 'style'">TOP</div>
+        <div class="g-top__text" :style="[colors[topSetting.style]]" v-if="topSetting.type == 'style'">TOP</div>
         <picture v-if="topSetting.type == 'img'">
             <source media="(max-width:768px)" :srcset="topSetting.mobile || topSetting.pc" />
             <img class="g-top__img" :srcset="topSetting.pc" :src="topSetting.pc" alt="" />

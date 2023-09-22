@@ -11,6 +11,8 @@ let slidesPerViewThumb = ref(null)
 let autoplay = ref({});
 let isMobile = ref(false);
 let navigation = ref(true);
+let currentSwiper = ref(null)
+let currentIndex = ref(0);
 let coverflowEffectValue = ref({ rotate: 50, depth: 200, modifier: 1, slideShadows: false })
 let pagination = ref({
     clickable: true,
@@ -30,11 +32,14 @@ breakpoints.value = {
         centeredSlides: false
     }
 }
-
 if (props.data?.autoplay?.open) {
-    autoplay.value = {
-        delay: Number(props.data.autoplay.delay) * 1000,
-        disableOnInteraction: false
+    if (props.data?.autoplay?.open == true || props.data?.autoplay?.open == 'true') {
+        autoplay.value = {
+            delay: Number(props.data.autoplay.delay) * 1000,
+            disableOnInteraction: false
+        }
+    } else {
+        autoplay.value = false;
     }
 } else {
     autoplay.value = false;
@@ -42,25 +47,39 @@ if (props.data?.autoplay?.open) {
 const modules = [Navigation, Pagination, Autoplay, EffectCoverflow, Thumbs, FreeMode];
 
 if (props.data?.control) {
-    if (props.data.control == 'navigation') {
-        pagination.value.enabled = false;
-    }
-    if (props.data.control == 'pagination') {
-        if (props.data.thumb != 'false') {
+    if (props.data?.type) {
+        if (props.data.type == 'slide') {
+            pagination.value.enabled = false;
+            if (props.data.control == 'pagination') {
+                navigation.value = false;
+            }
+            if (props.data.control == 'no') {
+                navigation.value = false;
+                pagination.value.enabled = false;
+            }
+        }
+    } else {
+        if (props.data.control == 'navigation') {
+            pagination.value.enabled = false;
+        }
+        if (props.data.control == 'pagination') {
+            if (props.data.thumb != 'false') {
+                navigation.value = false;
+                pagination.value.enabled = false;
+                slidesPerViewThumb.value = props.data.slides.length
+            } else {
+                navigation.value = false;
+            }
+        }
+        if (props.data.control == 'no') {
             navigation.value = false;
             pagination.value.enabled = false;
-            slidesPerViewThumb.value = props.data.slides.length
-        } else {
-            navigation.value = false;
         }
-    }
-    if (props.data.control == 'no') {
-        navigation.value = false;
-        pagination.value.enabled = false;
     }
 }
 
 const onSwiper = (swiper) => {
+    currentSwiper.value = swiper;
     if (!props.status) {
         swiper.disable()
     }
@@ -68,6 +87,15 @@ const onSwiper = (swiper) => {
 const setThumbsSwiper = (swiper) => {
     thumbsSwiper.value = swiper;
 };
+
+const onSlideChange = (swiper) => {
+    currentIndex.value = swiper.realIndex
+}
+
+const onChangeSlide = (index) => {
+    console.log(index)
+    currentSwiper.value.slideTo(index)
+}
 </script>
 <template>
     <div class="g-swiper">
@@ -178,7 +206,8 @@ const setThumbsSwiper = (swiper) => {
                         :thumbs="{ swiper: thumbsSwiper }"
                         :autoplay="autoplay"
                         :set-wrapper-size="true"
-                        @swiper="onSwiper">
+                        @swiper="onSwiper"
+                        @slideChange="onSlideChange">
                     <swiper-slide v-for="slide in data.slides">
                         <template v-if="store.status == 'edit'">
                             <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
@@ -200,34 +229,15 @@ const setThumbsSwiper = (swiper) => {
                         </template>
                     </swiper-slide>
                 </swiper>
-                <swiper
-                        v-if="data.control == 'pagination'"
-                        :modules="modules"
-                        :loop="true"
-                        :slidesPerView="slidesPerViewThumb"
-                        :watchSlidesProgress="true"
-                        @swiper="setThumbsSwiper">
-                    <swiper-slide v-for="slide in data.slides">
-                        <template v-if="store.status == 'edit'">
-                            <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
-                               :target="[slide.url ? '_blank' : '']">
-                                <picture>
-                                    <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
-                                    <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
-                                </picture>
-                            </a>
-                        </template>
-                        <template v-if="store.status != 'edit'">
-                            <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
-                               :target="[slide.url ? '_blank' : '']">
-                                <picture>
-                                    <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
-                                    <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
-                                </picture>
-                            </a>
-                        </template>
-                    </swiper-slide>
-                </swiper>
+                <div class="swiper-thumb-box" v-if="data.control == 'pagination' || data.control == 'all'">
+                    <div class="swiper-thumb__item" v-for="(slide, index) in data.slides"
+                         :class="[index == currentIndex ? 'active' : '']" @click="onChangeSlide(index + 1)">
+                        <picture>
+                            <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
+                            <img class="swiper-thumb__img" :srcset="slide.pc" :src="slide.pc" alt="" />
+                        </picture>
+                    </div>
+                </div>
             </template>
             <template v-else>
                 <swiper

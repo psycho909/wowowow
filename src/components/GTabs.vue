@@ -3,7 +3,7 @@ export default {
     name: "GTabs",
     label: "頁籤區塊物件",
     order: 5,
-    type:[1]
+    type: [1]
 }
 </script>
 <script setup>
@@ -17,7 +17,7 @@ import GCkedit from '../elements/GCkedit.vue';
 import GLightbox from './GLightbox.vue';
 import GYoutube from '../elements/GYoutube.vue';
 import colors, { style1, style2 } from "../colors";
-import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
+import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide, extractVideoID } from "../Tool";
 import { cloneDeep } from 'lodash-es'
 
 const props = defineProps(["data"])
@@ -27,11 +27,15 @@ const { page } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let tabsData = reactive({});
 let tabsSetting = reactive({})
-let styleValid = ref(true);
-let loading = ref(true);
 let videoUpdate = ref(false);
 let slideUpdate = ref(false);
-let boxRef = ref("")
+let tabBox = ref(null);
+let boxRef = ref("");
+let tabRef = ref("");
+let tabPop = ref(false);
+let tabPopShow = ref(false);
+let totalImages = ref(0);
+let imagesLoaded = ref(0);
 const initData = () => {
     return {
         style: "",
@@ -43,7 +47,6 @@ const initData = () => {
             name: "",
             validName: true,
             title: "",
-            subtitle: "",
             img: {
                 pc: "",
                 mobile: "",
@@ -125,6 +128,8 @@ watchEffect(async () => {
         slideUpdate.value = false;
     }
 })
+
+
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
@@ -137,8 +142,12 @@ onMounted(async () => {
             const collapseValue = computedStyles.getPropertyValue('--collapse');
             textBox.style = `--collapse:${collapseValue};--max-height:${boxRef.value.scrollHeight}`
         }
+        if (tabsSetting.type == "img") {
+            totalImages.value = tabsSetting.tabs.length
+        }
+        getHeightOfTabBoxes()
+        getWidthOfTab()
     }
-
 })
 
 const addInsertMenu = (index) => {
@@ -146,7 +155,6 @@ const addInsertMenu = (index) => {
         name: "",
         validName: true,
         title: "",
-        subtitle: "",
         img: {
             pc: "",
             mobile: "",
@@ -425,20 +433,62 @@ const closePop = (data, url) => {
     }
 }
 
+const getHeightOfTabBoxes = () => {
+    const tabBoxes = tabBox.value;
+    tabBox.value.forEach((tab, index) => {
+        tab.style = "";
+    })
+    let tabHeight = tabBoxes.map((box, index) => {
+        return box.clientHeight;
+    });
+    let maxHeight = Math.max(...tabHeight)
+    tabBox.value.forEach((tab, index) => {
+        tab.style = `--tab-height:${maxHeight}`;
+    })
+}
+
+const getWidthOfTab = () => {
+    const tabRefs = tabRef.value;
+    const tabBox = document.querySelector(".g-tabs__tab-box").clientWidth;
+    let tabWidth = tabRefs.reduce((p, c) => {
+        return p + c.clientWidth;
+    }, 0);
+    tabPop.value = tabWidth > tabBox
+}
+
+const imageLoaded = () => {
+    imagesLoaded.value++;
+    if (imagesLoaded.value === totalImages.value) {
+        getHeightOfTabBoxes()
+    }
+}
+
+const openTabPop = () => {
+    tabPopShow.value = true
+}
+
+const targetTab = (index) => {
+    tabPopShow.value = false
+    tabsSetting.activeTab = index
+}
 </script>
 <template>
-    <div class="g-tabs" :style="cssVar">
+    <div class="g-tabs" :style="[colors[tabsSetting.style], cssVar]">
         <div class="g-tabs-container">
-            <ul class="g-tabs__tab-list">
-                <template v-for="(tab, index) in tabsSetting.tabs" :key="index">
-                    <li class="g-tabs__tab-li" @click="tabsSetting.activeTab = index"
-                        :class="{ 'active': tabsSetting.activeTab === index }">{{
-                            tab.name }}</li>
-                </template>
-            </ul>
+            <div class="g-tabs__tab-box" :data-pop="tabPop">
+                <ul class="g-tabs__tab-list" :data-num="tabsSetting.tabs.length">
+                    <template v-for="(tab, index) in tabsSetting.tabs" :key="index">
+                        <li class="g-tabs__tab-li" @click="tabsSetting.activeTab = index"
+                            :class="{ 'active': tabsSetting.activeTab === index }" ref="tabRef">{{
+                                tab.name }}</li>
+                    </template>
+                </ul>
+                <a href="javascript:;" class="g-tabs__tab-pop" @click="openTabPop"></a>
+            </div>
             <div class="g-tabs__content">
                 <template v-for="(tab, index) in tabsSetting.tabs" :key="index">
-                    <div class="g-tabs__box" v-show="tabsSetting.activeTab === index">
+                    <div class="g-tabs__box" :class="[tabsSetting.activeTab === index ? 'show' : '']"
+                         :data-type="tabsSetting.type" ref="tabBox">
                         <div class="g-tabs__title">
                             <span>{{ tab.title }}</span>
                             <span v-if="tab.subtitle">{{ tab.subtitle }}</span>
@@ -450,7 +500,7 @@ const closePop = (data, url) => {
                                         <div class="g-img__img-box">
                                             <picture>
                                                 <source media="(max-width:768px)" :srcset="tab.img.mobile" />
-                                                <img :srcset="tab.img.pc" :src="tab.img.pc" alt="" />
+                                                <img :srcset="tab.img.pc" :src="tab.img.pc" alt="" @load="imageLoaded" />
                                             </picture>
                                         </div>
                                     </div>
@@ -461,7 +511,8 @@ const closePop = (data, url) => {
                                         <div class="g-img__img-box">
                                             <picture>
                                                 <source media="(max-width:768px)" :srcset="tab.img.mobile || tab.img.pc" />
-                                                <img class="g-img__img" :srcset="tab.img.pc" :src="tab.img.pc" alt="" />
+                                                <img class="g-img__img" :srcset="tab.img.pc" :src="tab.img.pc" alt=""
+                                                     @load="imageLoaded" />
                                             </picture>
                                         </div>
                                     </a>
@@ -473,12 +524,13 @@ const closePop = (data, url) => {
                                         <div class="g-img__img-box">
                                             <picture>
                                                 <source media="(max-width:768px)" :srcset="tab.img.mobile || tab.img.pc" />
-                                                <img class="g-img__img" :srcset="tab.img.pc" :src="tab.img.pc" alt="" />
+                                                <img class="g-img__img" :srcset="tab.img.pc" :src="tab.img.pc" alt=""
+                                                     @load="imageLoaded" />
                                             </picture>
                                         </div>
                                         <g-lightbox v-model:showLightbox="tab.img.pop.show"
                                                     :style="colors[tab.img.pop.style]"
-                                                    :class="tab.img.pop.align">
+                                                    :class="[tab.img.pop.align, tab.img.pop.type == 'slide' ? 'pop-slide' : '']">
                                             <template #lightbox-close v-if="tab.img.pop.closeCheckRedirect == 'true'">
                                                 <a href="javascript:;" class="g-lightbox__close icon-close"
                                                    @click="closePop(tab.img, tab.img.pop.closeRedirect)"></a>
@@ -546,6 +598,16 @@ const closePop = (data, url) => {
             </div>
             <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
         </div>
+        <g-lightbox v-model:showLightbox="tabPopShow" :style="[colors[tabsSetting.style]]"
+                    :action="false"
+                    class="lb-pop-tab">
+            <template #lightbox-content>
+                <ul class="g-lightbox__tab-list">
+                    <li class="g-lightbox__tab-li" v-for="(tab, index) in tabsSetting.tabs"
+                        :class="{ 'active': tabsSetting.activeTab === index }" @click="targetTab(index)">{{ tab.name }}</li>
+                </ul>
+            </template>
+        </g-lightbox>
         <g-edit v-model:showEdit="showEdit">
             <template #edit-close>
                 <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
@@ -573,7 +635,7 @@ const closePop = (data, url) => {
                     <g-radio label="影片" name="type" value="video" v-model="tabsData.type" />
                     <g-radio label="文字" name="type" value="text" v-model="tabsData.type" />
                 </div>
-                <template v-for="(tab, index) in tabsData.tabs" :key="index">
+                <template v-for="( tab, index ) in  tabsData.tabs " :key="index">
                     <div class="g-edit__row">
                         <div class="g-edit__col">
                             <div class="g-edit__group">
@@ -584,14 +646,11 @@ const closePop = (data, url) => {
                             </div>
                             <div class="g-edit__group">
                                 <div class="g-edit__col">
-                                    <g-input label="頁籤名稱:" v-model.trim="tab.name" :required="true"
+                                    <g-input label="頁籤名稱:" v-model.trim="tab.name" :required="true" max="8"
                                              :valid="tab.validName" />
                                 </div>
                                 <div class="g-edit__col">
-                                    <g-input label="主標:" v-model.trim="tab.title" />
-                                </div>
-                                <div class="g-edit__col">
-                                    <g-input label="小標:" v-model.trim="tab.subtitle" />
+                                    <g-input label="主標:" v-model.trim="tab.title" max="20" />
                                 </div>
                                 <template v-if="tabsData.type == 'img'">
                                     <div class="g-edit__col">
@@ -600,13 +659,16 @@ const closePop = (data, url) => {
                                                  :valid="tab.img.validPC" />
                                     </div>
                                     <div class="g-edit__col">
-                                        <g-input label="手機版圖片:" v-model.trim="tab.img.mobile" :preview="tab.img.mobile" />
+                                        <g-input label="手機版圖片:" v-model.trim="tab.img.mobile"
+                                                 :preview="tab.img.mobile" />
                                     </div>
                                     <div class="g-edit__col">
                                         <div class="input-group__label required">開啟方式:</div>
                                         <g-radio label="無" :name="'type' + index" value="" v-model="tab.img.type" />
-                                        <g-radio label="POP視窗" :name="'type' + index" value="pop" v-model="tab.img.type" />
-                                        <g-radio label="連結跳轉" :name="'type' + index" value="link" v-model="tab.img.type" />
+                                        <g-radio label="POP視窗" :name="'type' + index" value="pop"
+                                                 v-model="tab.img.type" />
+                                        <g-radio label="連結跳轉" :name="'type' + index" value="link"
+                                                 v-model="tab.img.type" />
                                     </div>
                                     <template v-if="tab.img.type == 'pop'">
                                         <div class="g-edit__col">
@@ -671,7 +733,8 @@ const closePop = (data, url) => {
                                                     <div class="input-group__label required">輪播切換方式:</div>
                                                     <g-radio label="左右箭頭" :name="'control' + index" value="navigation"
                                                              v-model="tab.img.pop.control" />
-                                                    <g-radio label="下方點點(或預覽)" :name="'control' + index" value="pagination"
+                                                    <g-radio label="下方點點(或預覽)" :name="'control' + index"
+                                                             value="pagination"
                                                              v-model="tab.img.pop.control" />
                                                     <g-radio label="都不顯示" :name="'control' + index" value="no"
                                                              v-model="tab.img.pop.control" />
@@ -679,7 +742,7 @@ const closePop = (data, url) => {
                                                              v-model="tab.img.pop.control" />
                                                 </div>
                                             </div>
-                                            <div class="g-edit__row" v-for="(slide, slideIndex) in tab.img.pop.slides">
+                                            <div class="g-edit__row" v-for="( slide, slideIndex ) in  tab.img.pop.slides ">
                                                 <div class="g-edit__col">
                                                     <div class="g-edit__group">
                                                         <a href="javascript:;" class="icon icon-add"
@@ -746,8 +809,10 @@ const closePop = (data, url) => {
                                     </div>
                                     <div class="g-edit__col">
                                         <div class="input-group__label required">手機使用YoutubeAPP開啟:</div>
-                                        <g-radio label="是" :name="'app' + index" :value="true" v-model="tab.video.app" />
-                                        <g-radio label="否" :name="'app' + index" :value="false" v-model="tab.video.app" />
+                                        <g-radio label="是" :name="'app' + index" :value="true"
+                                                 v-model="tab.video.app" />
+                                        <g-radio label="否" :name="'app' + index" :value="false"
+                                                 v-model="tab.video.app" />
                                     </div>
                                 </template>
                                 <template v-if="tabsData.type == 'text'">
@@ -759,7 +824,8 @@ const closePop = (data, url) => {
                                                  v-model="tab.text.align" />
                                     </div>
                                     <div class="g-edit__col">
-                                        <g-select label="主題顏色:" :group="true" :options="[style1, style2]" :required="true"
+                                        <g-select label="主題顏色:" :group="true" :options="[style1, style2]"
+                                                  :required="true"
                                                   :valid="tab.text.validStyle"
                                                   v-model="tab.text.style" />
                                     </div>

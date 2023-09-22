@@ -47,11 +47,6 @@ const initData = () => {
                 url: "",
                 validCard: true
             },
-            autoplay: {
-                open: false,
-                delay: 2,
-                validDelay: true
-            },
             pop: {
                 show: false, type: "text",
                 align: "left",
@@ -63,7 +58,12 @@ const initData = () => {
                 closeCheckRedirect: false,
                 closeRedirect: "",
                 num: 1,
-                control: 'all'
+                control: 'all',
+                autoplay: {
+                    open: false,
+                    delay: 3,
+                    validDelay: true
+                }
             },
             target: {
                 link: "",
@@ -94,6 +94,13 @@ watchEffect(async () => {
                         validCard: true
                     }
                 }
+                if (!img.pop.autoplay) {
+                    img.pop.autoplay = {
+                        open: false,
+                        delay: 3,
+                        validDelay: true
+                    }
+                }
             })
             _imgDataLength.value = imgData.num;
             imgLoading(imgData.imgs).then((res) => {
@@ -118,6 +125,13 @@ onMounted(async () => {
                     style: "",
                     url: "",
                     validCard: true
+                }
+            }
+            if (!img.pop.autoplay) {
+                img.pop.autoplay = {
+                    open: false,
+                    delay: 3,
+                    validDelay: true
                 }
             }
         })
@@ -229,7 +243,7 @@ const onChange = (e) => {
 }
 
 function validateCard(card) {
-    if (!card.title.trim() || !card.text.trim() || !card.url.trim()) {
+    if (!card.title.trim() && !card.text.trim() && !card.url.trim()) {
         card.validCard = false;
         return false;
     }
@@ -352,11 +366,11 @@ const closePop = (data, url) => {
 
 </script>
 <template>
-    <div class="g-img" :style="[colors[imgSetting.style], cssVar]" :class="[loading ? 'loading' : '']">
+    <div class="g-img" :style="[cssVar]" :class="[loading ? 'loading' : '']">
         <div class="g-img-container" :data-num="imgSetting.num">
             <template v-if="!loading" v-for="imgs in imgSetting.imgs">
                 <template v-if="store.status == 'edit'">
-                    <div class="g-img__box edit" :class="[imgs.type ? '' : 'none']">
+                    <div class="g-img__box edit" :class="[imgs.type ? '' : 'none']" :style="[colors[imgs.card.style]]">
                         <div class="g-img__img-box">
                             <picture>
                                 <source media="(max-width:768px)" :srcset="imgs.mobile || imgs.pc" />
@@ -367,7 +381,8 @@ const closePop = (data, url) => {
                             <div class="g-img__card-body">
                                 <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title }}</div>
                                 <div class="g-img__card-text" v-if="imgs.card.text !== ''" v-html="imgs.card.text"></div>
-                                <a class="g-img__card-link" v-if="imgs.card.url !== ''">馬上點我看詳情</a>
+                                <a class="g-img__card-link" v-if="imgs.card.url !== '' && imgs.type == 'link'">{{
+                                    imgs.card.url }}</a>
                             </div>
                         </template>
                     </div>
@@ -375,7 +390,7 @@ const closePop = (data, url) => {
 
                 <template v-if="store.status != 'edit'">
                     <template v-if="imgs.type == ''">
-                        <div class="g-img__box none">
+                        <div class="g-img__box none" :style="[colors[imgs.card.style]]">
                             <div class="g-img__img-box" :class="[imgs.effectCheck == 'true' ? 'effectImg' : '']">
                                 <picture>
                                     <source media="(max-width:768px)" :srcset="imgs.mobile" />
@@ -390,15 +405,15 @@ const closePop = (data, url) => {
                                     <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title }}</div>
                                     <div class="g-img__card-text" v-if="imgs.card.text !== ''" v-html="imgs.card.text">
                                     </div>
-                                    <a class="g-img__card-link" :href="imgs.card.url"
-                                       v-if="imgs.card.url !== ''">馬上點我看詳情</a>
+                                    <a class="g-img__card-link" :href="imgs.target.link"
+                                       v-if="imgs.card.url !== ''">{{ imgs.card.url }}</a>
                                 </div>
                             </template>
                         </div>
                     </template>
                     <template v-if="imgs.type == 'link'">
                         <template v-if="imgs.card.url != ''">
-                            <div class="g-img__box">
+                            <div class="g-img__box" :style="[colors[imgs.card.style]]">
                                 <div class="g-img__img-box" :class="[imgs.effectCheck == 'true' ? 'effectImg' : '']">
                                     <picture>
                                         <source media="(max-width:768px)" :srcset="imgs.mobile || imgs.pc" />
@@ -414,15 +429,16 @@ const closePop = (data, url) => {
                                         </div>
                                         <div class="g-img__card-text" v-if="imgs.card.text !== ''" v-html="imgs.card.text">
                                         </div>
-                                        <a class="g-img__card-link" :href="imgs.card.url"
-                                           v-if="imgs.card.url !== ''">馬上點我看詳情</a>
+                                        <a class="g-img__card-link" :href="imgs.target.link"
+                                           v-if="imgs.card.url !== ''">{{ imgs.card.url }}</a>
                                     </div>
                                 </template>
                             </div>
                         </template>
                         <template v-else>
                             <a :href="[imgs.target.link ? imgs.target.link : 'javascript:;']"
-                               :target="[imgs.target.attribute == true ? '_blank' : '_self']" class="g-img__box">
+                               :target="[imgs.target.attribute == true ? '_blank' : '_self']" class="g-img__box"
+                               :style="[colors[imgs.card.style]]">
                                 <div class="g-img__img-box" :class="[imgs.effectCheck == 'true' ? 'effectImg' : '']">
                                     <picture>
                                         <source media="(max-width:768px)" :srcset="imgs.mobile || imgs.pc" />
@@ -446,6 +462,7 @@ const closePop = (data, url) => {
                     <template v-if="imgs.type == 'pop'">
                         <div class="g-img__box"
                              :class="[store.status == 'edit' ? 'edit' : '']"
+                             :style="[colors[imgs.card.style]]"
                              @click="openPop(imgs)">
                             <div class="g-img__img-box" :class="[imgs.effectCheck == 'true' ? 'effectImg' : '']">
                                 <picture>
@@ -462,12 +479,10 @@ const closePop = (data, url) => {
                                     <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title }}</div>
                                     <div class="g-img__card-text" v-if="imgs.card.text !== ''" v-html="imgs.card.text">
                                     </div>
-                                    <a class="g-img__card-link" :href="imgs.card.url"
-                                       v-if="imgs.card.url !== ''">馬上點我看詳情</a>
                                 </div>
                             </template>
                             <g-lightbox v-model:showLightbox="imgs.pop.show" :style="colors[imgs.pop.style]"
-                                        :class="imgs.pop.align">
+                                        :class="imgs.pop.align" class="pop-slide">
                                 <template #lightbox-close v-if="imgs.pop.closeCheckRedirect == 'true'">
                                     <a href="javascript:;" class="g-lightbox__close icon-close"
                                        @click="closePop(imgs, imgs.pop.closeRedirect)"></a>
@@ -537,10 +552,6 @@ const closePop = (data, url) => {
                                   warning="標題、內文以及連結文字至少填寫一個，限制字數250字" />
                     </div>
                     <div class="g-edit__col">
-                        <g-input label="超連結文字:" v-model.trim="img.card.url" max="50" :valid="img.card.validCard"
-                                 warning="標題、內文以及連結文字至少填寫一個，限制字數50字" />
-                    </div>
-                    <div class="g-edit__col">
                         <div class="input-group__label">圖片特效:</div>
                         <g-radio label="無" :name="'effect' + index" :value="false" v-model="img.effectCheck" />
                         <g-radio label="換圖" :name="'effect' + index" :value="true" v-model="img.effectCheck" />
@@ -596,12 +607,13 @@ const closePop = (data, url) => {
                                 <div class="g-edit__col">
                                     <div class="input-group__label required">自動輪播:</div>
                                     <g-radio label="開啟" :name="'autoplay' + index" :value="true"
-                                             v-model="img.autoplay.open" />
+                                             v-model="img.pop.autoplay.open" />
                                     <g-radio label="關閉" :name="'autoplay' + index" :value="false"
-                                             v-model="img.autoplay.open" />
+                                             v-model="img.pop.autoplay.open" />
                                 </div>
-                                <div class="g-edit__col" v-if="img.autoplay.open == 'true'">
-                                    <g-input label="秒數:" v-model="img.autoplay.delay" :valid="img.autoplay.validDelay"
+                                <div class="g-edit__col" v-if="img.pop.autoplay.open == 'true'">
+                                    <g-input label="秒數:" v-model="img.pop.autoplay.delay"
+                                             :valid="img.pop.autoplay.validDelay"
                                              :required="true" />
                                 </div>
                                 <div class="g-edit__col">
@@ -648,11 +660,17 @@ const closePop = (data, url) => {
                             <g-radio label="否" :name="'redirect' + index" :value="false"
                                      v-model="img.pop.closeCheckRedirect" />
                         </div>
-                        <div class="g-edit__col" v-if="img.pop.closeCheckRedirect == 'true'">
-                            <g-input label="跳轉連結:" v-model.trim="img.pop.closeRedirect" />
-                        </div>
+                        <template v-if="img.pop.closeCheckRedirect == 'true'">
+                            <div class="g-edit__col">
+                                <g-input label="跳轉連結:" v-model.trim="img.pop.closeRedirect" />
+                            </div>
+                        </template>
                     </template>
                     <template v-if="img.type == 'link'">
+                        <div class="g-edit__col">
+                            <g-input label="超連結文字:" v-model.trim="img.card.url" max="50" :valid="img.card.validCard"
+                                     warning="標題、內文以及連結文字至少填寫一個，限制字數50字" />
+                        </div>
                         <div class="g-edit__col">
                             <g-input label="連結:" :required="true" v-model.trim="img.target.link"
                                      :valid="img.target.validUrl" />

@@ -286,7 +286,8 @@ const closePop = (data, url) => {
         </template>
         <template v-if="store.status != 'edit'">
             <template v-if="watermarkSetting.type == ''">
-                <div class="g-watermark__box none">
+                <div class="g-watermark__box none"
+                     :class="[watermarkSetting.mobileShow === true || watermarkSetting.mobileShow === 'true' ? 'mobileShow' : '']">
                     <div class="g-watermark__img-box" :class="[watermarkSetting.effectCheck == 'true' ? 'effectImg' : '']">
                         <picture>
                             <source media="(max-width:768px)" :srcset="watermarkSetting.mobile" />
@@ -300,7 +301,8 @@ const closePop = (data, url) => {
             </template>
             <template v-if="watermarkSetting.type == 'link'">
                 <a :href="[watermarkSetting.target.link ? watermarkSetting.target.link : 'javascript:;']"
-                   :target="[watermarkSetting.target.attribute == true ? '_blank' : '_self']" class="g-watermark__box">
+                   :target="[watermarkSetting.target.attribute == true ? '_blank' : '_self']" class="g-watermark__box"
+                   :class="[watermarkSetting.mobileShow === true || watermarkSetting.mobileShow === 'true' ? 'mobileShow' : '']">
                     <div class="g-watermark__img-box" :class="[watermarkSetting.effectCheck == 'true' ? 'effectImg' : '']">
                         <picture>
                             <source media="(max-width:768px)" :srcset="watermarkSetting.mobile || watermarkSetting.pc" />
@@ -314,9 +316,10 @@ const closePop = (data, url) => {
             </template>
             <template v-if="watermarkSetting.type == 'pop'">
                 <div class="g-watermark__box"
-                     :class="[store.status == 'edit' ? 'edit' : '']"
+                     :class="[store.status == 'edit' ? 'edit' : '', watermarkSetting.mobileShow === true || watermarkSetting.mobileShow === 'true' ? 'mobileShow' : '']"
                      @click="openPop(watermarkSetting)">
-                    <div class="g-watermark__img-box" :class="[watermarkSetting.effectCheck == 'true' ? 'effectImg' : '']">
+                    <div class="g-watermark__img-box"
+                         :class="[watermarkSetting.effectCheck == 'true' ? 'effectImg' : '']">
                         <picture>
                             <source media="(max-width:768px)" :srcset="watermarkSetting.mobile || watermarkSetting.pc" />
                             <img class="g-watermark__img" :srcset="watermarkSetting.pc" :src="watermarkSetting.pc" alt="" />
@@ -328,7 +331,7 @@ const closePop = (data, url) => {
                     </div>
 
                     <g-lightbox v-model:showLightbox="watermarkSetting.pop.show" :style="colors[watermarkSetting.pop.style]"
-                                :class="watermarkSetting.pop.align">
+                                :class="[watermarkSetting.pop.align, watermarkSetting.pop.type == 'slide' ? 'pop-slide' : '']">
                         <template #lightbox-close v-if="watermarkSetting.pop.closeCheckRedirect == 'true'">
                             <a href="javascript:;" class="g-lightbox__close icon-close"
                                @click="closePop(watermarkSetting, watermarkSetting.pop.closeRedirect)"></a>

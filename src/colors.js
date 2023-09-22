@@ -35,7 +35,18 @@ let red1 = {
 	"--menu-item-bg": "#ffffff",
 	"--menu-item-text": "#8c4142",
 	"--menu-top": "#8c4142",
-	"--menu-box-shadow": "rgba(255,255,255,.6)"
+	"--menu-box-shadow": "rgba(255,255,255,.6)",
+	"--simple-btn-bg": "255,255,255",
+	"--simple-btn-text": "140,65,66",
+	"--accordion-prefix": "#f5f765",
+	"--accordion-text": "#fff",
+	"--accordion-header-bg-close": "#8c4142",
+	"--accordion-header-bg-open": "#703435",
+	"--shadow": "0,0,0",
+	"--tab-disabled-bg": "#bfbfbf",
+	"--tab-disabled-text": "#696969",
+	"--mobile-tab-bg": "#8c4142",
+	"--mobile-tab-text": "#fff"
 };
 let red2 = {
 	"--text": "#fff",
@@ -43,7 +54,7 @@ let red2 = {
 	"--link": "#ffe26f",
 	"--btnBg": "#fff",
 	"--btnText": "#8c4142",
-	"--hoverBg": "#703435)",
+	"--hoverBg": "#703435",
 	"--hoverText": "#282828",
 	"--menu-border-color": "#e8d9d9",
 	"--menu-sidebar-bg": "#8c4142",
@@ -53,7 +64,18 @@ let red2 = {
 	"--menu-item-bg": "#703435",
 	"--menu-item-text": "#e8d9d9",
 	"--menu-top": "#fff",
-	"--menu-box-shadow": "rgba(0,0,0,.6)"
+	"--menu-box-shadow": "rgba(0,0,0,.6)",
+	"--simple-btn-bg": "140,65,66",
+	"--simple-btn-text": "255,255,255",
+	"--accordion-prefix": "#8c4142",
+	"--accordion-text": "#3a3a3a",
+	"--accordion-header-bg-close": "#fff",
+	"--accordion-header-bg-open": "#e8d9d9",
+	"--shadow": "255,255,255",
+	"--tab-disabled-bg": "#8d8d8d",
+	"--tab-disabled-text": "#e1e1e1",
+	"--mobile-tab-bg": "#8c4142",
+	"--mobile-tab-text": "#fff"
 };
 
 let orange1 = {
@@ -72,7 +94,18 @@ let orange1 = {
 	"--menu-item-bg": "#fff",
 	"--menu-item-text": "#ec8d31",
 	"--menu-top": "#ec8d31",
-	"--menu-box-shadow": "rgba(255,255,255,.6)"
+	"--menu-box-shadow": "rgba(255,255,255,.6)",
+	"--simple-btn-bg": "255,255,255",
+	"--simple-btn-text": "236,141,49",
+	"--accordion-prefix": "#f5f765",
+	"--accordion-text": "#fff",
+	"--accordion-header-bg-close": "#ec8d31",
+	"--accordion-header-bg-open": "#bd7127",
+	"--shadow": "0,0,0",
+	"--tab-disabled-bg": "#bfbfbf",
+	"--tab-disabled-text": "#696969",
+	"--mobile-tab-bg": "#3a3a3a",
+	"--mobile-tab-text": "#fff"
 };
 let orange2 = {
 	"--text": "#fff",
@@ -90,7 +123,18 @@ let orange2 = {
 	"--menu-item-bg": "#bd7127",
 	"--menu-item-text": "#fbe8d6",
 	"--menu-top": "#ffffff",
-	"--menu-box-shadow": "rgba(0,0,0,.6)"
+	"--menu-box-shadow": "rgba(0,0,0,.6)",
+	"--simple-btn-bg": "236,141,49",
+	"--simple-btn-text": "255,255,255",
+	"--accordion-prefix": "#ec8d31",
+	"--accordion-text": "#3a3a3a",
+	"--accordion-header-bg-close": "#fff",
+	"--accordion-header-bg-open": "#fbe8d6",
+	"--shadow": "255,255,255",
+	"--tab-disabled-bg": "#8d8d8d",
+	"--tab-disabled-text": "#e1e1e1",
+	"--mobile-tab-bg": "#3a3a3a",
+	"--mobile-tab-text": "#fff"
 };
 
 let yellow1 = {
@@ -109,7 +153,18 @@ let yellow1 = {
 	"--menu-item-bg": "#ffffff",
 	"--menu-item-text": "#f8b300",
 	"--menu-top": "#f8b300",
-	"--menu-box-shadow": "rgba(255,255,255,.6)"
+	"--menu-box-shadow": "rgba(255,255,255,.6)",
+	"--simple-btn-bg": "255,255,255",
+	"--simple-btn-text": "248,179,0",
+	"--accordion-prefix": "#cc289c",
+	"--accordion-text": "#fff",
+	"--accordion-header-bg-close": "#f8b300",
+	"--accordion-header-bg-open": "#c68f00",
+	"--shadow": "0,0,0",
+	"--tab-disabled-bg": "#bfbfbf",
+	"--tab-disabled-text": "#696969",
+	"--mobile-tab-bg": "#f8b300",
+	"--mobile-tab-text": "#fff"
 };
 let yellow2 = {
 	"--text": "#3a3a3a",
@@ -127,7 +182,18 @@ let yellow2 = {
 	"--menu-item-bg": "#c68f00",
 	"--menu-item-text": "#fef1cc",
 	"--menu-top": "#ffffff",
-	"--menu-box-shadow": "rgba(0,0,0,.6)"
+	"--menu-box-shadow": "rgba(0,0,0,.6)",
+	"--simple-btn-bg": "248,179,0",
+	"--simple-btn-text": "58,58,58",
+	"--accordion-prefix": "#f8b300",
+	"--accordion-text": "#3a3a3a",
+	"--accordion-header-bg-close": "#fff",
+	"--accordion-header-bg-open": "#fef0cc",
+	"--shadow": "255,255,255",
+	"--tab-disabled-bg": "#8d8d8d",
+	"--tab-disabled-text": "#e1e1e1",
+	"--mobile-tab-bg": "#f8b300",
+	"--mobile-tab-text": "#fff"
 };
 let green1 = {
 	"--text": "#3a3a3a",
@@ -145,7 +211,18 @@ let green1 = {
 	"--menu-item-bg": "#ffffff",
 	"--menu-item-text": "#6cc05c",
 	"--menu-top": "#6cc05c",
-	"--menu-box-shadow": "rgba(255,255,255,.6)"
+	"--menu-box-shadow": "rgba(255,255,255,.6)",
+	"--simple-btn-bg": "255,255,255",
+	"--simple-btn-text": "108,192,92",
+	"--accordion-prefix": "#fffd4c",
+	"--accordion-text": "#fff",
+	"--accordion-header-bg-close": "#6cc05c",
+	"--accordion-header-bg-open": "#569a4a",
+	"--shadow": "0,0,0",
+	"--tab-disabled-bg": "#bfbfbf",
+	"--tab-disabled-text": "#696969",
+	"--mobile-tab-bg": "#6cc05c",
+	"--mobile-tab-text": "#fff"
 };
 let green2 = {
 	"--text": "#fff",
@@ -163,7 +240,18 @@ let green2 = {
 	"--menu-item-bg": "#569a4a",
 	"--menu-item-text": "#e2f2de",
 	"--menu-top": "#ffffff",
-	"--menu-box-shadow": "rgba(0,0,0,.6)"
+	"--menu-box-shadow": "rgba(0,0,0,.6)",
+	"--simple-btn-bg": "108,192,92",
+	"--simple-btn-text": "255,255,255",
+	"--accordion-prefix": "#80c872",
+	"--accordion-text": "#3a3a3a",
+	"--accordion-header-bg-close": "#fff",
+	"--accordion-header-bg-open": "#e2f2de",
+	"--shadow": "255,255,255",
+	"--tab-disabled-bg": "#8d8d8d",
+	"--tab-disabled-text": "#e1e1e1",
+	"--mobile-tab-bg": "#6cc05c",
+	"--mobile-tab-text": "#fff"
 };
 
 let blue1 = {
@@ -182,7 +270,18 @@ let blue1 = {
 	"--menu-item-bg": "#ffffff",
 	"--menu-item-text": "#5caec0",
 	"--menu-top": "#5caec0",
-	"--menu-box-shadow": "rgba(255,255,255,.6)"
+	"--menu-box-shadow": "rgba(255,255,255,.6)",
+	"--simple-btn-bg": "255,255,255",
+	"--simple-btn-text": "92,174,192",
+	"--accordion-prefix": "#fff600",
+	"--accordion-text": "#fff",
+	"--accordion-header-bg-close": "#5caec0",
+	"--accordion-header-bg-open": "#567490",
+	"--shadow": "0,0,0",
+	"--tab-disabled-bg": "#bfbfbf",
+	"--tab-disabled-text": "#696969",
+	"--mobile-tab-bg": "#5caec0",
+	"--mobile-tab-text": "#fff"
 };
 let blue2 = {
 	"--text": "#fff",
@@ -200,7 +299,18 @@ let blue2 = {
 	"--menu-item-bg": "#4a8b9a",
 	"--menu-item-text": "#deeff2",
 	"--menu-top": "#ffffff",
-	"--menu-box-shadow": "rgba(0,0,0,.6)"
+	"--menu-box-shadow": "rgba(0,0,0,.6)",
+	"--simple-btn-bg": "92,174,192",
+	"--simple-btn-text": "255,255,255",
+	"--accordion-prefix": "#5caec0",
+	"--accordion-text": "#3a3a3a",
+	"--accordion-header-bg-close": "#fff",
+	"--accordion-header-bg-open": "#deeff2",
+	"--shadow": "255,255,255",
+	"--tab-disabled-bg": "#8d8d8d",
+	"--tab-disabled-text": "#e1e1e1",
+	"--mobile-tab-bg": "#5caec0",
+	"--mobile-tab-text": "#fff"
 };
 let indigo1 = {
 	"--text": "#3a3a3a",
@@ -218,7 +328,18 @@ let indigo1 = {
 	"--menu-item-bg": "#ffffff",
 	"--menu-item-text": "#6c91b4",
 	"--menu-top": "#6c91b4",
-	"--menu-box-shadow": "rgba(255,255,255,.6)"
+	"--menu-box-shadow": "rgba(255,255,255,.6)",
+	"--simple-btn-bg": "255,255,255",
+	"--simple-btn-text": "108,145,180",
+	"--accordion-prefix": "#ffd800",
+	"--accordion-text": "#fff",
+	"--accordion-header-bg-close": "#6c91b4",
+	"--accordion-header-bg-open": "#567490",
+	"--shadow": "0,0,0",
+	"--tab-disabled-bg": "#bfbfbf",
+	"--tab-disabled-text": "#696969",
+	"--mobile-tab-bg": "#6c91b4",
+	"--mobile-tab-text": "#fff"
 };
 let indigo2 = {
 	"--text": "#fff",
@@ -236,7 +357,18 @@ let indigo2 = {
 	"--menu-item-bg": "#567490",
 	"--menu-item-text": "#e2e9f0",
 	"--menu-top": "#ffffff",
-	"--menu-box-shadow": "rgba(0,0,0,.6)"
+	"--menu-box-shadow": "rgba(0,0,0,.6)",
+	"--simple-btn-bg": "108,145,180",
+	"--simple-btn-text": "255,255,255",
+	"--accordion-prefix": "#6c91b4",
+	"--accordion-text": "#3a3a3a",
+	"--accordion-header-bg-close": "#fff",
+	"--accordion-header-bg-open": "#e2e9f0",
+	"--shadow": "255,255,255",
+	"--tab-disabled-bg": "#8d8d8d",
+	"--tab-disabled-text": "#e1e1e1",
+	"--mobile-tab-bg": "#6c91b4",
+	"--mobile-tab-text": "#fff"
 };
 let purple1 = {
 	"--text": "#3a3a3a",
@@ -254,7 +386,18 @@ let purple1 = {
 	"--menu-item-bg": "#ffffff",
 	"--menu-item-text": "#6c689a",
 	"--menu-top": "#6c689a",
-	"--menu-box-shadow": "rgba(255,255,255,.6)"
+	"--menu-box-shadow": "rgba(255,255,255,.6)",
+	"--simple-btn-bg": "255,255,255",
+	"--simple-btn-text": "108,104,154",
+	"--accordion-prefix": "#ffd800",
+	"--accordion-text": "#fff",
+	"--accordion-header-bg-close": "#6c689a",
+	"--accordion-header-bg-open": "#56537b",
+	"--shadow": "0,0,0",
+	"--tab-disabled-bg": "#bfbfbf",
+	"--tab-disabled-text": "#696969",
+	"--mobile-tab-bg": "#6c689a",
+	"--mobile-tab-text": "#fff"
 };
 let purple2 = {
 	"--text": "#fff",
@@ -272,7 +415,18 @@ let purple2 = {
 	"--menu-item-bg": "#56537b",
 	"--menu-item-text": "#e2e1eb",
 	"--menu-top": "#ffffff",
-	"--menu-box-shadow": "rgba(0,0,0,.6)"
+	"--menu-box-shadow": "rgba(0,0,0,.6)",
+	"--simple-btn-bg": "108,104,154",
+	"--simple-btn-text": "255,255,255",
+	"--accordion-prefix": "#6c689a",
+	"--accordion-text": "#3a3a3a",
+	"--accordion-header-bg-close": "#fff",
+	"--accordion-header-bg-open": "#e2e1eb",
+	"--shadow": "255,255,255",
+	"--tab-disabled-bg": "#8d8d8d",
+	"--tab-disabled-text": "#e1e1e1",
+	"--mobile-tab-bg": "#6c689a",
+	"--mobile-tab-text": "#fff"
 };
 let grayscale1 = {
 	"--text": "#3a3a3a",
@@ -290,7 +444,18 @@ let grayscale1 = {
 	"--menu-item-bg": "#ffffff",
 	"--menu-item-text": "#505050",
 	"--menu-top": "#505050",
-	"--menu-box-shadow": "rgba(255,255,255,.6)"
+	"--menu-box-shadow": "rgba(255,255,255,.6)",
+	"--simple-btn-bg": "255,255,255",
+	"--simple-btn-text": "80,80,80",
+	"--accordion-prefix": "#ffd800",
+	"--accordion-text": "#3a3a3a",
+	"--accordion-header-bg-close": "#505050",
+	"--accordion-header-bg-open": "#404040",
+	"--shadow": "0,0,0",
+	"--tab-disabled-bg": "#bfbfbf",
+	"--tab-disabled-text": "#696969",
+	"--mobile-tab-bg": "#505050",
+	"--mobile-tab-text": "#fff"
 };
 let grayscale2 = {
 	"--text": "#fff",
@@ -308,6 +473,17 @@ let grayscale2 = {
 	"--menu-item-bg": "#404040",
 	"--menu-item-text": "#dcdcdc",
 	"--menu-top": "#ffffff",
-	"--menu-box-shadow": "rgba(0,0,0,.6)"
+	"--menu-box-shadow": "rgba(0,0,0,.6)",
+	"--simple-btn-bg": "80,80,80",
+	"--simple-btn-text": "255,255,255",
+	"--accordion-prefix": "#505050",
+	"--accordion-text": "#3a3a3a",
+	"--accordion-header-bg-close": "#fff",
+	"--accordion-header-bg-open": "#dcdcdc",
+	"--shadow": "255,255,255",
+	"--tab-disabled-bg": "#8d8d8d",
+	"--tab-disabled-text": "#e1e1e1",
+	"--mobile-tab-bg": "#505050",
+	"--mobile-tab-text": "#fff"
 };
 export default { red1, red2, orange1, orange2, yellow1, yellow2, green1, green2, blue1, blue2, purple1, purple2, indigo1, indigo2, grayscale1, grayscale2 };

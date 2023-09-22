@@ -47,11 +47,6 @@ const initData = () => {
                 style: "",
                 url: ""
             },
-            autoplay: {
-                open: false,
-                delay: 3,
-                validDelay: true
-            },
             pop: {
                 show: false, type: "text",
                 align: "left",
@@ -64,7 +59,12 @@ const initData = () => {
                 closeRedirect: "",
                 num: 1,
                 control: 'all',
-                thumb: true
+                thumb: true,
+                autoplay: {
+                    open: false,
+                    delay: 3,
+                    validDelay: true
+                }
             },
             target: {
                 link: "",
@@ -94,6 +94,13 @@ watchEffect(async () => {
                         url: ""
                     }
                 }
+                if (!img.pop.autoplay) {
+                    img.pop.autoplay = {
+                        open: false,
+                        delay: 3,
+                        validDelay: true
+                    }
+                }
                 if (img.pop.thumb == undefined) {
                     img.pop.thumb = true;
                 }
@@ -120,6 +127,13 @@ onMounted(async () => {
                     text: "",
                     style: "",
                     url: ""
+                }
+            }
+            if (!img.pop.autoplay) {
+                img.pop.autoplay = {
+                    open: false,
+                    delay: 3,
+                    validDelay: true
                 }
             }
             if (img.pop.thumb == undefined) {
@@ -451,7 +465,7 @@ const closePop = (data, url) => {
                                 </div>
                             </template>
                             <g-lightbox v-model:showLightbox="imgs.pop.show" :style="colors[imgs.pop.style]"
-                                        :class="imgs.pop.align">
+                                        :class="[imgs.pop.align, imgs.pop.type == 'slide' ? 'pop-slide' : '']">
                                 <template #lightbox-close v-if="imgs.pop.closeCheckRedirect == 'true'">
                                     <a href="javascript:;" class="g-lightbox__close icon-close"
                                        @click="closePop(imgs, imgs.pop.closeRedirect)"></a>
@@ -564,12 +578,13 @@ const closePop = (data, url) => {
                                 <div class="g-edit__col">
                                     <div class="input-group__label required">自動輪播:</div>
                                     <g-radio label="開啟" :name="'autoplay' + index" :value="true"
-                                             v-model="img.autoplay.open" />
+                                             v-model="img.pop.autoplay.open" />
                                     <g-radio label="關閉" :name="'autoplay' + index" :value="false"
-                                             v-model="img.autoplay.open" />
+                                             v-model="img.pop.autoplay.open" />
                                 </div>
-                                <div class="g-edit__col" v-if="img.autoplay.open == 'true'">
-                                    <g-input label="秒數:" v-model="img.autoplay.delay" :valid="img.autoplay.validDelay"
+                                <div class="g-edit__col" v-if="img.pop.autoplay.open == 'true'">
+                                    <g-input label="秒數:" v-model="img.pop.autoplay.delay"
+                                             :valid="img.pop.autoplay.validDelay"
                                              :required="true" />
                                 </div>
                                 <div class="g-edit__col">

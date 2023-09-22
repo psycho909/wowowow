@@ -49,9 +49,13 @@ watchEffect(async () => {
     } else {
         showEdit.value = false;
     }
-    Object.assign(buttonsData, cloneDeep(props.data.content));
-    Object.assign(buttonsSetting, cloneDeep(props.data.content));
-    _buttonsDataLength.value = buttonsData.num;
+    if (!props.data.update) {
+        if (Object.keys(props.data.content).length > 0) {
+            Object.assign(buttonsData, cloneDeep(props.data.content));
+            Object.assign(buttonsSetting, cloneDeep(props.data.content));
+            _buttonsDataLength.value = buttonsData.num;
+        }
+    }
 })
 onMounted(async () => {
     await nextTick()
@@ -100,7 +104,6 @@ const openPop = (data) => {
 const onChange = (e) => {
     let num = parseInt(e.target.value); // 將字串轉換為數字
     let diff = num - buttonsData.buttons.length;
-
     if (diff > 0) {
         for (let i = 0; i < diff; i++) {
             buttonsData.buttons.push({
@@ -109,7 +112,9 @@ const onChange = (e) => {
             });
         }
     } else if (diff < 0) {
-        buttonsData.buttons.splice(num); // 直接截斷至新數量
+        console.log("IN")
+        buttonsData.buttons = buttonsData.buttons.slice(0, num); // 直接截斷至新數量
+        console.log(buttonsData.buttons)
     }
 
     buttonsData.num = num; // 更新 num
@@ -181,7 +186,7 @@ const closeBtn = () => {
 
 </script>
 <template>
-    <div class="g-buttons" :style="cssVar">
+    <div class="g-buttons" :style="[colors[buttonsSetting.style], cssVar]">
         <div class="g-buttons-container" :data-num="buttonsSetting.num" :data-align="buttonsSetting.align">
             <template v-for="button in buttonsSetting.buttons">
                 <a :href="button.url" target="_blank" class="g-buttons__btn">{{ button.text }}</a>

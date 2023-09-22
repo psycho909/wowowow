@@ -35,6 +35,7 @@ let loading = ref(true);
 const initData = () => {
     return {
         default: "",
+        theme: 0,
         langs: [{
             name: "",
             url: "",
@@ -53,6 +54,10 @@ watchEffect(async () => {
     if (!props.data.update) {
         Object.assign(langData, cloneDeep(props.data.content));
         Object.assign(langSetting, cloneDeep(props.data.content))
+        if (store.page == 'EditPage') {
+            langData.theme = store.config.footer
+            langSetting.theme = store.config.footer
+        }
     }
 
 })
@@ -127,10 +132,10 @@ const closeBtn = () => {
 </script>
 <template>
     <Teleport to="body">
-        <div class="g-lang">
+        <div class="g-lang" :data-theme="langSetting.theme">
             <div class="g-lang-container" :data-num="langSetting.num">
                 <template v-for="lang in langSetting.langs">
-                    <a :href="lang.url">{{ lang.name }}</a>
+                    <a :href="lang.url" class="g-lang__link">{{ lang.name }}</a>
                 </template>
                 <g-modify :uid="data.uid" :move="false" v-if="page == 'EditPage'" />
             </div>
