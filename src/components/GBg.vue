@@ -20,9 +20,11 @@ const props = defineProps(["data", "sub"])
 const store = mainStore()
 const { content, MODE, page } = storeToRefs(store);
 let showEdit = ref(false);
-let showColor = ref(false)
-let bgData = reactive({})
-let bgSetting = reactive({})
+let showColor = ref(false);
+let bgData = reactive({});
+let bgSetting = reactive({});
+let videoRef = ref(null);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         color: "#fff",
@@ -87,7 +89,20 @@ onMounted(async () => {
             bgData.type = {
                 pc: "img", mobile: "img"
             }
+        } else {
+            if (bgData.type.pc == 'video' || bgData.type.mobile == 'video') {
+                videoRef.value.addEventListener('loadeddata', () => {
+                    if ($addComponent) {
+                        $addComponent("BG");
+                    }
+                });
+            } else {
+                if ($addComponent) {
+                    $addComponent("BG");
+                }
+            }
         }
+
     }
 })
 const updateColor = (color) => {
@@ -114,6 +129,7 @@ const onSubmit = async () => {
     if (bgData.pc.length == 0) {
         bgData.validPC = false;
     } else {
+        console.log(bgData.pc)
         if (!await CheckImage(bgData.pc)) {
             if (!isImageOrMp4(bgData.pc)) {
                 bgData.validPC = false;
@@ -149,7 +165,7 @@ const onSubmit = async () => {
                         bgData.type.mobile = "video"
                     }
                 } catch (err) {
-                    bgData.validPC = false;
+                    bgData.validMobile = false;
                 }
             }
         } else {
@@ -203,12 +219,12 @@ const closeBtn = () => {
 <template>
     <div class="g-bg">
         <template v-if="bgSetting?.type?.pc == 'video'">
-            <video class="bg-video" autoplay="" loop="" playsinline="">
+            <video class="bg-video" autoplay="" loop="" playsinline="" ref="videoRef">
                 <source :src="bgSetting.pc" type="video/mp4">
             </video>
         </template>
         <template v-if="bgSetting?.type?.mobile == 'video'">
-            <video class="bg-video" autoplay="" loop="" playsinline="">
+            <video class="bg-video" autoplay="" loop="" playsinline="" ref="videoRef">
                 <source :src="bgSetting.mobile" type="video/mp4">
             </video>
         </template>

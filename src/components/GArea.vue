@@ -36,6 +36,7 @@ let areaData = reactive({});
 let uid = ref(props.data.uid);
 let gr = ref(props.data.group);
 let targetArea = ref(null);
+const $addComponent = inject('$addComponent');
 const validPreviousComponents = ["GLang", "GBg", "GFixed", "GIcon", "GLogo", "GDNNav", "GDNImg"];
 const initData = () => {
     return {
@@ -91,6 +92,9 @@ onMounted(async () => {
         Object.assign(areaData, cloneDeep(props.data.content));
         Object.assign(areaSetting, cloneDeep(props.data.content));
         await nextTick()
+        if ($addComponent) {
+            $addComponent();
+        }
         if (gr.value == 1) {
             handleArea()
         }

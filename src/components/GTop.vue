@@ -26,6 +26,7 @@ let topData = reactive({});
 let topSetting = reactive({})
 let styleValid = ref(true);
 let loading = ref(true);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         align: "left",
@@ -55,6 +56,9 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(topData, cloneDeep(props.data.content));
         Object.assign(topSetting, cloneDeep(props.data.content));
+        if ($addComponent) {
+            $addComponent();
+        }
     }
 })
 

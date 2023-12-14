@@ -26,6 +26,7 @@ let listTextSetting = reactive({})
 let styleValid = ref(true);
 let loading = ref(true);
 let _listTextDataLength = ref(1);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         num: 1,
@@ -75,8 +76,26 @@ onMounted(async () => {
         Object.assign(listTextData, cloneDeep(props.data.content));
         Object.assign(listTextSetting, cloneDeep(props.data.content));
         _listTextDataLength.value = listTextData.num;
+        if ($addComponent) {
+            $addComponent();
+        }
     }
 })
+
+const imageInfo = async (type, url) => {
+    return new Promise((resolve, reject) => {
+        var elem = new Image();
+        elem.onload = () => {
+            const dimensions = {
+                width: elem.width,
+                height: elem.height
+            };
+            resolve(dimensions);
+        };
+        elem.onerror = () => resolve(null);
+        elem.src = url;
+    });
+};
 
 async function validateListTextData(data) {
     let isValid = true;
@@ -94,6 +113,11 @@ async function validateListTextData(data) {
             item.validIcon = isImageValid;
             if (!isImageValid) {
                 isValid = false;
+            } else {
+                const pcImageDimensions = await imageInfo("pc", item.icon);
+                item.w = pcImageDimensions.width;
+                item.h = pcImageDimensions.height;
+                item.validIcon = true;
             }
         } else {
             item.validIcon = true;
@@ -301,14 +325,28 @@ const closeBtn = () => {
     store.editCptClose(props.data.uid, props.sub)
 }
 
+function transformNavsToCSSProps(item) {
+    const cssProps = {
+        "--icon-url": `url(${item.icon})`,
+        "--icon-w": `${item.w}`,
+        "--icon-h": `${item.h}`,
+    };
+
+    return {
+        ...cssProps,
+    };
+}
+
 </script>
 <template>
     <div class="g-listText" :style="[colors[listTextSetting.style], cssVar]">
         <div class="g-listText-container">
             <div class="g-listText-content" :data-num="listTextSetting.num">
                 <template v-for="(list, index) in listTextSetting.listTexts">
-                    <div class="g-listText-row">
-                        <div class="g-listText__title">{{ list.title }}</div>
+                    <div class="g-listText-row" :data-icon="[list.icon != '' ? true : false]"
+                         :data-align="listTextSetting.align">
+                        <div class="g-listText__title"><span class="g-listText__icon" :style="transformNavsToCSSProps(list)"
+                                  v-if="list.icon != ''"></span>{{ list.title }}</div>
                         <div class="g-listText-col" v-for="nest in listTextSetting.listTexts[index].nested">
                             <a :href="[nest.url == '' ? 'javascript:;' : nest.url]" class="g-listText__text"
                                :target="[page == 'EditPage' ? '_blank' : nest.open ? '_blank' : '']">{{ nest.text

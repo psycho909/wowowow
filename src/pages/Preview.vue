@@ -7,6 +7,7 @@ export default {
 import { storeToRefs } from "pinia";
 import components from "../Components.js";
 import GCookie from "../components/GCookie.vue";
+import GLoading from "../components/GLoading.vue";
 import { mainStore } from "../store/index";
 import { loadingShow, loadingHide, pageInfo, getBrowserLocales, getUrlSearchParams } from "../Tool";
 // import gameFooter from "../gameFooter";
@@ -15,6 +16,14 @@ const store = mainStore()
 let state = null;
 let lanBrowser = getBrowserLocales()[0];
 let lanParams = getUrlSearchParams("lan");
+const loading = ref(false);
+const componentCount = ref(0);
+const totalComponentCount = ref(0);
+provide('$addComponent', (val) => {
+    console.log(val)
+    componentCount.value += 1;
+});
+provide('$componentCount', componentCount);
 
 if (window.localStorage.getItem("state")) {
     // state = JSON.parse(window.sessionStorage.getItem("state"));
@@ -25,10 +34,12 @@ let { previewConfig, previewContent } = storeToRefs(store);
 let footer = {}
 
 onMounted(async () => {
+    loading.value = true;
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", previewConfig.value.pageTypeSeq);
     document.querySelector("body").className = "preview";
     footer.prod = previewConfig.value.gameName;
     footer.theme = previewConfig.value.footer == 1 ? 'light' : 'dark';
+    totalComponentCount.value = previewContent.value.length;
 
     pageInfo(previewConfig);
 
@@ -84,7 +95,11 @@ onMounted(async () => {
             })(window);
         }, 0);
     }
-
+    watch(componentCount, (newVal) => {
+        if (newVal === totalComponentCount.value) {
+            loading.value = false;
+        }
+    });
 })
 const bg = computed(() => {
     return previewContent.value.filter((c, i) => {
@@ -113,6 +128,7 @@ const cssVar = computed(() => {
 </script>
 <template>
     <!-- <section class="page-preview">(預覽模式)</section> -->
+    <GLoading :loading="loading"></GLoading>
     <section class="wrap" :data-type="previewConfig.pageTypeSeq" :style="cssVar">
         <template v-for="block in previewContent">
             <component :is="block.component" :data="block"></component>

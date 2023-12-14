@@ -36,11 +36,11 @@ let tabPop = ref(false);
 let tabPopShow = ref(false);
 let totalImages = ref(0);
 let imagesLoaded = ref(0);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         style: "",
         validStyle: true,
-        border: true,
         type: "img",
         activeTab: 0,
         tabs: [{
@@ -56,8 +56,6 @@ const initData = () => {
                 pop: {
                     show: false, type: "text",
                     align: "left",
-                    style: "",
-                    validStyle: true,
                     text: "",
                     img: "",
                     validImg: true,
@@ -92,19 +90,9 @@ const initData = () => {
             },
             text: {
                 align: "left",
-                style: "",
-                validStyle: true,
                 text: "",
                 validText: true,
-                type: "all",
-                collapse: {
-                    num: 3,
-                    close: "收起-",
-                    open: "展開看更多+",
-                },
-                scrollbar: {
-                    num: 3,
-                }
+                type: "all"
             }
         }],
         mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
@@ -136,17 +124,14 @@ onMounted(async () => {
         Object.assign(tabsData, cloneDeep(props.data.content));
         Object.assign(tabsSetting, cloneDeep(props.data.content))
         await nextTick();
-        let textBox = boxRef.value;
-        if (textBox) {
-            const computedStyles = getComputedStyle(textBox);
-            const collapseValue = computedStyles.getPropertyValue('--collapse');
-            textBox.style = `--collapse:${collapseValue};--max-height:${boxRef.value.scrollHeight}`
-        }
         if (tabsSetting.type == "img") {
             totalImages.value = tabsSetting.tabs.length
         }
         getHeightOfTabBoxes()
         getWidthOfTab()
+        if ($addComponent) {
+            $addComponent();
+        }
     }
 })
 
@@ -323,13 +308,6 @@ const validateTabsData = async (data) => {
                 isValid = false;
             }
 
-            if (tab.img.type === "pop" && tab.img.pop.type === "text") {
-                if (tab.img.pop.style.trim() === "") {
-                    tab.img.pop.validStyle = false;
-                    isValid = false;
-                }
-            }
-
             if (tab.img.type === "pop" && tab.img.pop.type === "img") {
                 if (tab.img.pop.img.trim() === "" || !(await CheckImage(tab.img.pop.img))) {
                     tab.img.pop.validImg = false;
@@ -476,7 +454,7 @@ const targetTab = (index) => {
     <div class="g-tabs" :style="[colors[tabsSetting.style], cssVar]">
         <div class="g-tabs-container">
             <div class="g-tabs__tab-box" :data-pop="tabPop">
-                <ul class="g-tabs__tab-list" :data-num="tabsSetting.tabs.length">
+                <ul class="g-tabs__tab-list" :data-num="tabsSetting.tabs?.length">
                     <template v-for="(tab, index) in tabsSetting.tabs" :key="index">
                         <li class="g-tabs__tab-li" @click="tabsSetting.activeTab = index"
                             :class="{ 'active': tabsSetting.activeTab === index }" ref="tabRef">{{
@@ -529,7 +507,6 @@ const targetTab = (index) => {
                                             </picture>
                                         </div>
                                         <g-lightbox v-model:showLightbox="tab.img.pop.show"
-                                                    :style="colors[tab.img.pop.style]"
                                                     :class="[tab.img.pop.align, tab.img.pop.type == 'slide' ? 'pop-slide' : '']">
                                             <template #lightbox-close v-if="tab.img.pop.closeCheckRedirect == 'true'">
                                                 <a href="javascript:;" class="g-lightbox__close icon-close"
@@ -562,7 +539,7 @@ const targetTab = (index) => {
                                     <g-youtube :youtube="tab.video.url" :pop="true" :preview="true"
                                                :openapp="tab.video.app"
                                                v-if="!videoUpdate" />
-                                    <g-lightbox v-model:showLightbox="tab.video.show" :style="tab.video.style"
+                                    <g-lightbox v-model:showLightbox="tab.video.show"
                                                 :action="false"
                                                 class="lb-video">
                                         <template #lightbox-content>
@@ -578,18 +555,6 @@ const targetTab = (index) => {
                             <template v-if="tabsSetting.type == 'text'">
                                 <template v-if="tab.text.type == 'all'">
                                     <div class="g-text__box" v-html="tab.text.text"></div>
-                                </template>
-                                <template v-if="tab.text.type == 'collapse'">
-                                    <div class="g-text__box" :class="[collapseStatus ? '' : 'collapse']"
-                                         v-html="tab.text.text"
-                                         :style="{ '--collapse': tab.text.collapse.num }" ref="boxRef"></div>
-                                    <a class="g-text__collapse-btn" href="javascript:;" @click="collapseToggle"
-                                       :style="[colors[tab.text.style]]">{{
-                                           collapseStatus ? tab.text.collapse.close : tab.text.collapse.open }}</a>
-                                </template>
-                                <template v-if="tab.text.type == 'scrollbar'">
-                                    <div class="g-text__box scrollbar" v-html="tab.text.text"
-                                         :style="[colors[tab.text.style], { '--scrollbar': tab.text.scrollbar.num }]"></div>
                                 </template>
                             </template>
                         </div>
@@ -623,11 +588,6 @@ const targetTab = (index) => {
                     <g-select label="主題顏色:" :group="true" :options="[style1, style2]" :required="true"
                               :valid="tabsData.validStyle"
                               v-model="tabsData.style" />
-                </div>
-                <div class="g-edit__row">
-                    <div class="input-group__label required">外框顯示:</div>
-                    <g-radio label="是" name="border" :value="true" v-model="tabsData.border" />
-                    <g-radio label="否" name="border" :value="false" v-model="tabsData.border" />
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">內容樣式:</div>
@@ -692,12 +652,6 @@ const targetTab = (index) => {
                                                          v-model="tab.img.pop.align" />
                                             </div>
                                             <div class="g-edit__col">
-                                                <g-select label="主題顏色" :group="true" :options="[style1, style2]"
-                                                          :required="true"
-                                                          :valid="tab.img.pop.validStyle"
-                                                          v-model="tab.img.pop.style" />
-                                            </div>
-                                            <div class="g-edit__col">
                                                 <g-ckedit v-model="tab.img.pop.text" />
                                             </div>
                                         </template>
@@ -707,12 +661,6 @@ const targetTab = (index) => {
                                                          :preview="tab.img.pop.img"
                                                          :valid="tab.img.pop.validImg"
                                                          :required="true" />
-                                            </div>
-                                            <div class="g-edit__col">
-                                                <g-select label="主題顏色" :group="true" :options="[style1, style2]"
-                                                          :required="true"
-                                                          :valid="tab.img.pop.validStyle"
-                                                          v-model="tab.img.pop.style" />
                                             </div>
                                         </template>
                                         <template v-if="tab.img.pop.type == 'slide'">
@@ -823,47 +771,6 @@ const targetTab = (index) => {
                                         <g-radio label="中" :name="'textAlign' + index" value="center"
                                                  v-model="tab.text.align" />
                                     </div>
-                                    <div class="g-edit__col">
-                                        <g-select label="主題顏色:" :group="true" :options="[style1, style2]"
-                                                  :required="true"
-                                                  :valid="tab.text.validStyle"
-                                                  v-model="tab.text.style" />
-                                    </div>
-                                    <div class="g-edit__col">
-                                        <div class="input-group__label required">收合文字:</div>
-                                        <g-radio label="全部展開" :name="'textType' + index" value="all"
-                                                 v-model="tab.text.type" />
-                                        <g-radio label="摺疊收合" :name="'textType' + index" value="collapse"
-                                                 v-model="tab.text.type" />
-                                        <g-radio label="Scrollbar" :name="'textType' + index" value="scrollbar"
-                                                 v-model="tab.text.type" />
-                                    </div>
-                                    <template v-if="tab.text.type == 'collapse'">
-                                        <div class="g-edit__row">
-                                            <div class="g-edit__col">
-                                                <g-input class="w-auto" label="文字超過:" :type="'number' + index"
-                                                         v-model="tab.text.collapse.num" />
-                                                <span>行後出現Scrollbar</span>
-                                            </div>
-                                            <div class="g-edit__col">
-                                                <g-input label="收合後文字:" type="text"
-                                                         v-model="tab.text.collapse.close" />
-                                            </div>
-                                            <div class="g-edit__col">
-                                                <g-input label="收合前文字:" type="text"
-                                                         v-model="tab.text.collapse.open" />
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <template v-if="tab.text.type == 'scrollbar'">
-                                        <div class="g-edit__row">
-                                            <div class="g-edit__col">
-                                                <g-input label="文字超過:" :type="'number' + index"
-                                                         v-model="tab.text.scrollbar.num" />
-                                                <span class="flex[1]">行後出現Scrollbar</span>
-                                            </div>
-                                        </div>
-                                    </template>
                                     <div class="g-edit__row">
                                         <g-ckedit v-model:modelValue="tab.text.text" />
                                     </div>

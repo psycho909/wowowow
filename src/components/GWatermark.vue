@@ -29,6 +29,7 @@ let watermarkSetting = reactive({})
 let styleValid = ref(true);
 let loading = ref(true);
 let slideUpdate = ref(false);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         validPC: true,
@@ -94,6 +95,9 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(watermarkData, cloneDeep(props.data.content));
         Object.assign(watermarkSetting, cloneDeep(props.data.content));
+        if ($addComponent) {
+            $addComponent("GWatermark");
+        }
     }
 })
 

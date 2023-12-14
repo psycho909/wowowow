@@ -32,6 +32,7 @@ let langOptions = ref([{
     value: "ja"
 }])
 let loading = ref(true);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         default: "",
@@ -65,7 +66,10 @@ onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(langData, cloneDeep(props.data.content));
-        Object.assign(langSetting, cloneDeep(props.data.content))
+        Object.assign(langSetting, cloneDeep(props.data.content));
+        if ($addComponent) {
+            $addComponent("GLang");
+        }
     }
 })
 

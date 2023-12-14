@@ -27,6 +27,7 @@ let iconData = reactive({});
 let iconSetting = reactive({})
 let styleValid = ref(true);
 let loading = ref(true);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         icons: [{
@@ -59,7 +60,10 @@ onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(iconData, cloneDeep(props.data.content));
-        Object.assign(iconSetting, cloneDeep(props.data.content))
+        Object.assign(iconSetting, cloneDeep(props.data.content));
+        if ($addComponent) {
+            $addComponent();
+        }
     }
 })
 

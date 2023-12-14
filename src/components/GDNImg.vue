@@ -25,6 +25,7 @@ let content = cloneDeep(props.data.content);
 let imgData = reactive({});
 let imgSetting = reactive({})
 let loading = ref(true);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         imgs: [{
@@ -62,6 +63,9 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(imgData, cloneDeep(props.data.content));
         Object.assign(imgSetting, cloneDeep(props.data.content))
+        if ($addComponent) {
+            $addComponent();
+        }
     }
 })
 

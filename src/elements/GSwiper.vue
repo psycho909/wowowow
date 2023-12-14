@@ -192,7 +192,8 @@ watchEffect(async () => {
                                 </a>
                             </template>
                             <template v-else>
-                                <div class="g-swiper__a">
+                                <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
+                                   :target="[slide.url ? '_blank' : '']">
                                     <div class="g-swiper__img-box"
                                          :class="[slide.effectCheck == 'true' ? 'effectImg' : '']">
                                         <picture>
@@ -214,7 +215,7 @@ watchEffect(async () => {
                                                v-if="slide.card.url !== ''">馬上點我看詳情</a>
                                         </div>
                                     </template>
-                                </div>
+                                </a>
                             </template>
                         </template>
                         <template v-if="slide.type == ''">

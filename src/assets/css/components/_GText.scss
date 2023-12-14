@@ -121,6 +121,7 @@
 		position: relative;
 		z-index: 0;
 		padding: 25px;
+		overflow: hidden;
 		@include media {
 			padding: vw(25);
 		}

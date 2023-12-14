@@ -22,8 +22,9 @@ let videoUpdate = ref(false);
 const store = mainStore()
 const { page } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
-let videoSetting = reactive({})
-let videoData = reactive({})
+let videoSetting = reactive({});
+let videoData = reactive({});
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         num: 1,
@@ -63,6 +64,9 @@ onMounted(async () => {
         Object.assign(videoData, cloneDeep(props.data.content));
         Object.assign(videoSetting, cloneDeep(props.data.content));
         _videoDataLength.value = videoData.num;
+        if ($addComponent) {
+            $addComponent();
+        }
     }
 })
 

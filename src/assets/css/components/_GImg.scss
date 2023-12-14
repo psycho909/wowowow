@@ -95,9 +95,8 @@
 	}
 	&__effectImg {
 		position: absolute !important;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
+		top: 0;
+		left: 0;
 		z-index: 0;
 		opacity: 0;
 		transition: all 0.3s;

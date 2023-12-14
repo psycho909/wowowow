@@ -26,7 +26,8 @@ let accordionSetting = reactive({})
 let accordionData = reactive({});
 let styleValid = ref(true);
 let loading = ref(true);
-let bodyRefs = ref([])
+let bodyRefs = ref([]);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         align: "left",
@@ -67,6 +68,9 @@ onMounted(async () => {
         bodyRefs.value.forEach(item => {
             item.style = `--max-height:${item.scrollHeight}`
         });
+        if ($addComponent) {
+            $addComponent();
+        }
     }
 })
 

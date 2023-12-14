@@ -27,7 +27,8 @@ let musicSetting = reactive({})
 const audioPlayer = ref(null);
 const musicIndex = ref(0);
 const soundOn = ref(false);
-const toggleBox = ref(false)
+const toggleBox = ref(false);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         style: "",
@@ -60,11 +61,9 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(musicData, cloneDeep(props.data.content));
         Object.assign(musicSetting, cloneDeep(props.data.content))
-        audioPlayer.value.addEventListener('ended', () => {
-            audioPlayer.value.load();
-            audioPlayer.value.play();
-        });
-        // audioPlayer.value.play();
+        if ($addComponent) {
+            $addComponent("GMusic");
+        }
     }
 })
 
@@ -234,10 +233,10 @@ const musicToggle = () => {
             <div class="g-music__box" :class="[toggleBox ? 'closed' : '']">
                 <audio ref="audioPlayer" :src="currentMusic.url" @ended="next"></audio>
                 <a href="javascript:;" class="g-music__toggle" @click="musicToggle"></a>
-                <a href="javascript:;" class="g-music__prev" @click="prev" v-if="musicSetting.musics.length > 1">上一首</a>
+                <a href="javascript:;" class="g-music__prev" @click="prev" v-if="musicSetting.musics?.length > 1">上一首</a>
                 <a href="javascript:;" @click="toggleSound" class="g-music__control"
                    :class="[soundOn ? 'paused' : 'playing']"></a>
-                <a href="javascript:;" class="g-music__next" @click="next" v-if="musicSetting.musics.length > 1">下一首</a>
+                <a href="javascript:;" class="g-music__next" @click="next" v-if="musicSetting.musics?.length > 1">下一首</a>
                 <div class="g-music__anim" :class="[soundOn ? 'moving' : '']" v-if="!toggleBox"></div>
                 <a href="javascript:;" class="g-music__anim " :class="[soundOn ? 'moving' : '']" @click="musicToggle"
                    v-else></a>

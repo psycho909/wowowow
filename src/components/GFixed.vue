@@ -27,6 +27,7 @@ let fixedSetting = reactive({});
 let fixedMenuValid = ref(true);
 let styleValid = ref(true);
 let toggleStatus = ref(false)
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         position: "left",
@@ -123,6 +124,9 @@ onMounted(async () => {
                     $(".g-fixed").removeClass("fixed")
                 }
             })
+        }
+        if ($addComponent) {
+            $addComponent("GFixed");
         }
     }
 })

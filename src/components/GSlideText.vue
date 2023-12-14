@@ -29,6 +29,7 @@ let loading = ref(true);
 let slideData = reactive({})
 let slideNumValid = ref(true);
 let styleValid = ref(true);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         group: true,
@@ -123,7 +124,11 @@ onMounted(async () => {
         })
         imgLoading(slideData.slides).then((res) => {
             loading.value = false;
+            if ($addComponent) {
+                $addComponent();
+            }
         })
+
     }
 })
 

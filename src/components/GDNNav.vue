@@ -26,6 +26,7 @@ let content = cloneDeep(props.data.content);
 let navData = reactive({});
 let navSetting = reactive({})
 let loading = ref(true);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         pcMarginTop: 0,
@@ -66,7 +67,10 @@ onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(navData, cloneDeep(props.data.content));
-        Object.assign(navSetting, cloneDeep(props.data.content))
+        Object.assign(navSetting, cloneDeep(props.data.content));
+        if ($addComponent) {
+            $addComponent();
+        }
     }
 })
 

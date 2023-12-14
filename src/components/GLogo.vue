@@ -26,6 +26,7 @@ let content = cloneDeep(props.data.content);
 let logoData = reactive({});
 let logoSetting = reactive({})
 let loading = ref(true);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         link: "",
@@ -53,6 +54,9 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(logoData, cloneDeep(props.data.content));
         Object.assign(logoSetting, cloneDeep(props.data.content))
+        if ($addComponent) {
+            $addComponent();
+        }
     }
 })
 

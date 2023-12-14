@@ -24,7 +24,8 @@ let styleValid = ref(true);
 let textUpdate = ref(false);
 let textData = reactive({})
 let collapseStatus = ref(false);
-let boxRef = ref("")
+let boxRef = ref("");
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         align: "left",
@@ -80,7 +81,9 @@ onMounted(async () => {
             const collapseValue = computedStyles.getPropertyValue('--collapse');
             textBox.style = `--collapse:${collapseValue};--max-height:${boxRef.value.scrollHeight}`
         }
-
+        if ($addComponent) {
+            $addComponent();
+        }
     }
 })
 

@@ -26,6 +26,7 @@ let buttonsData = reactive({});
 let buttonsSetting = reactive({})
 let styleValid = ref(true);
 let loading = ref(true);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         num: 1,
@@ -63,6 +64,9 @@ onMounted(async () => {
         Object.assign(buttonsData, cloneDeep(props.data.content));
         Object.assign(buttonsSetting, cloneDeep(props.data.content));
         _buttonsDataLength.value = buttonsData.num;
+        if ($addComponent) {
+            $addComponent();
+        }
     }
 })
 

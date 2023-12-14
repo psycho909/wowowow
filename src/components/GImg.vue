@@ -29,6 +29,7 @@ let imgSetting = reactive({})
 let styleValid = ref(true);
 let loading = ref(true);
 let slideUpdate = ref(false);
+const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         num: 1,
@@ -113,6 +114,7 @@ watchEffect(async () => {
         slideUpdate.value = true;
         await nextTick();
         slideUpdate.value = false;
+
     }
 })
 onMounted(async () => {
@@ -143,6 +145,9 @@ onMounted(async () => {
         _imgDataLength.value = imgData.num;
         imgLoading(imgData.imgs).then((res) => {
             loading.value = false;
+            if ($addComponent) {
+                $addComponent();
+            }
         })
     }
 })
