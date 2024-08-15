@@ -3,15 +3,9 @@ let env = import.meta.env.MODE;
 
 let apiRequest;
 
-if (env == "test") {
-	apiRequest = axios.create({
-		baseURL: "/json"
-	});
-} else {
-	apiRequest = axios.create({
-		baseURL: "api/GamaEvent/"
-	});
-}
+apiRequest = axios.create({
+	baseURL: "/json"
+});
 
 // 取得遊戲列表
 export const GetGames = (otp = 1) => {
@@ -27,27 +21,15 @@ export const GetGames = (otp = 1) => {
 
 // 取得活動列表
 export const GetEventList = (otp = 1, data) => {
-	if (env == "test") {
-		return apiRequest({
-			method: "get",
-			url: "GetEventList",
-			headers: { "Content-Type": "application/json" },
-			data,
-			params: {
-				otp
-			}
-		});
-	} else {
-		return apiRequest({
-			method: "post",
-			url: "GetEventList",
-			headers: { "Content-Type": "application/json" },
-			data,
-			params: {
-				otp
-			}
-		});
-	}
+	return apiRequest({
+		method: "get",
+		url: "GetEventList",
+		headers: { "Content-Type": "application/json" },
+		data,
+		params: {
+			otp
+		}
+	});
 };
 
 // 取得模板列表

@@ -5,6 +5,9 @@ export default {
 }
 </script>
 <script setup>
+import { ClassicEditor, AccessibilityHelp, Autosave, Bold, Essentials, Italic, Paragraph, SelectAll, Undo } from 'ckeditor5';
+
+import 'ckeditor5/ckeditor5.css';
 const props = defineProps({
     modelValue: {
         type: [String, Number],
@@ -23,14 +26,12 @@ const emit = defineEmits(["update:modelValue"])
 let editor = ref(null)
 let editorConfig = ref({})
 editor.value = ClassicEditor
-editorConfig = {
+editorConfig.value = {
     toolbar: {
-        items: [
-            'bold',
-            'italic',
-            'link',
-        ]
-    }
+        items: ['bold', 'italic', '|', 'accessibilityHelp'],
+        shouldNotGroupWhenFull: false
+    },
+    plugins: [AccessibilityHelp, Autosave, Bold, Essentials, Italic, Paragraph, SelectAll, Undo],
 }
 const textValue = computed({
     get() {
@@ -46,7 +47,7 @@ watchEffect(() => {
     }
 })
 </script>
-            
+
 <template>
     <div class="g-ckedit" :class="[valid ? '' : 'warning']">
         <ckeditor :editor="editor" :config="editorConfig" v-model="textValue"></ckeditor>
@@ -55,4 +56,3 @@ watchEffect(() => {
         </template>
     </div>
 </template>
-            
