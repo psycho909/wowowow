@@ -245,6 +245,7 @@ const onSubmit = async () => {
                 data.detail = t.template[data.pageTypeSeq].content;
                 return store.setData(data);
             }).then((res) => {
+                store.setStatus("edit");
                 status.value = "create";
                 createText.value = "活動已建立成功";
                 createLightbox.value = true;

@@ -57,7 +57,8 @@ const updateValue = (event) => {
             <select class="select-group__control" @change="updateValue" v-model="selectValue">
                 <template v-for="option in options">
                     <slot name="options" :option="option">
-                        <option :value="option.value">{{ option.text }}</option>
+                        <option :value="option.value" :disabled="option.select">{{ option.text
+                        }}</option>
                     </slot>
 
                 </template>

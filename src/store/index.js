@@ -6,6 +6,7 @@ export const mainStore = defineStore("main", {
 	state: () => {
 		return {
 			page: "Home",
+			loading: false,
 			status: "",
 			MODE: "",
 			pageTypeSeq: "",
@@ -39,6 +40,15 @@ export const mainStore = defineStore("main", {
 		}
 	},
 	actions: {
+		toggleLoading(data) {
+			if (data) {
+				this.loading = data;
+			} else {
+				setTimeout(() => {
+					this.loading = data;
+				}, 400);
+			}
+		},
 		setForm(data) {
 			this.position.from = data;
 		},
@@ -60,10 +70,16 @@ export const mainStore = defineStore("main", {
 			let temp = [...this.content.slice(0, index), component, ...this.content.slice(index)];
 			this.content = temp;
 		},
+		// 拖曳新增子元件
+		// uid: 目標區塊的uid
+		// data: 拖曳的元件資料
+		// index: 目標區塊位子的index
 		async drgAddSubCpt(uid, data, index) {
+			console.log(uid, data, index);
 			var subUid = uuidv4();
 			let subComponent;
 			let areaIndex = this.content.findIndex((item) => item.uid == uid);
+			// 如果是在區塊內新增元件
 			if (data.cpt) {
 				if (this.content[areaIndex].content.subContent[index] != undefined) {
 					if (this.content[areaIndex].content.subContent[index].component == "GSlogan") {
@@ -73,14 +89,16 @@ export const mainStore = defineStore("main", {
 				subComponent = { component: data.cpt, uid: subUid, content: {}, update: true, init: true };
 				this.content[areaIndex].content.subContent.splice(index, 0, subComponent);
 			} else {
+				// 拖曳到其他區塊執行新增元件
 				subComponent = data;
 				this.move = true;
 				if (this.content[areaIndex].content.subContent.filter((item) => item.component == "GBg").length > 0) {
 					index += 1;
 				}
 				if (this.content[areaIndex].content.subContent[index] != undefined) {
+					// 當目標區塊位子是GSlogan則新增在下一個位子
 					if (this.content[areaIndex].content.subContent[index].component == "GSlogan") {
-						return;
+						index += 1;
 					}
 				}
 				this.content[areaIndex].content.subContent.splice(index, 0, subComponent);
@@ -126,10 +144,13 @@ export const mainStore = defineStore("main", {
 			}
 			if (data.cpt == "GArea") {
 				let group = uid;
-				this.tempGroup = { ...this.group };
-				this.group.name = "main";
+				this.tempGroup = { ...this.group, targetArea: this.targetArea };
 				if (this.pageTypeSeq == 2) {
+					this.group.name = "Child";
 					group = "Child";
+					this.targetArea = uid;
+				} else {
+					this.group.name = "main";
 				}
 				this.content.push({
 					component: data.cpt,
@@ -173,10 +194,12 @@ export const mainStore = defineStore("main", {
 									mobile: "",
 									validPC: true,
 									validMobile: true,
-									validUrl: true
+									validUrl: true,
+									target: true
 								},
 								update: false,
-								init: false
+								init: true,
+								first: true
 							}
 						]
 					},
@@ -234,24 +257,37 @@ export const mainStore = defineStore("main", {
 				findComponent.content.subContent[_index].content = JSON.parse(JSON.stringify(data));
 				findComponent.content.subContent[_index].update = false;
 				findComponent.content.subContent[_index].init = false;
+				findComponent.content.subContent.forEach((v, i) => {
+					if (v.component == "GSlogan") {
+						v.first = false;
+					}
+				});
 			} else {
 				_index = this.getIndex(uid);
 				if (_index > -1) {
 					this.content[_index].content = JSON.parse(JSON.stringify(data));
 					this.content[_index].update = false;
 					this.content[_index].init = false;
+					this.content[_index].first = false;
+					this.content.forEach((v, i) => {
+						if (v.component == "GSlogan") {
+							v.first = false;
+						}
+					});
 				}
 			}
 			$("#loadingProgress").hide();
 		},
 		editCptOpen(data, sub = false) {
 			if (sub) {
+				console.log("sub");
 				for (let i = 0; i < this.content.length; i++) {
 					if (this.content[i].component === "GArea") {
 						const subContentIndex = this.content[i].content.subContent.findIndex((subItem) => subItem.uid === data);
 						if (subContentIndex !== -1) {
+							this.loading = true;
 							this.content[i].content.subContent[subContentIndex].update = true;
-							return true; // Return true to indicate the update was successful
+							return true;
 						}
 					}
 				}
@@ -259,6 +295,8 @@ export const mainStore = defineStore("main", {
 			} else {
 				var _index = this.getIndex(data);
 				if (_index > -1) {
+					console.log("edit");
+					this.loading = true;
 					this.content[_index].update = true;
 				}
 			}
@@ -304,6 +342,9 @@ export const mainStore = defineStore("main", {
 				}
 				return false;
 			} else {
+				if (this.content[index].name == "home" || this.content[index].name == "main") {
+					return false;
+				}
 				var _index = this.getIndex(uid);
 				this.move = true;
 				var component = this.content[_index];
@@ -340,7 +381,6 @@ export const mainStore = defineStore("main", {
 			}
 		},
 		downCpt(data, sub) {
-			console.log(data, sub);
 			if (sub) {
 				for (let i = 0; i < this.content.length; i++) {
 					if (this.content[i].component === "GArea") {

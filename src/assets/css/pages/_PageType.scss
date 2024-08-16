@@ -20,7 +20,9 @@
 		box-sizing: border-box;
 		position: relative;
 		cursor: pointer;
+		transition: all 0.2s linear;
 		@include hover {
+			transform: scale(1.1);
 			&:before {
 				content: "";
 				width: 100%;
@@ -41,6 +43,21 @@
 		display: block;
 		&[data-type="1"] {
 			background-image: url("./img/pagetype/1.jpg");
+			background-position: center 0;
+			background-repeat: no-repeat;
+		}
+		&[data-type="2"] {
+			background-image: url("./img/pagetype/2.jpg");
+			background-position: center 0;
+			background-repeat: no-repeat;
+		}
+		&[data-type="3"] {
+			background-image: url("./img/pagetype/3.jpg");
+			background-position: center 0;
+			background-repeat: no-repeat;
+		}
+		&[data-type="4"] {
+			background-image: url("./img/pagetype/4.jpg");
 			background-position: center 0;
 			background-repeat: no-repeat;
 		}

@@ -30,7 +30,19 @@ onMounted(() => {
             return;
         }
         typeList.value = listData;
-        totalPage.value = Math.ceil(listData.length / total.value);
+        let findType2 = typeList.value.find((item) => {
+            return item.pageTypeSeq == 2
+        })
+        if (!findType2) {
+            typeList.value.push({
+                "pageTypeSeq": 2,
+                "subject": "分區顯示版型",
+                "directions": "此版型特色在於加入後背景圖(第一頁)為固定頁(含logo)</BR>其他頁面可自由新增，一次增加一頁</BR>僅可使用固定元件所有頁面的背景獨立",
+                "image": "/img/2.jpg"
+            })
+        }
+
+        totalPage.value = Math.ceil(typeList.value.length / total.value);
     }).finally(() => {
         loadingHide()
     })

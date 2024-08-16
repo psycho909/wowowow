@@ -11,12 +11,14 @@ import { mainStore } from "../store/index";
 import { templateStore } from "../store/template";
 import GLightbox from "../components/GLightbox.vue";
 import { loadingShow, loadingHide } from "../Tool";
-import { UpdateEventContent, ApproveEvent } from "../api";
+import { UpdateEventContent, ApproveEvent, GetPageType } from "../api";
+import GLoading from "../components/GLoading.vue";
 import draggable from "vuedraggable";
+import { onUnmounted } from 'vue';
 
 const store = mainStore()
 const t = templateStore()
-const { content } = storeToRefs(store);
+const { content, loading, pageTypeSeq } = storeToRefs(store);
 let saveLightbox = ref(false);
 let approveLightbox = ref(false);
 let approveEndLightbox = ref(false);
@@ -24,17 +26,196 @@ let homeLightbox = ref(false);
 let eventListLightbox = ref(false);
 let messageText = ref("");
 let messageLightbox = ref(false);
-
+let gAreas = ref([]);
+let isObserving = ref(true);
+let footerTop = ref(null);
+const componentCount = ref(0);
+const totalComponentCount = ref(0);
+provide('$addComponent', () => {
+    componentCount.value += 1;
+});
+provide('$componentCount', componentCount);
 if (store.content.length == 0 && (store.config.flag == 0 || store.config.flag == 4)) {
     store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
 }
 if (store.config.flag == 2 && store.content.length == 0) {
     store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
 }
-onMounted(() => {
+// store.toggleLoading(true)
+let gAreaComponents = computed(() => {
+    return content.value.filter((v, i) => {
+        return v.component === "GArea"
+    })
+})
+function handleScroll() {
+    if (store.pageTypeSeq == 2) {
+        gAreas.value.forEach((gArea, index) => {
+            const gAreaRect = gArea.getBoundingClientRect();
+            if (gAreaRect.top <= window.innerHeight && gAreaRect.bottom >= 0) {
+                store.setCurrentArea(gAreaComponents.value[index].group)
+                store.setTargetArea(gAreaComponents.value[index].uid)
+            }
+        });
+        const footerElement = document.querySelector(".UNI-footer");
+        if (!footerElement) return;
+        const rect = footerElement.getBoundingClientRect();
+        let observeLimit = window.innerHeight - rect.top;
+        if (rect.top <= window.innerHeight && observeLimit > 0) {
+            footerTop.value = observeLimit;
+            triggerEnterEvent();
+            isObserving.value = false;
+        } else if (rect.top > window.innerHeight && !isObserving.value) {
+            footerTop.value = null;
+            triggerExitEvent();
+            isObserving.value = true;
+        }
+    } else {
+        const footerElement = document.querySelector(".UNI-footer");
+        if (!footerElement) return;
+        const rect = footerElement.getBoundingClientRect();
+        let observeLimit = window.innerHeight - rect.top;
+        if (rect.top <= window.innerHeight && observeLimit > 0) {
+            footerTop.value = observeLimit;
+            triggerEnterEvent();
+            isObserving.value = false;
+        } else if (rect.top > window.innerHeight && !isObserving.value) {
+            footerTop.value = null;
+            triggerExitEvent();
+            isObserving.value = true;
+        }
+    }
+}
+watch(content.value, (newVal) => {
+    gAreas.value = document.querySelectorAll(".g-area")
+})
+
+function triggerEnterEvent() {
+    const musicElement = document.querySelector(".g-music");
+    const watermarkElement = document.querySelector(".g-watermark");
+    const topElement = document.querySelector(".g-top");
+    const menuElement = document.querySelector(".g-fixed.bottom");
+    if (musicElement) {
+        musicElement.style.setProperty('--bottom', footerTop.value);
+        musicElement.setAttribute('data-observer', true);
+    }
+    if (watermarkElement) {
+        if (watermarkElement.getAttribute("data-position") == 'left-bottom' || watermarkElement.getAttribute("data-position") == 'right-bottom') {
+            watermarkElement.style.setProperty('--bottom', footerTop.value);
+            watermarkElement.setAttribute('data-observer', true);
+        }
+    }
+    if (topElement) {
+        topElement.style.setProperty('--bottom', footerTop.value);
+        topElement.setAttribute('data-observer', true);
+    }
+    if (menuElement) {
+        menuElement.style.setProperty('--bottom', footerTop.value);
+        menuElement.setAttribute('data-observer', true);
+    }
+}
+function triggerExitEvent() {
+    const musicElement = document.querySelector(".g-music");
+    const watermarkElement = document.querySelector(".g-watermark");
+    const topElement = document.querySelector(".g-top");
+    const menuElement = document.querySelector(".g-fixed.bottom");
+    if (musicElement) {
+        musicElement.style.setProperty('--bottom', '');
+        musicElement.setAttribute('data-observer', false);
+    }
+    if (watermarkElement) {
+        if (watermarkElement.getAttribute("data-position") == 'left-bottom' || watermarkElement.getAttribute("data-position") == 'right-bottom') {
+            watermarkElement.style.setProperty('--bottom', '');
+            watermarkElement.setAttribute('data-observer', false);
+        }
+    }
+    if (topElement) {
+        topElement.style.setProperty('--bottom', '');
+        topElement.setAttribute('data-observer', false);
+    }
+    if (menuElement) {
+        menuElement.style.setProperty('--bottom', footerTop.value);
+        menuElement.setAttribute('data-observer', false);
+    }
+}
+onMounted(async () => {
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
     document.querySelector("#app").classList.add("edit");
-    handleArea()
+    let gAreaCount = 0;
+    let totalSubContentLength = 0;
+    const componentLength = content.value.length;
+    if (store.pageTypeSeq == 2) {
+        for (let i = 0; i < componentLength; i++) {
+            if (content.value[i].component === "GArea") {
+                gAreaCount++;
+                if (content.value[i].content && content.value[i].content.subContent) {
+                    totalSubContentLength += content.value[i].content.subContent.length;
+                }
+            }
+        }
+        handleArea(1)
+        store.setTargetArea(1)
+        gAreas.value = document.querySelectorAll(".g-area")
+        // window.addEventListener('scroll', handleScroll);
+    } else {
+        handleArea("main")
+    }
+    window.addEventListener('scroll', handleScroll);
+    totalComponentCount.value = componentLength + totalSubContentLength;
+    watch(componentCount, (newVal) => {
+        if (newVal >= totalComponentCount.value) {
+            // if (store.pageTypeSeq == 2) {
+            //     handleScroll()
+            // }
+            // store.toggleLoading(false)
+        }
+    });
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === 's' && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+            e.preventDefault();
+            if (loading.value) {
+                return;
+            }
+            loadingShow();
+            var data = store.config;
+            data.detail = JSON.stringify(store.content);
+            Object.keys(data).forEach((v, i) => {
+                if (data[v] == null) {
+                    data[v] = "";
+                }
+            })
+            messageText.value = "";
+            UpdateEventContent(store.otp, data).then((res) => {
+                let { code, message, url, listData } = res.data;
+                if (code != 1) {
+                    messageText.value = message;
+                    messageLightbox.value = true;
+                    loadingHide()
+                    return { code };
+                }
+                return {
+                    code, data, message, url
+                };
+            }).then((res) => {
+                if (res.code == 1) {
+                    store.setStorageState(store.$state, "EditPage");
+                    store.setUpdateTime();
+                    store.setSave(true);
+                    messageText.value = "已存檔完成";
+                    messageLightbox.value = true;
+                } else {
+                    messageText.value = `存檔失敗 ${res.message}`;
+                    messageLightbox.value = true;
+                }
+            }).finally(() => {
+                loadingHide()
+            })
+        }
+    }, false);
+})
+onUnmounted(() => {
+    console.log("onUnmounted")
+    window.removeEventListener('scroll', handleScroll);
 })
 const cssVar = computed(() => {
     if (content.value.length > 0) {
@@ -56,27 +237,73 @@ const cssVar = computed(() => {
 })
 
 const checkInit = computed(() => {
-    if (content.value.length > 0) {
-        var a = content.value.map((v, i) => {
-            return v.component;
-        });
-        var checkBG = a.find((v, i) => {
-            return v == "GBg";
-        });
-        var checkSlogan = a.find((v, i) => {
-            return v == "GSlogan";
-        });
-        if (Object.keys(content.value).length >= 3 || Object.keys(content.value).length == 1) {
-            return true;
+    if (pageTypeSeq.value == 1) {
+        if (content.value.length > 0) {
+            var a = content.value.map((v, i) => {
+                return v.component;
+            });
+            var checkBG = a.find((v, i) => {
+                return v == "GBg";
+            });
+            var checkSlogan = a.find((v, i) => {
+                return v == "GSlogan";
+            });
+            if (Object.keys(content.value).length >= 3 || Object.keys(content.value).length == 1) {
+                return true;
+            } else {
+                if (checkBG && checkSlogan) {
+                    var b = content.value.filter((v, i) => {
+                        return (v.component == "GBg" && !v.init) || (v.component == "GSlogan" && !v.init);
+                    });
+                    if (b.length > 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return true;
+                }
+            }
+        }
+    }
+    if (pageTypeSeq.value == 2) {
+        if (content.value.length > 1) {
+            return true
         } else {
-            if (checkBG && checkSlogan) {
-                var b = content.value.filter((v, i) => {
-                    return (v.component == "GBg" && !v.init) || (v.component == "GSlogan" && !v.init);
-                });
-                if (b.length > 0) {
+            var areaMain = content.value.find((v, i) => {
+                return v.name == 'home';
+            });
+            if (areaMain.content.subContent.length > 0) {
+                var checkBg = areaMain.content.subContent.find((v, i) => {
+                    return v.component == "GBg"
+                })
+                var checkIcon = areaMain.content.subContent.find((v, i) => {
+                    return v.component == "GIcon"
+                })
+                var checkLogo = areaMain.content.subContent.find((v, i) => {
+                    return v.component == "GLogo"
+                })
+                var checkNav = areaMain.content.subContent.find((v, i) => {
+                    return v.component == "GDNNav"
+                })
+                var checkImg = areaMain.content.subContent.find((v, i) => {
+                    return v.component == "GDNImg"
+                })
+                if (areaMain.content.subContent.length == 1) {
                     return true;
                 } else {
-                    return false;
+                    if (checkBg && checkIcon && checkNav && checkImg && checkLogo) {
+                        var b = areaMain.content.subContent.filter((v, i) => {
+                            return (v.component == "GBg" && !v.init) || (v.component == "GIcon" && !v.init) || (v.component == "GLogo" && !v.init) || (v.component == "GDNNav" && !v.init) || (v.component == "GDNImg" && !v.init);
+                        });
+                        if (b.length > 0) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        return true;
+                    }
                 }
             } else {
                 return true;
@@ -162,11 +389,13 @@ const onEvent = (type) => {
             approveLightbox.value = true;
             break;
         case "preview":
+            console.log(checkInit.value)
             if (!checkInit.value) {
                 messageText.value = "請先編輯內容";
                 messageLightbox.value = true;
                 return;
             }
+            GetPageType(store.otp)
             store.setStorageState(store.$state, "EditPage").then((res) => {
                 store.setPage("Preview", {
                     eventSeq: store.$state.config.eventSeq,
@@ -192,7 +421,7 @@ const onEvent = (type) => {
                     return { code };
                 }
                 return {
-                    code, data
+                    code, data, message, url
                 };
             }).then((res) => {
                 if (res.code == 1) {
@@ -202,7 +431,7 @@ const onEvent = (type) => {
                     messageText.value = "已存檔完成";
                     messageLightbox.value = true;
                 } else {
-                    messageText.value = "存檔失敗";
+                    messageText.value = `存檔失敗 ${res.message}`;
                     messageLightbox.value = true;
                 }
             }).finally(() => {
@@ -291,7 +520,11 @@ const log = (e) => {
     let cpt;
     let cptIndex;
     let uid;
-    let temp = 1;
+    let temp = 0;
+    GetPageType(store.otp)
+    if (contentBg.value.length) {
+        temp += 1;
+    }
     if (contentFixed.value.length) {
         temp += 1;
     }
@@ -337,14 +570,15 @@ const moveLog = () => {
     // console.log("move")
 }
 const startLog = () => {
-    // console.log("start")
+    console.log("start")
 }
 
-const handleArea = () => {
-    store.setCurrentArea("main")
+const handleArea = (type) => {
+    store.setCurrentArea(type)
 }
 </script>
 <template>
+    <GLoading :loading="loading"></GLoading>
     <label for="component" class="wrap development"
            :data-type="store.config.pageTypeSeq" :style="cssVar"
            :class="[store.group.name == 'main' && store.config.pageTypeSeq != 1 ? 'focus' : '']">
@@ -356,7 +590,14 @@ const handleArea = () => {
             <component is="GSlogan" :data="contentSlogan[0]"></component>
         </template>
         <template v-if="contentFixed.length">
-            <component is="GFixed" :data="contentFixed[0]"></component>
+            <template v-if="contentFixed.length > 1">
+                <template v-for="f in contentFixed">
+                    <component is="GFixed" :data="f"></component>
+                </template>
+            </template>
+            <template v-else>
+                <component is="GFixed" :data="contentFixed[0]"></component>
+            </template>
         </template>
         <template v-if="contentTop.length">
             <component is="GTop" :data="contentTop[0]"></component>

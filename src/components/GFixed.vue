@@ -16,17 +16,20 @@ import { mainStore } from "../store/index";
 import colors, { style1, style2 } from "../colors";
 import { CheckUrl } from "../Tool";
 import { cloneDeep } from 'lodash-es'
+import { GetPageType } from "../api";
 const props = defineProps(["data"])
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let showEdit = ref(false);
 let menuToggle = ref(false);
+let fixedRef = ref(null)
 let fixedData = reactive({})
 let fixedSetting = reactive({});
 let fixedMenuValid = ref(true);
 let styleValid = ref(true);
 let toggleStatus = ref(false)
+let scroll = ref(false);
 const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
@@ -46,6 +49,7 @@ Object.assign(fixedData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -64,7 +68,13 @@ watchEffect(async () => {
             Object.assign(fixedData, cloneDeep(props.data.content));
             Object.assign(fixedSetting, cloneDeep(props.data.content));
             if (fixedSetting.type == 'collapse') {
-                toggleStatus.value = fixedSetting.status;
+                if (fixedSetting.status == false || fixedSetting.status == 'false') {
+                    toggleStatus.value = false;
+                }
+                if (fixedSetting.status == true || fixedSetting.status == 'true') {
+                    toggleStatus.value = true;
+                }
+
             } else {
                 toggleStatus.value = true;
             }
@@ -81,21 +91,42 @@ watchEffect(async () => {
                     }
                 }
             }
+            if (fixedRef.value.scrollHeight > $(window).height()) {
+                scroll.value = true
+            } else {
+                scroll.value = false
+            }
         }
     }
     if (fixedData.position) {
         if (fixedData.position == 'top' || fixedData.position == 'bottom') {
             fixedData.collapse = false;
+            fixedData.status = true;
+            fixedData.type = "normal"
         }
     }
     if (fixedData.type) {
         if (fixedData.type == 'normal') {
             fixedData.collapseText = "";
             fixedData.collapse = false;
-            fixedData.status = false;
+            fixedData.status = true;
+        } else if (fixedData.type == 'collapse') {
+            fixedData.collapse = true;
         }
     }
 })
+// 定义滚动事件处理函数
+function handleScroll() {
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    let wrap = document.querySelector(".wrap");
+    let wrapTop = wrap.getBoundingClientRect().top;
+    let gFixed = document.querySelector(".g-fixed");
+    if (scrollTop >= wrapTop) {
+        gFixed.classList.add("fixed");
+    } else {
+        gFixed.classList.remove("fixed");
+    }
+}
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
@@ -113,30 +144,42 @@ onMounted(async () => {
         if (fixedSetting.type == 'collapse') {
             toggleStatus.value = fixedSetting.status;
         } else {
-            toggleStatus.value = true;
+            toggleStatus.value = "";
         }
         if (fixedSetting.position == 'top') {
-            $(window).on("scroll", function () {
-                let scrollTop = $(this).scrollTop();
-                if (scrollTop >= $(".wrap").offset().top) {
-                    $(".g-fixed").addClass("fixed")
+            if (store.page == 'Preview') {
+                if (document.querySelector(".g-fixed.top")) {
+                    document.querySelector(".g-fixed.top").style.setProperty('--preview', document.querySelector(".g-fixed.top").offsetHeight)
+                    document.querySelector(".g-fixed.top").classList.add("preview")
                 } else {
-                    $(".g-fixed").removeClass("fixed")
+                    document.querySelector(".g-fixed").style.setProperty('--preview', '')
+                    document.querySelector(".g-fixed").classList.remove("preview")
                 }
-            })
+            }
+            window.addEventListener("scroll", handleScroll);
+        } else {
+            window.removeEventListener("scroll", handleScroll);
         }
         if ($addComponent) {
-            $addComponent("GFixed");
+            $addComponent();
         }
+    }
+    if ($(".g-fixed").outerHeight(true) > $(window).height()) {
+        scroll.value = true
+    } else {
+        scroll.value = false
     }
 })
 
 onUnmounted(() => {
+    window.removeEventListener("scroll", handleScroll);
     if (fixedData.position == 'top') {
         if (!isMobile.any) {
             let height = 0;
             let area = document.querySelector(".g-area[data-page='main']");
-            area.style.marginTop = height + 'px'
+            if (area) {
+                area.style.marginTop = height + 'px'
+            }
         }
     }
 })
@@ -216,6 +259,7 @@ const onSubmit = () => {
         let data = cloneDeep(fixedData);
         store.updateCpt(props.data.uid, data);
         Object.assign(fixedSetting, data);
+        GetPageType(store.otp)
     }
 }
 const onReset = () => {
@@ -248,7 +292,12 @@ const closeMenu = () => {
     document.querySelector("body").classList.remove("ov-hidden");
 }
 const toggleMenu = () => {
-    toggleStatus.value = !toggleStatus.value
+    console.log(toggleStatus.value)
+    if (toggleStatus.value === false || toggleStatus.value === 'false') {
+        toggleStatus.value = true;
+    } else if (toggleStatus.value === true || toggleStatus.value === 'true') {
+        toggleStatus.value = false;
+    }
 }
 
 const goTop = () => {
@@ -262,8 +311,9 @@ const goTop = () => {
 <template>
     <div class="g-fixed__hamburger" :class="[fixedSetting.hamburger]" @click="openMenu"></div>
     <div class="g-fixed"
-         :class="[fixedSetting.position, fixedSetting.hamburger, menuToggle ? 'on' : '', fixedSetting.collapse ? 'collapse' : '']"
-         :style="colors[fixedSetting.style]" :data-collapse="toggleStatus">
+         :class="[fixedSetting.position, fixedSetting.hamburger, menuToggle ? 'on' : '', fixedSetting.type == 'collapse' ? 'collapse' : '', scroll ? 'scroll' : '']"
+         :style="colors[fixedSetting.style]"
+         :data-collapse="toggleStatus" ref="fixedRef">
         <a href="javascript:;" class="g-fixed__close" @click="closeMenu"></a>
         <div class="g-fixed-container">
             <a href="javascript:;" class="g-fixed__collapse" v-if="fixedSetting.type == 'collapse'" @click="toggleMenu">
@@ -294,7 +344,7 @@ const goTop = () => {
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">浮動選單
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Fixed.html"
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Fixed${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
@@ -308,25 +358,19 @@ const goTop = () => {
                 <div class="g-edit__row">
                     <div class="input-group__label required">樣式:</div>
                     <g-radio label="一般文字" name="type" value="normal" v-model="fixedData.type" />
-                    <g-radio label="可收合" name="type" value="collapse" v-model="fixedData.type" />
+                    <g-radio label="可收合" name="type" value="collapse" v-model="fixedData.type"
+                             v-if="!(fixedData.position == 'top' || fixedData.position == 'bottom')" />
                 </div>
                 <template
                           v-if="fixedData.type == 'collapse' && (fixedData.position != 'top' && fixedData.position != 'bottom')">
                     <div class="g-edit__row">
-                        <div class="input-group__label required">是否需要開合選單:</div>
-                        <g-radio label="是" name="collapse" :value="true" v-model="fixedData.collapse" />
-                        <g-radio label="否" name="collapse" :value="false" v-model="fixedData.collapse" />
+                        <div class="input-group__label required">預設狀態:</div>
+                        <g-radio label="展開" name="status" :value="true" v-model="fixedData.status" />
+                        <g-radio label="收合" name="status" :value="false" v-model="fixedData.status" />
                     </div>
-                    <template v-if="fixedData.collapse == 'true'">
-                        <div class="g-edit__row">
-                            <div class="input-group__label required">預設狀態:</div>
-                            <g-radio label="展開" name="status" :value="true" v-model="fixedData.status" />
-                            <g-radio label="收合" name="status" :value="false" v-model="fixedData.status" />
-                        </div>
-                        <div class="g-edit__row">
-                            <g-input label="收合側欄文字:" v-model="fixedData.collapseText" :valid="fixedData.collapseText" />
-                        </div>
-                    </template>
+                    <div class="g-edit__row">
+                        <g-input label="收合側欄文字:" v-model="fixedData.collapseText" :valid="fixedData.collapseText" />
+                    </div>
                 </template>
                 <div class="g-edit__row">
                     <div class="input-group__label required">開啟回到最上面按鈕:</div>

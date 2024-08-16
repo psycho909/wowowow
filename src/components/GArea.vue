@@ -9,12 +9,18 @@ import GIcon from "./GIcon.vue";
 import GLogo from "./GLogo.vue";
 import GDNImg from "./GDNImg.vue";
 import GDNNav from "./GDNNav.vue";
+import GListText from "./GListText.vue";
+import GAccordion from "./GAccordion.vue";
+import GButtons from "./GButtons.vue";
+import GImgText from "./GImgText.vue";
+import GSlideText from "./GSlideText.vue";
+import GTabs from "./GTabs.vue";
 export default {
     name: "GArea",
     label: "增加頁面",
     order: 5,
     components: {
-        GVideo, GImg, GText, GBg, GSlogan, GIcon, GLogo, GDNImg, GDNNav, GSlide
+        GVideo, GImg, GText, GBg, GSlogan, GIcon, GLogo, GDNImg, GDNNav, GSlide, GListText, GAccordion, GButtons, GImgText, GSlideText, GTabs
     },
     type: [2]
 }
@@ -26,6 +32,7 @@ import { mainStore } from "../store/index";
 import GInput from "../elements/GInput.vue";
 import { cloneDeep } from 'lodash-es'
 import { handleNumber } from "../Tool";
+import { GetPageType } from "../api";
 const store = mainStore()
 const { page, content, group, pageTypeSeq, tempGroup, position } = storeToRefs(store);
 const props = defineProps(["data"])
@@ -35,7 +42,7 @@ let areaSetting = reactive({})
 let areaData = reactive({});
 let uid = ref(props.data.uid);
 let gr = ref(props.data.group);
-let targetArea = ref(null);
+let targetArea = ref(1);
 const $addComponent = inject('$addComponent');
 const validPreviousComponents = ["GLang", "GBg", "GFixed", "GIcon", "GLogo", "GDNNav", "GDNImg"];
 const initData = () => {
@@ -54,6 +61,7 @@ const initData = () => {
 Object.assign(areaData, initData());
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -95,8 +103,9 @@ onMounted(async () => {
         if ($addComponent) {
             $addComponent();
         }
-        if (gr.value == 1) {
+        if (gr.value == 1 && store.page == 'EditPage') {
             handleArea()
+            store.tempGroup = { ...store.group, targetArea: store.targetArea }
         }
         if (!isMobile.any) {
             let height = 0;
@@ -200,11 +209,30 @@ const openPop = (data) => {
 }
 const onSubmit = async () => {
     let data = {}
+    areaData.validMt = true;
+    areaData.validMb = true;
+    areaData.validMmt = true;
+    areaData.validMmb = true;
+    if (areaData.pc.paddingTop < 0) {
+        areaData.validMt = false;
+    }
+    if (areaData.pc.paddingBottom < 0) {
+        areaData.validMb = false;
+    }
+    if (areaData.mobile.paddingTop < 0) {
+        areaData.validMmt = false;
+    }
+    if (areaData.mobile.paddingBottom < 0) {
+        areaData.validMmb = false;
+    }
 
-    $("#loadingProgress").show();
-    data = cloneDeep(areaData);
-    store.updateCpt(props.data.uid, data, props.sub);
-    Object.assign(areaSetting, data);
+    if (areaData.validMt && areaData.validMb && areaData.validMmt && areaData.validMmb) {
+        data = cloneDeep(areaData);
+        store.updateCpt(props.data.uid, data, props.sub);
+        Object.assign(areaSetting, data);
+        GetPageType(store.otp)
+    }
+
 }
 const onReset = () => {
     Object.assign(areaData, initData());
@@ -214,6 +242,7 @@ const closeBtn = () => {
         showEdit.value = false;
         store.removeCpt(props.data.uid, props.sub);
         store.setCurrentArea(tempGroup.value.name)
+        store.setTargetArea(tempGroup.value.targetArea);
         document.querySelector("body").classList.remove("ov-hidden");
         return;
     }
@@ -243,6 +272,7 @@ const log = async (e) => {
     //     temp += 1;
     // }
     if (e.added) {
+        GetPageType(store.otp)
         cpt = e.added.element;
         let data = {
             cpt: cpt.title
@@ -283,6 +313,50 @@ const start = (evt) => {
 const move = (evt) => {
     store.position.to = evt.to.parentElement.getAttribute("data-uid");
 }
+const checkInit = computed(() => {
+    if (page.value === "Preview") return true;
+    if (props.data.name != 'home') return true;
+    if (content.value.length > 1) {
+        return true
+    } else {
+        if (props.data.content.subContent.length > 0) {
+            var checkBg = props.data.content.subContent.find((v, i) => {
+                return v.component == "GBg"
+            })
+            var checkIcon = props.data.content.subContent.find((v, i) => {
+                return v.component == "GIcon"
+            })
+            var checkLogo = props.data.content.subContent.find((v, i) => {
+                return v.component == "GLogo"
+            })
+            var checkNav = props.data.content.subContent.find((v, i) => {
+                return v.component == "GDNNav"
+            })
+            var checkImg = props.data.content.subContent.find((v, i) => {
+                return v.component == "GDNImg"
+            })
+            if (props.data.content.subContent.length == 1) {
+                return true;
+            } else {
+                if (checkBg && checkIcon && checkNav && checkImg && checkLogo) {
+                    var b = props.data.content.subContent.filter((v, i) => {
+                        return (v.component == "GBg" && !v.init) || (v.component == "GIcon" && !v.init) || (v.component == "GLogo" && !v.init) || (v.component == "GDNNav" && !v.init) || (v.component == "GDNImg" && !v.init);
+                    });
+                    if (b.length > 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return true;
+                }
+            }
+        } else {
+            return true;
+        }
+    }
+
+})
 </script>
 <template>
     <div class="g-area" :id="uid" :style="cssVar" :data-page="[uid == 1 ? 'main' : '']"
@@ -297,7 +371,8 @@ const move = (evt) => {
            :style="cssVar"
            :data-page="[gr == 1 ? 'main' : '']"
            v-else>
-        <input type="radio" name="area" :id="uid" :value="uid" v-model="targetArea" @change="handleArea">
+        <div class="g-area-container--notice" v-if="gr == 1 && !checkInit" :data-init="checkInit"></div>
+        <input type="radio" name="area" :id="uid" :value="uid" v-model="targetArea">
         <!-- <template v-if="contentBg.length">
             <component is="GBg" :data="contentBg[0]" :sub="true"></component>
         </template> -->
@@ -342,24 +417,27 @@ const move = (evt) => {
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">區塊
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Area${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="PC內間距上:" type="number" v-model="areaData.pc.paddingTop" @change="handleNumber" />
+                        <g-input label="PC內間距上:" type="number" v-model="areaData.pc.paddingTop" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="areaData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="PC內間距下:" type="number" v-model="areaData.pc.paddingBottom" @change="handleNumber" />
+                        <g-input label="PC內間距下:" type="number" v-model="areaData.pc.paddingBottom"
+                                 @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="areaData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile內間距上:" type="number" v-model="areaData.mobile.paddingTop"
-                                 @change="handleNumber" />
+                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="areaData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile內間距下:" type="number" v-model="areaData.mobile.paddingBottom"
-                                 @change="handleNumber" />
+                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="areaData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

@@ -1,11 +1,12 @@
 <script>
 export default {
     name: "GWatermark",
-    label: "浮水印物件",
+    label: "浮水印",
     limit: 1,
-    order: 5, type: [1]
+    order: 14, type: [1, 2]
 }
 </script>
+
 <script setup>
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
@@ -18,11 +19,11 @@ import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-
+import { GetPageType } from "../api";
 const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let watermarkData = reactive({});
 let watermarkSetting = reactive({})
@@ -75,6 +76,7 @@ Object.assign(watermarkData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -96,7 +98,7 @@ onMounted(async () => {
         Object.assign(watermarkData, cloneDeep(props.data.content));
         Object.assign(watermarkSetting, cloneDeep(props.data.content));
         if ($addComponent) {
-            $addComponent("GWatermark");
+            $addComponent();
         }
     }
 })
@@ -141,9 +143,23 @@ const openPop = (data) => {
     data.pop.show = true
 }
 
+const imageInfo = async (type, url) => {
+    return new Promise((resolve, reject) => {
+        var elem = new Image();
+        elem.onload = () => {
+            if (type == "mobile") {
+                watermarkData.mw = elem.width
+                watermarkData.mh = elem.height
+            }
+            resolve(true)
+        };
+        elem.onerror = () => resolve(false);
+        elem.src = url;
+    });
+}
+
 async function validateWatermarkData(data) {
     let isValid = true;
-
     if (data.pc.trim() === "") {
         data.validPC = false;
         isValid = false;
@@ -154,23 +170,27 @@ async function validateWatermarkData(data) {
         }
     }
 
-    if (data.effectCheck && data.effectImg.trim() === "") {
-        data.validEffectImg = false;
-        isValid = false;
-    } else if (data.effectCheck) {
-        data.validEffectImg = await CheckImage(data.effectImg);
-        if (!data.validEffectImg) {
+    if (data.effectCheck == true || data.effectCheck == 'true') {
+        if (data.effectImg.trim() === "") {
+            data.validEffectImg = false;
             isValid = false;
+        } else {
+            data.validEffectImg = await CheckImage(data.effectImg);
+            if (!data.validEffectImg) {
+                isValid = false;
+            }
         }
     }
 
-    if (data.mobileShow && data.mobile.trim() === "") {
-        data.validMobile = false;
-        isValid = false;
-    } else if (data.mobileShow) {
-        data.validMobile = await CheckImage(data.mobile);
-        if (!data.validMobile) {
+    if (data.mobileShow == true || data.mobileShow == 'true') {
+        if (data.mobile.trim() === "") {
+            data.validMobile = false;
             isValid = false;
+        } else {
+            data.validMobile = await CheckImage(data.mobile);
+            if (!data.validMobile) {
+                isValid = false;
+            }
         }
     }
 
@@ -236,12 +256,16 @@ const onSubmit = async () => {
     let isValidData = await validateWatermarkData(watermarkData);
     if (isValidData) {
         $("#loadingProgress").show();
+        if (watermarkData.mobile.length) {
+            await imageInfo("mobile", watermarkData.mobile);
+        }
         let data = cloneDeep(watermarkData);
         store.updateCpt(props.data.uid, data);
         Object.assign(watermarkSetting, data);
         slideUpdate.value = true;
         await nextTick();
         slideUpdate.value = false;
+        GetPageType(store.otp)
     } else {
         loadingHide()
     }
@@ -274,274 +298,323 @@ const closePop = (data, url) => {
         window.location.href = url;
     }
 }
-</script>
-<template>
-    <div class="g-watermark" :style="[colors[watermarkSetting.style]]" :data-position="watermarkSetting.position"
-         :data-type="watermarkSetting.type">
-        <template v-if="store.status == 'edit'">
-            <div class="g-watermark__box edit" :class="[watermarkSetting.type ? '' : 'none']">
-                <div class="g-watermark__img-box">
-                    <picture>
-                        <source media="(max-width:768px)" :srcset="watermarkSetting.mobile || watermarkSetting.pc" />
-                        <img class="g-watermark__img" :srcset="watermarkSetting.pc" :src="watermarkSetting.pc" alt="" />
-                    </picture>
-                </div>
-            </div>
-        </template>
-        <template v-if="store.status != 'edit'">
-            <template v-if="watermarkSetting.type == ''">
-                <div class="g-watermark__box none"
-                     :class="[watermarkSetting.mobileShow === true || watermarkSetting.mobileShow === 'true' ? 'mobileShow' : '']">
-                    <div class="g-watermark__img-box" :class="[watermarkSetting.effectCheck == 'true' ? 'effectImg' : '']">
-                        <picture>
-                            <source media="(max-width:768px)" :srcset="watermarkSetting.mobile" />
-                            <img :srcset="watermarkSetting.pc" :src="watermarkSetting.pc" alt="" />
-                        </picture>
-                        <template v-if="watermarkSetting.effectCheck == 'true'">
-                            <img :src="watermarkSetting.effectImg" alt="" class="g-watermark__effectImg">
-                        </template>
-                    </div>
-                </div>
-            </template>
-            <template v-if="watermarkSetting.type == 'link'">
-                <a :href="[watermarkSetting.target.link ? watermarkSetting.target.link : 'javascript:;']"
-                   :target="[watermarkSetting.target.attribute == true ? '_blank' : '_self']" class="g-watermark__box"
-                   :class="[watermarkSetting.mobileShow === true || watermarkSetting.mobileShow === 'true' ? 'mobileShow' : '']">
-                    <div class="g-watermark__img-box" :class="[watermarkSetting.effectCheck == 'true' ? 'effectImg' : '']">
-                        <picture>
-                            <source media="(max-width:768px)" :srcset="watermarkSetting.mobile || watermarkSetting.pc" />
-                            <img class="g-watermark__img" :srcset="watermarkSetting.pc" :src="watermarkSetting.pc" alt="" />
-                        </picture>
-                        <template v-if="watermarkSetting.effectCheck == 'true'">
-                            <img :src="watermarkSetting.effectImg" alt="" class="g-watermark__effectImg">
-                        </template>
-                    </div>
-                </a>
-            </template>
-            <template v-if="watermarkSetting.type == 'pop'">
-                <div class="g-watermark__box"
-                     :class="[store.status == 'edit' ? 'edit' : '', watermarkSetting.mobileShow === true || watermarkSetting.mobileShow === 'true' ? 'mobileShow' : '']"
-                     @click="openPop(watermarkSetting)">
-                    <div class="g-watermark__img-box"
-                         :class="[watermarkSetting.effectCheck == 'true' ? 'effectImg' : '']">
-                        <picture>
-                            <source media="(max-width:768px)" :srcset="watermarkSetting.mobile || watermarkSetting.pc" />
-                            <img class="g-watermark__img" :srcset="watermarkSetting.pc" :src="watermarkSetting.pc" alt="" />
-                        </picture>
-                        <template v-if="watermarkSetting.effectCheck == 'true'">
-                            <img :src="watermarkSetting.effectImg" alt="" class="g-watermark__effectImg"
-                                 v-if="store.status != 'edit'">
-                        </template>
-                    </div>
 
-                    <g-lightbox v-model:showLightbox="watermarkSetting.pop.show" :style="colors[watermarkSetting.pop.style]"
-                                :class="[watermarkSetting.pop.align, watermarkSetting.pop.type == 'slide' ? 'pop-slide' : '']">
-                        <template #lightbox-close v-if="watermarkSetting.pop.closeCheckRedirect == 'true'">
-                            <a href="javascript:;" class="g-lightbox__close icon-close"
-                               @click="closePop(watermarkSetting, watermarkSetting.pop.closeRedirect)"></a>
-                        </template>
-                        <template #lightbox-title v-if="watermarkSetting.pop.type != 'slide'">{{ watermarkSetting.pop.title
-                        }}</template>
-                        <template #lightbox-content>
-                            <template v-if="watermarkSetting.pop.type != 'slide'">
-                                <div class="g-lightbox__text" v-if="watermarkSetting.pop.text"
-                                     v-html="watermarkSetting.pop.text"></div>
-                                <div class="g-lightbox__img" v-if="watermarkSetting.pop.img">
-                                    <img :src="watermarkSetting.pop.img" alt="">
-                                </div>
-                            </template>
-                            <template v-else>
-                                <g-swiper :data="watermarkSetting.pop" :status="status" v-if="!slideUpdate" />
-                            </template>
-                        </template>
-                    </g-lightbox>
+function transformToCSSProps(item) {
+    const cssProps = {
+        "--watermark-mw": item.mw ? `${item.mw}` : "",
+        "--watermark-mh": item.mh ? `${item.mh}` : "",
+    };
+
+    return {
+        ...cssProps,
+    };
+}
+</script>
+
+<template>
+    <Teleport to="body">
+        <div class="g-watermark" :style="[colors[watermarkSetting.style], transformToCSSProps(watermarkSetting)]"
+             :data-position="watermarkSetting.position"
+             :data-type="watermarkSetting.type">
+            <template v-if="store.status == 'edit'">
+                <div class="g-watermark__box edit" :class="[watermarkSetting.type ? '' : 'none']">
+                    <div class="g-watermark__img-box">
+                        <picture>
+                            <source media="(max-width:768px)"
+                                    :srcset="watermarkSetting.mobile || watermarkSetting.pc" />
+                            <img class="g-watermark__img" :srcset="watermarkSetting.pc" :src="watermarkSetting.pc"
+                                 alt="" />
+                        </picture>
+                    </div>
                 </div>
             </template>
-        </template>
-        <g-modify :uid="data.uid" :move="false" v-if="page == 'EditPage'" />
-        <g-edit v-model:showEdit="showEdit">
-            <template #edit-close>
-                <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
-            </template>
-            <template #edit-content>
-                <div class="edit-title__box">
-                    <div class="edit-title__text">浮水印物件
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
-                           class="edit-title__q" target="_blank"></a>
-                    </div>
-                </div>
-                <div class="g-edit__row">
-                    <div class="input-group__label required">位置:</div>
-                    <g-radio label="左上" name="position" value="left-top" v-model="watermarkData.position" />
-                    <g-radio label="右上" name="position" value="right-top" v-model="watermarkData.position" />
-                    <g-radio label="左中" name="position" value="left-middle" v-model="watermarkData.position" />
-                    <g-radio label="右中" name="position" value="right-middle" v-model="watermarkData.position" />
-                    <g-radio label="左下" name="position" value="left-bottom" v-model="watermarkData.position" />
-                    <g-radio label="右下" name="position" value="right-bottom" v-model="watermarkData.position" />
-                </div>
-                <div class="g-edit__row">
-                    <div class="g-edit__col">
-                        <g-input label="圖片:" v-model.trim="watermarkData.pc" :preview="watermarkData.pc" :required="true"
-                                 :valid="watermarkData.validPC" />
-                    </div>
-                </div>
-                <div class="g-edit__row">
-                    <div class="g-edit__col">
-                        <div class="input-group__label">圖片特效:</div>
-                        <g-radio label="無" name="effect" :value="false" v-model="watermarkData.effectCheck" />
-                        <g-radio label="換圖" name="effect" :value="true" v-model="watermarkData.effectCheck" />
-                    </div>
-                    <div class="g-edit__col" v-if="watermarkData.effectCheck == 'true'">
-                        <g-input label="更換圖片網址:" v-model.trim="watermarkData.effectImg" :preview="watermarkData.effectImg"
-                                 :required="true"
-                                 :valid="watermarkData.validEffectImg" />
-                    </div>
-                </div>
-                <div class="g-edit__row">
-                    <div class="input-group__label">是否顯示於手機版:</div>
-                    <g-radio label="是" name="mobileShow" :value="true" v-model="watermarkData.mobileShow" />
-                    <g-radio label="否" name="mobileShow" :value="false" v-model="watermarkData.mobileShow" />
-                </div>
-                <template v-if="watermarkData.mobileShow == 'true'">
-                    <div class="g-edit__row">
-                        <div class="g-edit__col">
-                            <g-input label="手機版圖片:" v-model.trim="watermarkData.mobile" :preview="watermarkData.mobile"
-                                     :required="true"
-                                     :valid="watermarkData.validMobile" />
+
+            <template v-if="store.status != 'edit'">
+                <template v-if="watermarkSetting.type == ''">
+                    <div class="g-watermark__box none"
+                         :class="[watermarkSetting.mobileShow === true || watermarkSetting.mobileShow === 'true' ? 'mobileShow' : '']">
+                        <div class="g-watermark__img-box"
+                             :class="[watermarkSetting.effectCheck == 'true' ? 'effectImg' : '']">
+                            <picture>
+                                <source media="(max-width:768px)" :srcset="watermarkSetting.mobile" />
+                                <img :srcset="watermarkSetting.pc" :src="watermarkSetting.pc" alt="" />
+                            </picture>
+                            <template v-if="watermarkSetting.effectCheck == 'true'">
+                                <img :src="watermarkSetting.effectImg" alt="" class="g-watermark__effectImg">
+                            </template>
                         </div>
                     </div>
                 </template>
-                <div class="g-edit__row">
-                    <div class="input-group__label required">開啟方式:</div>
-                    <g-radio label="無" name="type" value="" v-model="watermarkData.type" />
-                    <g-radio label="POP視窗" name="type" value="pop" v-model="watermarkData.type" />
-                    <g-radio label="連結跳轉" name="type" value="link" v-model="watermarkData.type" />
-                </div>
-                <template v-if="watermarkData.type == 'pop'">
+
+                <template v-if="watermarkSetting.type == 'link'">
+                    <a :href="[watermarkSetting.target.link ? watermarkSetting.target.link : 'javascript:;']"
+                       :target="[watermarkSetting.target.attribute == true ? '_blank' : '_self']"
+                       class="g-watermark__box"
+                       :class="[watermarkSetting.mobileShow === true || watermarkSetting.mobileShow === 'true' ? 'mobileShow' : '']">
+                        <div class="g-watermark__img-box"
+                             :class="[watermarkSetting.effectCheck == 'true' ? 'effectImg' : '']">
+                            <picture>
+                                <source media="(max-width:768px)"
+                                        :srcset="watermarkSetting.mobile || watermarkSetting.pc" />
+                                <img class="g-watermark__img" :srcset="watermarkSetting.pc" :src="watermarkSetting.pc"
+                                     alt="" />
+                            </picture>
+                            <template v-if="watermarkSetting.effectCheck == 'true'">
+                                <img :src="watermarkSetting.effectImg" alt="" class="g-watermark__effectImg">
+                            </template>
+                        </div>
+                    </a>
+                </template>
+
+                <template v-if="watermarkSetting.type == 'pop'">
+                    <div class="g-watermark__box"
+                         :class="[store.status == 'edit' ? 'edit' : '', watermarkSetting.mobileShow === true || watermarkSetting.mobileShow === 'true' ? 'mobileShow' : '']"
+                         @click="openPop(watermarkSetting)">
+                        <div class="g-watermark__img-box"
+                             :class="[watermarkSetting.effectCheck == 'true' ? 'effectImg' : '']">
+                            <picture>
+                                <source media="(max-width:768px)"
+                                        :srcset="watermarkSetting.mobile || watermarkSetting.pc" />
+                                <img class="g-watermark__img" :srcset="watermarkSetting.pc" :src="watermarkSetting.pc"
+                                     alt="" />
+                            </picture>
+                            <template v-if="watermarkSetting.effectCheck == 'true'">
+                                <img :src="watermarkSetting.effectImg" alt="" class="g-watermark__effectImg"
+                                     v-if="store.status != 'edit'">
+                            </template>
+                        </div>
+
+                        <g-lightbox v-model:showLightbox="watermarkSetting.pop.show"
+                                    :style="colors[watermarkSetting.pop.style]"
+                                    :class="[watermarkSetting.pop.align, watermarkSetting.pop.type, watermarkSetting.pop.type == 'slide' ? 'pop-slide' : '']">
+
+                            <template #lightbox-title v-if="watermarkSetting.pop.type != 'slide'">{{
+            watermarkSetting.pop.title
+        }}</template>
+
+                            <template #lightbox-content>
+                                <template v-if="watermarkSetting.pop.type != 'slide'">
+                                    <div class="g-lightbox__text" v-if="watermarkSetting.pop.text"
+                                         v-html="watermarkSetting.pop.text"></div>
+                                    <div class="g-lightbox__img" v-if="watermarkSetting.pop.img">
+                                        <img :src="watermarkSetting.pop.img" alt="">
+                                    </div>
+                                </template>
+
+                                <template v-else>
+                                    <g-swiper :data="watermarkSetting.pop" :status="status" v-if="!slideUpdate" />
+                                </template>
+                            </template>
+
+                            <template #lightbox-btn v-if="watermarkSetting.pop.closeCheckRedirect == 'true'">
+                                <a href="javascript:;" class="g-lightbox__btn"
+                                   @click="closePop(watermarkSetting, watermarkSetting.pop.closeRedirect)"></a>
+                            </template>
+
+                            <template #lightbox-close
+                                      v-if="watermarkSetting.pop.closeCheckRedirect == 'true' || watermarkSetting.pop.closeCheckRedirect === true">
+                                <a href="javascript:;" class="g-lightbox__close icon-close"
+                                   @click="closePop(watermarkSetting, watermarkSetting.pop.closeRedirect)">確定</a>
+                            </template>
+                        </g-lightbox>
+                    </div>
+                </template>
+            </template>
+            <g-modify :uid="data.uid" :move="false" v-if="page == 'EditPage'" />
+            <g-edit v-model:showEdit="showEdit">
+
+                <template #edit-close>
+                    <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
+                </template>
+
+                <template #edit-content>
+                    <div class="edit-title__box">
+                        <div class="edit-title__text">浮水印
+                            <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Watermark${pageTypeSeq}.html`"
+                               class="edit-title__q" target="_blank"></a>
+                        </div>
+                    </div>
+                    <div class="g-edit__row">
+                        <div class="input-group__label required">位置:</div>
+                        <g-radio label="左上" name="position" value="left-top" v-model="watermarkData.position" />
+                        <g-radio label="右上" name="position" value="right-top" v-model="watermarkData.position" />
+                        <g-radio label="左中" name="position" value="left-middle" v-model="watermarkData.position" />
+                        <g-radio label="右中" name="position" value="right-middle" v-model="watermarkData.position" />
+                        <g-radio label="左下" name="position" value="left-bottom" v-model="watermarkData.position" />
+                        <g-radio label="右下" name="position" value="right-bottom" v-model="watermarkData.position" />
+                    </div>
                     <div class="g-edit__row">
                         <div class="g-edit__col">
-                            <div class="input-group__label required">POP內容:</div>
-                            <g-radio label="純文字" name="popType" value="text" v-model="watermarkData.pop.type" />
-                            <g-radio label="圖片" name="popType" value="img" v-model="watermarkData.pop.type" />
-                            <g-radio label="POP SLIDE" name="popType" value="slide"
-                                     v-model="watermarkData.pop.type" />
+                            <g-input label="圖片:" v-model.trim="watermarkData.pc" :preview="watermarkData.pc"
+                                     :required="true"
+                                     :valid="watermarkData.validPC" />
                         </div>
-                        <template v-if="watermarkData.pop.type == 'text'">
+                    </div>
+                    <div class="g-edit__row">
+                        <div class="g-edit__col">
+                            <div class="input-group__label">圖片特效:</div>
+                            <g-radio label="無" name="effect" :value="false" v-model="watermarkData.effectCheck" />
+                            <g-radio label="換圖" name="effect" :value="true" v-model="watermarkData.effectCheck" />
+                        </div>
+                        <div class="g-edit__col" v-if="watermarkData.effectCheck == 'true'">
+                            <g-input label="更換圖片網址:" v-model.trim="watermarkData.effectImg"
+                                     :preview="watermarkData.effectImg"
+                                     :required="true"
+                                     :valid="watermarkData.validEffectImg" />
+                        </div>
+                    </div>
+                    <div class="g-edit__row">
+                        <div class="input-group__label">是否顯示於手機版:</div>
+                        <g-radio label="是" name="mobileShow" :value="true" v-model="watermarkData.mobileShow" />
+                        <g-radio label="否" name="mobileShow" :value="false" v-model="watermarkData.mobileShow" />
+                    </div>
+                    <template v-if="watermarkData.mobileShow == 'true'">
+                        <div class="g-edit__row">
                             <div class="g-edit__col">
-                                <g-input label="POP標題:" v-model="watermarkData.pop.title" />
+                                <g-input label="手機版圖片:" v-model.trim="watermarkData.mobile"
+                                         :preview="watermarkData.mobile"
+                                         :required="true"
+                                         :valid="watermarkData.validMobile" />
                             </div>
-                            <div class="g-edit__row">
-                                <div class="input-group__label required">對齊方向:</div>
-                                <g-radio label="左" name="align" value="left" v-model="watermarkData.pop.align" />
-                                <g-radio label="中" name="align" value="center"
-                                         v-model="watermarkData.pop.align" />
-                            </div>
+                        </div>
+                    </template>
+                    <div class="g-edit__row">
+                        <div class="input-group__label required">開啟方式:</div>
+                        <g-radio label="無" name="type" value="" v-model="watermarkData.type" />
+                        <g-radio label="POP視窗" name="type" value="pop" v-model="watermarkData.type" />
+                        <g-radio label="連結跳轉" name="type" value="link" v-model="watermarkData.type" />
+                    </div>
+
+                    <template v-if="watermarkData.type == 'pop'">
+                        <div class="g-edit__row">
                             <div class="g-edit__col">
-                                <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
-                                          :valid="watermarkData.pop.validStyle"
-                                          v-model="watermarkData.pop.style" />
+                                <div class="input-group__label required">POP內容:</div>
+                                <g-radio label="純文字" name="popType" value="text" v-model="watermarkData.pop.type" />
+                                <g-radio label="圖片" name="popType" value="img" v-model="watermarkData.pop.type" />
+                                <g-radio label="POP SLIDE" name="popType" value="slide"
+                                         v-model="watermarkData.pop.type" />
                             </div>
-                            <div class="g-edit__col">
-                                <g-ckedit v-model="watermarkData.pop.text" />
-                            </div>
-                        </template>
-                        <template v-if="watermarkData.pop.type == 'img'">
-                            <div class="g-edit__col">
-                                <g-input label="POP圖片網址:" v-model.trim="watermarkData.pop.img"
-                                         :preview="watermarkData.pop.img"
-                                         :valid="watermarkData.pop.validImg"
-                                         :required="true" />
-                            </div>
-                            <div class="g-edit__col">
-                                <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
-                                          :valid="watermarkData.pop.validStyle"
-                                          v-model="watermarkData.pop.style" />
-                            </div>
-                        </template>
-                        <template v-if="watermarkData.pop.type == 'slide'">
-                            <div class="g-edit__row">
+                            <template v-if="watermarkData.pop.type == 'text'">
                                 <div class="g-edit__col">
-                                    <div class="input-group__label required">自動輪播:</div>
-                                    <g-radio label="開啟" name="autoplay" :value="true"
-                                             v-model="watermarkData.pop.autoplay.open" />
-                                    <g-radio label="關閉" name="autoplay" :value="false"
-                                             v-model="watermarkData.pop.autoplay.open" />
+                                    <g-input label="POP標題:" v-model="watermarkData.pop.title" />
                                 </div>
-                                <div class="g-edit__col" v-if="watermarkData.pop.autoplay.open == 'true'">
-                                    <g-input label="秒數:" v-model="watermarkData.pop.autoplay.delay"
-                                             :valid="watermarkData.pop.autoplay.validDelay"
+                                <div class="g-edit__row">
+                                    <div class="input-group__label required">對齊方向:</div>
+                                    <g-radio label="左" name="align" value="left" v-model="watermarkData.pop.align" />
+                                    <g-radio label="中" name="align" value="center"
+                                             v-model="watermarkData.pop.align" />
+                                </div>
+                                <div class="g-edit__col">
+                                    <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
+                                              :valid="watermarkData.pop.validStyle"
+                                              v-model="watermarkData.pop.style" />
+                                </div>
+                                <div class="g-edit__col">
+                                    <g-ckedit v-model="watermarkData.pop.text" />
+                                </div>
+                            </template>
+
+                            <template v-if="watermarkData.pop.type == 'img'">
+                                <div class="g-edit__col">
+                                    <g-input label="POP圖片網址:" v-model.trim="watermarkData.pop.img"
+                                             :preview="watermarkData.pop.img"
+                                             :valid="watermarkData.pop.validImg"
                                              :required="true" />
                                 </div>
                                 <div class="g-edit__col">
-                                    <div class="input-group__label required">輪播切換方式:</div>
-                                    <g-radio label="左右箭頭" name="control" value="navigation"
-                                             v-model="watermarkData.pop.control" />
-                                    <g-radio label="下方點點" name="control" value="pagination"
-                                             v-model="watermarkData.pop.control" />
-                                    <g-radio label="都不顯示" name="control" value="no"
-                                             v-model="watermarkData.pop.control" />
-                                    <g-radio label="都要顯示" name="control" value="all"
-                                             v-model="watermarkData.pop.control" />
+                                    <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
+                                              :valid="watermarkData.pop.validStyle"
+                                              v-model="watermarkData.pop.style" />
                                 </div>
-                            </div>
-                            <div class="g-edit__row" v-for="(slide, slideIndex) in watermarkData.pop.slides">
-                                <div class="g-edit__col">
-                                    <div class="g-edit__group">
-                                        <a href="javascript:;" class="icon icon-add"
-                                           @click="addInsertMenu(slideIndex)"></a>
-                                        <a href="javascript:;" class="icon icon-remove"
-                                           @click="removeMenu(slideIndex)"></a>
-                                        <a href="javascript:;" class="icon icon-up" @click="onUp(slideIndex)">up</a>
-                                        <a href="javascript:;" class="icon icon-down"
-                                           @click="onDown(slideIndex)">down</a>
+                            </template>
+
+                            <template v-if="watermarkData.pop.type == 'slide'">
+                                <div class="g-edit__row">
+                                    <div class="g-edit__col">
+                                        <div class="input-group__label required">自動輪播:</div>
+                                        <g-radio label="開啟" name="autoplay" :value="true"
+                                                 v-model="watermarkData.pop.autoplay.open" />
+                                        <g-radio label="關閉" name="autoplay" :value="false"
+                                                 v-model="watermarkData.pop.autoplay.open" />
                                     </div>
-                                    <div class="g-edit__group">
-                                        <div class="g-edit__col">
-                                            <g-input label="圖片網址:" v-model.trim="slide.pc" :valid="slide.validPC"
-                                                     :preview="slide.pc"
-                                                     :required="true" />
-                                        </div>
-                                        <div class="g-edit__col">
-                                            <g-input label="手機版圖片網址" v-model.trim="slide.mobile" :preview="slide.mobile"
-                                                     :valid="slide.validMobile" />
-                                        </div>
+                                    <div class="g-edit__col" v-if="watermarkData.pop.autoplay.open == 'true'">
+                                        <g-input label="秒數:" v-model="watermarkData.pop.autoplay.delay"
+                                                 :valid="watermarkData.pop.autoplay.validDelay"
+                                                 :required="true" />
+                                    </div>
+                                    <div class="g-edit__col">
+                                        <div class="input-group__label required">輪播切換方式:</div>
+                                        <g-radio label="左右箭頭" name="control" value="navigation"
+                                                 v-model="watermarkData.pop.control" />
+                                        <g-radio label="下方點點" name="control" value="pagination"
+                                                 v-model="watermarkData.pop.control" />
+                                        <g-radio label="都不顯示" name="control" value="no"
+                                                 v-model="watermarkData.pop.control" />
+                                        <g-radio label="都要顯示" name="control" value="all"
+                                                 v-model="watermarkData.pop.control" />
                                     </div>
                                 </div>
+                                <div class="g-edit__row" v-for="(slide, slideIndex) in watermarkData.pop.slides">
+                                    <div class="g-edit__col">
+                                        <div class="g-edit__group">
+                                            <a href="javascript:;" class="icon icon-add"
+                                               @click="addInsertMenu(slideIndex)"></a>
+                                            <a href="javascript:;" class="icon icon-remove"
+                                               @click="removeMenu(slideIndex)"></a>
+                                            <a href="javascript:;" class="icon icon-up" @click="onUp(slideIndex)">up</a>
+                                            <a href="javascript:;" class="icon icon-down"
+                                               @click="onDown(slideIndex)">down</a>
+                                        </div>
+                                        <div class="g-edit__group">
+                                            <div class="g-edit__col">
+                                                <g-input label="圖片網址:" v-model.trim="slide.pc" :valid="slide.validPC"
+                                                         :preview="slide.pc"
+                                                         :required="true" />
+                                            </div>
+                                            <div class="g-edit__col">
+                                                <g-input label="手機版圖片網址" v-model.trim="slide.mobile"
+                                                         :preview="slide.mobile"
+                                                         :valid="slide.validMobile" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            <div class="g-edit__col">
+                                <div class="input-group__label required">POP視窗關閉是否跳轉:</div>
+                                <g-radio label="是" name="redirect" :value="true"
+                                         v-model="watermarkData.pop.closeCheckRedirect" />
+                                <g-radio label="否" name="redirect" :value="false"
+                                         v-model="watermarkData.pop.closeCheckRedirect" />
                             </div>
-                        </template>
-                        <div class="g-edit__col">
-                            <div class="input-group__label required">POP視窗關閉是否跳轉:</div>
-                            <g-radio label="是" name="redirect" :value="true"
-                                     v-model="watermarkData.pop.closeCheckRedirect" />
-                            <g-radio label="否" name="redirect" :value="false"
-                                     v-model="watermarkData.pop.closeCheckRedirect" />
+                            <div class="g-edit__col" v-if="watermarkData.pop.closeCheckRedirect == 'true'">
+                                <g-input label="跳轉連結:" v-model.trim="watermarkData.pop.closeRedirect" :required="true"
+                                         :valid="watermarkData.pop.validRedirect" />
+                            </div>
                         </div>
-                        <div class="g-edit__col" v-if="watermarkData.pop.closeCheckRedirect == 'true'">
-                            <g-input label="跳轉連結:" v-model.trim="watermarkData.pop.closeRedirect" :required="true"
-                                     :valid="watermarkData.pop.validRedirect" />
+                    </template>
+
+                    <template v-if="watermarkData.type == 'link'">
+                        <div class="g-edit__row">
+                            <div class="g-edit__col">
+                                <g-input label="連結:" :required="true" v-model.trim="watermarkData.target.link"
+                                         :valid="watermarkData.target.validUrl" />
+                            </div>
+                            <div class="g-edit__col">
+                                <div class="input-group__label">另開視窗:</div>
+                                <g-radio label="是" name="attribute" :value="true"
+                                         v-model="watermarkData.target.attribute" />
+                                <g-radio label="否" name="attribute" :value="false"
+                                         v-model="watermarkData.target.attribute" />
+                            </div>
                         </div>
+                    </template>
+                    <div class="edit-btn__box">
+                        <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
+                        <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>
                     </div>
                 </template>
-                <template v-if="watermarkData.type == 'link'">
-                    <div class="g-edit__row">
-                        <div class="g-edit__col">
-                            <g-input label="連結:" :required="true" v-model.trim="watermarkData.target.link"
-                                     :valid="watermarkData.target.validUrl" />
-                        </div>
-                        <div class="g-edit__col">
-                            <div class="input-group__label">另開視窗:</div>
-                            <g-radio label="是" name="attribute" :value="true"
-                                     v-model="watermarkData.target.attribute" />
-                            <g-radio label="否" name="attribute" :value="false"
-                                     v-model="watermarkData.target.attribute" />
-                        </div>
-                    </div>
-                </template>
-                <div class="edit-btn__box">
-                    <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
-                    <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>
-                </div>
-            </template>
-        </g-edit>
-    </div>
+            </g-edit>
+        </div>
+    </Teleport>
 </template>

@@ -2,7 +2,7 @@
 	position: absolute;
 	top: 24px;
 	right: 26px;
-	z-index: 1;
+	z-index: 2;
 	@include media {
 		top: vw(32);
 		right: vw(29);
@@ -24,7 +24,8 @@
 		&[data-init="true"] {
 			width: 62px;
 			height: 62px;
-			background-color: #c9c9c9;
+			background-image: linear-gradient(45deg, #ffffff 25%, #a1a1a1 25%, #a1a1a1 50%, #ffffff 50%, #ffffff 75%, #a1a1a1 75%, #a1a1a1 100%);
+			background-size: 5.66px 5.66px;
 			border-radius: 100vmax;
 		}
 		&1 {
@@ -40,8 +41,8 @@
 			@include media {
 				background-image: var(--icon-mobile);
 				background-size: calc(var(--icon-mw) / 768 * 100vw) calc(var(--icon-mh) / 768 * 100vw);
-				width: calc(var(--icon-w) / 768 * 100vw);
-				height: calc(var(--icon-h) / 768 * 100vw);
+				width: calc(var(--icon-mw) / 768 * 100vw);
+				height: calc(var(--icon-mh) / 768 * 100vw);
 			}
 		}
 	}

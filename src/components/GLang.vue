@@ -1,11 +1,12 @@
 <script>
 export default {
     name: "GLang",
-    label: "多國語系物件",
+    label: "設定多國語系",
     limit: 1,
-    order: 1, type: [1]
+    order: 15, type: [1, 2]
 }
 </script>
+
 <script setup>
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
@@ -13,23 +14,23 @@ import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GSelect from '../elements/GSelect.vue';
 import { cloneDeep } from 'lodash-es'
-
+import { GetPageType } from "../api";
 const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let langData = reactive({});
 let langSetting = reactive({})
 let langOptions = ref([{
     text: "繁體中文",
-    value: "zh"
+    value: "zh",
 }, {
     text: "英文",
-    value: "en"
+    value: "en",
 }, {
     text: "日文",
-    value: "ja"
+    value: "ja",
 }])
 let loading = ref(true);
 const $addComponent = inject('$addComponent');
@@ -40,7 +41,8 @@ const initData = () => {
         langs: [{
             name: "",
             url: "",
-            val: ""
+            val: "",
+            validUrl: true
         }]
     }
 }
@@ -48,6 +50,7 @@ Object.assign(langData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -60,7 +63,6 @@ watchEffect(async () => {
             langSetting.theme = store.config.footer
         }
     }
-
 })
 onMounted(async () => {
     await nextTick()
@@ -68,7 +70,7 @@ onMounted(async () => {
         Object.assign(langData, cloneDeep(props.data.content));
         Object.assign(langSetting, cloneDeep(props.data.content));
         if ($addComponent) {
-            $addComponent("GLang");
+            $addComponent();
         }
     }
 })
@@ -77,6 +79,7 @@ const addInsertMenu = (index) => {
     const lang = {
         name: "",
         url: "",
+        validUrl: true
 
     };
     langData.langs.push(lang)
@@ -107,9 +110,22 @@ const onDown = (index) => {
 }
 
 const onSubmit = async () => {
-    let data = cloneDeep(langData)
-    store.updateCpt(props.data.uid, data);
-    Object.assign(langSetting, data);
+    let check = true;
+    langData.langs.forEach((v, i) => {
+        if (v.url == "") {
+            check = false
+            v.validUrl = false
+        } else {
+            v.validUrl = true
+        }
+    })
+    if (check) {
+        let data = cloneDeep(langData)
+        store.updateCpt(props.data.uid, data);
+        Object.assign(langSetting, data);
+        GetPageType(store.otp)
+    }
+
 }
 
 const onReset = () => {
@@ -133,7 +149,15 @@ const closeBtn = () => {
     store.editCptClose(props.data.uid, props.sub)
 }
 
+const selectLang = (e) => {
+    var index = langOptions.value.findIndex((v, i) => {
+        return v.value == e.target.value;
+    })
+    // langOptions.value[index].select = true;
+}
+
 </script>
+
 <template>
     <Teleport to="body">
         <div class="g-lang" :data-theme="langSetting.theme">
@@ -144,13 +168,15 @@ const closeBtn = () => {
                 <g-modify :uid="data.uid" :move="false" v-if="page == 'EditPage'" />
             </div>
             <g-edit v-model:showEdit="showEdit">
+
                 <template #edit-close>
                     <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
                 </template>
+
                 <template #edit-content>
                     <div class="edit-title__box">
-                        <div class="edit-title__text">多國語系物件
-                            <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
+                        <div class="edit-title__text">設定多國語系
+                            <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Lang${pageTypeSeq}.html`"
                                class="edit-title__q" target="_blank"></a>
                         </div>
                     </div>
@@ -164,18 +190,22 @@ const closeBtn = () => {
                             </div>
                             <div class="g-edit__group">
                                 <div class="g-edit__col">
-                                    <g-select label="語系:" v-model="lang.val" :options="langOptions" />
+                                    <g-select label="語系:" v-model="lang.val" :options="langOptions"
+                                              @change="selectLang" />
+                                </div>
+                                <div class="g-edit__col">
+                                    <div class="input-group__label required">開啟方式:</div>
+                                    <g-radio label="其他語系預設使用" name="default" :value="lang.val"
+                                             v-model="langData.default" />
                                 </div>
                                 <div class="g-edit__col">
                                     <g-input label="語系名稱:" v-model.trim="lang.name" />
                                 </div>
                                 <div class="g-edit__col">
-                                    <g-input label="網址:" v-model.trim="lang.url" />
+                                    <g-input label="網址:" v-model.trim="lang.url" :required="true"
+                                             :valid="lang.validUrl" />
                                 </div>
-                                <div class="g-edit__col">
-                                    <div class="input-group__label required">開啟方式:</div>
-                                    <g-radio label="其他語系預設使用" name="default" :value="lang.val" v-model="langData.default" />
-                                </div>
+
                             </div>
                         </div>
                     </div>

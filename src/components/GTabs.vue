@@ -1,11 +1,12 @@
 <script>
 export default {
     name: "GTabs",
-    label: "頁籤區塊物件",
+    label: "頁籤區塊",
     order: 5,
-    type: [1]
+    type: [1,2]
 }
 </script>
+
 <script setup>
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
@@ -19,11 +20,11 @@ import GYoutube from '../elements/GYoutube.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide, extractVideoID } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-
-const props = defineProps(["data"])
+import { GetPageType } from "../api";
+const props = defineProps(["data","sub"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let tabsData = reactive({});
 let tabsSetting = reactive({})
@@ -34,6 +35,7 @@ let boxRef = ref("");
 let tabRef = ref("");
 let tabPop = ref(false);
 let tabPopShow = ref(false);
+let tabPopHide = ref(false);
 let totalImages = ref(0);
 let imagesLoaded = ref(0);
 const $addComponent = inject('$addComponent');
@@ -102,6 +104,7 @@ Object.assign(tabsData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -114,6 +117,11 @@ watchEffect(async () => {
         await nextTick();
         videoUpdate.value = false;
         slideUpdate.value = false;
+        if (tabsSetting.type == "img") {
+            totalImages.value = tabsSetting.tabs.length
+        }
+        // getHeightOfTabBoxes()
+        // getWidthOfTab()
     }
 })
 
@@ -127,8 +135,18 @@ onMounted(async () => {
         if (tabsSetting.type == "img") {
             totalImages.value = tabsSetting.tabs.length
         }
-        getHeightOfTabBoxes()
-        getWidthOfTab()
+        // getHeightOfTabBoxes()
+        // getWidthOfTab()
+        let tabListWidth = document.querySelector('.g-tabs__tab-list').clientWidth;
+        let tabLiWidthTotal = 0;
+        document.querySelectorAll('.g-tabs__tab-list li').forEach((item) => {
+            tabLiWidthTotal += item.clientWidth
+        })
+        if (tabLiWidthTotal > tabListWidth) {
+            tabPopHide.value = true;
+        } else {
+            tabPopHide.value = false;
+        }
         if ($addComponent) {
             $addComponent();
         }
@@ -187,6 +205,7 @@ const addInsertMenu = (index) => {
             align: "left",
             style: "",
             text: "",
+            validText: true,
             type: "all",
             collapse: {
                 num: 3,
@@ -289,29 +308,39 @@ const validateTabsData = async (data) => {
     if (data.style.trim() === "") {
         data.validStyle = false;
         isValid = false;
+    } else {
+        data.validStyle = true;
     }
 
     for (let tab of data.tabs) {
         if (tab.name.trim() === "") {
             tab.validName = false;
             isValid = false;
+        } else {
+            tab.validName = true;
         }
 
         if (data.type === "img") {
             if (tab.img.pc.trim() === "" || !(await CheckImage(tab.img.pc))) {
                 tab.img.validPC = false;
                 isValid = false;
+            } else {
+                tab.img.validPC = true;
             }
 
             if (tab.img.mobile.trim() !== "" && !(await CheckImage(tab.img.mobile))) {
                 tab.img.validMobile = false;
                 isValid = false;
+            } else {
+                tab.img.validMobile = true;
             }
 
             if (tab.img.type === "pop" && tab.img.pop.type === "img") {
                 if (tab.img.pop.img.trim() === "" || !(await CheckImage(tab.img.pop.img))) {
                     tab.img.pop.validImg = false;
                     isValid = false;
+                } else {
+                    tab.img.pop.validImg = true;
                 }
             }
 
@@ -320,10 +349,14 @@ const validateTabsData = async (data) => {
                     if (slide.pc.trim() === "" || !(await CheckImage(slide.pc))) {
                         slide.validPC = false;
                         isValid = false;
+                    } else {
+                        slide.validPC = true;
                     }
                     if (slide.mobile.trim() !== "" && !(await CheckImage(slide.mobile))) {
                         slide.validMobile = false;
                         isValid = false;
+                    } else {
+                        slide.validMobile = true;
                     }
                 }
             }
@@ -332,6 +365,8 @@ const validateTabsData = async (data) => {
                 if (tab.img.target.link.trim() === "") {
                     tab.img.target.validLink = false;
                     isValid = false;
+                } else {
+                    tab.img.target.validLink = true;
                 }
             }
         }
@@ -349,13 +384,11 @@ const validateTabsData = async (data) => {
         }
 
         if (data.type === "text") {
-            if (tab.text.style.trim() === "") {
-                tab.text.validStyle = false;
-                isValid = false;
-            }
-
             if (tab.text.text.trim() === "") {
+                tab.text.validText = false;
                 isValid = false;
+            } else {
+                tab.text.validText = true;
             }
         }
     }
@@ -365,21 +398,41 @@ const validateTabsData = async (data) => {
 
 const onSubmit = async () => {
     loadingShow()
+    tabsData.validMt = true;
+    tabsData.validMb = true;
+    tabsData.validMmt = true;
+    tabsData.validMmb = true;
+    if (tabsData.mt < 0) {
+        tabsData.validMt = false;
+    }
+    if (tabsData.mb < 0) {
+        tabsData.validMb = false;
+    }
+    if (tabsData.mobile_mt < 0) {
+        tabsData.validMmt = false;
+    }
+    if (tabsData.mobile_mb < 0) {
+        tabsData.validMmb = false;
+    }
     let isValidData = await validateTabsData(tabsData);
-    if (isValidData) {
-        let data = cloneDeep(tabsData)
-        store.updateCpt(props.data.uid, data);
-        Object.assign(tabsSetting, data);
+    if (tabsData.validMt && tabsData.validMb && tabsData.validMmt && tabsData.validMmb) {
+        if (isValidData) {
+            let data = cloneDeep(tabsData)
+            store.updateCpt(props.data.uid, data, props.sub);
+            Object.assign(tabsSetting, data);
 
-        videoUpdate.value = true;
-        slideUpdate.value = true;
-        await nextTick();
-        videoUpdate.value = false;
-        slideUpdate.value = false;
+            videoUpdate.value = true;
+            slideUpdate.value = true;
+            await nextTick();
+            videoUpdate.value = false;
+            slideUpdate.value = false;
+            GetPageType(store.otp)
+        } else {
+            loadingHide()
+        }
     } else {
         loadingHide()
     }
-
 }
 
 const onReset = () => {
@@ -404,6 +457,7 @@ const closeBtn = () => {
 }
 
 const closePop = (data, url) => {
+    console.log(data, url)
     if (store.page == "EditPage") {
         data.pop.show = false
     } else {
@@ -437,7 +491,7 @@ const getWidthOfTab = () => {
 const imageLoaded = () => {
     imagesLoaded.value++;
     if (imagesLoaded.value === totalImages.value) {
-        getHeightOfTabBoxes()
+        // getHeightOfTabBoxes()
     }
 }
 
@@ -450,6 +504,7 @@ const targetTab = (index) => {
     tabsSetting.activeTab = index
 }
 </script>
+
 <template>
     <div class="g-tabs" :style="[colors[tabsSetting.style], cssVar]">
         <div class="g-tabs-container">
@@ -458,16 +513,17 @@ const targetTab = (index) => {
                     <template v-for="(tab, index) in tabsSetting.tabs" :key="index">
                         <li class="g-tabs__tab-li" @click="tabsSetting.activeTab = index"
                             :class="{ 'active': tabsSetting.activeTab === index }" ref="tabRef">{{
-                                tab.name }}</li>
+        tab.name }}</li>
                     </template>
                 </ul>
-                <a href="javascript:;" class="g-tabs__tab-pop" @click="openTabPop"></a>
+                <a href="javascript:;" class="g-tabs__tab-pop" @click="openTabPop" v-if="tabPopHide"></a>
             </div>
             <div class="g-tabs__content">
+
                 <template v-for="(tab, index) in tabsSetting.tabs" :key="index">
                     <div class="g-tabs__box" :class="[tabsSetting.activeTab === index ? 'show' : '']"
                          :data-type="tabsSetting.type" ref="tabBox">
-                        <div class="g-tabs__title">
+                        <div class="g-tabs__title" v-if="tab.title">
                             <span>{{ tab.title }}</span>
                             <span v-if="tab.subtitle">{{ tab.subtitle }}</span>
                         </div>
@@ -478,42 +534,45 @@ const targetTab = (index) => {
                                         <div class="g-img__img-box">
                                             <picture>
                                                 <source media="(max-width:768px)" :srcset="tab.img.mobile" />
-                                                <img :srcset="tab.img.pc" :src="tab.img.pc" alt="" @load="imageLoaded" />
+                                                <img :srcset="tab.img.pc" :src="tab.img.pc" alt=""
+                                                     @load="imageLoaded" />
                                             </picture>
                                         </div>
                                     </div>
                                 </template>
+
                                 <template v-if="tab.img.type == 'link'">
                                     <a :href="[tab.img.target.link ? tab.img.target.link : 'javascript:;']"
-                                       :target="[tab.img.target.attribute == true ? '_blank' : '_self']" class="g-img__box">
+                                       :target="[tab.img.target.attribute == true ? '_blank' : '_self']"
+                                       class="g-img__box">
                                         <div class="g-img__img-box">
                                             <picture>
-                                                <source media="(max-width:768px)" :srcset="tab.img.mobile || tab.img.pc" />
+                                                <source media="(max-width:768px)"
+                                                        :srcset="tab.img.mobile || tab.img.pc" />
                                                 <img class="g-img__img" :srcset="tab.img.pc" :src="tab.img.pc" alt=""
                                                      @load="imageLoaded" />
                                             </picture>
                                         </div>
                                     </a>
                                 </template>
+
                                 <template v-if="tab.img.type == 'pop'">
                                     <div class="g-img__box"
                                          :class="[store.status == 'edit' ? 'edit' : '']"
                                          @click="openPop(tab.img)">
-                                        <div class="g-img__img-box">
+                                        <div class="g-img__img-box g-img__img-box-pop">
                                             <picture>
-                                                <source media="(max-width:768px)" :srcset="tab.img.mobile || tab.img.pc" />
+                                                <source media="(max-width:768px)"
+                                                        :srcset="tab.img.mobile || tab.img.pc" />
                                                 <img class="g-img__img" :srcset="tab.img.pc" :src="tab.img.pc" alt=""
                                                      @load="imageLoaded" />
                                             </picture>
                                         </div>
                                         <g-lightbox v-model:showLightbox="tab.img.pop.show"
-                                                    :class="[tab.img.pop.align, tab.img.pop.type == 'slide' ? 'pop-slide' : '']">
-                                            <template #lightbox-close v-if="tab.img.pop.closeCheckRedirect == 'true'">
-                                                <a href="javascript:;" class="g-lightbox__close icon-close"
-                                                   @click="closePop(tab.img, tab.img.pop.closeRedirect)"></a>
-                                            </template>
+                                                    :class="[tab.img.pop.align, tab.img.pop.type, tab.img.pop.type == 'slide' ? 'pop-slide' : '']">
                                             <template #lightbox-title v-if="tab.img.pop.type != 'slide'">{{
-                                                tab.img.pop.title }}</template>
+        tab.img.pop.title }}</template>
+
                                             <template #lightbox-content>
                                                 <template v-if="tab.img.pop.type != 'slide'">
                                                     <div class="g-lightbox__text" v-if="tab.img.pop.text"
@@ -522,19 +581,35 @@ const targetTab = (index) => {
                                                         <img :src="tab.img.pop.img" alt="">
                                                     </div>
                                                 </template>
+
                                                 <template v-else>
-                                                    <g-swiper :data="tab.img.pop" :status="status" v-if="!slideUpdate" />
+                                                    <g-swiper :data="tab.img.pop" :status="status"
+                                                              v-if="!slideUpdate" />
                                                 </template>
+                                            </template>
+
+                                            <template #lightbox-btn
+                                                      v-if="tab.img.pop.closeCheckRedirect == 'true' || tab.img.pop.closeCheckRedirect === true">
+                                                <a href=" javascript:;" class="g-lightbox__btn"
+                                                   @click="closePop(tab.img, tab.img.pop.closeRedirect)">確定</a>
+                                            </template>
+
+                                            <template #lightbox-close
+                                                      v-if="tab.img.pop.closeCheckRedirect == 'true' || tab.img.pop.closeCheckRedirect === true">
+                                                <a href="javascript:;" class="g-lightbox__close icon-close"
+                                                   @click="closePop(tab.img, tab.img.pop.closeRedirect)">確定</a>
                                             </template>
                                         </g-lightbox>
                                     </div>
                                 </template>
                             </template>
+
                             <template v-if="tabsSetting.type == 'video'">
                                 <a v-if="tab.video.type == 'click'" href="javascript:;" class="g-video__box">
                                     <g-youtube :youtube="tab.video.url" v-if="!videoUpdate" :openapp="tab.video.app" />
                                 </a>
-                                <a v-if="tab.video.type == 'pop'" href="javascript:;" class="g-video__box"
+                                <a v-if="tab.video.type == 'pop'" href="javascript:;"
+                                   class="g-video__box g-video__box-pop"
                                    @click="openPop(tab.video)">
                                     <g-youtube :youtube="tab.video.url" :pop="true" :preview="true"
                                                :openapp="tab.video.app"
@@ -552,35 +627,40 @@ const targetTab = (index) => {
                                     </g-lightbox>
                                 </a>
                             </template>
+
                             <template v-if="tabsSetting.type == 'text'">
                                 <template v-if="tab.text.type == 'all'">
-                                    <div class="g-text__box" v-html="tab.text.text"></div>
+                                    <div class="g-text__box" :data-align="tab.text.align" v-html="tab.text.text"></div>
                                 </template>
                             </template>
                         </div>
                     </div>
                 </template>
             </div>
-            <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
+            <g-modify :uid="data.uid" :sub="sub" v-if="page == 'EditPage'" />
         </div>
         <g-lightbox v-model:showLightbox="tabPopShow" :style="[colors[tabsSetting.style]]"
                     :action="false"
                     class="lb-pop-tab">
+
             <template #lightbox-content>
                 <ul class="g-lightbox__tab-list">
                     <li class="g-lightbox__tab-li" v-for="(tab, index) in tabsSetting.tabs"
-                        :class="{ 'active': tabsSetting.activeTab === index }" @click="targetTab(index)">{{ tab.name }}</li>
+                        :class="{ 'active': tabsSetting.activeTab === index }" @click="targetTab(index)">{{ tab.name }}
+                    </li>
                 </ul>
             </template>
         </g-lightbox>
         <g-edit v-model:showEdit="showEdit">
+
             <template #edit-close>
                 <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
             </template>
+
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">頁籤區塊物件
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
+                    <div class="edit-title__text">頁籤區塊
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Tabs${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
@@ -655,6 +735,7 @@ const targetTab = (index) => {
                                                 <g-ckedit v-model="tab.img.pop.text" />
                                             </div>
                                         </template>
+
                                         <template v-if="tab.img.pop.type == 'img'">
                                             <div class="g-edit__col">
                                                 <g-input label="POP圖片網址:" v-model.trim="tab.img.pop.img"
@@ -663,6 +744,7 @@ const targetTab = (index) => {
                                                          :required="true" />
                                             </div>
                                         </template>
+
                                         <template v-if="tab.img.pop.type == 'slide'">
                                             <div class="g-edit__row">
                                                 <div class="g-edit__col">
@@ -690,7 +772,8 @@ const targetTab = (index) => {
                                                              v-model="tab.img.pop.control" />
                                                 </div>
                                             </div>
-                                            <div class="g-edit__row" v-for="( slide, slideIndex ) in  tab.img.pop.slides ">
+                                            <div class="g-edit__row"
+                                                 v-for="( slide, slideIndex ) in  tab.img.pop.slides ">
                                                 <div class="g-edit__col">
                                                     <div class="g-edit__group">
                                                         <a href="javascript:;" class="icon icon-add"
@@ -729,6 +812,7 @@ const targetTab = (index) => {
                                             <g-input label="跳轉連結:" v-model.trim="tab.img.pop.closeRedirect" />
                                         </div>
                                     </template>
+
                                     <template v-if="tab.img.type == 'link'">
                                         <div class="g-edit__col">
                                             <g-input label="連結:" :required="true" v-model.trim="tab.img.target.link"
@@ -743,6 +827,7 @@ const targetTab = (index) => {
                                         </div>
                                     </template>
                                 </template>
+
                                 <template v-if="tabsData.type == 'video'">
                                     <div class="g-edit__col">
                                         <g-input label="影片連結:" :required="true" v-model.trim="tab.video.url"
@@ -763,6 +848,7 @@ const targetTab = (index) => {
                                                  v-model="tab.video.app" />
                                     </div>
                                 </template>
+
                                 <template v-if="tabsData.type == 'text'">
                                     <div class="g-edit__col">
                                         <div class="input-group__label required">對齊方向:</div>
@@ -772,7 +858,8 @@ const targetTab = (index) => {
                                                  v-model="tab.text.align" />
                                     </div>
                                     <div class="g-edit__row">
-                                        <g-ckedit v-model:modelValue="tab.text.text" />
+                                        <g-ckedit v-model:modelValue="tab.text.text" :require="true"
+                                                  :valid="tab.text.validText" />
                                     </div>
                                 </template>
                             </div>
@@ -781,16 +868,20 @@ const targetTab = (index) => {
                 </template>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距上:" type="number" v-model="tabsData.mt" @change="handleNumber" />
+                        <g-input label="PC間距上:" type="number" v-model="tabsData.mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="tabsData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距下:" type="number" v-model="tabsData.mb" @change="handleNumber" />
+                        <g-input label="PC間距下:" type="number" v-model="tabsData.mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="tabsData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距上:" type="number" v-model="tabsData.mobile_mt" @change="handleNumber" />
+                        <g-input label="Mobile間距上:" type="number" v-model="tabsData.mobile_mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="tabsData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距下:" type="number" v-model="tabsData.mobile_mb" @change="handleNumber" />
+                        <g-input label="Mobile間距下:" type="number" v-model="tabsData.mobile_mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="tabsData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

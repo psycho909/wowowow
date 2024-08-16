@@ -9,40 +9,52 @@ export default {
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
-import { nextTick, reactive, watchEffect } from 'vue';
+import { nextTick, onUpdated, reactive, watchEffect } from 'vue';
 import { ColorPicker } from 'vue-color-kit';
 import 'vue-color-kit/dist/vue-color-kit.css';
 import GInput from "../elements/GInput.vue";
+import GRadio from '../elements/GRadioo.vue';
 import { mainStore } from "../store/index";
 import { CheckImage, getVideoInfo, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
+import { GetPageType } from "../api";
 const props = defineProps(["data", "sub"])
 const store = mainStore()
-const { content, MODE, page } = storeToRefs(store);
+const { content, MODE, page, pageTypeSeq } = storeToRefs(store);
 let showEdit = ref(false);
 let showColor = ref(false);
 let bgData = reactive({});
 let bgSetting = reactive({});
 let videoRef = ref(null);
+let mobile = ref(false);
+let videoUpdate = ref(false);
 const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         color: "#fff",
         pc: "",
         mobile: "",
+        pcVideo: "",
+        mobileVideo: "",
         w: "",
         h: "",
         mw: "",
         mh: "",
+        fit: true,
         validPC: true,
+        validPCVideo: true,
         validMobile: true,
-        type: {
-            pc: "img", mobile: "img"
-        }
+        validMobileVideo: true,
     }
 };
 
 Object.assign(bgData, initData());
+
+if (isMobile.any) {
+    mobile.value = true;
+} else {
+    mobile.value = false;
+}
 
 const imageInfo = async (type, url) => {
     return new Promise((resolve, reject) => {
@@ -62,8 +74,9 @@ const imageInfo = async (type, url) => {
         elem.src = url;
     });
 }
-watchEffect(() => {
+watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -72,39 +85,80 @@ watchEffect(() => {
         if (Object.keys(props.data.content).length > 0) {
             Object.assign(bgData, cloneDeep(props.data.content));
             Object.assign(bgSetting, cloneDeep(props.data.content));
-            if (!bgData.type) {
-                bgData.type = {
-                    pc: "img", mobile: "img"
+            if (bgData.pc !== '') {
+                if (isMp4(bgData.pc)) {
+                    bgData.pcVideo = bgData.pc;
+                    bgData.pc = "";
                 }
+            }
+            if (bgData.mobile !== '') {
+                if (isMp4(bgData.mobile)) {
+                    bgData.mobileVideo = bgData.mobile;
+                    bgData.mobile = "";
+                }
+            }
+            if (bgSetting.pc !== '') {
+                if (isMp4(bgSetting.pc)) {
+                    console.log(123)
+                    bgSetting.pcVideo = bgSetting.pc;
+                    bgSetting.pc = "";
+                }
+            }
+            if (bgSetting.mobile !== '') {
+                if (isMp4(bgSetting.mobile)) {
+                    bgSetting.mobileVideo = bgSetting.mobile;
+                    bgSetting.mobile = "";
+                }
+            }
+            if (bgSetting.pcVideo) {
+                videoUpdate.value = true;
+                await nextTick();
+                videoUpdate.value = false;
             }
         }
     }
 })
+watch(videoRef, (newVal, oldVal) => {
+    if (newVal !== null) {
+        videoRef.value.addEventListener('loadeddata', () => {
+            setTimeout(() => {
+                document.querySelector(".wrap").style.setProperty("--video-h", document.querySelector(".g-bg-video").clientHeight);
+                document.querySelector(".wrap").classList.add("video-bg-h");
+                console.log(document.querySelector(".g-bg-video").clientHeight)
+            }, 0);
+        });
+    } else {
+        document.querySelector(".wrap").classList.remove("video-bg-h");
+    }
+}, { flush: 'post' })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(bgData, cloneDeep(props.data.content));
         Object.assign(bgSetting, cloneDeep(props.data.content));
-        if (!bgData.type) {
-            bgData.type = {
-                pc: "img", mobile: "img"
-            }
-        } else {
-            if (bgData.type.pc == 'video' || bgData.type.mobile == 'video') {
-                videoRef.value.addEventListener('loadeddata', () => {
-                    if ($addComponent) {
-                        $addComponent("BG");
-                    }
-                });
-            } else {
+        await nextTick()
+        if (bgSetting.pc !== "") {
+            document.querySelector(".wrap").classList.add("bg-h");
+        }
+        if (videoRef.value) {
+            videoRef.value.addEventListener('loadeddata', () => {
+                setTimeout(() => {
+                    document.querySelector(".wrap").style.setProperty("--video-h", document.querySelector(".g-bg-video").clientHeight);
+                    document.querySelector(".wrap").classList.add("video-bg-h");
+                }, 0);
                 if ($addComponent) {
-                    $addComponent("BG");
+                    $addComponent();
                 }
+            });
+        } else {
+            if ($addComponent) {
+                $addComponent();
             }
         }
 
     }
 })
+
 const updateColor = (color) => {
     bgData.color = color.hex
 }
@@ -117,9 +171,9 @@ const openColor = () => {
 
 }
 
-function isImageOrMp4(url) {
+function isMp4(url) {
     var ext = url.split('.').pop().toLowerCase();
-    return (ext === 'jpg' || ext === 'jpeg' || ext === 'png' || ext === 'gif' || ext === 'mp4');
+    return (ext === 'mp4');
 }
 
 const onSubmit = async () => {
@@ -127,67 +181,77 @@ const onSubmit = async () => {
     let data = {};
     bgData.validMobile = true;
     if (bgData.pc.length == 0) {
-        bgData.validPC = false;
+        bgData.validPC = true;
     } else {
-        console.log(bgData.pc)
         if (!await CheckImage(bgData.pc)) {
-            if (!isImageOrMp4(bgData.pc)) {
-                bgData.validPC = false;
-            } else {
-                try {
-                    let videoInfo = await getVideoInfo(bgData.pc);
-                    if (videoInfo.size > 5) {
-                        bgData.validPC = false;
-                    } else {
-                        bgData.validPC = true;
-                        bgData.type.pc = "video"
-                    }
-                } catch (err) {
-                    bgData.validPC = false;
-                }
-            }
+            bgData.validPC = false;
         } else {
             bgData.validPC = true;
-            bgData.type.pc = "img"
         }
     }
+
+    if (bgData.pcVideo.length == 0) {
+        bgData.validPCVideo = true;
+    } else {
+        if (!isMp4(bgData.pcVideo)) {
+            bgData.validPCVideo = false;
+        } else {
+            try {
+                let videoInfo = await getVideoInfo(bgData.pcVideo);
+                if (videoInfo.size > 10) {
+                    bgData.validPCVideo = false;
+                } else {
+                    bgData.validPCVideo = true;
+                }
+            } catch (err) {
+                bgData.validPCVideo = false;
+            }
+        }
+    }
+
     if (bgData.mobile.length > 0) {
         if (!await CheckImage(bgData.mobile)) {
-            if (!isImageOrMp4(bgData.mobile)) {
-                bgData.validMobile = false;
-            } else {
-                try {
-                    let videoInfo = await getVideoInfo(bgData.pc);
-                    if (videoInfo.size > 5) {
-                        bgData.validMobile = false;
-                    } else {
-                        bgData.validMobile = true;
-                        bgData.type.mobile = "video"
-                    }
-                } catch (err) {
-                    bgData.validMobile = false;
-                }
-            }
+            bgData.validMobile = false;
         } else {
             bgData.validMobile = true;
-            bgData.type.mobile = "img"
         }
     } else {
         bgData.validMobile = true;
     }
-
-    if (bgData.validPC && bgData.validMobile) {
-        if (bgData.type.pc == "img") {
-            await imageInfo("mobile", bgData.mobile);
+    if (bgData.mobileVideo.length == 0) {
+        bgData.validMobileVideo = true;
+    } else {
+        if (!isMp4(bgData.mobileVideo)) {
+            bgData.validMobileVideo = false;
+        } else {
+            try {
+                let videoInfo = await getVideoInfo(bgData.mobileVideo);
+                if (videoInfo.size > 10) {
+                    bgData.validMobileVideo = false;
+                } else {
+                    bgData.validMobileVideo = true;
+                }
+            } catch (err) {
+                bgData.validMobileVideo = false;
+            }
         }
-        if (bgData.type.mobile == "img") {
+    }
+    if (bgData.validPC && bgData.validMobile && bgData.validPCVideo && bgData.validMobileVideo) {
+        if (bgData.pc.length) {
             await imageInfo("pc", bgData.pc);
+        }
+        if (bgData.mobile.length) {
+            await imageInfo("mobile", bgData.mobile);
         }
         data = { ...bgData };
         store.updateCpt(props.data.uid, data, props.sub);
+        GetPageType(store.otp)
     } else {
         loadingHide();
     }
+    // data = { ...bgData };
+    //     store.updateCpt(props.data.uid, data, props.sub);
+    //     loadingHide();
 }
 const onReset = () => {
     Object.assign(bgData, initData());
@@ -217,15 +281,23 @@ const closeBtn = () => {
 }
 </script>
 <template>
-    <div class="g-bg">
-        <template v-if="bgSetting?.type?.pc == 'video'">
-            <video class="bg-video" autoplay="" loop="" playsinline="" ref="videoRef">
-                <source :src="bgSetting.pc" type="video/mp4">
+    <div class="g-bg" :data-init="data.init">
+        <template v-if="bgSetting?.pcVideo && !mobile">
+            <video class="g-bg-video g-bg-video--pc"
+                   :class="[bgSetting?.fit === true || bgSetting?.fit === 'true' ? 'fit' : 'contain']" autoplay=""
+                   loop=""
+                   playsinline="" muted ref="videoRef"
+                   v-if="!videoUpdate">
+                <source :src="bgSetting.pcVideo" type="video/mp4">
             </video>
         </template>
-        <template v-if="bgSetting?.type?.mobile == 'video'">
-            <video class="bg-video" autoplay="" loop="" playsinline="" ref="videoRef">
-                <source :src="bgSetting.mobile" type="video/mp4">
+        <template v-if="(bgSetting?.mobileVideo || bgSetting?.pcVideo) && mobile">
+            <video class="g-bg-video g-bg-video--mobile"
+                   :class="[bgSetting?.fit === true || bgSetting?.fit === 'true' ? 'fit' : 'contain']" autoplay=""
+                   loop=""
+                   playsinline="" muted ref="videoRef"
+                   v-if="!videoUpdate">
+                <source :src="bgSetting.mobileVideo || bgSetting.pcVideo" type="video/mp4">
             </video>
         </template>
         <g-modify :uid="data.uid" title="背景" :move="false" :remove="false" :sub="sub"
@@ -239,17 +311,33 @@ const closeBtn = () => {
                 <div class="edit-title__box">
                     <div class="edit-title__text">
                         背景圖
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/BG.html"
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/BG${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
                 <div class="g-edit__row">
-                    <g-input label="圖片/影片網址:" v-model.trim="bgData.pc" :preview="bgData.pc" :valid="bgData.validPC"
-                             :required="true" />
+                    <g-input label="圖片網址:" v-model.trim="bgData.pc" :preview="bgData.pc" :valid="bgData.validPC" />
                 </div>
                 <div class="g-edit__row">
-                    <g-input label="手機版圖片/影片網址:" v-model.trim="bgData.mobile" :preview="bgData.mobile"
+                    <g-input label="影片網址:" v-model.trim="bgData.pcVideo" :preview="bgData.pcVideo"
+                             :valid="bgData.validPCVideo" />
+                </div>
+                <div class="g-edit__row">
+                    <g-input label="手機版圖片網址:" v-model.trim="bgData.mobile" :preview="bgData.mobile"
                              :valid="bgData.validMobile" />
+                </div>
+                <div class="g-edit__row">
+                    <g-input label="手機版影片網址:" v-model.trim="bgData.mobileVideo" :preview="bgData.mobileVideo"
+                             :valid="bgData.validMobileVideo" />
+                </div>
+                <div class="g-edit__row">
+                    <div class="g-edit__col">
+                        <div class="input-group__label required">影片寬度:</div>
+                        <g-radio label="影片滿版" name="video-fit" :value="true"
+                                 v-model="bgData.fit" />
+                        <g-radio label="影片自己寬度" :name="'control' + index" :value="false"
+                                 v-model="bgData.fit" />
+                    </div>
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group">

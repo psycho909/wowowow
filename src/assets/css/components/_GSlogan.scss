@@ -8,7 +8,7 @@
 	margin-bottom: calc(var(--mb, 24) * 1px);
 
 	@include media {
-		max-width: vw(728);
+		max-width: vw(690);
 		margin: 0 auto;
 		margin-top: calc(var(--mobile_mt, 250) / 768 * 100vw);
 		margin-bottom: calc(var(--mobile_mb, 24) / 768 * 100vw);
@@ -19,6 +19,16 @@
 		background-repeat: no-repeat;
 		margin: 0 auto;
 		display: block;
+		// background-image: var(--slogan-pc);
+		// background-size: calc(var(--slogan-w) * 1px) calc(var(--slogan-h) * 1px);
+		// width: calc(var(--slogan-w, 1000) * 1px);
+		// height: calc(var(--slogan-h, 187) * 1px);
+		@include media {
+			// background-image: var(--slogan-mobile);
+			// background-size: calc(var(--slogan-mw) / 768 * 100vw) calc(var(--slogan-mh) / 768 * 100vw);
+			// width: calc(var(--slogan-mw, 1000) / 768 * 100vw);
+			// height: calc(var(--slogan-mh, 187) / 768 * 100vw);
+		}
 		&[href="javascript:;"] {
 			cursor: default;
 		}

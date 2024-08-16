@@ -3,6 +3,32 @@
 	z-index: 1;
 	margin-top: calc(var(--mt, 0) * 1px);
 	margin-bottom: calc(var(--mb, 0) * 1px);
+	&[data-aspect="16/9"] {
+		.g-swiper__img-box {
+			img {
+				// aspect-ratio: 16/9;
+				object-fit: cover;
+			}
+		}
+	}
+	&[data-type="slide-card"] {
+		.g-swiper .swiper-wrapper {
+			align-items: stretch;
+		}
+		.g-swiper__a {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+		}
+		.swiper-slide {
+			height: auto;
+		}
+		.g-swiper__card {
+			display: flex;
+			flex: 1;
+			flex-direction: column;
+		}
+	}
 	@include media {
 		margin-bottom: vw(54);
 		overflow: hidden;

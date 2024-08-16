@@ -2,6 +2,7 @@
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
 import nestedDraggable from "./nested.vue";
+import { GetPageType } from "../api";
 
 const props = defineProps(["menu"])
 const store = mainStore();
@@ -17,6 +18,16 @@ const bgStatus = computed(() => {
     }
     return {}
 })
+
+const componentStatus = (cpt) => {
+    if (content.value) {
+        return content.value.filter((c, i) => {
+            return c.component == cpt;
+        })[0]
+    }
+    return {}
+}
+
 const total = computed(() => {
     if (content.value) {
         if (pageTypeSeq.value == 2) {
@@ -49,42 +60,83 @@ const total = computed(() => {
     }
     return {}
 })
-const menuFilter1 = computed(() => {
-    if (menuList) {
-        if (pageTypeSeq.value == 1) {
-            return props.menu.map((v, i) => {
-                if (total.value[v.title] == v.limit) {
-                    v.status = false
-                } else {
-                    v.status = true
-                }
-                return v;
-            }).filter((v, i) => validPreviousComponents.includes(v.title)).sort((a, b) => {
-                return a.order - b.order
-            })
-        }
-        if (pageTypeSeq.value == 2) {
-            return props.menu.filter((v, i) => v.title == "GArea" || v.title == "GFixed").sort((a, b) => {
-                return a.order - b.order
-            })
-        }
+const menuFilter = computed(() => {
+    if (!menuList) return [];
 
-    }
-})
+    if (pageTypeSeq.value === 1) {
+        const filteredMenu = props.menu
+            .filter(item => item.type.includes(1))
+            .map(v => ({
+                ...v,
+                status: total.value[v.title] !== v.limit
+            }))
+            .sort((a, b) => a.order - b.order);
 
-const menuFilter2 = computed(() => {
-    if (menuList) {
-        if (pageTypeSeq.value == 1) {
-            const filteredMenu = props.menu.filter((item, i) => item.type.includes(1)).map((v, i) => {
-                if (total.value[v.title] == v.limit) {
-                    v.status = false;
-                } else {
-                    v.status = true;
+        const validPreviousMenu = filteredMenu.filter(v => validPreviousComponents.includes(v.title));
+
+        const remainingMenu = filteredMenu.filter(v => !validPreviousComponents.includes(v.title));
+        const groupedMenu = [];
+        let currentGroup = null;
+
+        for (const element of remainingMenu) {
+            if (element.title.startsWith("GSlide")) {
+                if (!currentGroup || currentGroup.title !== "輪播區塊") {
+                    currentGroup = { title: "輪播區塊", elements: [], order: 4 };
+                    groupedMenu.push(currentGroup);
                 }
-                return v;
-            }).filter(v => !validPreviousComponents.includes(v.title)).sort((a, b) => {
-                return a.order - b.order;
+                currentGroup.elements.push(element);
+            } else if (element.title.startsWith("GImg")) {
+                if (!currentGroup || currentGroup.title !== "圖片區塊") {
+                    currentGroup = { title: "圖片區塊", elements: [], order: 5 };
+                    groupedMenu.push(currentGroup);
+                }
+                currentGroup.elements.push(element);
+            } else {
+                groupedMenu.push(element);
+            }
+        }
+        return [...validPreviousMenu, ...groupedMenu]
+            .sort((a, b) => {
+                // 如果是分组，使用第一个元素的 order
+                const orderA = a.elements ? a.elements[0].order : a.order;
+                const orderB = b.elements ? b.elements[0].order : b.order;
+                return orderA - orderB;
             });
+    }
+
+    if (pageTypeSeq.value == 2) {
+        // First condition: Filter and sort specific menu items
+        const specificItems = props.menu
+            .filter(item => item.type.includes(2))
+            .filter(v => ["GArea", "GFixed", "GWatermark", "GMusic", "GLang", "GTop"].includes(v.title))
+            .sort((a, b) => a.order - b.order);
+
+        // Second condition: Based on group value
+        if (group.value.name == 1) {
+            const homeComponent = ["GLogo", "GIcon", "GBg", "GDNNav", "GDNImg"];
+            return props.menu
+                .filter(v => homeComponent.includes(v.title))
+                .sort((a, b) => a.order - b.order)
+                .map(v => ({
+                    ...v,
+                    group: group.value.name,
+                    drag: false
+                }));
+        } else {
+            const homeComponent = ["GBg", "GSlogan", "GVideo", "GText", "GSlide", "GImg", "GListText", "GAccordion", "GButtons", "GImgText", "GSlideText", "GTabs"];
+
+            if (group.value.name == 'main') {
+                return;
+            }
+
+            const filteredMenu = props.menu
+                .filter(v => homeComponent.includes(v.title))
+                .sort((a, b) => a.order - b.order)
+                .map(v => ({
+                    ...v,
+                    group: group.value.name
+                }));
+
             const groupedMenu = [];
             let currentGroup = null;
 
@@ -105,39 +157,59 @@ const menuFilter2 = computed(() => {
                     groupedMenu.push(element);
                 }
             }
+
             return groupedMenu;
         }
-        if (pageTypeSeq.value == 2) {
-            if (group.value.name == 1) {
-                const homeComponent = ["GLogo", "GIcon", "GBg", "GDNNav", "GDNImg"]
-                let menu = props.menu
-                return menu.filter((v, i) => homeComponent.includes(v.title)).sort((a, b) => {
-                    return a.order - b.order
-                }).map((v, i) => {
-                    v.group = group.value.name;
-                    return v
-                })
-            } else {
-                const homeComponent = ["GBg", "GSlogan", "GVideo", "GText", "GSlide", "GImg"]
-                if (group.value.name == 'main') {
-                    return;
-                }
-                return props.menu.filter((v, i) => homeComponent.includes(v.title)).sort((a, b) => {
-                    return a.order - b.order
-                }).map((v, i) => {
-                    v.group = group.value.name;
-                    return v
-                })
-            }
-        }
     }
+
+    // If pageTypeSeq.value is not 2, no action is taken
+
+    return [];
 });
 const add = (cpt) => {
     if (cpt.title == "GBg") {
         if (bgStatus.value?.content?.pc) {
+            bgStatus.value.update = true;
             return;
         } else {
             bgStatus.value.update = true;
+            return;
+        }
+    }
+    if (cpt.title == "GSlogan") {
+        if (componentStatus("GSlogan")) {
+            componentStatus("GSlogan").update = true;
+            return;
+        }
+
+    }
+    if (cpt.title == "GFixed") {
+        if (componentStatus("GFixed")) {
+            componentStatus("GFixed").update = true;
+            return;
+        }
+    }
+    if (cpt.title == "GWatermark") {
+        if (componentStatus("GWatermark")) {
+            componentStatus("GWatermark").update = true;
+            return;
+        }
+    }
+    if (cpt.title == "GTop") {
+        if (componentStatus("GTop")) {
+            componentStatus("GTop").update = true;
+            return;
+        }
+    }
+    if (cpt.title == "GMusic") {
+        if (componentStatus("GMusic")) {
+            componentStatus("GMusic").update = true;
+            return;
+        }
+    }
+    if (cpt.title == "GLang") {
+        if (componentStatus("GLang")) {
+            componentStatus("GLang").update = true;
             return;
         }
     }
@@ -160,18 +232,6 @@ const onOpen = () => {
 const onClose = () => {
     menuToggle.value = false
 }
-const log = (evt) => {
-    console.log("evt", evt);
-}
-const moveLog = (e) => {
-    console.log("menu move", e)
-}
-const start = (e) => {
-    console.log("menu start", e)
-}
-const end = (e) => {
-    console.log(e)
-}
 </script>
 <template>
     <Teleport to="body">
@@ -180,30 +240,7 @@ const end = (e) => {
             <a href="javascript:;" class="g-menu__close icon-close" @click="onClose"></a>
 
             <div class="g-menu__wrap">
-                <a href="javascript:;" class="g-menu__add"
-                   :class="[m.title == 'GBg' ? bgStatus?.content?.pc ? 'disabled 1' : '' : m.status ? '' : 'disabled 2']"
-                   v-for="m in menuFilter1"
-                   @click="add(m)">{{ m.label }}</a>
-                <nested-draggable :tasks="menuFilter2" v-if="menuFilter2" />
-                <!-- <draggable
-                           class="list-group"
-                           :list="menuFilter2"
-                           :group="store.group"
-                           :sort="false"
-                           :force-fallback="true"
-                           :fallback-tolerance="1"
-                           :scroll-sensitivity="100"
-                           @start="start"
-                           @end="end"
-                           @change="log"
-                           @move="moveLog"
-                           itemKey="label">
-                    <template #item="{ element, index }">
-                        <a href="javascript:;" class="g-menu__add"
-                           :class="[element.title == 'GBg' ? bgStatus?.content?.pc ? 'disabled' : '' : element.status ? '' : 'disabled', element.title]"
-                           @click="add(element)">{{ element.label }}</a>
-                    </template>
-                </draggable> -->
+                <nested-draggable :tasks="menuFilter" v-if="menuFilter" />
             </div>
         </div>
     </Teleport>

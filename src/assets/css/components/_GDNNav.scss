@@ -1,19 +1,26 @@
 .g-dn_nav {
 	margin-top: calc(var(--nav-margin-top, 104) * 1px);
+	margin-bottom: calc(var(--nav-margin-bottom, 0) * 1px) !important;
+	position: relative;
+	z-index: 2;
 	@include media {
-		margin-top: calc(var(--nav-m-margin-top, 59) / 768 * 100vw);
+		margin-top: calc(var(--nav-m-margin-top, 80) / 768 * 100vw);
+		margin-bottom: calc(var(--nav-m-margin-bottom, 0) / 768 * 100vw) !important;
 	}
 	&-container {
 		min-width: 1200px;
 		padding-left: 68%;
 		box-sizing: border-box;
 		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		row-gap: 20px;
 		@include media {
 			min-width: auto;
 			padding-left: 0;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
+			row-gap: vw(30);
+			// margin-top: vw(80);
 		}
 		.g-modify {
 			right: unset;
@@ -32,7 +39,10 @@
 		&[data-init="true"] {
 			width: 723px;
 			height: 110px;
-			background-color: #c9c9c9;
+			background-image: url("./img/border-top-left.png"), url("./img/border-top-right.png"), url("./img/border-bottom-left.png"), url("./img/border-bottom-right.png"), linear-gradient(45deg, #ffffff 25%, #a1a1a1 25%, #a1a1a1 50%, #ffffff 50%, #ffffff 75%, #a1a1a1 75%, #a1a1a1 100%);
+			background-size: 32px 32px, 32px 32px, 32px 32px, 32px 32px, 5px 5px;
+			background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+			background-position: 0 0, right 0, 0 bottom, right bottom, 0 0;
 		}
 		&[data-effect="true"] {
 			@include hover {
@@ -70,10 +80,11 @@
 			width: calc(var(--nav-effectImg-w) * 1px);
 			height: calc(var(--nav-effectImg-h) * 1px);
 			position: absolute;
-			z-index: 0;
-			top: 0;
-			left: 0;
+			z-index: 1;
+			top: 50%;
+			left: 50%;
 			opacity: 0;
+			transform: translate(-50%, -50%);
 			@include media {
 				display: none;
 			}

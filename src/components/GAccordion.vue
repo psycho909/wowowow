@@ -2,7 +2,7 @@
 export default {
     name: "GAccordion",
     label: "手風琴文字",
-    order: 5, type: [1]
+    order: 10, type: [1, 2]
 }
 </script>
 <script setup>
@@ -16,11 +16,11 @@ import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-
-const props = defineProps(["data"])
+import { GetPageType } from "../api";
+const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let accordionSetting = reactive({})
 let accordionData = reactive({});
@@ -49,6 +49,7 @@ Object.assign(accordionData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -65,9 +66,6 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(accordionData, cloneDeep(props.data.content));
         Object.assign(accordionSetting, cloneDeep(props.data.content));
-        bodyRefs.value.forEach(item => {
-            item.style = `--max-height:${item.scrollHeight}`
-        });
         if ($addComponent) {
             $addComponent();
         }
@@ -127,14 +125,13 @@ const openPop = (data) => {
 }
 
 function validateAccordionData(data) {
+    let isValid = true;
     if (data.style.trim() === "") {
         data.validStyle = false;
-        return false;
+        isValid = false;
     } else {
         data.validStyle = true;
     }
-
-    let isValid = true;
 
     for (const accordion of data.accordions) {
         if (accordion.prefix.trim() !== "" && accordion.prefix.trim().length > 5) {
@@ -144,7 +141,7 @@ function validateAccordionData(data) {
             accordion.validPrefix = true;
         }
 
-        if (accordion.title.trim() === "" || accordion.title.trim().length > 30) {
+        if (accordion.title.trim() === "" || accordion.title.trim().length > 500) {
             accordion.validTitle = false;
             isValid = false;
         } else {
@@ -165,12 +162,32 @@ function validateAccordionData(data) {
 const onSubmit = async () => {
     loadingShow()
     let isValidData = validateAccordionData(accordionData);
-
-    if (isValidData) {
-        let data = cloneDeep(accordionData);
-        store.updateCpt(props.data.uid, data);
-        Object.assign(accordionSetting, data);
+    accordionData.validMobile = true;
+    accordionData.validMt = true;
+    accordionData.validMb = true;
+    accordionData.validMmt = true;
+    accordionData.validMmb = true;
+    if (accordionData.mt < 0) {
+        accordionData.validMt = false;
     }
+    if (accordionData.mb < 0) {
+        accordionData.validMb = false;
+    }
+    if (accordionData.mobile_mt < 0) {
+        accordionData.validMmt = false;
+    }
+    if (accordionData.mobile_mb < 0) {
+        accordionData.validMmb = false;
+    }
+    if (accordionData.validMt && accordionData.validMb && accordionData.validMmt && accordionData.validMmb) {
+        if (isValidData) {
+            let data = cloneDeep(accordionData);
+            store.updateCpt(props.data.uid, data, props.sub, props.sub);
+            Object.assign(accordionSetting, data);
+            GetPageType(store.otp)
+        }
+    }
+
     loadingHide()
 }
 
@@ -196,6 +213,9 @@ const closeBtn = () => {
 }
 
 const toggleAccordion = (index) => {
+    // bodyRefs.value.forEach(item => {
+    //     item.style = `--max-height:${item.scrollHeight}`
+    // });
     if (accordionSetting.accordions[index].collapse.toString() == 'true') {
         accordionSetting.accordions[index].collapse = 'false';
     } else {
@@ -206,19 +226,21 @@ const toggleAccordion = (index) => {
 </script>
 <template>
     <div class="g-accordion" :style="[colors[accordionSetting.style], cssVar]">
-        <div class="g-accordion-container">
+        <div class="g-accordion-container" :data-align="accordionSetting.align">
             <template v-for="(accordion, index) in accordionSetting.accordions" :key="index">
                 <div class="g-accordion__item" :data-accordion="accordion.collapse">
                     <div class="g-accordion__header" @click="toggleAccordion(index)"><span
                               class="g-accordion__header-prefix">{{
-                                  accordion.prefix }}</span>{{ accordion.title }}</div>
+        accordion.prefix }}</span>{{ accordion.title }}</div>
                     <div class="g-accordion__body" :class="[accordion.collapse.toString() == 'true' ? '' : 'active']"
                          ref="bodyRefs">
-                        <div class="g-accordion__content" v-html="accordion.content"></div>
+                        <div class="g-accordion__content">
+                            <div class="g-accordion__content-inner" v-html="accordion.content"></div>
+                        </div>
                     </div>
                 </div>
             </template>
-            <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
+            <g-modify :uid="data.uid" :sub="sub" v-if="page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit">
             <template #edit-close>
@@ -227,7 +249,7 @@ const toggleAccordion = (index) => {
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">手風琴文字物件
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Accordion${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
@@ -257,11 +279,12 @@ const toggleAccordion = (index) => {
                                 </div>
                                 <div class="g-edit__col">
                                     <g-input label="標題:" type="text" v-model.trim="accordion.title" :required="true"
-                                             max="30" :valid="accordion.validTitle" />
+                                             max="500" :valid="accordion.validTitle" />
                                 </div>
                                 <div class="g-edit__col items-start">
                                     <div class="input-group__label">內文:</div>
-                                    <g-ckedit v-model:modelValue="accordion.content" :valid="accordion.validContent" />
+                                    <g-ckedit v-model:modelValue="accordion.content" :valid="accordion.validContent"
+                                              :required="true" />
                                 </div>
                             </div>
                         </div>
@@ -275,18 +298,20 @@ const toggleAccordion = (index) => {
 
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距上:" type="number" v-model="accordionData.mt" @change="handleNumber" />
+                        <g-input label="PC間距上:" type="number" v-model="accordionData.mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="accordionData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距下:" type="number" v-model="accordionData.mb" @change="handleNumber" />
+                        <g-input label="PC間距下:" type="number" v-model="accordionData.mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="accordionData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距上:" type="number" v-model="accordionData.mobile_mt"
-                                 @change="handleNumber" />
+                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="accordionData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距下:" type="number" v-model="accordionData.mobile_mb"
-                                 @change="handleNumber" />
+                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="accordionData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

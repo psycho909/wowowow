@@ -1,9 +1,9 @@
 <script>
 export default {
     name: "GMusic",
-    label: "音樂物件",
+    label: "音樂播放器",
     limit: 1,
-    order: 1, type: [1]
+    order: 13, type: [1, 2]
 }
 </script>
 <script setup>
@@ -16,11 +16,11 @@ import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-
+import { GetPageType } from "../api";
 const props = defineProps(["data"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let musicData = reactive({});
 let musicSetting = reactive({})
@@ -29,12 +29,16 @@ const musicIndex = ref(0);
 const soundOn = ref(false);
 const toggleBox = ref(false);
 const $addComponent = inject('$addComponent');
+let marquee = ref(null)
+let marqueeInterval = null;
+let marqueePosition = 0;
 const initData = () => {
     return {
         style: "",
         validStyle: true,
         position: "left-bottom",
         download: false,
+        mobileShow: false, musicToggle: true,
         musics: [{
             name: "",
             validName: true,
@@ -47,6 +51,7 @@ Object.assign(musicData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -55,6 +60,11 @@ watchEffect(async () => {
         Object.assign(musicData, cloneDeep(props.data.content));
         Object.assign(musicSetting, cloneDeep(props.data.content))
     }
+    if (musicSetting.musicToggle == 'true' || musicSetting.musicToggle === true) {
+        toggleBox.value = false
+    } else {
+        toggleBox.value = true
+    }
 })
 onMounted(async () => {
     await nextTick()
@@ -62,7 +72,12 @@ onMounted(async () => {
         Object.assign(musicData, cloneDeep(props.data.content));
         Object.assign(musicSetting, cloneDeep(props.data.content))
         if ($addComponent) {
-            $addComponent("GMusic");
+            $addComponent();
+        }
+        if (musicSetting.musicToggle == 'true' || musicSetting.musicToggle === true) {
+            toggleBox.value = false
+        } else {
+            toggleBox.value = true
         }
     }
 })
@@ -103,6 +118,14 @@ const onDown = (index) => {
 
 const status = computed(() => {
     return store.page == "EditPage" ? false : true;
+})
+
+const mobileCheck = computed(() => {
+    if ((musicSetting.mobileShow == 'true' || musicSetting.mobileShow == true)) {
+        return true
+    } else {
+        return false
+    }
 })
 
 const currentMusic = computed(() => {
@@ -150,13 +173,12 @@ const onSubmit = async () => {
         let data = cloneDeep(musicData)
         store.updateCpt(props.data.uid, data);
         Object.assign(musicSetting, data);
+        GetPageType(store.otp)
     } else {
         loadingHide()
     }
 
 }
-
-
 
 const prev = async () => {
     if (musicSetting.musics.length === 0) {
@@ -167,6 +189,9 @@ const prev = async () => {
         audioPlayer.value.load();
         await nextTick();
         audioPlayer.value.play();
+        marqueePosition = 0
+        document.querySelector(".g-music__title").style.transform = `translateX(${marqueePosition}px)`;
+        startMarquee()
     }
 
 };
@@ -184,6 +209,9 @@ const next = async () => {
         audioPlayer.value.load();
         await nextTick();
         audioPlayer.value.play();
+        marqueePosition = 0
+        document.querySelector(".g-music__title").style.transform = `translateX(${marqueePosition}px)`;
+        startMarquee()
     }
 };
 
@@ -194,8 +222,10 @@ const startPlayback = () => {
 const toggleSound = () => {
     soundOn.value = !soundOn.value;
     if (!soundOn.value) {
+        stopMarquee()
         audioPlayer.value.pause(); // Pause music if soundOn is false
     } else if (soundOn.value && !audioPlayer.paused) {
+        startMarquee()
         audioPlayer.value.play(); // Play music if soundOn is true and audioPlayer was playing
     }
 };
@@ -222,76 +252,122 @@ const closeBtn = () => {
 }
 
 const musicToggle = () => {
+
     toggleBox.value = !toggleBox.value
 }
-
-
+const startMarquee = () => {
+    let marqueeElement = marquee.value;
+    let temp1 = 0;
+    let tempWidth = -document.querySelector(".g-music__title-box").scrollWidth;
+    let innerWidth = document.querySelector(".g-music__title-box").clientWidth;
+    let titleWidth = document.querySelector(".g-music__title").clientWidth;
+    console.log(titleWidth, innerWidth)
+    if (titleWidth <= innerWidth) {
+        temp1 = -titleWidth;
+    } else {
+        temp1 = tempWidth
+    }
+    console.log(temp1)
+    clearInterval(marqueeInterval);
+    marqueeInterval = setInterval(() => {
+        marqueePosition -= 1;
+        if (marqueePosition < temp1) {
+            marqueePosition = document.querySelector(".g-music__title-box").offsetWidth;
+        }
+        marqueeElement.style.transform = `translateX(${marqueePosition}px)`;
+    }, 50);
+};
+const stopMarquee = () => {
+    if (marqueeInterval) {
+        clearInterval(marqueeInterval);
+    }
+};
 </script>
 <template>
-    <div class="g-music" :data-position="[musicSetting.position]" style="[colors[musicSetting.style]]">
-        <div class="g-music-container">
-            <div class="g-music__box" :class="[toggleBox ? 'closed' : '']">
-                <audio ref="audioPlayer" :src="currentMusic.url" @ended="next"></audio>
-                <a href="javascript:;" class="g-music__toggle" @click="musicToggle"></a>
-                <a href="javascript:;" class="g-music__prev" @click="prev" v-if="musicSetting.musics?.length > 1">上一首</a>
-                <a href="javascript:;" @click="toggleSound" class="g-music__control"
-                   :class="[soundOn ? 'paused' : 'playing']"></a>
-                <a href="javascript:;" class="g-music__next" @click="next" v-if="musicSetting.musics?.length > 1">下一首</a>
-                <div class="g-music__anim" :class="[soundOn ? 'moving' : '']" v-if="!toggleBox"></div>
-                <a href="javascript:;" class="g-music__anim " :class="[soundOn ? 'moving' : '']" @click="musicToggle"
-                   v-else></a>
-                <div class="g-music__title-box">
-                    <div :key="currentMusic.name" class="g-music__title" :class="[soundOn ? 'marquee' : '']">{{
-                        currentMusic.name
-                    }}</div>
+    <Teleport to="body">
+        <div class="g-music"
+             :class="[toggleBox ? 'g-music--close' : '', mobileCheck ? 'mobileShow' : '']"
+             :data-position="[musicSetting.position]"
+             :style="[colors[musicSetting.style]]">
+            <div class="g-music-container">
+                <div class="g-music__box"
+                     :class="[toggleBox ? 'closed' : '', musicSetting.musics?.length > 1 ? 'size1' : 'size2']">
+                    <audio ref="audioPlayer" :src="currentMusic.url" @ended="next"></audio>
+                    <a href="javascript:;" class="g-music__toggle" @click="musicToggle"></a>
+                    <a href="javascript:;" class="g-music__prev" @click="prev"
+                       v-if="musicSetting.musics?.length > 1">上一首</a>
+                    <a href="javascript:;" @click="toggleSound" class="g-music__control"
+                       :class="[soundOn ? 'paused' : 'playing']"></a>
+                    <a href="javascript:;" class="g-music__next" @click="next"
+                       v-if="musicSetting.musics?.length > 1">下一首</a>
+                    <div class="g-music__anim" :class="[soundOn ? 'moving' : '']" v-if="!toggleBox"></div>
+                    <a href="javascript:;" class="g-music__anim " :class="[soundOn ? 'moving' : '']"
+                       @click="musicToggle"
+                       v-else></a>
+                    <div class="g-music__title-box">
+                        <div :key="currentMusic.name" class="g-music__title" :class="[soundOn ? 'marquee' : '']"
+                             ref="marquee">
+                            {{ currentMusic.name }}</div>
+                    </div>
                 </div>
+                <g-modify :uid="data.uid" :move="false" v-if="page == 'EditPage'" />
             </div>
-            <g-modify :uid="data.uid" :move="false" v-if="page == 'EditPage'" />
+            <g-edit v-model:showEdit="showEdit">
+                <template #edit-close>
+                    <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
+                </template>
+                <template #edit-content>
+                    <div class="edit-title__box">
+                        <div class="edit-title__text">音樂播放器
+                            <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Music${pageTypeSeq}.html`"
+                               class="edit-title__q" target="_blank"></a>
+                        </div>
+                    </div>
+                    <div class="g-edit__row">
+                        <div class="input-group__label required">按鈕位置:</div>
+                        <g-radio label="左下" name="position" value="left-bottom" v-model="musicData.position" />
+                        <g-radio label="右下" name="position" value="right-bottom" v-model="musicData.position" />
+                    </div>
+                    <div class="g-edit__row">
+                        <div class="input-group__label required">預設模式:</div>
+                        <g-radio label="展開" name="musicToggle" :value="true" v-model="musicData.musicToggle" />
+                        <g-radio label="收合" name="musicToggle" :value="false" v-model="musicData.musicToggle" />
+                    </div>
+                    <div class="g-edit__row">
+                        <div class="input-group__label required">手機版是否顯示:</div>
+                        <g-radio label="是" name="mobileShow" :value="true" v-model="musicData.mobileShow" />
+                        <g-radio label="否" name="mobileShow" :value="false" v-model="musicData.mobileShow" />
+                    </div>
+                    <div class="g-edit__row" v-for="(music, index) in musicData.musics" :key="index">
+                        <div class="g-edit__col">
+                            <div class="g-edit__group">
+                                <a href="javascript:;" class="icon icon-add"
+                                   @click="addInsertMenu(index)"></a>
+                                <a href="javascript:;" class="icon icon-remove"
+                                   @click="removeMenu(index)"></a>
+                                <a href="javascript:;" class="icon icon-up"
+                                   @click="onUp(index)">up</a>
+                                <a href="javascript:;" class="icon icon-down"
+                                   @click="onDown(index)">down</a>
+                            </div>
+                            <div class="g-edit__group">
+                                <div class="g-edit__col">
+                                    <g-input label="歌曲顯示名稱:" v-model.trim="music.name" :required="true"
+                                             :valid="music.validName" />
+                                </div>
+                                <div class="g-edit__col">
+                                    <g-input label="音樂檔案網址:" v-model.trim="music.url" :required="true"
+                                             :valid="music.validUrl" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="edit-btn__box">
+                        <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
+                        <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>
+                    </div>
+                </template>
+            </g-edit>
         </div>
-        <g-edit v-model:showEdit="showEdit">
-            <template #edit-close>
-                <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
-            </template>
-            <template #edit-content>
-                <div class="edit-title__box">
-                    <div class="edit-title__text">音樂物件
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
-                           class="edit-title__q" target="_blank"></a>
-                    </div>
-                </div>
-                <div class="g-edit__row">
-                    <div class="input-group__label required">按鈕位置:</div>
-                    <g-radio label="左下" name="position" value="left-bottom" v-model="musicData.position" />
-                    <g-radio label="右下" name="position" value="right-bottom" v-model="musicData.position" />
-                </div>
-                <div class="g-edit__row" v-for="(music, index) in musicData.musics" :key="index">
-                    <div class="g-edit__col">
-                        <div class="g-edit__group">
-                            <a href="javascript:;" class="icon icon-add"
-                               @click="addInsertMenu(index)"></a>
-                            <a href="javascript:;" class="icon icon-remove"
-                               @click="removeMenu(index)"></a>
-                            <a href="javascript:;" class="icon icon-up"
-                               @click="onUp(index)">up</a>
-                            <a href="javascript:;" class="icon icon-down"
-                               @click="onDown(index)">down</a>
-                        </div>
-                        <div class="g-edit__group">
-                            <div class="g-edit__col">
-                                <g-input label="歌曲名稱:" v-model.trim="music.name" :required="true"
-                                         :valid="music.validName" />
-                            </div>
-                            <div class="g-edit__col">
-                                <g-input label="檔案位置:" v-model.trim="music.url" :required="true" :valid="music.validUrl" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="edit-btn__box">
-                    <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
-                    <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>
-                </div>
-            </template>
-        </g-edit>
-    </div>
+    </Teleport>
 </template>

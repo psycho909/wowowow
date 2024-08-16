@@ -25,12 +25,25 @@ if (window.innerWidth < 769) {
 } else {
     isMobile.value = false;
 }
-breakpoints.value = {
-    769: {
-        slidesPerView: Number(props.data.num),
-        slidesPerGroup: props.data?.group ? Number(props.data.num) : 1, // 一次滑動幾個
-        spaceBetween: 16,
-        centeredSlides: false
+
+
+if (document.querySelector("HTML").getAttribute("data-type") == 2) {
+    breakpoints.value = {
+        769: {
+            slidesPerView: Number(props.data.num),
+            slidesPerGroup: props.data?.group == true || props.data?.group == 'true' ? Number(props.data.num) : 1, // 一次滑動幾個
+            spaceBetween: 0,
+            centeredSlides: false
+        }
+    }
+} else {
+    breakpoints.value = {
+        769: {
+            slidesPerView: Number(props.data.num),
+            slidesPerGroup: props.data?.group == true || props.data?.group == 'true' ? Number(props.data.num) : 1, // 一次滑動幾個
+            spaceBetween: 16,
+            centeredSlides: false
+        }
     }
 }
 
@@ -47,12 +60,22 @@ if (props.data?.autoplay?.open) {
     autoplay.value = false;
 }
 const modules = [Navigation, Pagination, Autoplay, EffectCoverflow];
+
 if (props.data?.control) {
     if (props.data.control == 'navigation') {
         pagination.value.enabled = false;
     }
+    if (props.data.control == 'all') {
+        if (props.data.thumb == 'true' || props.data.thumb == true) {
+            pagination.value.enabled = false;
+            slidesPerViewThumb.value = props.data.slides.length
+        } else {
+            pagination.value.enabled = true;
+            navigation.value = true;
+        }
+    }
     if (props.data.control == 'pagination') {
-        if (props.data.thumb != 'false') {
+        if (props.data.thumb == 'true' || props.data.thumb == true) {
             navigation.value = false;
             pagination.value.enabled = false;
             slidesPerViewThumb.value = props.data.slides.length
@@ -110,12 +133,16 @@ watchEffect(async () => {
                                 </picture>
                             </div>
                             <template v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                <div class="g-swiper__card-body">
-                                    <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{ slide.card.title
-                                    }}</div>
-                                    <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
-                                         v-html="slide.card.text"></div>
-                                    <a class="g-swiper__card-link" :href="slide.card.url"
+                                <div class="g-swiper__card">
+                                    <div class="g-swiper__card-body"
+                                         v-if="slide.card.title !== '' || slide.card.text !== ''">
+                                        <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{ slide.card.title
+                                        }}</div>
+                                        <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
+                                             v-html="slide.card.text"></div>
+                                    </div>
+                                    <a class="g-swiper__card-link" :href="[slide.url ? slide.url : 'javascript:;']"
+                                       :target="[slide.url ? '_blank' : '']"
                                        v-if="slide.card.url !== '' && slide.type == 'link'">{{ slide.card.url }}</a>
                                 </div>
                             </template>
@@ -124,7 +151,8 @@ watchEffect(async () => {
                     <template v-if="store.status != 'edit'">
                         <template v-if="slide.type == 'pop'">
                             <div class="g-swiper__a" @click="openPop(slide)">
-                                <div class="g-swiper__img-box" :class="[slide.effectCheck == 'true' ? 'effectImg' : '']">
+                                <div class="g-swiper__img-box"
+                                     :class="[slide.effectCheck == 'true' || slide.effectCheck == true ? 'effectImg' : '']">
                                     <picture>
                                         <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                         <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -134,17 +162,22 @@ watchEffect(async () => {
                                     </template>
                                 </div>
                                 <template v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                    <div class="g-swiper__card-body">
-                                        <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{ slide.card.title
-                                        }}</div>
-                                        <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
-                                             v-html="slide.card.text"></div>
-                                        <a class="g-swiper__card-link" :href="slide.card.url"
-                                           v-if="slide.card.url !== ''">馬上點我看詳情</a>
+                                    <div class="g-swiper__card">
+                                        <div class="g-swiper__card-body"
+                                             v-if="slide.card.title !== '' || slide.card.text !== ''">
+                                            <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
+                                                slide.card.title
+                                            }}</div>
+                                            <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
+                                                 v-html="slide.card.text"></div>
+                                        </div>
+                                        <a class="g-swiper__card-link" :href="[slide.url ? slide.url : 'javascript:;']"
+                                           :target="[slide.attribute == 'true' || slide.attribute == true ? '_blank' : '']"
+                                           v-if="slide.card.url !== ''">{{ slide.card.url }}</a>
                                     </div>
                                 </template>
                                 <g-lightbox v-model:showLightbox="slide.pop.show" :style="colors[slide.pop.style]"
-                                            :class="[slide.pop.align, slide.pop.type == 'slide' ? 'pop-slide' : '']">
+                                            :class="[slide.pop.align, slide.pop.type, slide.pop.type == 'slide' ? 'pop-slide' : '']">
                                     <template #lightbox-close v-if="slide.pop.closeCheckRedirect == 'true'">
                                         <a href="javascript:;" class="g-lightbox__close icon-close"
                                            @click="closePop(slide, slide.pop.closeRedirect)"></a>
@@ -169,9 +202,9 @@ watchEffect(async () => {
                         <template v-if="slide.type == 'link' || slide.url != ''">
                             <template v-if="slide.card.url != ''">
                                 <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
-                                   :target="[slide.url ? '_blank' : '']">
+                                   :target="[slide.attribute == true || slide.attribute == 'true' ? '_blank' : '']">
                                     <div class="g-swiper__img-box"
-                                         :class="[slide.effectCheck == 'true' ? 'effectImg' : '']">
+                                         :class="[slide.effectCheck == 'true' || slide.effectCheck == true ? 'effectImg' : '']">
                                         <picture>
                                             <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                             <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -182,20 +215,25 @@ watchEffect(async () => {
                                     </div>
                                     <template
                                               v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                        <div class="g-swiper__card-body">
-                                            <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
-                                                slide.card.title }}</div>
-                                            <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
-                                                 v-html="slide.card.text"></div>
+                                        <div class="g-swiper__card">
+                                            <div class="g-swiper__card-body"
+                                                 v-if="slide.card.title !== '' || slide.card.text !== ''">
+                                                <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
+                                                    slide.card.title }}</div>
+                                                <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
+                                                     v-html="slide.card.text"></div>
+                                            </div>
+                                            <a class="g-swiper__card-link"
+                                               v-if="slide.card.url !== ''">{{ slide.card.url }}</a>
                                         </div>
                                     </template>
                                 </a>
                             </template>
                             <template v-else>
                                 <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
-                                   :target="[slide.url ? '_blank' : '']">
+                                   :target="[slide.attribute == true || slide.attribute == 'true' ? '_blank' : '']">
                                     <div class="g-swiper__img-box"
-                                         :class="[slide.effectCheck == 'true' ? 'effectImg' : '']">
+                                         :class="[slide.effectCheck == 'true' || slide.effectCheck == true ? 'effectImg' : '']">
                                         <picture>
                                             <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                             <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -206,21 +244,25 @@ watchEffect(async () => {
                                     </div>
                                     <template
                                               v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                        <div class="g-swiper__card-body">
-                                            <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
-                                                slide.card.title }}</div>
-                                            <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
-                                                 v-html="slide.card.text"></div>
-                                            <a class="g-swiper__card-link" :href="slide.card.url"
-                                               v-if="slide.card.url !== ''">馬上點我看詳情</a>
+                                        <div class="g-swiper__card">
+                                            <div class="g-swiper__card-body"
+                                                 v-if="slide.card.title !== '' || slide.card.text !== ''">
+                                                <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
+                                                    slide.card.title }}</div>
+                                                <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
+                                                     v-html="slide.card.text"></div>
+                                            </div>
+                                            <a class="g-swiper__card-link"
+                                               v-if="slide.card.url !== ''">{{ slide.card.url }}</a>
                                         </div>
                                     </template>
                                 </a>
                             </template>
                         </template>
-                        <template v-if="slide.type == ''">
+                        <template v-if="slide.type == '' || slide.type == undefined">
                             <div class="g-swiper__a">
-                                <div class="g-swiper__img-box" :class="[slide.effectCheck == 'true' ? 'effectImg' : '']">
+                                <div class="g-swiper__img-box"
+                                     :class="[slide.effectCheck == 'true' || slide.effectCheck == true ? 'effectImg' : '']">
                                     <picture>
                                         <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                         <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -230,13 +272,18 @@ watchEffect(async () => {
                                     </template>
                                 </div>
                                 <template v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                    <div class="g-swiper__card-body">
-                                        <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{ slide.card.title
-                                        }}</div>
-                                        <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
-                                             v-html="slide.card.text"></div>
-                                        <a class="g-swiper__card-link" :href="slide.card.url"
-                                           v-if="slide.card.url !== ''">馬上點我看詳情</a>
+                                    <div class="g-swiper__card">
+                                        <div class="g-swiper__card-body"
+                                             v-if="slide.card.title !== '' || slide.card.text !== ''">
+                                            <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
+                                                slide.card.title
+                                            }}</div>
+                                            <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
+                                                 v-html="slide.card.text"></div>
+                                        </div>
+                                        <a class="g-swiper__card-link" :href="[slide.url ? slide.url : 'javascript:;']"
+                                           :target="[slide.attribute == 'true' || slide.attribute == true ? '_blank' : '']"
+                                           v-if="slide.card.url !== ''">{{ slide.card.url }}</a>
                                     </div>
                                 </template>
                             </div>
@@ -267,12 +314,16 @@ watchEffect(async () => {
                                 </picture>
                             </div>
                             <template v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                <div class="g-swiper__card-body">
-                                    <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{ slide.card.title
-                                    }}</div>
-                                    <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
-                                         v-html="slide.card.text"></div>
-                                    <a class="g-swiper__card-link" :href="slide.url"
+                                <div class="g-swiper__card">
+                                    <div class="g-swiper__card-body"
+                                         v-if="slide.card.title !== '' || slide.card.text !== ''">
+                                        <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{ slide.card.title
+                                        }}</div>
+                                        <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
+                                             v-html="slide.card.text"></div>
+                                    </div>
+                                    <a class="g-swiper__card-link" :href="[slide.url ? slide.url : 'javascript:;']"
+                                       :target="[slide.url ? '_blank' : '']"
                                        v-if="slide.card.url !== ''">{{ slide.card.url }}</a>
                                 </div>
                             </template>
@@ -281,7 +332,8 @@ watchEffect(async () => {
                     <template v-if="store.status != 'edit'">
                         <template v-if="slide.type == 'pop'">
                             <div class="g-swiper__a" @click="openPop(slide)" data-type="pop">
-                                <div class="g-swiper__img-box" :class="[slide.effectCheck == 'true' ? 'effectImg' : '']">
+                                <div class="g-swiper__img-box"
+                                     :class="[slide.effectCheck == 'true' || slide.effectCheck == true ? 'effectImg' : '']">
                                     <picture>
                                         <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                         <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -291,19 +343,19 @@ watchEffect(async () => {
                                     </template>
                                 </div>
                                 <template v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                    <div class="g-swiper__card-body">
-                                        <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{ slide.card.title
-                                        }}</div>
-                                        <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
-                                             v-html="slide.card.text"></div>
+                                    <div class="g-swiper__card">
+                                        <div class="g-swiper__card-body"
+                                             v-if="slide.card.title !== '' || slide.card.text !== ''">
+                                            <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
+                                                slide.card.title
+                                            }}</div>
+                                            <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
+                                                 v-html="slide.card.text"></div>
+                                        </div>
                                     </div>
                                 </template>
                                 <g-lightbox v-model:showLightbox="slide.pop.show" :style="colors[slide.pop.style]"
                                             :class="[slide.pop.align, slide.pop.type == 'slide' ? 'pop-slide' : '']">
-                                    <template #lightbox-close v-if="slide.pop.closeCheckRedirect == 'true'">
-                                        <a href="javascript:;" class="g-lightbox__close icon-close"
-                                           @click="closePop(slide, slide.pop.closeRedirect)"></a>
-                                    </template>
                                     <template #lightbox-title v-if="slide.pop.type != 'slide'">{{
                                         slide.pop.title }}</template>
                                     <template #lightbox-content>
@@ -318,6 +370,14 @@ watchEffect(async () => {
                                             <g-swiper :data="slide.pop" :status="status" v-if="!slideUpdate" />
                                         </template>
                                     </template>
+                                    <template #lightbox-btn v-if="slide.pop.closeCheckRedirect == 'true'">
+                                        <a href="javascript:;" class="g-lightbox__btn"
+                                           @click="closePop(slide, slide.pop.closeRedirect)">確定</a>
+                                    </template>
+                                    <template #lightbox-close v-if="slide.pop.closeCheckRedirect == 'true'">
+                                        <a href="javascript:;" class="g-lightbox__close icon-close"
+                                           @click="closePop(slide, slide.pop.closeRedirect)"></a>
+                                    </template>
                                 </g-lightbox>
                             </div>
                         </template>
@@ -325,7 +385,7 @@ watchEffect(async () => {
                             <template v-if="slide.card.url != ''">
                                 <div class="g-swiper__a">
                                     <div class="g-swiper__img-box"
-                                         :class="[slide.effectCheck == 'true' ? 'effectImg' : '']">
+                                         :class="[slide.effectCheck == 'true' || slide.effectCheck == true ? 'effectImg' : '']">
                                         <picture>
                                             <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                             <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -336,12 +396,16 @@ watchEffect(async () => {
                                     </div>
                                     <template
                                               v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                        <div class="g-swiper__card-body">
-                                            <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
-                                                slide.card.title }}</div>
-                                            <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
-                                                 v-html="slide.card.text"></div>
-                                            <a class="g-swiper__card-link" :href="slide.url"
+                                        <div class="g-swiper__card">
+                                            <div class="g-swiper__card-body"
+                                                 v-if="slide.card.title !== '' || slide.card.text !== ''">
+                                                <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
+                                                    slide.card.title }}</div>
+                                                <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
+                                                     v-html="slide.card.text"></div>
+                                            </div>
+                                            <a class="g-swiper__card-link" :href="[slide.url ? slide.url : 'javascript:;']"
+                                               :target="[slide.attribute == 'true' || slide.attribute == true ? '_blank' : '']"
                                                v-if="slide.card.url !== ''">{{ slide.card.url }}</a>
                                         </div>
                                     </template>
@@ -349,9 +413,9 @@ watchEffect(async () => {
                             </template>
                             <template v-else>
                                 <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
-                                   :target="[slide.url ? '_blank' : '']">
+                                   :target="[slide.attribute == true || slide.attribute == 'true' ? '_blank' : '']">
                                     <div class="g-swiper__img-box"
-                                         :class="[slide.effectCheck == 'true' ? 'effectImg' : '']">
+                                         :class="[slide.effectCheck == 'true' || slide.effectCheck == true ? 'effectImg' : '']">
                                         <picture>
                                             <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                             <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -362,19 +426,23 @@ watchEffect(async () => {
                                     </div>
                                     <template
                                               v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                        <div class="g-swiper__card-body">
-                                            <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
-                                                slide.card.title }}</div>
-                                            <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
-                                                 v-html="slide.card.text"></div>
+                                        <div class="g-swiper__card">
+                                            <div class="g-swiper__card-body"
+                                                 v-if="slide.card.title !== '' || slide.card.text !== ''">
+                                                <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
+                                                    slide.card.title }}</div>
+                                                <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
+                                                     v-html="slide.card.text"></div>
+                                            </div>
                                         </div>
                                     </template>
                                 </a>
                             </template>
                         </template>
-                        <template v-if="slide.type == ''">
+                        <template v-if="slide.type == '' || slide.type == undefined">
                             <div class="g-swiper__a">
-                                <div class="g-swiper__img-box" :class="[slide.effectCheck == 'true' ? 'effectImg' : '']">
+                                <div class="g-swiper__img-box"
+                                     :class="[slide.effectCheck == 'true' || slide.effectCheck == true ? 'effectImg' : '']">
                                     <picture>
                                         <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                         <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -384,13 +452,18 @@ watchEffect(async () => {
                                     </template>
                                 </div>
                                 <template v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                    <div class="g-swiper__card-body">
-                                        <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{ slide.card.title
-                                        }}</div>
-                                        <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
-                                             v-html="slide.card.text"></div>
-                                        <a class="g-swiper__card-link" :href="slide.card.url"
-                                           v-if="slide.card.url !== ''">馬上點我看詳情</a>
+                                    <div class="g-swiper__card">
+                                        <div class="g-swiper__card-body"
+                                             v-if="slide.card.title !== '' || slide.card.text !== ''">
+                                            <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
+                                                slide.card.title
+                                            }}</div>
+                                            <div class="g-swiper__card-text" v-if="slide.card.text !== ''"
+                                                 v-html="slide.card.text"></div>
+                                        </div>
+                                        <a class="g-swiper__card-link" :href="[slide.url ? slide.url : 'javascript:;']"
+                                           :target="[slide.attribute == 'true' || slide.attribute == true ? '_blank' : '']"
+                                           v-if="slide.card.url !== ''">{{ slide.card.url }}</a>
                                     </div>
                                 </template>
                             </div>

@@ -2,7 +2,7 @@
 export default {
     name: "GImgText",
     label: "圖片-上圖下文",
-    order: 5, type: [1]
+    order: 5, type: [1, 2]
 }
 </script>
 <script setup>
@@ -17,11 +17,12 @@ import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-const props = defineProps(["data"])
+import { GetPageType } from "../api";
+const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 let _imgDataLength = ref(1);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let imgData = reactive({});
 let imgSetting = reactive({})
@@ -32,6 +33,8 @@ const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         num: 1,
+        style: "",
+        validStyle: true,
         imgs: [{
             pc: "",
             mobile: "",
@@ -44,7 +47,6 @@ const initData = () => {
             card: {
                 title: "",
                 text: "",
-                style: "",
                 url: "",
                 validCard: true
             },
@@ -52,12 +54,17 @@ const initData = () => {
                 show: false, type: "text",
                 align: "left",
                 style: "",
+                styleValid: true,
                 text: "",
+                validText: true,
+                title: "",
+                validTitle: true,
                 slides: [{
                     pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
                 }],
                 closeCheckRedirect: false,
                 closeRedirect: "",
+                validCloseRedirect: true,
                 num: 1,
                 control: 'all',
                 autoplay: {
@@ -77,6 +84,7 @@ const initData = () => {
 Object.assign(imgData, initData());
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -90,7 +98,6 @@ watchEffect(async () => {
                     img.card = {
                         title: "",
                         text: "",
-                        style: "",
                         url: "",
                         validCard: true
                     }
@@ -123,7 +130,6 @@ onMounted(async () => {
                 img.card = {
                     title: "",
                     text: "",
-                    style: "",
                     url: "",
                     validCard: true
                 }
@@ -211,7 +217,6 @@ const onChange = (e) => {
                 card: {
                     title: "",
                     text: "",
-                    style: "",
                     url: "",
                     validCard: true
                 },
@@ -225,12 +230,19 @@ const onChange = (e) => {
                     type: "text",
                     align: "left",
                     text: "",
+                    validText: true,
                     style: "",
+                    styleValid: true,
+                    title: "",
+                    validTitle: true,
+                    img: "",
+                    validImg: true,
                     slides: [{
                         pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
                     }],
                     closeCheckRedirect: false,
                     closeRedirect: "",
+                    validCloseRedirect: true,
                     num: 1,
                     control: 'all'
                 },
@@ -245,24 +257,124 @@ const onChange = (e) => {
     }
     _imgDataLength.value = num;
 }
-
-function validateCard(card) {
-    if (!card.title.trim() && !card.text.trim() && !card.url.trim()) {
-        card.validCard = false;
-        return false;
-    }
-
-    if (card.title.length > 50 || card.text.length > 250 || card.url.length > 50) {
-        card.validCard = false;
-        return false;
-    }
-
-    card.validCard = true;
-    return true;
+function removeHtmlTags(str) {
+    return str.replace(/<[^>]*>/g, '');
 }
 
+function validateCard(card) {
+    // 檢查至少一個字段有內容
+    const hasContent = card.text || card.title || card.url;
+
+    // 檢查標題長度
+    const validTitle = !card.title || card.title.length <= 50;
+
+    // 檢查文本長度
+    const validText = !card.text || removeHtmlTags(card.text).length <= 250;
+
+    // 檢查URL格式
+    const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+    const validUrl = !card.url || urlPattern.test(card.url);
+
+    // 設置validCard
+    card.validCard = hasContent && validTitle && validText && validUrl;
+
+    return card.validCard;
+}
+const validateImages = async (imgData) => {
+    for (const img of imgData.imgs) {
+        if (img.pop.type === 'text') {
+            if (img.pop.title !== "" && img.pop.title !== undefined) {
+                img.pop.validTitle = true;
+            } else {
+                img.pop.validTitle = false;
+            }
+            if (img.pop.style == "") {
+                img.pop.styleValid = false;
+            } else {
+                img.pop.styleValid = true;
+            }
+        } else if (img.pop.type === 'img') {
+            if (img.pop.img !== "" && (await CheckImage(img.pop.img)) && img.pop.img != undefined) {
+                img.pop.validImg = true;
+            } else {
+                img.pop.validImg = false;
+            }
+            if (img.pop.style == "") {
+                img.pop.styleValid = false;
+            } else {
+                img.pop.styleValid = true;
+            }
+        } else if (img.pop.type === 'slide') {
+            img.pop.validPC = true;
+            img.pop.validMobile = true;
+            img.pop.styleValid = true;
+            for (const slide of img.pop.slides) {
+                if (slide.pc !== "" && (await CheckImage(slide.pc))) {
+                    slide.validPC = true;
+                } else {
+                    slide.validPC = false;
+                }
+
+                if (slide.mobile !== "") {
+                    if (await CheckImage(slide.mobile)) {
+                        slide.validMobile = true;
+                    } else {
+                        slide.validMobile = false;
+                    }
+                } else {
+                    slide.validMobile = true;
+                }
+            }
+            if (img.pop.closeCheckRedirect && CheckUrl(img.pop.closeRedirect)) {
+                img.pop.validCloseRedirect = true;
+            } else {
+                img.pop.validCloseRedirect = false;
+            }
+
+            img.pop.validPC = img.pop.slides.every((slide) => slide.validPC);
+            img.pop.validMobile = img.pop.slides.every((slide) => slide.validMobile);
+        }
+
+        if (img.pop.closeCheckRedirect) {
+            if (CheckUrl(img.pop.closeRedirect)) {
+                img.pop.validCloseRedirect = true;
+            } else {
+                img.pop.validCloseRedirect = false;
+            }
+        } else {
+            img.pop.validCloseRedirect = true;
+        }
+    }
+
+    return imgData.imgs.every((img) => {
+        if (img.type !== 'pop') return true;
+        if (img.pop.type === 'text') {
+            return img.pop.validTitle && img.pop.validCloseRedirect && img.pop.styleValid;
+        } else if (img.pop.type === 'img') {
+            return img.pop.validImg && img.pop.validCloseRedirect && img.pop.styleValid;
+        } else if (img.pop.type === 'slide') {
+            return img.pop.validPC && img.pop.validMobile && img.pop.validCloseRedirect && img.pop.styleValid;
+        }
+    });
+};
 const onSubmit = async () => {
     loadingShow();
+    imgData.validMt = true;
+    imgData.validMb = true;
+    imgData.validMmt = true;
+    imgData.validMmb = true;
+    if (imgData.mt < 0) {
+        imgData.validMt = false;
+    }
+    if (imgData.mb < 0) {
+        imgData.validMb = false;
+    }
+    if (imgData.mobile_mt < 0) {
+        imgData.validMmt = false;
+    }
+    if (imgData.mobile_mb < 0) {
+        imgData.validMmb = false;
+    }
     for (let i = 0; i < imgData.imgs.length; i++) {
         if (imgData.imgs[i].pc.length == 0) {
             imgData.imgs[i].validPC = false;
@@ -283,16 +395,20 @@ const onSubmit = async () => {
         } else {
             imgData.imgs[i].validMobile = true;
         }
-        if (imgData.imgs[i].target.link.length > 0) {
-            if (!CheckUrl(imgData.imgs[i].target.link)) {
-                imgData.imgs[i].target.validUrl = false;
+        if (imgData.imgs[i].type == 'link') {
+            if (imgData.imgs[i].target.link.length > 0) {
+                if (!CheckUrl(imgData.imgs[i].target.link)) {
+                    imgData.imgs[i].target.validUrl = false;
+                } else {
+                    imgData.imgs[i].target.validUrl = true;
+                }
             } else {
-                imgData.imgs[i].target.validUrl = true;
+                imgData.imgs[i].target.validUrl = false;
             }
         } else {
             imgData.imgs[i].target.validUrl = true;
         }
-        if (imgData.imgs[i].effectCheck) {
+        if (imgData.imgs[i].effectCheck == 'true' || imgData.imgs[i].effectCheck == true) {
             if (!await CheckImage(imgData.imgs[i].effectImg)) {
                 imgData.imgs[i].validEffectImg = false;
             } else {
@@ -301,36 +417,41 @@ const onSubmit = async () => {
         } else {
             imgData.imgs[i].validEffectImg = true;
         }
-
         if (validateCard(imgData.imgs[i].card)) {
             imgData.imgs[i].card.validCard = true;
         } else {
             imgData.imgs[i].card.validCard = false;
         }
     }
-
-    if (imgData.style == "") {
-        styleValid.value = false;
+    if (imgData.style == "" || imgData.style == undefined) {
+        imgData.validStyle = false;
     } else {
-        styleValid.value = true;
+        imgData.validStyle = true;
     }
+    const isDataValid = await validateImages(imgData);
+
     var validCheck = imgData.imgs.every(function (v, i) {
         return v.validPC == true && v.validMobile == true && v.target.validUrl == true && v.validEffectImg == true && v.card.validCard == true;
     })
-    if (validCheck && styleValid.value) {
-        $("#loadingProgress").show();
-        let data = cloneDeep(imgData);
-        store.updateCpt(props.data.uid, data);
-        Object.assign(imgSetting, data);
-        imgLoading(imgData.imgs).then((res) => {
-            loading.value = false;
-        })
-        slideUpdate.value = true;
-        await nextTick();
-        slideUpdate.value = false;
+    if (imgData.validMt && imgData.validMb && imgData.validMmt && imgData.validMmb) {
+        if (validCheck && isDataValid && imgData.validStyle) {
+            $("#loadingProgress").show();
+            let data = cloneDeep(imgData);
+            store.updateCpt(props.data.uid, data, props.sub);
+            Object.assign(imgSetting, data);
+            imgLoading(imgData.imgs).then((res) => {
+                loading.value = false;
+            })
+            slideUpdate.value = true;
+            await nextTick();
+            slideUpdate.value = false;
+        } else {
+            loadingHide();
+        }
     } else {
         loadingHide();
     }
+
 }
 
 const onReset = () => {
@@ -357,6 +478,7 @@ const closeBtn = () => {
     }
     showEdit.value = false;
     store.editCptClose(props.data.uid, props.sub)
+    GetPageType(store.otp)
     loadingHide()
 }
 
@@ -370,11 +492,12 @@ const closePop = (data, url) => {
 
 </script>
 <template>
-    <div class="g-img" :style="[cssVar]" :class="[loading ? 'loading' : '']">
-        <div class="g-img-container" :data-num="imgSetting.num">
+    <div class="g-img" :style="[cssVar, colors[imgSetting.style]]" :class="[loading ? 'loading' : '']"
+         data-aspect="16/9">
+        <div class="g-img-container g-img-container--text" :data-num="imgSetting.num">
             <template v-if="!loading" v-for="imgs in imgSetting.imgs">
                 <template v-if="store.status == 'edit'">
-                    <div class="g-img__box edit" :class="[imgs.type ? '' : 'none']" :style="[colors[imgs.card.style]]">
+                    <div class="g-img__box edit" :class="[imgs.type ? '' : 'none']">
                         <div class="g-img__img-box">
                             <picture>
                                 <source media="(max-width:768px)" :srcset="imgs.mobile || imgs.pc" />
@@ -382,11 +505,16 @@ const closePop = (data, url) => {
                             </picture>
                         </div>
                         <template v-if="imgs.card.title !== '' || imgs.card.text !== '' || imgs.card.url !== ''">
-                            <div class="g-img__card-body">
-                                <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title }}</div>
-                                <div class="g-img__card-text" v-if="imgs.card.text !== ''" v-html="imgs.card.text"></div>
+                            <div class="g-img__card">
+                                <div class="g-img__card-body" v-if="imgs.card.title !== '' || imgs.card.text !== ''">
+                                    <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title }}
+                                    </div>
+                                    <div class="g-img__card-text" v-if="imgs.card.text !== ''" v-html="imgs.card.text">
+                                    </div>
+
+                                </div>
                                 <a class="g-img__card-link" v-if="imgs.card.url !== '' && imgs.type == 'link'">{{
-                                    imgs.card.url }}</a>
+        imgs.card.url }}</a>
                             </div>
                         </template>
                     </div>
@@ -395,21 +523,29 @@ const closePop = (data, url) => {
                 <template v-if="store.status != 'edit'">
                     <template v-if="imgs.type == ''">
                         <div class="g-img__box none" :style="[colors[imgs.card.style]]">
-                            <div class="g-img__img-box" :class="[imgs.effectCheck == 'true' ? 'effectImg' : '']">
+                            <div class="g-img__img-box"
+                                 :class="[imgs.effectCheck == 'true' || imgs.effectCheck == true ? 'effectImg' : '']">
                                 <picture>
                                     <source media="(max-width:768px)" :srcset="imgs.mobile" />
                                     <img :srcset="imgs.pc" :src="imgs.pc" alt="" />
                                 </picture>
-                                <template v-if="imgs.effectCheck == 'true'">
+                                <template v-if="imgs.effectCheck == 'true' || imgs.effectCheck == true">
                                     <img :src="imgs.effectImg" alt="" class="g-img__effectImg">
                                 </template>
                             </div>
                             <template v-if="imgs.card.title !== '' || imgs.card.text !== '' || imgs.card.url !== ''">
-                                <div class="g-img__card-body">
-                                    <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title }}</div>
-                                    <div class="g-img__card-text" v-if="imgs.card.text !== ''" v-html="imgs.card.text">
+                                <div class="g-img__card">
+                                    <div class="g-img__card-body"
+                                         v-if="imgs.card.title !== '' || imgs.card.text !== ''">
+                                        <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title
+                                            }}
+                                        </div>
+                                        <div class="g-img__card-text" v-if="imgs.card.text !== ''"
+                                             v-html="imgs.card.text">
+                                        </div>
                                     </div>
                                     <a class="g-img__card-link" :href="imgs.target.link"
+                                       :target="imgs.target.attribute == 'true' || imgs.target.attribute == true ? '_blank' : '_self'"
                                        v-if="imgs.card.url !== ''">{{ imgs.card.url }}</a>
                                 </div>
                             </template>
@@ -418,22 +554,31 @@ const closePop = (data, url) => {
                     <template v-if="imgs.type == 'link'">
                         <template v-if="imgs.card.url != ''">
                             <div class="g-img__box" :style="[colors[imgs.card.style]]">
-                                <div class="g-img__img-box" :class="[imgs.effectCheck == 'true' ? 'effectImg' : '']">
+                                <div class="g-img__img-box"
+                                     :class="[imgs.effectCheck == 'true' || imgs.effectCheck == true ? 'effectImg' : '']">
                                     <picture>
                                         <source media="(max-width:768px)" :srcset="imgs.mobile || imgs.pc" />
                                         <img class="g-img__img" :srcset="imgs.pc" :src="imgs.pc" alt="" />
                                     </picture>
-                                    <template v-if="imgs.effectCheck == 'true'">
+                                    <template v-if="imgs.effectCheck == 'true' || imgs.effectCheck == true">
                                         <img :src="imgs.effectImg" alt="" class="g-img__effectImg">
                                     </template>
                                 </div>
-                                <template v-if="imgs.card.title !== '' || imgs.card.text !== '' || imgs.card.url !== ''">
-                                    <div class="g-img__card-body">
-                                        <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title }}
-                                        </div>
-                                        <div class="g-img__card-text" v-if="imgs.card.text !== ''" v-html="imgs.card.text">
+                                <template
+                                          v-if="imgs.card.title !== '' || imgs.card.text !== '' || imgs.card.url !== ''">
+                                    <div class="g-img__card">
+                                        <div class="g-img__card-body"
+                                             v-if="imgs.card.title !== '' || imgs.card.text !== ''">
+                                            <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{
+        imgs.card.title
+    }}
+                                            </div>
+                                            <div class="g-img__card-text" v-if="imgs.card.text !== ''"
+                                                 v-html="imgs.card.text">
+                                            </div>
                                         </div>
                                         <a class="g-img__card-link" :href="imgs.target.link"
+                                           :target="imgs.target.attribute == 'true' || imgs.target.attribute == true ? '_blank' : '_self'"
                                            v-if="imgs.card.url !== ''">{{ imgs.card.url }}</a>
                                     </div>
                                 </template>
@@ -441,22 +586,31 @@ const closePop = (data, url) => {
                         </template>
                         <template v-else>
                             <a :href="[imgs.target.link ? imgs.target.link : 'javascript:;']"
-                               :target="[imgs.target.attribute == true ? '_blank' : '_self']" class="g-img__box"
+                               :target="[imgs.target.attribute == true || imgs.target.attribute == 'true' ? '_blank' : '_self']"
+                               class="g-img__box"
                                :style="[colors[imgs.card.style]]">
-                                <div class="g-img__img-box" :class="[imgs.effectCheck == 'true' ? 'effectImg' : '']">
+                                <div class="g-img__img-box"
+                                     :class="[imgs.effectCheck == 'true' || imgs.effectCheck == true ? 'effectImg' : '']">
                                     <picture>
                                         <source media="(max-width:768px)" :srcset="imgs.mobile || imgs.pc" />
                                         <img class="g-img__img" :srcset="imgs.pc" :src="imgs.pc" alt="" />
                                     </picture>
-                                    <template v-if="imgs.effectCheck == 'true'">
+                                    <template v-if="imgs.effectCheck == 'true' || imgs.effectCheck == true">
                                         <img :src="imgs.effectImg" alt="" class="g-img__effectImg">
                                     </template>
                                 </div>
-                                <template v-if="imgs.card.title !== '' || imgs.card.text !== '' || imgs.card.url !== ''">
-                                    <div class="g-img__card-body">
-                                        <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title }}
-                                        </div>
-                                        <div class="g-img__card-text" v-if="imgs.card.text !== ''" v-html="imgs.card.text">
+                                <template
+                                          v-if="imgs.card.title !== '' || imgs.card.text !== '' || imgs.card.url !== ''">
+                                    <div class="g-img__card">
+                                        <div class="g-img__card-body"
+                                             v-if="imgs.card.title !== '' || imgs.card.text !== ''">
+                                            <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{
+        imgs.card.title
+    }}
+                                            </div>
+                                            <div class="g-img__card-text" v-if="imgs.card.text !== ''"
+                                                 v-html="imgs.card.text">
+                                            </div>
                                         </div>
                                     </div>
                                 </template>
@@ -464,34 +618,38 @@ const closePop = (data, url) => {
                         </template>
                     </template>
                     <template v-if="imgs.type == 'pop'">
-                        <div class="g-img__box"
+                        <div class="g-img__box g-img__box-pop"
                              :class="[store.status == 'edit' ? 'edit' : '']"
                              :style="[colors[imgs.card.style]]"
                              @click="openPop(imgs)">
-                            <div class="g-img__img-box" :class="[imgs.effectCheck == 'true' ? 'effectImg' : '']">
+                            <div class="g-img__img-box"
+                                 :class="[imgs.effectCheck == 'true' || imgs.effectCheck == true ? 'effectImg' : '']">
                                 <picture>
                                     <source media="(max-width:768px)" :srcset="imgs.mobile || imgs.pc" />
                                     <img class="g-img__img" :srcset="imgs.pc" :src="imgs.pc" alt="" />
                                 </picture>
-                                <template v-if="imgs.effectCheck == 'true'">
+                                <template v-if="imgs.effectCheck == 'true' || imgs.effectCheck == true">
                                     <img :src="imgs.effectImg" alt="" class="g-img__effectImg"
                                          v-if="store.status != 'edit'">
                                 </template>
                             </div>
                             <template v-if="imgs.card.title !== '' || imgs.card.text !== '' || imgs.card.url !== ''">
-                                <div class="g-img__card-body">
-                                    <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title }}</div>
-                                    <div class="g-img__card-text" v-if="imgs.card.text !== ''" v-html="imgs.card.text">
+                                <div class="g-img__card">
+                                    <div class="g-img__card-body"
+                                         v-if="imgs.card.title !== '' || imgs.card.text !== ''">
+                                        <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title
+                                            }}
+                                        </div>
+                                        <div class="g-img__card-text" v-if="imgs.card.text !== ''"
+                                             v-html="imgs.card.text">
+                                        </div>
                                     </div>
                                 </div>
                             </template>
                             <g-lightbox v-model:showLightbox="imgs.pop.show" :style="colors[imgs.pop.style]"
-                                        :class="imgs.pop.align" class="pop-slide">
-                                <template #lightbox-close v-if="imgs.pop.closeCheckRedirect == 'true'">
-                                    <a href="javascript:;" class="g-lightbox__close icon-close"
-                                       @click="closePop(imgs, imgs.pop.closeRedirect)"></a>
-                                </template>
-                                <template #lightbox-title v-if="imgs.pop.type != 'slide'">{{ imgs.pop.title }}</template>
+                                        :class="[imgs.pop.align, imgs.pop.type, imgs.pop.type == 'slide' ? 'pop-slide' : '']">
+                                <template #lightbox-title v-if="imgs.pop.type != 'slide'">{{ imgs.pop.title
+                                    }}</template>
                                 <template #lightbox-content>
                                     <template v-if="imgs.pop.type != 'slide'">
                                         <div class="g-lightbox__text" v-if="imgs.pop.text"
@@ -504,6 +662,15 @@ const closePop = (data, url) => {
                                         <g-swiper :data="imgs.pop" :status="status" v-if="!slideUpdate" />
                                     </template>
                                 </template>
+                                <template #lightbox-btn v-if="imgs.pop.closeCheckRedirect == 'true'">
+                                    <a href="javascript:;" class="g-lightbox__btn"
+                                       @click="closePop(imgs, imgs.pop.closeRedirect)">確定</a>
+                                </template>
+                                <template #lightbox-close
+                                          v-if="imgs.pop.closeCheckRedirect == 'true' || imgs.pop.closeCheckRedirect === true">
+                                    <a href="javascript:;" class="g-lightbox__close icon-close"
+                                       @click="closePop(imgs, imgs.pop.closeRedirect)">確定</a>
+                                </template>
                             </g-lightbox>
                         </div>
                     </template>
@@ -512,7 +679,7 @@ const closePop = (data, url) => {
             <template v-else>
                 <div class="g-img__box"></div>
             </template>
-            <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
+            <g-modify :uid="data.uid" :sub="sub" v-if="page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
             <template #edit-close>
@@ -521,7 +688,7 @@ const closePop = (data, url) => {
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">圖片區塊
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
@@ -531,6 +698,13 @@ const closePop = (data, url) => {
                     <g-radio label="兩格圖片" name="img" value="2" v-model="imgData.num" @change="onChange" />
                     <g-radio label="三格圖片" name="img" value="3" v-model="imgData.num" @change="onChange" />
                     <g-radio label="四格圖片" name="img" value="4" v-model="imgData.num" @change="onChange" />
+                </div>
+                <div class="g-edit__row">
+                    <div class="g-edit__col">
+                        <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
+                                  :valid="imgData.validStyle"
+                                  v-model="imgData.style" />
+                    </div>
                 </div>
                 <div class="g-edit__row g-edit__block" v-for="(img, index) in imgData.imgs">
                     <div class="g-edit__col">
@@ -544,11 +718,6 @@ const closePop = (data, url) => {
                     <div class="g-edit__col">
                         <g-input label="標題文字:" v-model.trim="img.card.title" max="50" :valid="img.card.validCard"
                                  warning="標題、內文以及連結文字至少填寫一個，限制字數50字" />
-                    </div>
-                    <div class="g-edit__col">
-                        <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
-                                  :valid="styleValid"
-                                  v-model="img.card.style" />
                     </div>
                     <div class="g-edit__col items-start">
                         <div class="input-group__label">內文:</div>
@@ -579,7 +748,7 @@ const closePop = (data, url) => {
                         </div>
                         <template v-if="img.pop.type == 'text'">
                             <div class="g-edit__col">
-                                <g-input label="POP標題:" v-model="img.pop.title" />
+                                <g-input label="POP標題:" v-model="img.pop.title" :valid="img.pop.validTitle" />
                             </div>
                             <div class="g-edit__row">
                                 <div class="input-group__label required">對齊方向:</div>
@@ -588,7 +757,7 @@ const closePop = (data, url) => {
                             </div>
                             <div class="g-edit__col">
                                 <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
-                                          :valid="styleValid"
+                                          :valid="img.pop.styleValid"
                                           v-model="img.pop.style" />
                             </div>
                             <div class="g-edit__col">
@@ -598,16 +767,22 @@ const closePop = (data, url) => {
                         <template v-if="img.pop.type == 'img'">
                             <div class="g-edit__col">
                                 <g-input label="POP圖片網址:" v-model.trim="img.pop.img" :preview="img.pop.img"
+                                         :valid="img.pop.validImg"
                                          :required="true" />
                             </div>
                             <div class="g-edit__col">
                                 <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
-                                          :valid="styleValid"
+                                          :valid="img.pop.styleValid"
                                           v-model="img.pop.style" />
                             </div>
                         </template>
                         <template v-if="img.pop.type == 'slide'">
                             <div class="g-edit__row">
+                                <div class="g-edit__col">
+                                    <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
+                                              :valid="img.pop.styleValid"
+                                              v-model="img.pop.style" />
+                                </div>
                                 <div class="g-edit__col">
                                     <div class="input-group__label required">自動輪播:</div>
                                     <g-radio label="開啟" :name="'autoplay' + index" :value="true"
@@ -639,7 +814,8 @@ const closePop = (data, url) => {
                                            @click="addInsertMenu(index, slideIndex)"></a>
                                         <a href="javascript:;" class="icon icon-remove"
                                            @click="removeMenu(index, slideIndex)"></a>
-                                        <a href="javascript:;" class="icon icon-up" @click="onUp(index, slideIndex)">up</a>
+                                        <a href="javascript:;" class="icon icon-up"
+                                           @click="onUp(index, slideIndex)">up</a>
                                         <a href="javascript:;" class="icon icon-down"
                                            @click="onDown(index, slideIndex)">down</a>
                                     </div>
@@ -690,16 +866,20 @@ const closePop = (data, url) => {
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距上:" type="number" v-model="imgData.mt" @change="handleNumber" />
+                        <g-input label="PC間距上:" type="number" v-model="imgData.mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="imgData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距下:" type="number" v-model="imgData.mb" @change="handleNumber" />
+                        <g-input label="PC間距下:" type="number" v-model="imgData.mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="imgData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距上:" type="number" v-model="imgData.mobile_mt" @change="handleNumber" />
+                        <g-input label="Mobile間距上:" type="number" v-model="imgData.mobile_mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="imgData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距下:" type="number" v-model="imgData.mobile_mb" @change="handleNumber" />
+                        <g-input label="Mobile間距下:" type="number" v-model="imgData.mobile_mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="imgData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

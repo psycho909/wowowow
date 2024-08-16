@@ -2,7 +2,7 @@
 export default {
     name: "GSlideText",
     label: "輪播-上圖下文",
-    order: 4, type: [1]
+    order: 4, type: [1, 2]
 }
 </script>
 <script setup>
@@ -17,11 +17,11 @@ import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHid
 import { cloneDeep } from 'lodash-es'
 import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
-
-const props = defineProps(["data"])
+import { GetPageType } from "../api";
+const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let slideSetting = reactive({});
 let slideUpdate = ref(false);
@@ -39,12 +39,13 @@ const initData = () => {
             delay: 2,
             validDelay: true
         },
+        style: "",
+        validStyle: true,
         slides: [{
             pc: "", mobile: "", type: "", url: "", attribute: false, validPC: true, validMobile: true, validUrl: true,
             card: {
                 title: "",
                 text: "",
-                style: "",
                 url: "",
                 validCard: true
             },
@@ -52,11 +53,19 @@ const initData = () => {
                 show: false, type: "text",
                 align: "left",
                 style: "",
+                styleValid: true,
+                text: "",
+                validText: true,
+                title: "",
+                validTitle: true,
+                img: "",
+                validImg: true,
                 slides: [{
                     pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
                 }],
                 closeCheckRedirect: false,
                 closeRedirect: "",
+                validCloseRedirect: true,
                 num: 1,
                 control: 'all',
                 autoplay: {
@@ -78,6 +87,7 @@ Object.assign(slideData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -92,6 +102,7 @@ watchEffect(async () => {
                         title: "",
                         text: "",
                         style: "",
+                        validStyle: true,
                         url: "",
                         validCard: true
                     }
@@ -117,6 +128,7 @@ onMounted(async () => {
                     title: "",
                     text: "",
                     style: "",
+                    validStyle: true,
                     url: "",
                     validCard: true
                 }
@@ -132,29 +144,28 @@ onMounted(async () => {
     }
 })
 
+function removeHtmlTags(str) {
+    return str.replace(/<[^>]*>/g, '');
+}
+
 function validateCard(card) {
-    if (!card.title.trim() && !card.text.trim() && !card.url.trim()) {
-        card.validCard = false;
-        return false;
-    }
+    // 檢查至少一個字段有內容
+    const hasContent = card.text || card.title || card.url;
 
-    if (card.title.length > 50) {
-        card.validCard = false;
-        return false;
-    }
+    // 檢查標題長度
+    const validTitle = !card.title || card.title.length <= 50;
 
-    if (card.text.length > 250) {
-        card.validCard = false;
-        return false;
-    }
+    // 檢查文本長度
+    const validText = !card.text || removeHtmlTags(card.text).length <= 250;
 
-    if (card.url.length > 50) {
-        card.validCard = false;
-        return false;
-    }
+    // 檢查URL格式
+    const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+    const validUrl = !card.url || urlPattern.test(card.url);
 
-    card.validCard = true;
-    return true;
+    // 設置validCard
+    card.validCard = hasContent && validTitle && validText && validUrl;
+
+    return card.validCard;
 }
 
 const cssVar = computed(() => {
@@ -177,7 +188,6 @@ const addInsertMenu = (index) => {
             card: {
                 title: "",
                 text: "",
-                style: "",
                 url: "",
                 validCard: true
             },
@@ -185,11 +195,19 @@ const addInsertMenu = (index) => {
                 show: false, type: "text",
                 align: "left",
                 style: "",
+                styleValid: true,
+                text: "",
+                validText: true,
+                title: "",
+                validTitle: true,
+                img: "",
+                validImg: true,
                 slides: [{
                     pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
                 }],
                 closeCheckRedirect: false,
                 closeRedirect: "",
+                validCloseRedirect: true,
                 num: 1,
                 control: 'all',
                 autoplay: {
@@ -216,7 +234,6 @@ const addInsertMenu = (index) => {
         card: {
             title: "",
             text: "",
-            style: "",
             url: "",
             validCard: true
         },
@@ -224,11 +241,19 @@ const addInsertMenu = (index) => {
             show: false, type: "text",
             align: "left",
             style: "",
+            styleValid: true,
+            text: "",
+            validText: true,
+            title: "",
+            validTitle: true,
+            img: "",
+            validImg: true,
             slides: [{
                 pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
             }],
             closeCheckRedirect: false,
             closeRedirect: "",
+            validCloseRedirect: true,
             num: 1,
             control: 'all',
             autoplay: {
@@ -317,10 +342,92 @@ const onDown2 = (imgIndex, slideIndex) => {
     }
 }
 
+const validateImages = async (slideData) => {
+    for (const img of slideData.slides) {
+        if (img.pop.type === 'text') {
+            if (img.pop.title !== "" && img.pop.title !== undefined) {
+                img.pop.validTitle = true;
+            } else {
+                img.pop.validTitle = false;
+            }
+        } else if (img.pop.type === 'img') {
+            if (img.pop.img !== "" && (await CheckImage(img.pop.img) && img.pop.img != undefined)) {
+                img.pop.validImg = true;
+            } else {
+                img.pop.validImg = false;
+            }
+        } else if (img.pop.type === 'slide') {
+            img.pop.validPC = true;
+            img.pop.validMobile = true;
+
+            for (const slide of img.pop.slides) {
+                if (slide.pc !== "" && (await CheckImage(slide.pc))) {
+                    slide.validPC = true;
+                } else {
+                    slide.validPC = false;
+                }
+
+                if (slide.mobile !== "") {
+                    if (await CheckImage(slide.mobile)) {
+                        slide.validMobile = true;
+                    } else {
+                        slide.validMobile = false;
+                    }
+                } else {
+                    slide.validMobile = true;
+                }
+            }
+            if (img.pop.closeCheckRedirect && CheckUrl(img.pop.closeRedirect)) {
+                img.pop.validCloseRedirect = true;
+            } else {
+                img.pop.validCloseRedirect = false;
+            }
+
+            img.pop.validPC = img.pop.slides.every((slide) => slide.validPC);
+            img.pop.validMobile = img.pop.slides.every((slide) => slide.validMobile);
+        }
+        if (img.pop.closeCheckRedirect) {
+            if (CheckUrl(img.pop.closeRedirect)) {
+                img.pop.validCloseRedirect = true;
+            } else {
+                img.pop.validCloseRedirect = false;
+            }
+        } else {
+            img.pop.validCloseRedirect = true;
+        }
+    }
+
+    return slideData.slides.every((img) => {
+        if (img.type !== 'pop') return true;
+        if (img.pop.type === 'text') {
+            return img.pop.validTitle && img.pop.validCloseRedirect && img.pop.validCloseRedirect;
+        } else if (img.pop.type === 'img') {
+            return img.pop.validImg && img.pop.validCloseRedirect && img.pop.validCloseRedirect;
+        } else if (img.pop.type === 'slide') {
+            return img.pop.validPC && img.pop.validMobile && img.pop.validCloseRedirect && img.pop.validCloseRedirect;
+        }
+    });
+};
 const onSubmit = async () => {
     loadingShow();
     let data = {}
     var validDelay;
+    slideData.validMt = true;
+    slideData.validMb = true;
+    slideData.validMmt = true;
+    slideData.validMmb = true;
+    if (slideData.mt < 0) {
+        slideData.validMt = false;
+    }
+    if (slideData.mb < 0) {
+        slideData.validMb = false;
+    }
+    if (slideData.mobile_mt < 0) {
+        slideData.validMmt = false;
+    }
+    if (slideData.mobile_mb < 0) {
+        slideData.validMmb = false;
+    }
     for (let i = 0; i < slideData.slides.length; i++) {
         if (slideData.slides[i].pc.length == 0) {
             slideData.slides[i].validPC = false;
@@ -347,9 +454,11 @@ const onSubmit = async () => {
             } else {
                 slideData.slides[i].validUrl = true;
             }
+        } else {
+            slideData.slides[i].validUrl = true;
         }
 
-        if (slideData.slides[i].effectCheck) {
+        if (slideData.slides[i].effectCheck == 'true' || slideData.slides[i].effectCheck == true) {
             if (!await CheckImage(slideData.slides[i].effectImg)) {
                 slideData.slides[i].validEffectImg = false;
             } else {
@@ -358,7 +467,11 @@ const onSubmit = async () => {
         } else {
             slideData.slides[i].validEffectImg = true;
         }
-
+        if (slideData.slides[i].pop.style == "") {
+            slideData.slides[i].pop.styleValid = false;
+        } else {
+            slideData.slides[i].pop.styleValid = true;
+        }
         if (validateCard(slideData.slides[i].card)) {
             slideData.slides[i].card.validCard = true;
         } else {
@@ -377,6 +490,12 @@ const onSubmit = async () => {
     } else {
         validDelay = true;
     }
+    if (slideData.style == "" || slideData.style == undefined) {
+        slideData.validStyle = false;
+    } else {
+        slideData.validStyle = true;
+    }
+    const isDataValid = await validateImages(slideData);
     var validCheck = slideData.slides.every(function (v, i) {
         return v.validPC == true && v.validMobile == true && v.validUrl == true && v.validEffectImg == true && v.card.validCard == true;
     })
@@ -385,22 +504,26 @@ const onSubmit = async () => {
     } else {
         slideNumValid.value = false;
     }
-    console.log(validCheck, validDelay, slideNumValid.value);
-    if (validCheck && validDelay && slideNumValid.value) {
-        console.log("SlideText")
-        $("#loadingProgress").show();
-        let data = cloneDeep(slideData);
-        store.updateCpt(props.data.uid, data);
-        Object.assign(slideSetting, data);
-        imgLoading(slideData.slides).then((res) => {
-            loading.value = false;
-        })
-        slideUpdate.value = true;
-        await nextTick();
-        slideUpdate.value = false;
+    if (slideData.validMt && slideData.validMb && slideData.validMmt && slideData.validMmb) {
+        if (validCheck && validDelay && slideNumValid.value && isDataValid && slideData.validStyle) {
+            $("#loadingProgress").show();
+            let data = cloneDeep(slideData);
+            store.updateCpt(props.data.uid, data, props.sub);
+            Object.assign(slideSetting, data);
+            imgLoading(slideData.slides).then((res) => {
+                loading.value = false;
+            })
+            slideUpdate.value = true;
+            await nextTick();
+            slideUpdate.value = false;
+            GetPageType(store.otp)
+        } else {
+            loadingHide();
+        }
     } else {
         loadingHide();
     }
+
 }
 const onReset = () => {
     Object.assign(slideData, initData());
@@ -429,15 +552,16 @@ const closeBtn = () => {
 
 </script>
 <template>
-    <div class="g-slide" :style="[colors[slideSetting.style], cssVar]" :class="[loading ? 'loading' : '']">
-        <div class="g-slide-container g-slide-card" :data-num="slideSetting.num">
+    <div class="g-slide" :style="[colors[slideSetting.style], cssVar]" :class="[loading ? 'loading' : '']"
+         data-aspect="16/9" data-type="slide-card">
+        <div class="g-slide-container" :data-num="slideSetting.num">
             <template v-if="!loading">
                 <g-swiper :data="slideSetting" :status="status" v-if="!slideUpdate" />
             </template>
             <template v-else>
                 <div class="g-swiper"></div>
             </template>
-            <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
+            <g-modify :uid="data.uid" :sub="sub" v-if="page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
             <template #edit-close>
@@ -446,7 +570,7 @@ const closeBtn = () => {
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">輪播區塊
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Slide.html"
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Slide${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
@@ -457,6 +581,12 @@ const closeBtn = () => {
                     <g-radio label="三格輪播" name="item" value="3" v-model="slideData.num" />
                     <g-radio label="四格輪播" name="item" value="4" v-model="slideData.num" />
                     <div class="error" v-if="!slideNumValid">放置圖片數量不得小於所選輪播數量</div>
+                </div>
+                <div class="g-edit__row">
+                    <div class="g-edit__col">
+                        <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
+                                  v-model="slideData.style" :valid="slideData.validStyle" />
+                    </div>
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">切換方式:</div>
@@ -503,10 +633,6 @@ const closeBtn = () => {
                                          warning="標題、內文以及連結文字至少填寫一個，限制字數50字"
                                          max="50" />
                             </div>
-                            <div class="g-edit__col">
-                                <g-select label="主題顏色" :group="true" :options="[style1, style2]"
-                                          v-model="slide.card.style" />
-                            </div>
                             <div class="g-edit__col items-start">
                                 <div class="input-group__label">內文:</div>
                                 <g-ckedit v-model="slide.card.text" :valid="slide.card.validCard" max="250"
@@ -514,8 +640,10 @@ const closeBtn = () => {
                             </div>
                             <div class="g-edit__col">
                                 <div class="input-group__label">圖片特效:</div>
-                                <g-radio label="無" :name="'effect' + index" :value="false" v-model="slide.effectCheck" />
-                                <g-radio label="換圖" :name="'effect' + index" :value="true" v-model="slide.effectCheck" />
+                                <g-radio label="無" :name="'effect' + index" :value="false"
+                                         v-model="slide.effectCheck" />
+                                <g-radio label="換圖" :name="'effect' + index" :value="true"
+                                         v-model="slide.effectCheck" />
                             </div>
                             <div class="g-edit__col" v-if="slide.effectCheck == 'true'">
                                 <g-input label="更換圖片網址:" v-model.trim="slide.effectImg" :preview="slide.effectImg"
@@ -531,25 +659,30 @@ const closeBtn = () => {
                             <template v-if="slide.type == 'pop'">
                                 <div class="g-edit__col">
                                     <div class="input-group__label required">POP內容:</div>
-                                    <g-radio label="純文字" :name="'popType' + index" value="text" v-model="slide.pop.type" />
-                                    <g-radio label="圖片" :name="'popType' + index" value="img" v-model="slide.pop.type" />
+                                    <g-radio label="純文字" :name="'popType' + index" value="text"
+                                             v-model="slide.pop.type" />
+                                    <g-radio label="圖片" :name="'popType' + index" value="img"
+                                             v-model="slide.pop.type" />
                                     <g-radio label="POP SLIDE" :name="'popType' + index" value="slide"
                                              v-model="slide.pop.type" />
                                 </div>
 
                                 <template v-if="slide.pop.type == 'text'">
                                     <div class="g-edit__col">
-                                        <g-input label="POP標題:" v-model="slide.pop.title" />
+                                        <g-input label="POP標題:" v-model="slide.pop.title" :required="true"
+                                                 :valid="slide.pop.validTitle" />
                                     </div>
                                     <div class="g-edit__row">
                                         <div class="input-group__label required">對齊方向:</div>
-                                        <g-radio label="左" :name="'align' + index" value="left" v-model="slide.pop.align" />
+                                        <g-radio label="左" :name="'align' + index" value="left"
+                                                 v-model="slide.pop.align" />
                                         <g-radio label="中" :name="'align' + index" value="center"
                                                  v-model="slide.pop.align" />
                                     </div>
                                     <div class="g-edit__col">
-                                        <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
-                                                  :valid="styleValid"
+                                        <g-select label="主題顏色" :group="true" :options="[style1, style2]"
+                                                  :required="true"
+                                                  :valid="slide.pop.styleValid"
                                                   v-model="slide.pop.style" />
                                     </div>
                                     <div class="g-edit__col">
@@ -559,11 +692,13 @@ const closeBtn = () => {
                                 <template v-if="slide.pop.type == 'img'">
                                     <div class="g-edit__col">
                                         <g-input label="POP圖片網址:" v-model.trim="slide.pop.img" :preview="slide.pop.img"
+                                                 :valid="slide.pop.validImg"
                                                  :required="true" />
                                     </div>
                                     <div class="g-edit__col">
-                                        <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
-                                                  :valid="styleValid"
+                                        <g-select label="主題顏色" :group="true" :options="[style1, style2]"
+                                                  :required="true"
+                                                  :valid="slide.pop.styleValid"
                                                   v-model="slide.pop.style" />
                                     </div>
                                 </template>
@@ -580,6 +715,7 @@ const closeBtn = () => {
                                                 <a href="javascript:;" class="icon icon-down"
                                                    @click="onDown2(index, slideIndex)">down</a>
                                             </div>
+
                                             <div class="g-edit__group">
                                                 <div class="g-edit__col">
                                                     <g-input label="圖片網址:" v-model.trim="popSlide.pc"
@@ -594,29 +730,35 @@ const closeBtn = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="g-edit__col">
-                                            <div class="input-group__label required">自動輪播:</div>
-                                            <g-radio label="開啟" :name="'popAutoplay' + index" :value="true"
-                                                     v-model="slide.pop.autoplay.open" />
-                                            <g-radio label="關閉" :name="'popAutoplay' + index" :value="false"
-                                                     v-model="slide.pop.autoplay.open" />
-                                        </div>
-                                        <div class="g-edit__col" v-if="slide.pop.autoplay.open == 'true'">
-                                            <g-input label="秒數:" v-model="slide.pop.autoplay.delay"
-                                                     :valid="slide.pop.autoplay.validDelay"
-                                                     :required="true" />
-                                        </div>
-                                        <div class="g-edit__col">
-                                            <div class="input-group__label required">輪播切換方式:</div>
-                                            <g-radio label="左右箭頭" :name="'popControl' + index" value="navigation"
-                                                     v-model="slide.pop.control" />
-                                            <g-radio label="下方點點" :name="'popControl' + index" value="pagination"
-                                                     v-model="slide.pop.control" />
-                                            <g-radio label="都不顯示" :name="'popControl' + index" value="no"
-                                                     v-model="slide.pop.control" />
-                                            <g-radio label="都要顯示" :name="'popControl' + index" value="all"
-                                                     v-model="slide.pop.control" />
-                                        </div>
+                                    </div>
+                                    <div class="g-edit__col">
+                                        <g-select label="主題顏色" :group="true" :options="[style1, style2]"
+                                                  :required="true"
+                                                  :valid="slide.pop.styleValid"
+                                                  v-model="slide.pop.style" />
+                                    </div>
+                                    <div class="g-edit__col">
+                                        <div class="input-group__label required">自動輪播:</div>
+                                        <g-radio label="開啟" :name="'popAutoplay' + index" :value="true"
+                                                 v-model="slide.pop.autoplay.open" />
+                                        <g-radio label="關閉" :name="'popAutoplay' + index" :value="false"
+                                                 v-model="slide.pop.autoplay.open" />
+                                    </div>
+                                    <div class="g-edit__col" v-if="slide.pop.autoplay.open == 'true'">
+                                        <g-input label="秒數:" v-model="slide.pop.autoplay.delay"
+                                                 :valid="slide.pop.autoplay.validDelay"
+                                                 :required="true" />
+                                    </div>
+                                    <div class="g-edit__col">
+                                        <div class="input-group__label required">輪播切換方式:</div>
+                                        <g-radio label="左右箭頭" :name="'popControl' + index" value="navigation"
+                                                 v-model="slide.pop.control" />
+                                        <g-radio label="下方點點" :name="'popControl' + index" value="pagination"
+                                                 v-model="slide.pop.control" />
+                                        <g-radio label="都不顯示" :name="'popControl' + index" value="no"
+                                                 v-model="slide.pop.control" />
+                                        <g-radio label="都要顯示" :name="'popControl' + index" value="all"
+                                                 v-model="slide.pop.control" />
                                     </div>
                                 </template>
                                 <div class="g-edit__col">
@@ -646,25 +788,25 @@ const closeBtn = () => {
                                              v-model="slide.attribute" />
                                 </div>
                             </template>
-                            <div class="g-edit__col">
-                                <g-input label="手機版圖片網址" v-model.trim="slide.mobile" :preview="slide.mobile"
-                                         :valid="slide.validMobile" />
-                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距上:" type="number" v-model="slideData.mt" @change="handleNumber" />
+                        <g-input label="PC間距上:" type="number" v-model="slideData.mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="slideData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距下:" type="number" v-model="slideData.mb" @change="handleNumber" />
+                        <g-input label="PC間距下:" type="number" v-model="slideData.mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="slideData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距上:" type="number" v-model="slideData.mobile_mt" @change="handleNumber" />
+                        <g-input label="Mobile間距上:" type="number" v-model="slideData.mobile_mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="slideData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距下:" type="number" v-model="slideData.mobile_mb" @change="handleNumber" />
+                        <g-input label="Mobile間距下:" type="number" v-model="slideData.mobile_mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="slideData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

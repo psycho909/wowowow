@@ -2,6 +2,8 @@
 import { computed } from "vue";
 import { mainStore } from "../store/index";
 import GLightbox from "../components/GLightbox.vue";
+import { GetPageType } from "../api";
+
 const props = defineProps({
     uid: {
         type: [String, Number]
@@ -30,7 +32,7 @@ let messageText = ref("");
 let messageLightbox = ref(false);
 
 const store = mainStore();
-const checkComponent = computed(() => {
+const checkUp = computed(() => {
     const validPreviousComponents = ["GFixed", "GBg", "GSlogan", "GTop", "GWatermark", "GMusic"];
     if (props.sub) {
         for (let i = 0; i < store.content.length; i++) {
@@ -47,7 +49,7 @@ const checkComponent = computed(() => {
         }
     } else {
         const index = store.getIndex(props.uid)
-        if (index - 1 <= 0 || validPreviousComponents.includes(store.content[index - 1]?.component) || store.content[index - 1]?.name == 'main') {
+        if (index - 1 <= 0 || validPreviousComponents.includes(store.content[index - 1]?.component) || store.content[index - 1]?.name == 'main' || store.content[index - 1]?.name == 'home') {
             return false;
         } else {
             return true;
@@ -96,6 +98,8 @@ const onDown = () => {
     store.downCpt(props.uid, props.sub);
 }
 const onEdit = () => {
+    console.log("Edit")
+    GetPageType(store.otp)
     store.editCptOpen(props.uid, props.sub);
 }
 
@@ -105,7 +109,7 @@ const onEdit = () => {
         <div class="g-modify-title">{{ title }}</div>
         <div class="g-modify-btn__group" v-if="move">
             <a href="javascript:;" class="icon icon-drag">drag</a>
-            <a href="javascript:;" class="icon icon-up" @click="onUp" v-if="checkComponent">up</a>
+            <a href="javascript:;" class="icon icon-up" @click="onUp" v-if="checkUp">up</a>
             <a href="javascript:;" class="icon icon-down" @click="onDown"
                v-if="checkDown">down</a>
         </div>

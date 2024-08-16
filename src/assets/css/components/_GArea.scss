@@ -5,6 +5,7 @@
 	}
 }
 .g-area {
+	min-height: 960px;
 	background-position: center 0;
 	background-image: var(--area-pc);
 	background-color: var(--area-color);
@@ -22,6 +23,7 @@
 		}
 	}
 	@include media {
+		min-height: auto;
 		background-image: var(--area-mobile);
 		background-size: calc(var(--area-mw) / 768 * 100vw) calc(var(--area-mh) / 768 * 100vw);
 	}
@@ -29,14 +31,36 @@
 		box-shadow: inset 1px 0 0 3px red;
 	}
 	&[data-page="main"] {
+		min-height: 1080px;
+		@include media {
+			min-height: auto;
+		}
 		.g-area-container {
 			padding-top: calc(var(--pc-padding-top, 80) * 1px);
 			padding-bottom: calc(var(--pc-padding-bottom, 80) * 1px);
+			display: flex;
+			flex-direction: column;
+			.g-dn_img {
+				order: 2;
+			}
+			.g-dn_nav {
+				order: 1;
+			}
+			&--notice {
+				position: absolute;
+				top: 298px;
+				left: 280px;
+				width: 544px;
+				height: 187px;
+				background-image: url("./img/border-top-left.png"), url("./img/border-top-right.png"), url("./img/border-bottom-left.png"), url("./img/border-bottom-right.png"), url("./img/page2-notice.png");
+				background-size: 32px 32px, 32px 32px, 32px 32px, 32px 32px, 544px 187px;
+				background-repeat: no-repeat;
+				background-position: 0 0, right 0, 0 bottom, right bottom, 0 0;
+			}
 			@include media {
 				padding-top: calc(var(--mobile-padding-top, 100) / 768 * 100vw);
 				padding-bottom: calc(var(--mobile-padding-bottom, 100) / 768 * 100vw);
-				display: flex;
-				flex-direction: column;
+				min-height: auto;
 				.g-dn_img {
 					order: 1;
 				}

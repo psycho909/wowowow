@@ -45,7 +45,7 @@ onMounted(async () => {
     } else {
         mobile.value = false
     }
-    if (mobile.value && props.openapp == 'true') {
+    if (mobile.value && (props.openapp == 'true' || props.openapp == true)) {
         videoImg.value = youtubePreview(extractVideoID(props.youtube))
         return
     } else {
@@ -77,14 +77,13 @@ const onVideo = () => {
     }
 }
 defineExpose({ player, videoRef });
-
 </script>
 <template>
     <div class="g-yt">
         <template v-if="mobile">
-            <template v-if="openapp == 'true'">
+            <template v-if="openapp == 'true' || openapp == true">
                 <a class="g-yt__box" :href="youtube" data-openapp="1">
-                    <img class="g-yt__img" :class="[playStatus ? 'on' : 'off']" :src="videoImg?.hq" />
+                    <img class="g-yt__img" :class="[playStatus ? 'on' : 'off']" :src="videoImg?.hq" target="_blank" />
                 </a>
             </template>
             <template v-else>

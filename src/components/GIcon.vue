@@ -17,11 +17,11 @@ import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-
+import { GetPageType } from "../api";
 const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let iconData = reactive({});
 let iconSetting = reactive({})
@@ -42,6 +42,7 @@ const initData = () => {
             validPC: true,
             validMobile: true,
             validLink: true,
+            target: true
         }],
     }
 }
@@ -49,6 +50,7 @@ Object.assign(iconData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -61,6 +63,18 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(iconData, cloneDeep(props.data.content));
         Object.assign(iconSetting, cloneDeep(props.data.content));
+        if (iconData.icons.length) {
+            iconData.icons.forEach((v, i) => {
+                if (v.target == undefined) {
+                    v.target = true
+                }
+            })
+            iconSetting.icons.forEach((v, i) => {
+                if (v.target == undefined) {
+                    v.target = true
+                }
+            })
+        }
         if ($addComponent) {
             $addComponent();
         }
@@ -76,9 +90,8 @@ const addInsertMenu = (index) => {
         link: "",
         validPC: true,
         validMobile: true,
-        validLink: true,
+        validLink: true, target: true
     };
-
     iconData.icons.push(icon)
 };
 
@@ -153,9 +166,14 @@ async function validateAll(data) {
                 isValid = false;
             } else {
                 const pcImageDimensions = await imageInfo("pc", item.pc);
-                item.w = pcImageDimensions.width;
-                item.h = pcImageDimensions.height;
-                item.validPC = true;
+                if (pcImageDimensions) {
+                    item.w = pcImageDimensions.width;
+                    item.h = pcImageDimensions.height;
+                    item.validPC = true;
+                } else {
+                    item.validPC = false;
+                    isValid = false;
+                }
             }
         }
         if (item.mobile) {
@@ -165,9 +183,14 @@ async function validateAll(data) {
                 isValid = false;
             } else {
                 const mobileImageDimensions = await imageInfo("mobile", item.mobile);
-                item.mw = mobileImageDimensions.width;
-                item.mh = mobileImageDimensions.height;
-                item.validMobile = true;
+                if (mobileImageDimensions) {
+                    item.mw = mobileImageDimensions.width;
+                    item.mh = mobileImageDimensions.height;
+                    item.validMobile = true;
+                } else {
+                    item.validMobile = false;
+                    isValid = false;
+                }
             }
         }
         // if (item.effectCheck) {
@@ -222,6 +245,7 @@ const onSubmit = async () => {
         let data = cloneDeep(iconData);
         store.updateCpt(props.data.uid, data, props.sub);
         Object.assign(iconSetting, data);
+        GetPageType(store.otp)
     }
     loadingHide()
 
@@ -234,8 +258,11 @@ const onReset = () => {
 const closeBtn = () => {
     if (props.data.init) {
         showEdit.value = false;
-        store.removeCpt(props.data.uid, props.sub);
+        if (Object.keys(props.data.content).length == 0) {
+            store.removeCpt(props.data.uid, props.sub);
+        }
         document.querySelector("body").classList.remove("ov-hidden");
+        store.editCptClose(props.data.uid, props.sub)
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
@@ -260,7 +287,8 @@ const closeBtn = () => {
             </template>
             <template v-else>
                 <template v-for="item in iconSetting.icons">
-                    <a :href="item.link ? item.link : 'javascript:;'" :target="item.link ? '_blank' : ''"
+                    <a :href="item.link ? item.link : 'javascript:;'"
+                       :target="[item.link ? item.target == true || item.target == 'true' ? '_blank' : '' : '']"
                        class="g-icon-item"
                        :data-init="data.init">
                         <span class="g-icon-item1" :style="transformNavsToCSSProps(item)"></span>
@@ -277,7 +305,7 @@ const closeBtn = () => {
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">ICON區塊
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Icon${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
@@ -302,6 +330,13 @@ const closeBtn = () => {
                                 <div class="g-edit__col">
                                     <g-input label="連結:" v-model.trim="item.link"
                                              :valid="item.validLink" />
+                                </div>
+                                <div class="g-edit__col">
+                                    <div class="input-group__label">另開視窗:</div>
+                                    <g-radio label="是" :name="'attribute' + index" :value="true"
+                                             v-model="item.target" />
+                                    <g-radio label="否" :name="'attribute' + index" :value="false"
+                                             v-model="item.target" />
                                 </div>
                             </div>
                         </div>

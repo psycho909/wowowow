@@ -2,11 +2,21 @@
 	position: absolute;
 	top: 24px;
 	left: 26px;
-	z-index: 1;
+	z-index: 2;
 	@include media {
 		top: vw(30);
 		left: 50%;
 		transform: translateX(-50%);
+	}
+	&[data-init="true"] {
+		.g-logo-container {
+			width: 278px;
+			height: 118px;
+			background-image: url("./img/border-top-left.png"), url("./img/border-top-right.png"), url("./img/border-bottom-left.png"), url("./img/border-bottom-right.png"), linear-gradient(45deg, #ffffff 25%, #a1a1a1 25%, #a1a1a1 50%, #ffffff 50%, #ffffff 75%, #a1a1a1 75%, #a1a1a1 100%);
+			background-size: 32px 32px, 32px 32px, 32px 32px, 32px 32px, 5px 5px;
+			background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+			background-position: 0 0, right 0, 0 bottom, right bottom, 0 0;
+		}
 	}
 	&-container {
 		background-position: center 0;
@@ -19,13 +29,8 @@
 		@include media {
 			background-image: var(--logo-mobile);
 			background-size: calc(var(--logo-mw) / 768 * 100vw) calc(var(--logo-mh) / 768 * 100vw);
-			width: calc(var(--logo-w) / 768 * 100vw);
-			height: calc(var(--logo-h) / 768 * 100vw);
-		}
-		&[data-init="true"] {
-			width: 278px;
-			height: 118px;
-			background-color: #c9c9c9;
+			width: calc(var(--logo-mw) / 768 * 100vw);
+			height: calc(var(--logo-mh) / 768 * 100vw);
 		}
 	}
 }

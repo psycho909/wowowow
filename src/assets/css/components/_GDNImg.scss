@@ -1,22 +1,54 @@
 .g-dn_img {
+	margin-top: calc(var(--dn-margin-top, 60) * 1px);
+	margin-bottom: calc(var(--dn-margin-bottom, 0) * 1px) !important;
+	position: relative;
+	z-index: 2;
+	@include media {
+		margin-top: calc(var(--dn-m-margin-top, 750) / 768 * 100vw);
+		margin-bottom: calc(var(--dn-m-margin-bottom, 0) / 768 * 100vw) !important;
+	}
 	&-container {
 		max-width: 1200px;
 		box-sizing: border-box;
-		margin: 60px auto 0;
+		margin: 0 auto;
 		position: relative;
 		display: flex;
 		flex-wrap: wrap;
 		column-gap: 24px;
 		row-gap: 24px;
+		&[data-align="left"] {
+			justify-content: flex-start;
+		}
+		&[data-align="center"] {
+			justify-content: center;
+		}
+		&[data-align="right"] {
+			justify-content: flex-end;
+		}
 		@include media {
-			margin: vw(750) auto 0;
-			column-gap: vw(24);
+			margin: 0 auto;
+			// column-gap: vw(24);
+			column-gap: 0;
 			row-gap: vw(24);
 			max-width: vw(690);
+			// display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			place-items: center;
 		}
 	}
 	&-item {
 		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		&[href="javascript:;"] {
+			cursor: default;
+		}
+		@include media {
+			width: 50%;
+			flex-grow: 0;
+			flex-shrink: 0;
+		}
 		&:last-child {
 			margin-bottom: 0;
 		}
@@ -24,7 +56,10 @@
 		&[data-init="true"] {
 			width: 282px;
 			height: 137px;
-			background-color: #c9c9c9;
+			background-image: url("./img/border-top-left.png"), url("./img/border-top-right.png"), url("./img/border-bottom-left.png"), url("./img/border-bottom-right.png"), linear-gradient(45deg, #ffffff 25%, #a1a1a1 25%, #a1a1a1 50%, #ffffff 50%, #ffffff 75%, #a1a1a1 75%, #a1a1a1 100%);
+			background-size: 32px 32px, 32px 32px, 32px 32px, 32px 32px, 5px 5px;
+			background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+			background-position: 0 0, right 0, 0 bottom, right bottom, 0 0;
 		}
 		&[data-effect="true"] {
 			@include hover {
@@ -62,10 +97,11 @@
 			width: calc(var(--dn-img-effectImg-w) * 1px);
 			height: calc(var(--dn-img-effectImg-h) * 1px);
 			position: absolute;
-			z-index: 0;
-			top: 0;
-			left: 0;
+			z-index: 1;
+			top: 50%;
+			left: 50%;
 			opacity: 0;
+			transform: translate(-50%, -50%);
 			@include media {
 				display: none;
 			}

@@ -5,8 +5,9 @@ import GDate from "../elements/GDate.vue";
 import GInput from "../elements/GInput.vue";
 import GSelect from "../elements/GSelect.vue";
 import GHome from "../components/GHome.vue";
+import GLoading from "../components/GLoading.vue";
 import { loadingShow, loadingHide } from "../Tool";
-import { CopyEvent, GetGames, GetEventList, ApproveEvent, AddEventList, UpdateEvent } from "../api";
+import { CopyEvent, GetGames, GetEventList, ApproveEvent, AddEventList, UpdateEvent, GetPageType } from "../api";
 
 const store = mainStore()
 let approveLightbox = ref(false)
@@ -31,7 +32,7 @@ let approveTemp = ref({});
 let messageText = ref("");
 let messageLightbox = ref(false);
 let messageAccess = ref(0);
-
+let loading = ref(false);
 if (window.sessionStorage.getItem("state")) {
     window.sessionStorage.removeItem("state")
 }
@@ -67,7 +68,7 @@ const onSort = (type) => {
     onSearch();
 }
 const onSearch = () => {
-    loadingShow()
+    loading.value = true;
     if (eventFilter.beginDate == null) {
         eventFilter.beginDate = "";
     }
@@ -104,7 +105,7 @@ const onSearch = () => {
         store.setEventListFilter(data, currentPage.value, listData, message);
         store.setSave(false);
     }).finally(() => {
-        loadingHide()
+        loading.value = false;
     })
 }
 
@@ -200,6 +201,7 @@ const onPreview = async (event) => {
         return;
     }
     await store.setData(event)
+    GetPageType(store.otp)
     store.setStorageState(store.$state, "EventList").then((res) => {
         store.setPage("Preview", {
             eventSeq: event.eventSeq,
@@ -361,16 +363,17 @@ const onCopy = (event) => {
 
 onMounted(async () => {
     await nextTick()
-    loadingShow()
+    loading.value = true;
     GetGames(store.otp).then((res) => {
         let { code, message, url, listData } = res.data;
         if (code != 1) {
             messageText.value = message;
             messageLightbox.value = true;
-            loadingHide()
+            loading.value = false;
             return;
         }
         gameSeqOptions.value = [{ guid: "", gameName: "" }, ...listData];
+        loading.value = false;
         if (Object.keys(store.eventListFilter).length) {
             Object.keys(eventFilter).forEach((v, i) => {
                 eventFilter[v] = store.eventListFilter[v];
@@ -384,7 +387,7 @@ onMounted(async () => {
                 } else {
                     totalPage.value = 0;
                 }
-                loadingHide()
+                loading.value = false;
             } else {
                 onSearch();
             }
@@ -395,6 +398,7 @@ onMounted(async () => {
 })
 </script>
 <template>
+    <GLoading :loading="loading"></GLoading>
     <div class="container event-list__container">
         <g-home />
         <div class="page-title">

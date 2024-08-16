@@ -17,11 +17,11 @@ import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-
+import { GetPageType } from "../api";
 const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let logoData = reactive({});
 let logoSetting = reactive({})
@@ -31,13 +31,14 @@ const initData = () => {
     return {
         link: "",
         pc: "",
-        mobile: "", validPC: true, validMobile: true, validLink: true
+        mobile: "", validPC: true, validMobile: true, validLink: true, target: true
     }
 }
 Object.assign(logoData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -46,6 +47,12 @@ watchEffect(async () => {
         if (Object.keys(props.data.content).length > 0) {
             Object.assign(logoData, cloneDeep(props.data.content));
             Object.assign(logoSetting, cloneDeep(props.data.content))
+            if (logoData.target == undefined) {
+                logoData.target = true
+            }
+            if (logoSetting.target == undefined) {
+                logoSetting.target = true
+            }
         }
     }
 })
@@ -121,9 +128,14 @@ async function validateLogoData(logoData) {
             isValid = false;
         } else {
             const pcImageDimensions = await imageInfo("pc", logoData.pc);
-            logoData.w = pcImageDimensions.width;
-            logoData.h = pcImageDimensions.height;
-            logoData.validPC = true;
+            if (pcImageDimensions) {
+                logoData.w = pcImageDimensions.width;
+                logoData.h = pcImageDimensions.height;
+                logoData.validPC = true;
+            } else {
+                logoData.validPC = false;
+                isValid = false;
+            }
         }
 
     }
@@ -135,9 +147,14 @@ async function validateLogoData(logoData) {
             isValid = false;
         } else {
             const mobileImageDimensions = await imageInfo("mobile", logoData.mobile);
-            logoData.mw = mobileImageDimensions.width;
-            logoData.mh = mobileImageDimensions.height;
-            logoData.validMobile = true;
+            if (mobileImageDimensions) {
+                logoData.mw = mobileImageDimensions.width;
+                logoData.mh = mobileImageDimensions.height;
+                logoData.validMobile = true;
+            } else {
+                logoData.validMobile = false;
+                isValid = false;
+            }
         }
 
     }
@@ -159,6 +176,7 @@ const onSubmit = async () => {
         let data = cloneDeep(logoData);
         store.updateCpt(props.data.uid, data, props.sub);
         Object.assign(logoSetting, data);
+        GetPageType(store.otp)
     }
 
     loadingHide()
@@ -171,8 +189,11 @@ const onReset = () => {
 const closeBtn = () => {
     if (props.data.init) {
         showEdit.value = false;
-        store.removeCpt(props.data.uid, props.sub);
+        if (Object.keys(props.data.content).length == 0) {
+            store.removeCpt(props.data.uid, props.sub);
+        }
         document.querySelector("body").classList.remove("ov-hidden");
+        store.editCptClose(props.data.uid, props.sub)
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
@@ -183,12 +204,13 @@ const closeBtn = () => {
     showEdit.value = false;
     store.editCptClose(props.data.uid, props.sub)
 }
-
 </script>
 <template>
-    <div class="g-logo">
+    <div class="g-logo" :data-init="data.init">
         <template v-if="store.status != 'edit'">
-            <a :href="[logoSetting.link ? logoSetting.link : 'javascript:;']" class="g-logo-container" :style="cssVar"></a>
+            <a :href="[logoSetting.link ? logoSetting.link : 'javascript:;']"
+               :target="[logoSetting.link ? logoSetting.target == true || logoSetting.target == 'true' ? '_blank' : '' : '']"
+               class="g-logo-container" :style="cssVar"></a>
         </template>
         <template v-else>
             <a href="javascript:;" class="g-logo-container" :style="cssVar" :data-init="data.init"></a>
@@ -201,7 +223,7 @@ const closeBtn = () => {
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">LOGO
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Slogan.html"
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Logo${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
@@ -215,6 +237,15 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <g-input label="連結:" v-model.trim="logoData.link" :valid="logoData.validLink" />
+                </div>
+                <div class="g-edit__row">
+                    <div class="g-edit__col">
+                        <div class="input-group__label">另開視窗:</div>
+                        <g-radio label="是" :name="'attribute'" :value="true"
+                                 v-model="logoData.target" />
+                        <g-radio label="否" :name="'attribute'" :value="false"
+                                 v-model="logoData.target" />
+                    </div>
                 </div>
                 <div class="edit-btn__box">
                     <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>

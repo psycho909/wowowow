@@ -2,7 +2,7 @@
 export default {
     name: "GVideo",
     label: "影片區塊",
-    order: 6,
+    order: 8,
     type: [1, 2]
 }
 </script>
@@ -12,15 +12,15 @@ import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GYoutube from '../elements/GYoutube.vue';
 import { mainStore } from "../store/index";
-import { extractVideoID, handleNumber } from "../Tool";
+import { extractVideoID, handleNumber, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-
+import { GetPageType } from "../api";
 const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 let _videoDataLength = ref(1);
 let videoUpdate = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let videoSetting = reactive({});
 let videoData = reactive({});
@@ -42,6 +42,7 @@ Object.assign(videoData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -100,6 +101,22 @@ const onChange = (e) => {
 
 const onSubmit = async () => {
     let data = {}
+    videoData.validMt = true;
+    videoData.validMb = true;
+    videoData.validMmt = true;
+    videoData.validMmb = true;
+    if (videoData.mt < 0) {
+        videoData.validMt = false;
+    }
+    if (videoData.mb < 0) {
+        videoData.validMb = false;
+    }
+    if (videoData.mobile_mt < 0) {
+        videoData.validMmt = false;
+    }
+    if (videoData.mobile_mb < 0) {
+        videoData.validMmb = false;
+    }
     videoData.videos.forEach((v, i) => {
         if (v.url.length > 0 && extractVideoID(v.url)) {
             v.validUrl = true;
@@ -110,19 +127,23 @@ const onSubmit = async () => {
     var validCheck = videoData.videos.every(function (v, i) {
         return v.validUrl == true;
     })
-    if (validCheck) {
-        $("#loadingProgress").show();
-        if (videoData.type == "pop") {
-            videoData.preview = true;
-        }
-        let data = cloneDeep(videoData)
-        store.updateCpt(props.data.uid, data, props.sub);
-        Object.assign(videoSetting, data);
+    if (videoData.validMt && videoData.validMb && videoData.validMmt && videoData.validMmb) {
+        if (validCheck) {
+            $("#loadingProgress").show();
+            if (videoData.type == "pop") {
+                videoData.preview = true;
+            }
+            let data = cloneDeep(videoData)
+            store.updateCpt(props.data.uid, data, props.sub);
+            Object.assign(videoSetting, data);
 
-        videoUpdate.value = true;
-        await nextTick();
-        videoUpdate.value = false;
+            videoUpdate.value = true;
+            await nextTick();
+            videoUpdate.value = false;
+            GetPageType(store.otp)
+        }
     }
+
 }
 const onReset = () => {
     _videoDataLength.value = 1;
@@ -177,7 +198,7 @@ const closeBtn = () => {
                 <div class="edit-title__box">
                     <div class="edit-title__text">
                         影片區塊
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Video.html"
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Video${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
@@ -204,16 +225,20 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距上:" type="number" v-model="videoData.mt" @change="handleNumber" />
+                        <g-input label="PC間距上:" type="number" v-model="videoData.mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="videoData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距下:" type="number" v-model="videoData.mb" @change="handleNumber" />
+                        <g-input label="PC間距下:" type="number" v-model="videoData.mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="videoData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距上:" type="number" v-model="videoData.mobile_mt" @change="handleNumber" />
+                        <g-input label="Mobile間距上:" type="number" v-model="videoData.mobile_mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="videoData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距下:" type="number" v-model="videoData.mobile_mb" @change="handleNumber" />
+                        <g-input label="Mobile間距下:" type="number" v-model="videoData.mobile_mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="videoData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

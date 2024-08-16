@@ -19,6 +19,22 @@
 		display: flex;
 		flex-direction: column;
 		row-gap: 10px;
+		&[data-align="left"] {
+			.g-accordion__header {
+				text-align: left;
+			}
+			.g-accordion__content {
+				text-align: left;
+			}
+		}
+		&[data-align="center"] {
+			.g-accordion__header {
+				text-align: center;
+			}
+			.g-accordion__content {
+				text-align: center;
+			}
+		}
 		@include media {
 			max-width: vw(678);
 			padding: vw(25);
@@ -56,6 +72,7 @@
 		font-weight: bold;
 		position: relative;
 		padding-right: 62px;
+		word-break: break-all;
 		@include media {
 			font-size: vw(30);
 			padding: vw(25);
@@ -91,28 +108,73 @@
 		// padding: 10px;
 		background-color: var(--bg);
 		will-change: auto;
-		max-height: 0;
+		// max-height: 0;
 		overflow: hidden;
 		transition: max-height 0.5s;
 		font-size: 20px;
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: 0.5s grid-template-rows ease;
 		@include media {
 			font-size: vw(30);
 		}
 		&.active {
-			max-height: calc(var(--max-height) * 1px);
+			grid-template-rows: 1fr;
+			// max-height: calc(var(--max-height) * 1px);
 		}
 	}
 	&__content {
-		padding-top: 16px;
-		padding-bottom: 16px;
+		// padding-top: 16px;
+		// padding-bottom: 16px;
 		color: var(--text);
 		box-sizing: border-box;
+		background-color: var(--bg, rgba(#474747, 0.6));
+		color: var(--text, #000);
+		font-size: 20px !important;
+		word-break: break-all;
+		line-height: 1.5;
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
 		@include media {
-			padding-top: vw(20);
-			padding-bottom: vw(20);
+			// padding-top: vw(20);
+			// padding-bottom: vw(20);
+			font-size: vw(30) !important;
+		}
+		&-inner {
+			padding: 16px 0;
+			@include media {
+				padding: vw(20) 0;
+			}
+		}
+		img {
+			max-width: 100%;
 		}
 		a {
-			color: var(--link);
+			color: var(--link, #000);
+		}
+		ol,
+		ul {
+			padding-left: 48px;
+			@include media {
+				padding-left: vw(64);
+			}
+		}
+		li {
+		}
+		table {
+			border-collapse: collapse;
+		}
+		table,
+		td {
+			border: 1px solid var(--text, #000);
+		}
+		td {
+			padding: 4px;
+			@include media {
+				padding: vw(4);
+			}
 		}
 	}
 }

@@ -2,7 +2,7 @@
 export default {
     name: "GListText",
     label: "區塊條列式文字",
-    order: 5, type: [1]
+    order: 11, type: [1, 2]
 }
 </script>
 <script setup>
@@ -15,11 +15,11 @@ import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-
-const props = defineProps(["data"])
+import { GetPageType } from "../api";
+const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let listTextData = reactive({});
 let listTextSetting = reactive({})
@@ -33,7 +33,6 @@ const initData = () => {
         align: "left",
         style: "",
         validStyle: true,
-        collapseCheck: false,
         collapseNum: 5,
         listTexts: [
             {
@@ -58,6 +57,7 @@ Object.assign(listTextData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -115,9 +115,14 @@ async function validateListTextData(data) {
                 isValid = false;
             } else {
                 const pcImageDimensions = await imageInfo("pc", item.icon);
-                item.w = pcImageDimensions.width;
-                item.h = pcImageDimensions.height;
-                item.validIcon = true;
+                if (pcImageDimensions) {
+                    item.w = pcImageDimensions.width;
+                    item.h = pcImageDimensions.height;
+                    item.validIcon = true;
+                } else {
+                    item.validIcon = false;
+                    isValid = false;
+                }
             }
         } else {
             item.validIcon = true;
@@ -287,20 +292,43 @@ const onChange = (e) => {
 const onSubmit = async () => {
     loadingShow()
     let isValidData = await validateListTextData(listTextData);
-
+    listTextData.validMt = true;
+    listTextData.validMb = true;
+    listTextData.validMmt = true;
+    listTextData.validMmb = true;
+    if (listTextData.mt < 0) {
+        listTextData.validMt = false;
+    }
+    if (listTextData.mb < 0) {
+        listTextData.validMb = false;
+    }
+    if (listTextData.mobile_mt < 0) {
+        listTextData.validMmt = false;
+    }
+    if (listTextData.mobile_mb < 0) {
+        listTextData.validMmb = false;
+    }
     if (listTextData.style == "") {
         styleValid.value = false;
     } else {
         styleValid.value = true;
     }
+    if (listTextData.validMt && listTextData.validMb && listTextData.validMmt && listTextData.validMmb) {
+        if (styleValid.value && isValidData) {
+            $("#loadingProgress").show();
+            let data = cloneDeep(listTextData);
+            store.updateCpt(props.data.uid, data, props.sub);
+            Object.assign(listTextSetting, data);
+            GetPageType(store.otp)
 
-    if (styleValid.value && isValidData) {
-        $("#loadingProgress").show();
-        let data = cloneDeep(listTextData);
-        store.updateCpt(props.data.uid, data);
-        Object.assign(listTextSetting, data);
+        } else {
+            loadingHide()
+        }
+    } else {
+        loadingHide()
     }
-    loadingHide()
+
+
 }
 
 const onReset = () => {
@@ -345,17 +373,22 @@ function transformNavsToCSSProps(item) {
                 <template v-for="(list, index) in listTextSetting.listTexts">
                     <div class="g-listText-row" :data-icon="[list.icon != '' ? true : false]"
                          :data-align="listTextSetting.align">
-                        <div class="g-listText__title"><span class="g-listText__icon" :style="transformNavsToCSSProps(list)"
+                        <div class="g-listText__title"><span class="g-listText__icon"
+                                  :style="transformNavsToCSSProps(list)"
                                   v-if="list.icon != ''"></span>{{ list.title }}</div>
                         <div class="g-listText-col" v-for="nest in listTextSetting.listTexts[index].nested">
+                            <a href="javascript:;" class="g-listText__text" v-if="page == 'EditPage'">{{ nest.text
+                                }}</a>
                             <a :href="[nest.url == '' ? 'javascript:;' : nest.url]" class="g-listText__text"
-                               :target="[page == 'EditPage' ? '_blank' : nest.open ? '_blank' : '']">{{ nest.text
-                               }}</a>
+                               :target="[page == 'EditPage' ? '_blank' : nest.open == 'true' || nest.open == true ? '_blank' : '']"
+                               v-else>{{
+        nest.text
+    }}</a>
                         </div>
                     </div>
                 </template>
             </div>
-            <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
+            <g-modify :uid="data.uid" :sub="sub" v-if="page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit">
             <template #edit-close>
@@ -363,13 +396,13 @@ function transformNavsToCSSProps(item) {
             </template>
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">區塊條件式文字
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
+                    <div class="edit-title__text">區塊條列式文字
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/ListText${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label required">選擇輪播數量:</div>
+                    <div class="input-group__label required">選擇欄位數量:</div>
                     <g-radio label="單欄" name="item" value="1" v-model="listTextData.num" @change="onChange" />
                     <g-radio label="兩欄" name="item" value="2" v-model="listTextData.num" @change="onChange" />
                     <g-radio label="三欄" name="item" value="3" v-model="listTextData.num" @change="onChange" />
@@ -384,17 +417,6 @@ function transformNavsToCSSProps(item) {
                     <g-select label="主題顏色:" :group="true" :options="[style1, style2]" :required="true"
                               :valid="styleValid"
                               v-model="listTextData.style" />
-                </div>
-                <div class="g-edit__row">
-                    <div class="input-group__label required">收合開關:</div>
-                    <g-radio label="是" name="collapseCheck" :value="true" v-model="listTextData.collapseCheck" />
-                    <g-radio label="否" name="collapseCheck" :value="false" v-model="listTextData.collapseCheck" />
-                </div>
-                <div class="g-edit__row" v-if="listTextData.collapseCheck == 'true'">
-                    <div class="g-edit__col">
-                        <g-input label="條列文字超過:" class="w-auto" type="number" v-model="listTextData.collapseNum" />
-                        <span class="flex[1]">個後自動收合</span>
-                    </div>
                 </div>
                 <div class="g-edit__row g-edit__block" v-for="(list, index) in listTextData.listTexts">
                     <div class="g-edit__col">
@@ -418,7 +440,8 @@ function transformNavsToCSSProps(item) {
                                            @click="addInsertMenu2(index, nestIndex)"></a>
                                         <a href="javascript:;" class="icon icon-remove"
                                            @click="removeMenu2(index, nestIndex)"></a>
-                                        <a href="javascript:;" class="icon icon-up" @click="onUp2(index, nestIndex)">up</a>
+                                        <a href="javascript:;" class="icon icon-up"
+                                           @click="onUp2(index, nestIndex)">up</a>
                                         <a href="javascript:;" class="icon icon-down"
                                            @click="onDown2(index, nestIndex)">down</a>
                                     </div>
@@ -445,16 +468,22 @@ function transformNavsToCSSProps(item) {
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距上:" type="number" v-model="listTextData.mt" @change="handleNumber" />
+                        <g-input label="PC間距上:" type="number" v-model="listTextData.mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="listTextData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距下:" type="number" v-model="listTextData.mb" @change="handleNumber" />
+                        <g-input label="PC間距下:" type="number" v-model="listTextData.mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="listTextData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距上:" type="number" v-model="listTextData.mobile_mt" @change="handleNumber" />
+                        <g-input label="Mobile間距上:" type="number" v-model="listTextData.mobile_mt"
+                                 @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="listTextData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距下:" type="number" v-model="listTextData.mobile_mb" @change="handleNumber" />
+                        <g-input label="Mobile間距下:" type="number" v-model="listTextData.mobile_mb"
+                                 @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="listTextData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

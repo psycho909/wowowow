@@ -1,14 +1,32 @@
 .g-music {
 	position: fixed;
 	z-index: 9998;
-	bottom: 20px;
+	bottom: calc(var(--bottom, 18) * 1px);
+	&.mobileShow {
+		@include media {
+			display: block;
+		}
+	}
 	@include media {
-		bottom: vw(74);
+		display: none;
+		&[data-observer="true"] {
+			@include media {
+				bottom: calc(var(--bottom, 40) * 1px);
+			}
+		}
+		bottom: vw(20);
 	}
 	&[data-position="left-bottom"] {
 		left: 18px;
 		@include media {
-			left: vw(20);
+			left: 50%;
+			transform: translateX(-50%);
+		}
+		&.g-music--close {
+			@include media {
+				left: vw(20);
+				transform: translateX(0);
+			}
 		}
 		.g-modify {
 			top: 0;
@@ -20,11 +38,19 @@
 	&[data-position="right-bottom"] {
 		right: 18px;
 		@include media {
-			right: vw(20);
+			right: 50%;
+			transform: translateX(50%);
+		}
+		&.g-music--close {
+			@include media {
+				right: vw(20);
+				transform: translateX(0);
+			}
 		}
 		.g-modify {
-			top: 0;
-			right: 100%;
+			top: -38px;
+			right: unset;
+			left: 0;
 		}
 		.g-music__toggle {
 			transform: scale(-1);
@@ -47,6 +73,26 @@
 		padding-left: 18px;
 		padding-right: 18px;
 		box-sizing: border-box;
+		&.size1 {
+			// .g-music__title-box {
+			// 	width: 156px;
+			// 	@include media {
+			// 		width: vw(289);
+			// 	}
+			// }
+		}
+		&.size2 {
+			max-width: 307px;
+			@include media {
+				max-width: vw(582);
+			}
+			// .g-music__title-box {
+			// 	width: 224px;
+			// 	@include media {
+			// 		width: vw(417);
+			// 	}
+			// }
+		}
 		@include media {
 			max-width: vw(730);
 			height: vw(100);
@@ -89,6 +135,7 @@
 		background-position: center;
 		background-image: url("./img/music-toggle.png");
 		padding: 0 8px;
+		flex-shrink: 0;
 		@include media {
 			width: vw(19);
 			height: vw(34);
@@ -102,6 +149,7 @@
 		background-size: cover;
 		background-image: url("./img/music-prev.png");
 		margin-left: 16px;
+		flex-shrink: 0;
 		@include media {
 			width: vw(32);
 			height: vw(19);
@@ -114,6 +162,7 @@
 		background-size: cover;
 		background-image: url("./img/music-next.png");
 		margin-right: 20px;
+		flex-shrink: 0;
 		@include media {
 			width: vw(32);
 			height: vw(19);
@@ -129,6 +178,7 @@
 		margin-left: 16px;
 		position: relative;
 		box-shadow: 0 0 0px 5px #800000;
+		flex-shrink: 0;
 		@include media {
 			width: vw(63);
 			height: vw(63);
@@ -178,6 +228,7 @@
 		background-size: cover;
 		background-image: url("./img/music-anim.png");
 		margin-right: 16px;
+		flex-shrink: 0;
 		&.moving {
 			animation: moving 0.5s linear infinite alternate;
 		}
@@ -189,18 +240,25 @@
 	}
 	&__title {
 		&-box {
-			flex: 1;
+			width: 224px;
+			// flex: 1;
 			position: relative;
 			overflow: hidden;
+			white-space: nowrap;
+
+			@include media {
+				width: rem(730);
+			}
 		}
 		font-size: 14px;
+		display: inline-block;
 		@include media {
 			font-size: vw(30);
 		}
 		&.marquee {
-			white-space: nowrap;
-			overflow: hidden;
-			animation: marquee 5s linear infinite;
+			// white-space: nowrap;
+			// overflow: hidden;
+			// animation: marquee 5s linear infinite;
 		}
 	}
 }

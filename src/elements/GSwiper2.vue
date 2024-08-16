@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import { mainStore } from "../store/index";
 const props = defineProps(["data", "status"]);
 const store = mainStore()
+console.log(props.data)
 let breakpoints = ref({})
 let slidesPerViewThumb = ref(null)
 let autoplay = ref({});
@@ -46,12 +47,27 @@ if (props.data?.autoplay?.open) {
 }
 const modules = [Navigation, Pagination, Autoplay, EffectCoverflow, Thumbs, FreeMode];
 
+
 if (props.data?.control) {
     if (props.data?.type) {
         if (props.data.type == 'slide') {
-            pagination.value.enabled = false;
+            if (props.data.control == 'navigation') {
+                pagination.value.enabled = false;
+            }
             if (props.data.control == 'pagination') {
+                if (props.data.thumb == true || props.data.thumb == 'true') {
+                    pagination.value.enabled = false;
+                } else {
+                    pagination.value.enabled = true;
+                }
                 navigation.value = false;
+            }
+            if (props.data.control == 'all') {
+                if (props.data.thumb == true || props.data.thumb == 'true') {
+                    pagination.value.enabled = false;
+                } else {
+                    pagination.value.enabled = true;
+                }
             }
             if (props.data.control == 'no') {
                 navigation.value = false;
@@ -69,6 +85,13 @@ if (props.data?.control) {
                 slidesPerViewThumb.value = props.data.slides.length
             } else {
                 navigation.value = false;
+            }
+        }
+        if (props.data.control == 'all') {
+            if (props.data.thumb == true || props.data.thumb == 'true') {
+                pagination.value.enabled = false;
+            } else {
+                pagination.value.enabled = true;
             }
         }
         if (props.data.control == 'no') {
@@ -93,7 +116,6 @@ const onSlideChange = (swiper) => {
 }
 
 const onChangeSlide = (index) => {
-    console.log(index)
     currentSwiper.value.slideTo(index)
 }
 </script>
@@ -113,8 +135,7 @@ const onChangeSlide = (index) => {
                         @swiper="onSwiper">
                     <swiper-slide v-for="slide in data.slides">
                         <template v-if="store.status == 'edit'">
-                            <a class=" g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
-                               :target="[slide.url ? '_blank' : '']">
+                            <a class=" g-swiper__a">
                                 <picture>
                                     <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                     <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -123,7 +144,7 @@ const onChangeSlide = (index) => {
                         </template>
                         <template v-if="store.status != 'edit'">
                             <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
-                               :target="[slide.url ? '_blank' : '']">
+                               :target="[slide.attribute == true || slide.attribute == 'true' ? '_blank' : '']">
                                 <picture>
                                     <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                     <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -151,7 +172,7 @@ const onChangeSlide = (index) => {
                         </template>
                         <template v-if="store.status != 'edit'">
                             <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
-                               :target="[slide.url ? '_blank' : '']">
+                               :target="[slide.attribute == true || slide.attribute == 'true' ? '_blank' : '']">
                                 <picture>
                                     <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                     <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -184,7 +205,7 @@ const onChangeSlide = (index) => {
                         </template>
                         <template v-if="store.status != 'edit'">
                             <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
-                               :target="[slide.url ? '_blank' : '']">
+                               :target="[slide.attribute == true || slide.attribute == 'true' ? '_blank' : '']">
                                 <picture>
                                     <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                     <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -203,7 +224,6 @@ const onChangeSlide = (index) => {
                         :loop="true"
                         :navigation="navigation"
                         :pagination="pagination"
-                        :thumbs="{ swiper: thumbsSwiper }"
                         :autoplay="autoplay"
                         :set-wrapper-size="true"
                         @swiper="onSwiper"
@@ -220,7 +240,7 @@ const onChangeSlide = (index) => {
                         </template>
                         <template v-if="store.status != 'edit'">
                             <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
-                               :target="[slide.url ? '_blank' : '']">
+                               :target="[slide.attribute == true || slide.attribute == 'true' ? '_blank' : '']">
                                 <picture>
                                     <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                     <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />
@@ -229,7 +249,8 @@ const onChangeSlide = (index) => {
                         </template>
                     </swiper-slide>
                 </swiper>
-                <div class="swiper-thumb-box" v-if="data.control == 'pagination' || data.control == 'all'">
+                <div class="swiper-thumb-box"
+                     v-if="(data.control == 'pagination' || data.control == 'all') && data.thumb == 'true' || data.thumb == true">
                     <div class="swiper-thumb__item" v-for="(slide, index) in data.slides"
                          :class="[index == currentIndex ? 'active' : '']" @click="onChangeSlide(index + 1)">
                         <picture>
@@ -263,7 +284,7 @@ const onChangeSlide = (index) => {
                         </template>
                         <template v-if="store.status != 'edit'">
                             <a class="g-swiper__a" :href="[slide.url ? slide.url : 'javascript:;']"
-                               :target="[slide.url ? '_blank' : '']">
+                               :target="[slide.attribute == true || slide.attribute == 'true' ? '_blank' : '']">
                                 <picture>
                                     <source media="(max-width:768px)" :srcset="slide.mobile || slide.pc" />
                                     <img class="g-swiper__img" :srcset="slide.pc" :src="slide.pc" alt="" />

@@ -17,11 +17,11 @@ import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-
+import { GetPageType } from "../api";
 const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let navData = reactive({});
 let navSetting = reactive({})
@@ -29,8 +29,8 @@ let loading = ref(true);
 const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
-        pcMarginTop: 0,
-        mobileMarginTop: 0,
+        pcMarginTop: 104,
+        mobileMarginTop: 80,
         pcItemMarginBottom: 0,
         mobileItemMarginBottom: 0,
         navs: [{
@@ -49,6 +49,7 @@ const initData = () => {
             validPC: true,
             validMobile: true,
             validLink: true,
+            target: true
         }],
     }
 }
@@ -56,6 +57,7 @@ Object.assign(navData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -68,6 +70,18 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(navData, cloneDeep(props.data.content));
         Object.assign(navSetting, cloneDeep(props.data.content));
+        if (navData.navs.length) {
+            navData.navs.forEach((v, i) => {
+                if (v.target == undefined) {
+                    v.target = true
+                }
+            })
+            navSetting.navs.forEach((v, i) => {
+                if (v.target == undefined) {
+                    v.target = true
+                }
+            })
+        }
         if ($addComponent) {
             $addComponent();
         }
@@ -91,6 +105,7 @@ const addInsertMenu = (index) => {
         validPC: true,
         validMobile: true,
         validLink: true,
+        target: true
     };
 
     navData.navs.push(nav)
@@ -167,9 +182,14 @@ async function validateAll(data) {
                 isValid = false;
             } else {
                 const pcImageDimensions = await imageInfo("pc", item.pc);
-                item.w = pcImageDimensions.width;
-                item.h = pcImageDimensions.height;
-                item.validPC = true;
+                if (pcImageDimensions) {
+                    item.w = pcImageDimensions.width;
+                    item.h = pcImageDimensions.height;
+                    item.validPC = true;
+                } else {
+                    item.validPC = false;
+                    isValid = false;
+                }
             }
         }
         if (item.mobile) {
@@ -179,9 +199,14 @@ async function validateAll(data) {
                 isValid = false;
             } else {
                 const mobileImageDimensions = await imageInfo("mobile", item.mobile);
-                item.mw = mobileImageDimensions.width;
-                item.mh = mobileImageDimensions.height;
-                item.validMobile = true;
+                if (mobileImageDimensions) {
+                    item.mw = mobileImageDimensions.width;
+                    item.mh = mobileImageDimensions.height;
+                    item.validMobile = true;
+                } else {
+                    item.validMobile = false;
+                    isValid = false;
+                }
             }
         }
         if (item.effectCheck) {
@@ -192,9 +217,14 @@ async function validateAll(data) {
                     isValid = false;
                 } else {
                     const pcImageDimensions = await imageInfo("pc", item.effectImg);
-                    item.effectImgW = pcImageDimensions.width;
-                    item.effectImgH = pcImageDimensions.height;
-                    item.validEffectImg = true;
+                    if (pcImageDimensions) {
+                        item.effectImgW = pcImageDimensions.width;
+                        item.effectImgH = pcImageDimensions.height;
+                        item.validEffectImg = true;
+                    } else {
+                        item.validEffectImg = false;
+                        isValid = false;
+                    }
                 }
             } else {
                 item.validEffectImg = false;
@@ -215,17 +245,17 @@ function transformNavsToCSSProps(item) {
     const cssProps = {
         "--nav-pc": `url(${item.pc})`,
         "--nav-effectImg": item.effectImg ? `url(${item.effectImg})` : undefined,
-        "--nav-mobile": item.mobile ? `url(${item.mobile})` : "",
+        "--nav-mobile": item.mobile ? `url(${item.mobile})` : `url(${item.pc})`,
         "--nav-w": `${item.w}`,
         "--nav-h": `${item.h}`,
-        "--nav-mw": item.mw ? `${item.mw}` : "",
-        "--nav-mh": item.mh ? `${item.mh}` : "",
+        "--nav-mw": item.mw ? `${item.mw}` : `${item.w}`,
+        "--nav-mh": item.mh ? `${item.mh}` : `${item.h}`,
         "--nav-effectImg-w": item.effectImgW ? `${item.effectImgW}` : "",
         "--nav-effectImg-h": item.effectImgH ? `${item.effectImgH}` : "",
         "--nav-margin-top": item.pcMarginTop ? `${item.pcMarginTop}` : "",
-        "--nav-m-margin-top": item.mobileMarginTop ? `${item.mobileMarginTop}` : "",
-        "--nav-item-margin-bottom": item.pcItemMarginBottom ? `${item.pcItemMarginBottom}` : "",
-        "--nav-m-item-margin-bottom": item.mobileItemMarginBottom ? `${item.mobileItemMarginBottom}` : "",
+        "--nav-m-margin-top": item.mobileMarginTop ? `${item.mobileMarginTop}` : item.pcMarginTop,
+        "--nav-margin-bottom": item.pcMarginBottom ? `${item.pcMarginBottom}` : "",
+        "--nav-m-margin-bottom": item.mobileMarginBottom ? `${item.mobileMarginBottom}` : item.pcMarginBottom,
     };
 
     return {
@@ -236,11 +266,31 @@ function transformNavsToCSSProps(item) {
 const onSubmit = async () => {
     loadingShow()
     const isNavDataValid = await validateAll(navData);
-    if (isNavDataValid) {
-        let data = cloneDeep(navData);
-        store.updateCpt(props.data.uid, data, props.sub);
-        Object.assign(navSetting, data);
+    navData.validMt = true;
+    navData.validMb = true;
+    navData.validMmt = true;
+    navData.validMmb = true;
+    if (navData.pcMarginTop < 0) {
+        navData.validMt = false;
     }
+    if (navData.mobileMarginTop < 0) {
+        navData.validMb = false;
+    }
+    if (navData.pcItemMarginBottom < 0) {
+        navData.validMmt = false;
+    }
+    if (navData.mobileItemMarginBottom < 0) {
+        navData.validMmb = false;
+    }
+    if (navData.validMt && navData.validMb && navData.validMmt && navData.validMmb) {
+        if (isNavDataValid) {
+            let data = cloneDeep(navData);
+            store.updateCpt(props.data.uid, data, props.sub);
+            Object.assign(navSetting, data);
+            GetPageType(store.otp)
+        }
+    }
+
 
     loadingHide()
 }
@@ -252,8 +302,11 @@ const onReset = () => {
 const closeBtn = () => {
     if (props.data.init) {
         showEdit.value = false;
-        store.removeCpt(props.data.uid, props.sub);
+        if (Object.keys(props.data.content).length == 0) {
+            store.removeCpt(props.data.uid, props.sub);
+        }
         document.querySelector("body").classList.remove("ov-hidden");
+        store.editCptClose(props.data.uid, props.sub);
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
@@ -280,7 +333,8 @@ const closeBtn = () => {
             </template>
             <template v-else>
                 <template v-for="(item, index) in navSetting.navs">
-                    <a :href="item.link ? item.link : 'javascript:;'" :target="item.link ? '_blank' : ''"
+                    <a :href="item.link ? item.link : 'javascript:;'"
+                       :target="[item.link ? item.target == true || item.target == 'true' ? '_blank' : '' : '']"
                        class="g-dn_nav-item" :data-init="data.init" :data-effect="item.effectCheck"
                        :style="transformNavsToCSSProps(navSetting)">
                         <span class="g-dn_nav-item1" :style="transformNavsToCSSProps(item)"></span>
@@ -298,7 +352,7 @@ const closeBtn = () => {
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">選單區塊
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/DNNav${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
@@ -334,24 +388,33 @@ const closeBtn = () => {
                                     <g-input label="連結:" v-model.trim="item.link"
                                              :valid="item.validLink" />
                                 </div>
+                                <div class="g-edit__col">
+                                    <div class="input-group__label">另開視窗:</div>
+                                    <g-radio label="是" :name="'attribute' + index" :value="true"
+                                             v-model="item.target" />
+                                    <g-radio label="否" :name="'attribute' + index" :value="false"
+                                             v-model="item.target" />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </template>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距上:" type="number" v-model="navData.pcMarginTop" @change="handleNumber" />
+                        <g-input label="PC間距上:" type="number" v-model="navData.pcMarginTop" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="navData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距上:" type="number" v-model="navData.mobileMarginTop"
-                                 @change="handleNumber" />
+                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="navData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="PC按鈕間距下:" type="number" v-model="navData.pcMarginBottom" @change="handleNumber" />
+                        <g-input label="PC按鈕間距下:" type="number" v-model="navData.pcItemMarginBottom" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="navData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile按鈕間距下:" type="number" v-model="navData.mobileMarginBottom"
-                                 @change="handleNumber" />
+                        <g-input label="Mobile按鈕間距下:" type="number" v-model="navData.mobileItemMarginBottom"
+                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="navData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

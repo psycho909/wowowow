@@ -33,7 +33,10 @@
 		}
 		@include media {
 			max-width: vw(678);
-			padding: vw(25);
+			padding-left: vw(25);
+			padding-right: vw(25);
+			padding-top: 0;
+			padding-bottom: 0;
 		}
 	}
 	&-content {
@@ -87,7 +90,8 @@
 		}
 		@include media {
 			padding: vw(25);
-			padding-bottom: vw(46);
+			padding-top: vw(52);
+			padding-bottom: vw(52);
 			&:last-child {
 				&:before {
 					content: none;
@@ -96,8 +100,8 @@
 			&:before {
 				content: "";
 				width: vw(678);
-				height: 2px;
-				background-color: #d9d9d9;
+				height: vw(2);
+				background-color: rgba(0, 0, 0, 0.15);
 				position: absolute;
 				bottom: 0;
 				left: 50%;
@@ -107,19 +111,20 @@
 		}
 	}
 	&__icon {
-		width: calc(var(--icon-w) * 1px);
-		height: calc(var(--icon-h) * 1px);
-		background-size: calc(var(--icon-w) * 1px) calc(var(--icon-h) * 1px);
+		width: 40px;
+		height: 40px;
+		background-size: 100%;
 		background-image: var(--icon-url);
 		background-repeat: no-repeat;
+		background-position: center;
 		position: absolute;
-		top: 50%;
+		top: 12px;
 		left: 0;
 		transform: translateY(-50%);
 		@include media {
-			width: calc(var(--icon-w) / 768 * 100vw);
-			height: calc(var(--icon-h) / 768 * 100vw);
-			background-size: calc(var(--icon-w) / 768 * 100vw) calc(var(--icon-h) / 768 * 100vw);
+			top: vw(22);
+			width: vw(68);
+			height: vw(68);
 		}
 	}
 	&__title {
@@ -128,6 +133,7 @@
 		color: var(--text, #3a3a3a);
 		font-weight: bold;
 		position: relative;
+		word-break: break-all;
 		@include media {
 			font-size: vw(36);
 			margin-bottom: vw(32);
@@ -147,6 +153,7 @@
 	&__text {
 		color: var(--link, #3a3a3a);
 		text-decoration: none;
+		word-break: break-all;
 		&[href="javascript:;"] {
 			cursor: default;
 			color: var(--text, #3a3a3a);

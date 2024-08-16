@@ -1,12 +1,17 @@
 .g-top {
 	cursor: pointer;
 	position: fixed;
-	bottom: 40px;
+	bottom: calc(var(--bottom, 40) * 1px);
 	z-index: 9998;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	@include media {
+		&[data-observer="true"] {
+			@include media {
+				bottom: calc(var(--bottom, 40) * 1px);
+			}
+		}
 		bottom: vw(20);
 	}
 	&[data-align="left"] {
@@ -59,8 +64,17 @@
 		}
 	}
 	&[data-type="img"] {
-		max-width: 100%;
+		max-width: 500px;
 		font-size: 0;
+		@include media {
+			max-width: vw(384);
+		}
+		img {
+			max-width: 100%;
+			@include media {
+				width: calc(var(--top-mw) / 768 * 100vw);
+			}
+		}
 	}
 	.g-modify {
 		top: 0;

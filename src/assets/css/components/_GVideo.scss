@@ -64,6 +64,9 @@
 		display: inline-block;
 		width: 100%;
 		max-width: 600px;
+		&-pop {
+			cursor: pointer;
+		}
 		@include media {
 			margin-bottom: vw(20);
 			&:last-child {

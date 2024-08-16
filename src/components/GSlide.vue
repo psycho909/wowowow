@@ -18,11 +18,11 @@ import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHid
 import { cloneDeep } from 'lodash-es'
 import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
-
+import { GetPageType } from "../api";
 const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let slideSetting = reactive({});
 let slideUpdate = ref(false);
@@ -52,11 +52,19 @@ const initData = () => {
                 show: false, type: "text",
                 align: "left",
                 style: "",
+                styleValid: true,
+                text: "",
+                validText: true,
+                title: "",
+                validTitle: true,
+                img: "",
+                validImg: true,
                 slides: [{
                     pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
                 }],
                 closeCheckRedirect: false,
                 closeRedirect: "",
+                validCloseRedirect: true,
                 num: 1,
                 control: 'all',
                 thumb: true,
@@ -79,6 +87,7 @@ Object.assign(slideData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -96,13 +105,84 @@ watchEffect(async () => {
                         url: ""
                     }
                 }
-                if (slide.pop.thumb == undefined) {
-                    slide.pop.thumb = true;
+                if (!slide.pop) {
+                    slide.pop = {
+                        show: false, type: "text",
+                        align: "left",
+                        style: "",
+                        styleValid: true,
+                        text: "",
+                        validText: true,
+                        title: "",
+                        validTitle: true,
+                        img: "",
+                        validImg: true,
+                        slides: [{
+                            pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
+                        }],
+                        closeCheckRedirect: false,
+                        closeRedirect: "",
+                        validCloseRedirect: true,
+                        num: 1,
+                        control: 'all',
+                        thumb: true,
+                        autoplay: {
+                            open: false,
+                            delay: 2,
+                            validDelay: true
+                        }
+                    }
+                }
+                if (!slide.effectCheck) {
+                    slide.effectCheck = false;
+                    slide.effectImg = "";
+                    slide.validEffectImg = true;
                 }
             })
-            imgLoading(slideData.slides).then((res) => {
-                loading.value = false;
+            slideSetting.slides.forEach((slide, index) => {
+                if (!slide.card) {
+                    slide.card = {
+                        title: "",
+                        text: "",
+                        style: "",
+                        url: ""
+                    }
+                }
+                if (!slide.pop) {
+                    slide.pop = {
+                        show: false, type: "text",
+                        align: "left",
+                        style: "",
+                        styleValid: true,
+                        text: "",
+                        validText: true,
+                        title: "",
+                        validTitle: true,
+                        img: "",
+                        validImg: true,
+                        slides: [{
+                            pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
+                        }],
+                        closeCheckRedirect: false,
+                        closeRedirect: "",
+                        validCloseRedirect: true,
+                        num: 1,
+                        control: 'all',
+                        thumb: true,
+                        autoplay: {
+                            open: false,
+                            delay: 2,
+                            validDelay: true
+                        }
+                    }
+                }
+                if (!slide.effectCheck) {
+                    slide.effectCheck = false;
+                    slide.effectImg = "";
+                    slide.validEffectImg = true;
+                }
             })
+            imgLoading(slideData.slides);
         }
         slideUpdate.value = true;
         await nextTick();
@@ -110,7 +190,7 @@ watchEffect(async () => {
     }
 })
 onMounted(async () => {
-    await nextTick()
+    await nextTick();
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(slideData, cloneDeep(props.data.content));
         Object.assign(slideSetting, cloneDeep(props.data.content));
@@ -123,8 +203,81 @@ onMounted(async () => {
                     url: ""
                 }
             }
-            if (slide.pop.thumb == undefined) {
-                slide.pop.thumb = true;
+            if (!slide.pop) {
+                slide.pop = {
+                    show: false, type: "text",
+                    align: "left",
+                    style: "",
+                    styleValid: true,
+                    text: "",
+                    validText: true,
+                    title: "",
+                    validTitle: true,
+                    img: "",
+                    validImg: true,
+                    slides: [{
+                        pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
+                    }],
+                    closeCheckRedirect: false,
+                    closeRedirect: "",
+                    validCloseRedirect: true,
+                    num: 1,
+                    control: 'all',
+                    thumb: true,
+                    autoplay: {
+                        open: false,
+                        delay: 2,
+                        validDelay: true
+                    }
+                }
+            }
+            if (!slide.effectCheck) {
+                slide.effectCheck = false;
+                slide.effectImg = "";
+                slide.validEffectImg = true;
+            }
+        })
+        slideSetting.slides.forEach((slide, index) => {
+            if (!slide.card) {
+                slide.card = {
+                    title: "",
+                    text: "",
+                    style: "",
+                    url: ""
+                }
+            }
+            if (!slide.pop) {
+                slide.pop = {
+                    show: false, type: "text",
+                    align: "left",
+                    style: "",
+                    styleValid: true,
+                    text: "",
+                    validText: true,
+                    title: "",
+                    validTitle: true,
+                    img: "",
+                    validImg: true,
+                    slides: [{
+                        pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
+                    }],
+                    closeCheckRedirect: false,
+                    closeRedirect: "",
+                    validCloseRedirect: true,
+                    num: 1,
+                    control: 'all',
+                    thumb: true,
+                    autoplay: {
+                        open: false,
+                        delay: 2,
+                        validDelay: true
+                    }
+                }
+            }
+            if (!slide.effectCheck) {
+                slide.effectCheck = false;
+                slide.effectImg = "";
+                slide.validEffectImg = true;
             }
         })
         imgLoading(slideData.slides).then((res) => {
@@ -163,11 +316,19 @@ const addInsertMenu = (index) => {
                 show: false, type: "text",
                 align: "left",
                 style: "",
+                styleValid: true,
+                text: "",
+                validText: true,
+                title: "",
+                validTitle: true,
+                img: "",
+                validImg: true,
                 slides: [{
                     pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
                 }],
                 closeCheckRedirect: false,
                 closeRedirect: "",
+                validCloseRedirect: true,
                 num: 1,
                 control: 'all',
                 thumb: true,
@@ -202,11 +363,19 @@ const addInsertMenu = (index) => {
             show: false, type: "text",
             align: "left",
             style: "",
+            styleValid: true,
+            text: "",
+            validText: true,
+            title: "",
+            validTitle: true,
+            img: "",
+            validImg: true,
             slides: [{
                 pc: "", mobile: "", open: false, url: "", attribute: false, validPC: true, validMobile: true, validUrl: true
             }],
             closeCheckRedirect: false,
             closeRedirect: "",
+            validCloseRedirect: true,
             num: 1,
             control: 'all',
             autoplay: {
@@ -295,10 +464,93 @@ const onDown2 = (imgIndex, slideIndex) => {
     }
 }
 
+const validateImages = async (slideData) => {
+    for (const img of slideData.slides) {
+        if (img.pop.type === 'text') {
+            if (img.pop.title !== "") {
+                img.pop.validTitle = true;
+            } else {
+                img.pop.validTitle = false;
+            }
+        } else if (img.pop.type === 'img') {
+            if (img.pop.img !== "" && (await CheckImage(img.pop.img))) {
+                img.pop.validImg = true;
+            } else {
+                img.pop.validImg = false;
+            }
+        } else if (img.pop.type === 'slide') {
+            img.pop.validPC = true;
+            img.pop.validMobile = true;
+
+            for (const slide of img.pop.slides) {
+                if (slide.pc !== "" && (await CheckImage(slide.pc))) {
+                    slide.validPC = true;
+                } else {
+                    slide.validPC = false;
+                }
+
+                if (slide.mobile !== "") {
+                    if (await CheckImage(slide.mobile)) {
+                        slide.validMobile = true;
+                    } else {
+                        slide.validMobile = false;
+                    }
+                } else {
+                    slide.validMobile = true;
+                }
+            }
+            if (img.pop.closeCheckRedirect && CheckUrl(img.pop.closeRedirect)) {
+                img.pop.validCloseRedirect = true;
+            } else {
+                img.pop.validCloseRedirect = false;
+            }
+
+            img.pop.validPC = img.pop.slides.every((slide) => slide.validPC);
+            img.pop.validMobile = img.pop.slides.every((slide) => slide.validMobile);
+        }
+        if (img.pop.closeCheckRedirect) {
+            if (CheckUrl(img.pop.closeRedirect)) {
+                img.pop.validCloseRedirect = true;
+            } else {
+                img.pop.validCloseRedirect = false;
+            }
+        } else {
+            img.pop.validCloseRedirect = true;
+        }
+    }
+
+    return slideData.slides.every((img) => {
+        if (img.type !== 'pop') return true;
+        if (img.pop.type === 'text') {
+            return img.pop.validTitle && img.pop.validCloseRedirect;
+        } else if (img.pop.type === 'img') {
+            return img.pop.validImg && img.pop.validCloseRedirect;
+        } else if (img.pop.type === 'slide') {
+            return img.pop.validPC && img.pop.validMobile && img.pop.validCloseRedirect;
+        }
+    });
+};
+
 const onSubmit = async () => {
     loadingShow();
     let data = {}
     var validDelay;
+    slideData.validMt = true;
+    slideData.validMb = true;
+    slideData.validMmt = true;
+    slideData.validMmb = true;
+    if (slideData.mt < 0) {
+        slideData.validMt = false;
+    }
+    if (slideData.mb < 0) {
+        slideData.validMb = false;
+    }
+    if (slideData.mobile_mt < 0) {
+        slideData.validMmt = false;
+    }
+    if (slideData.mobile_mb < 0) {
+        slideData.validMmb = false;
+    }
     for (let i = 0; i < slideData.slides.length; i++) {
         if (slideData.slides[i].pc.length == 0) {
             slideData.slides[i].validPC = false;
@@ -330,7 +582,7 @@ const onSubmit = async () => {
             slideData.slides[i].validUrl = true;
         }
 
-        if (slideData.slides[i].effectCheck) {
+        if (slideData.slides[i].effectCheck == true || slideData.slides[i].effectCheck == "true") {
             if (!await CheckImage(slideData.slides[i].effectImg)) {
                 slideData.slides[i].validEffectImg = false;
             } else {
@@ -338,6 +590,11 @@ const onSubmit = async () => {
             }
         } else {
             slideData.slides[i].validEffectImg = true;
+        }
+        if (slideData.slides[i].pop.style == "") {
+            slideData.slides[i].pop.styleValid = false;
+        } else {
+            slideData.slides[i].pop.styleValid = true;
         }
     }
 
@@ -352,6 +609,8 @@ const onSubmit = async () => {
     } else {
         validDelay = true;
     }
+    const isDataValid = await validateImages(slideData);
+
     var validCheck = slideData.slides.every(function (v, i) {
         return v.validPC == true && v.validMobile == true && v.validUrl == true && v.validEffectImg == true;
     })
@@ -360,20 +619,27 @@ const onSubmit = async () => {
     } else {
         slideNumValid.value = false;
     }
-    if (validCheck && validDelay && slideNumValid.value) {
-        $("#loadingProgress").show();
-        let data = cloneDeep(slideData);
-        store.updateCpt(props.data.uid, data, props.sub);
-        Object.assign(slideSetting, data);
-        imgLoading(slideData.slides).then((res) => {
-            loading.value = false;
-        })
-        slideUpdate.value = true;
-        await nextTick();
-        slideUpdate.value = false;
+    if (slideData.validMt && slideData.validMb && slideData.validMmt && slideData.validMmb) {
+        if (validCheck && validDelay && slideNumValid.value && isDataValid) {
+            $("#loadingProgress").show();
+            let data = cloneDeep(slideData);
+            store.updateCpt(props.data.uid, data, props.sub);
+            Object.assign(slideSetting, data);
+            imgLoading(slideData.slides).then((res) => {
+                loading.value = false;
+            })
+            slideUpdate.value = true;
+            await nextTick();
+            slideUpdate.value = false;
+            GetPageType(store.otp)
+        } else {
+            loadingHide();
+        }
     } else {
         loadingHide();
+        return;
     }
+
 }
 const onReset = () => {
     Object.assign(slideData, initData());
@@ -419,7 +685,7 @@ const closeBtn = () => {
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">輪播區塊
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Slide.html"
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Slide${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
@@ -498,7 +764,7 @@ const closeBtn = () => {
 
                                 <template v-if="slide.pop.type == 'text'">
                                     <div class="g-edit__col">
-                                        <g-input label="POP標題:" v-model="slide.pop.title" />
+                                        <g-input label="POP標題:" v-model="slide.pop.title" :valid="slide.pop.validTitle" />
                                     </div>
                                     <div class="g-edit__row">
                                         <div class="input-group__label required">對齊方向:</div>
@@ -508,7 +774,7 @@ const closeBtn = () => {
                                     </div>
                                     <div class="g-edit__col">
                                         <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
-                                                  :valid="styleValid"
+                                                  :valid="slide.pop.styleValid"
                                                   v-model="slide.pop.style" />
                                     </div>
                                     <div class="g-edit__col">
@@ -517,17 +783,24 @@ const closeBtn = () => {
                                 </template>
                                 <template v-if="slide.pop.type == 'img'">
                                     <div class="g-edit__col">
-                                        <g-input label="POP圖片網址:" v-model.trim="slide.pop.img" :preview="slide.pop.img"
+                                        <g-input label="POP圖片網址:" v-model.trim="slide.pop.img" :valid="slide.pop.validImg"
+                                                 :preview="slide.pop.img"
                                                  :required="true" />
                                     </div>
                                     <div class="g-edit__col">
                                         <g-select label="主題顏色:" :group="true" :options="[style1, style2]" :required="true"
-                                                  :valid="styleValid"
+                                                  :valid="slide.pop.styleValid"
                                                   v-model="slide.pop.style" />
                                     </div>
                                 </template>
                                 <template v-if="slide.pop.type == 'slide'">
                                     <div class="g-edit__row">
+                                        <div class="g-edit__col">
+                                            <g-select label="主題顏色:" :group="true" :options="[style1, style2]"
+                                                      :required="true"
+                                                      :valid="slide.pop.styleValid"
+                                                      v-model="slide.pop.style" />
+                                        </div>
                                         <div class="g-edit__col">
                                             <div class="input-group__label required">自動輪播:</div>
                                             <g-radio label="開啟" :name="'popAutoplay' + index" :value="true"
@@ -551,7 +824,7 @@ const closeBtn = () => {
                                             <g-radio label="都要顯示" :name="'popControl' + index" value="all"
                                                      v-model="slide.pop.control" />
                                         </div>
-                                        <template v-if="slide.pop.control == 'pagination'">
+                                        <template v-if="slide.pop.control == 'pagination' || slide.pop.control == 'all'">
                                             <div class="g-edit__col">
                                                 <div class="input-group__label required">點點改為預覽圖:</div>
                                                 <g-radio label="是" :name="'thumb' + index" :value="true"
@@ -617,16 +890,20 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距上:" type="number" v-model="slideData.mt" @change="handleNumber" />
+                        <g-input label="PC間距上:" type="number" v-model="slideData.mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="slideData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距下:" type="number" v-model="slideData.mb" @change="handleNumber" />
+                        <g-input label="PC間距下:" type="number" v-model="slideData.mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="slideData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距上:" type="number" v-model="slideData.mobile_mt" @change="handleNumber" />
+                        <g-input label="Mobile間距上:" type="number" v-model="slideData.mobile_mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="slideData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距下:" type="number" v-model="slideData.mobile_mb" @change="handleNumber" />
+                        <g-input label="Mobile間距下:" type="number" v-model="slideData.mobile_mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="slideData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

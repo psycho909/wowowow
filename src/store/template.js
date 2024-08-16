@@ -35,10 +35,12 @@ export const templateStore = defineStore("template", {
 								mobile: "",
 								validPC: true,
 								validMobile: true,
-								validUrl: true
+								validUrl: true,
+								target: true
 							},
 							update: false,
-							init: true
+							init: true,
+							first: true
 						}
 					]
 				},
@@ -89,6 +91,7 @@ export const templateStore = defineStore("template", {
 													validPC: true,
 													validMobile: true,
 													validLink: true,
+													target: true,
 													w: 0,
 													h: 0
 												},
@@ -99,6 +102,7 @@ export const templateStore = defineStore("template", {
 													validPC: true,
 													validMobile: true,
 													validLink: true,
+													target: true,
 													w: 0,
 													h: 0
 												}
@@ -118,7 +122,8 @@ export const templateStore = defineStore("template", {
 											validMobile: true,
 											validLink: true,
 											w: 0,
-											h: 0
+											h: 0,
+											target: true
 										},
 										update: false,
 										init: true
@@ -127,6 +132,10 @@ export const templateStore = defineStore("template", {
 										component: "GDNNav",
 										uid: "5",
 										content: {
+											pcMarginTop: 104,
+											mobileMarginTop: 80,
+											pcItemMarginBottom: 0,
+											mobileItemMarginBottom: 0,
 											navs: [
 												{
 													pc: "",
@@ -143,7 +152,8 @@ export const templateStore = defineStore("template", {
 													link: "",
 													validPC: true,
 													validMobile: true,
-													validLink: true
+													validLink: true,
+													target: true
 												},
 												{
 													pc: "",
@@ -160,7 +170,8 @@ export const templateStore = defineStore("template", {
 													link: "",
 													validPC: true,
 													validMobile: true,
-													validLink: true
+													validLink: true,
+													target: true
 												},
 												{
 													pc: "",
@@ -177,7 +188,8 @@ export const templateStore = defineStore("template", {
 													link: "",
 													validPC: true,
 													validMobile: true,
-													validLink: true
+													validLink: true,
+													target: true
 												},
 												{
 													pc: "",
@@ -194,7 +206,8 @@ export const templateStore = defineStore("template", {
 													link: "",
 													validPC: true,
 													validMobile: true,
-													validLink: true
+													validLink: true,
+													target: true
 												}
 											]
 										},
@@ -205,11 +218,15 @@ export const templateStore = defineStore("template", {
 										component: "GDNImg",
 										uid: "6",
 										content: {
+											pcMarginTop: 60,
+											pcMarginBottom: 0,
+											mobileMarginTop: 750,
+											mobileMarginBottom: 0,
 											imgs: [
-												{ pc: "", effectCheck: false, effectImg: "", effectImgW: "", effectImgH: "", validEffectImg: true, mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true },
-												{ pc: "", effectCheck: false, effectImg: "", effectImgW: "", effectImgH: "", validEffectImg: true, mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true },
-												{ pc: "", effectCheck: false, effectImg: "", effectImgW: "", effectImgH: "", validEffectImg: true, mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true },
-												{ pc: "", effectCheck: false, effectImg: "", effectImgW: "", effectImgH: "", validEffectImg: true, mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true }
+												{ pc: "", effectCheck: false, effectImg: "", effectImgW: "", effectImgH: "", validEffectImg: true, mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true, target: true },
+												{ pc: "", effectCheck: false, effectImg: "", effectImgW: "", effectImgH: "", validEffectImg: true, mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true, target: true },
+												{ pc: "", effectCheck: false, effectImg: "", effectImgW: "", effectImgH: "", validEffectImg: true, mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true, target: true },
+												{ pc: "", effectCheck: false, effectImg: "", effectImgW: "", effectImgH: "", validEffectImg: true, mobile: "", w: 0, h: 0, mw: 0, mh: 0, link: "", validPC: true, validMobile: true, validLink: true, target: true }
 											]
 										},
 										update: false,

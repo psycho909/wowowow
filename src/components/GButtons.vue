@@ -1,8 +1,8 @@
 <script>
 export default {
     name: "GButtons",
-    label: "快速按鈕物件",
-    order: 5, type: [1]
+    label: "快速按鈕",
+    order: 5, type: [1,2]
 }
 </script>
 <script setup>
@@ -15,12 +15,12 @@ import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-
-const props = defineProps(["data"])
+import { GetPageType } from "../api";
+const props = defineProps(["data","sub"])
 let showEdit = ref(false);
 let _buttonsDataLength = ref(1);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let buttonsData = reactive({});
 let buttonsSetting = reactive({})
@@ -38,6 +38,7 @@ const initData = () => {
             validText: true,
             url: "",
             validUrl: true,
+            target: true
         }],
         mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
     }
@@ -46,6 +47,7 @@ Object.assign(buttonsData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -55,6 +57,16 @@ watchEffect(async () => {
             Object.assign(buttonsData, cloneDeep(props.data.content));
             Object.assign(buttonsSetting, cloneDeep(props.data.content));
             _buttonsDataLength.value = buttonsData.num;
+            buttonsData.buttons.forEach((v, i) => {
+                if (v.target == undefined) {
+                    v.target = true
+                }
+            })
+            buttonsSetting.buttons.forEach((v, i) => {
+                if (v.target == undefined) {
+                    v.target = true
+                }
+            })
         }
     }
 })
@@ -112,7 +124,10 @@ const onChange = (e) => {
         for (let i = 0; i < diff; i++) {
             buttonsData.buttons.push({
                 text: "",
-                url: ""
+                validText: true,
+                url: "",
+                validUrl: true,
+                target: true
             });
         }
     } else if (diff < 0) {
@@ -126,17 +141,15 @@ const onChange = (e) => {
 }
 
 function validateButtonsData(data) {
+    let isValid = true;
     if (data.style.trim() === "") {
         data.validStyle = false;
-        return false;
+        isValid = false;
     } else {
         data.validStyle = true;
     }
-
-    let isValid = true;
-
     for (const button of data.buttons) {
-        if (button.text.trim() === "" || button.text.trim().length > 8) {
+        if (button.text.trim() === "" || button.text.trim().length <= 0) {
             button.validText = false;
             isValid = false;
         } else {
@@ -158,13 +171,35 @@ function validateButtonsData(data) {
 const onSubmit = async () => {
     loadingShow();
     let isValidData = validateButtonsData(buttonsData);
-    if (isValidData) {
-        let data = cloneDeep(buttonsData);
-        store.updateCpt(props.data.uid, data);
-        Object.assign(buttonsSetting, data);
+    buttonsData.validMt = true;
+    buttonsData.validMb = true;
+    buttonsData.validMmt = true;
+    buttonsData.validMmb = true;
+    if (buttonsData.mt < 0) {
+        buttonsData.validMt = false;
+    }
+    if (buttonsData.mb < 0) {
+        buttonsData.validMb = false;
+    }
+    if (buttonsData.mobile_mt < 0) {
+        buttonsData.validMmt = false;
+    }
+    if (buttonsData.mobile_mb < 0) {
+        buttonsData.validMmb = false;
+    }
+    if (buttonsData.validMt && buttonsData.validMb && buttonsData.validMmt && buttonsData.validMmb) {
+        if (isValidData) {
+            let data = cloneDeep(buttonsData);
+            store.updateCpt(props.data.uid, data, props.sub);
+            Object.assign(buttonsSetting, data);
+            GetPageType(store.otp)
+        } else {
+            loadingHide();
+        }
     } else {
         loadingHide();
     }
+
 }
 
 const onReset = () => {
@@ -193,9 +228,11 @@ const closeBtn = () => {
     <div class="g-buttons" :style="[colors[buttonsSetting.style], cssVar]">
         <div class="g-buttons-container" :data-num="buttonsSetting.num" :data-align="buttonsSetting.align">
             <template v-for="button in buttonsSetting.buttons">
-                <a :href="button.url" target="_blank" class="g-buttons__btn">{{ button.text }}</a>
+                <a :href="[store.status != 'edit' ? button.url : 'javascript:;']"
+                   :target="[store.status != 'edit' ? button.target == true || button.target == 'true' ? '_blank' : '_self' : '_self']"
+                   class="g-buttons__btn">{{ button.text }}</a>
             </template>
-            <g-modify :uid="data.uid" v-if="page == 'EditPage'" />
+            <g-modify :uid="data.uid" :sub="sub" v-if="page == 'EditPage'" />
         </div>
         <g-edit v-model:showEdit="showEdit">
             <template #edit-close>
@@ -203,8 +240,8 @@ const closeBtn = () => {
             </template>
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">快速按鈕物件
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
+                    <div class="edit-title__text">快速按鈕
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Buttons${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
@@ -233,28 +270,39 @@ const closeBtn = () => {
                         </div>
                         <div class="g-edit__group">
                             <div class="g-edit__col">
-                                <g-input label="按鈕文字:" type="text" v-model="item.text" max="8" :required="true"
+                                <g-input label="按鈕文字:" type="text" v-model="item.text" :required="true"
                                          :valid="item.validText" />
                             </div>
                             <div class="g-edit__col">
                                 <g-input label="按鈕連結:" type="text" v-model="item.url" :required="true"
                                          :valid="item.validUrl" />
                             </div>
+                            <div class="g-edit__col">
+                                <div class="input-group__label">另開視窗:</div>
+                                <g-radio label="是" :name="'attribute' + index" :value="true"
+                                         v-model="item.target" />
+                                <g-radio label="否" :name="'attribute' + index" :value="false"
+                                         v-model="item.target" />
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距上:" type="number" v-model="buttonsData.mt" @change="handleNumber" />
+                        <g-input label="PC間距上:" type="number" v-model="buttonsData.mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="buttonsData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="PC間距下:" type="number" v-model="buttonsData.mb" @change="handleNumber" />
+                        <g-input label="PC間距下:" type="number" v-model="buttonsData.mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="buttonsData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距上:" type="number" v-model="buttonsData.mobile_mt" @change="handleNumber" />
+                        <g-input label="Mobile間距上:" type="number" v-model="buttonsData.mobile_mt" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="buttonsData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
-                        <g-input label="Mobile間距下:" type="number" v-model="buttonsData.mobile_mb" @change="handleNumber" />
+                        <g-input label="Mobile間距下:" type="number" v-model="buttonsData.mobile_mb" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="buttonsData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

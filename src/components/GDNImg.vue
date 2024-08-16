@@ -1,7 +1,7 @@
 <script>
 export default {
     name: "GDNImg",
-    label: "DN圖片區塊",
+    label: "圖片區塊",
     order: 5,
     type: [2]
 }
@@ -16,11 +16,11 @@ import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
-
+import { GetPageType } from "../api";
 const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 const store = mainStore()
-const { page } = storeToRefs(store);
+const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let imgData = reactive({});
 let imgSetting = reactive({})
@@ -28,6 +28,11 @@ let loading = ref(true);
 const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
+        pcMarginTop: 60,
+        pcMarginBottom: 0,
+        mobileMarginTop: 750,
+        mobileMarginBottom: 0,
+        align: "left",
         imgs: [{
             pc: "",
             effectCheck: false,
@@ -44,6 +49,7 @@ const initData = () => {
             validPC: true,
             validMobile: true,
             validLink: true,
+            target: true
         }],
     }
 }
@@ -51,18 +57,32 @@ Object.assign(imgData, initData());
 
 watchEffect(async () => {
     if (props.data.update) {
+        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
     }
     Object.assign(imgData, cloneDeep(props.data.content));
     Object.assign(imgSetting, cloneDeep(props.data.content))
+
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(imgData, cloneDeep(props.data.content));
         Object.assign(imgSetting, cloneDeep(props.data.content))
+        if (imgData.imgs.length) {
+            imgData.imgs.forEach((v, i) => {
+                if (v.target == undefined) {
+                    v.target = true
+                }
+            })
+            imgSetting.imgs.forEach((v, i) => {
+                if (v.target == undefined) {
+                    v.target = true
+                }
+            })
+        }
         if ($addComponent) {
             $addComponent();
         }
@@ -85,10 +105,12 @@ const addInsertMenu = (index) => {
         link: "",
         validPC: true,
         validMobile: true,
-        validLink: true,
+        validLink: true, target: true
     };
-    if (imgData.imgs.length < 3) {
+    if (imgData.imgs.length < 4) {
         imgData.imgs.push(nav)
+    } else {
+        alert("這個圖只能最多四個")
     }
 
 };
@@ -164,9 +186,15 @@ async function validateAll(data) {
                 isValid = false;
             } else {
                 const pcImageDimensions = await imageInfo("pc", item.pc);
-                item.w = pcImageDimensions.width;
-                item.h = pcImageDimensions.height;
-                item.validPC = true;
+                if (pcImageDimensions) {
+                    item.w = pcImageDimensions.width;
+                    item.h = pcImageDimensions.height;
+                    item.validPC = true;
+                } else {
+                    item.validPC = false;
+                    isValid = false;
+                }
+
             }
         }
         if (item.mobile) {
@@ -176,12 +204,17 @@ async function validateAll(data) {
                 isValid = false;
             } else {
                 const mobileImageDimensions = await imageInfo("mobile", item.mobile);
-                item.mw = mobileImageDimensions.width;
-                item.mh = mobileImageDimensions.height;
-                item.validMobile = true;
+                if (mobileImageDimensions) {
+                    item.mw = mobileImageDimensions.width;
+                    item.mh = mobileImageDimensions.height;
+                    item.validMobile = true;
+                } else {
+                    item.validMobile = false;
+                    isValid = false;
+                }
             }
         }
-        if (item.effectCheck) {
+        if (item.effectCheck == 'true' || item.effectCheck == true) {
             if (item.effectImg) {
                 const pcImageValid = await CheckImage(item.effectImg);
                 if (!pcImageValid) {
@@ -189,9 +222,15 @@ async function validateAll(data) {
                     isValid = false;
                 } else {
                     const pcImageDimensions = await imageInfo("pc", item.effectImg);
-                    item.effectImgW = pcImageDimensions.width;
-                    item.effectImgH = pcImageDimensions.height;
-                    item.validEffectImg = true;
+                    if (pcImageDimensions) {
+                        item.effectImgW = pcImageDimensions.width;
+                        item.effectImgH = pcImageDimensions.height;
+                        item.validEffectImg = true;
+                    } else {
+                        item.validEffectImg = false;
+                        isValid = false;
+                    }
+
                 }
             } else {
                 item.validEffectImg = false;
@@ -212,13 +251,17 @@ function transformNavsToCSSProps(item) {
     const cssProps = {
         "--dn-img-pc": `url(${item.pc})`,
         "--dn-img-effectImg": item.effectImg ? `url(${item.effectImg})` : undefined,
-        "--dn-img-mobile": item.mobile ? `url(${item.mobile})` : "",
+        "--dn-img-mobile": item.mobile ? `url(${item.mobile})` : `url(${item.pc})`,
         "--dn-img-w": `${item.w}`,
         "--dn-img-h": `${item.h}`,
-        "--dn-img-mw": item.mw ? `${item.mw}` : "",
-        "--dn-img-mh": item.mh ? `${item.mh}` : "",
+        "--dn-img-mw": item.mw ? `${item.mw}` : `${item.w}`,
+        "--dn-img-mh": item.mh ? `${item.mh}` : `${item.h}`,
         "--dn-img-effectImg-w": item.effectImgW ? `${item.effectImgW}` : "",
         "--dn-img-effectImg-h": item.effectImgH ? `${item.effectImgH}` : "",
+        "--dn-margin-top": item.pcMarginTop ? `${item.pcMarginTop}` : "",
+        "--dn-m-margin-top": item.mobileMarginTop ? `${item.mobileMarginTop}` : item.pcMarginTop,
+        "--dn-margin-bottom": item.pcMarginBottom ? `${item.pcMarginBottom}` : "",
+        "--dn-m-margin-bottom": item.mobileMarginBottom ? `${item.mobileMarginBottom}` : item.pcMarginBottom,
     };
 
     return {
@@ -229,11 +272,31 @@ function transformNavsToCSSProps(item) {
 const onSubmit = async () => {
     loadingShow()
     const isNavDataValid = await validateAll(imgData);
-    if (isNavDataValid) {
-        let data = cloneDeep(imgData);
-        store.updateCpt(props.data.uid, data, props.sub);
-        Object.assign(imgSetting, data);
+    imgData.validMt = true;
+    imgData.validMb = true;
+    imgData.validMmt = true;
+    imgData.validMmb = true;
+    if (imgData.pcMarginTop < 0) {
+        imgData.validMt = false;
     }
+    if (imgData.pcMarginBottom < 0) {
+        imgData.validMb = false;
+    }
+    if (imgData.mobileMarginTop < 0) {
+        imgData.validMmt = false;
+    }
+    if (imgData.mobileMarginBottom < 0) {
+        imgData.validMmb = false;
+    }
+    if (imgData.validMt && imgData.validMb && imgData.validMmt && imgData.validMmb) {
+        if (isNavDataValid) {
+            let data = cloneDeep(imgData);
+            store.updateCpt(props.data.uid, data, props.sub);
+            Object.assign(imgSetting, data);
+            GetPageType(store.otp)
+        }
+    }
+
 
     loadingHide()
 }
@@ -244,9 +307,13 @@ const onReset = () => {
 
 const closeBtn = () => {
     if (props.data.init) {
+        console.log(Object.keys(props.data.content).length)
         showEdit.value = false;
-        store.removeCpt(props.data.uid, props.sub);
+        if (Object.keys(props.data.content).length == 0) {
+            store.removeCpt(props.data.uid, props.sub);
+        }
         document.querySelector("body").classList.remove("ov-hidden");
+        store.editCptClose(props.data.uid, props.sub)
         return;
     }
     if (Object.keys(props.data.content).length > 0) {
@@ -259,8 +326,8 @@ const closeBtn = () => {
 }
 </script>
 <template>
-    <div class="g-dn_img">
-        <div class="g-dn_img-container">
+    <div class="g-dn_img" :style="transformNavsToCSSProps(imgSetting)">
+        <div class="g-dn_img-container" :data-align="imgSetting.align">
             <template v-if="store.status == 'edit'">
                 <template v-for="(item, index) in imgSetting.imgs">
                     <a href="javascript:;" class="g-dn_img-item" :data-init="data.init" :data-effect="item.effectCheck">
@@ -272,7 +339,8 @@ const closeBtn = () => {
             </template>
             <template v-else>
                 <template v-for="(item, index) in imgSetting.imgs">
-                    <a :href="item.link ? item.link : 'javascript:;'" :target="item.link ? '_blank' : ''"
+                    <a :href="item.link ? item.link : 'javascript:;'"
+                       :target="[item.link ? item.target == true || item.target == 'true' ? '_blank' : '' : '']"
                        class="g-dn_img-item"
                        :data-init="data.init" :data-effect="item.effectCheck">
                         <span class="g-dn_img-item1" :style="transformNavsToCSSProps(item)"></span>
@@ -290,10 +358,16 @@ const closeBtn = () => {
             </template>
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">DN圖片區塊
-                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
+                    <div class="edit-title__text">圖片區塊
+                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/DNImg${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
+                </div>
+                <div class="g-edit__row">
+                    <div class="input-group__label required">按鈕位置:</div>
+                    <g-radio label="左" name="align" value="left" v-model="imgData.align" />
+                    <g-radio label="中" name="align" value="center" v-model="imgData.align" />
+                    <g-radio label="右" name="align" value="right" v-model="imgData.align" />
                 </div>
                 <template v-for="(item, index) in imgData.imgs">
                     <div class="g-edit__row">
@@ -327,10 +401,35 @@ const closeBtn = () => {
                                     <g-input label="連結:" v-model.trim="item.link"
                                              :valid="item.validLink" />
                                 </div>
+                                <div class="g-edit__col">
+                                    <div class="input-group__label">另開視窗:</div>
+                                    <g-radio label="是" :name="'attribute' + index" :value="true"
+                                             v-model="item.target" />
+                                    <g-radio label="否" :name="'attribute' + index" :value="false"
+                                             v-model="item.target" />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </template>
+                <div class="g-edit__row">
+                    <div class="g-edit__col w50">
+                        <g-input label="PC間距上:" type="number" v-model="imgData.pcMarginTop" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="imgData.validMt" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile間距上:" type="number" v-model="imgData.mobileMarginTop"
+                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="imgData.validMmt" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="PC按鈕間距下:" type="number" v-model="imgData.pcMarginBottom" @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="imgData.validMb" />
+                    </div>
+                    <div class="g-edit__col w50">
+                        <g-input label="Mobile按鈕間距下:" type="number" v-model="imgData.mobileMarginBottom"
+                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="imgData.validMmb" />
+                    </div>
+                </div>
                 <div class="edit-btn__box">
                     <a href="javascript:;" class="btn btn__submit" @click="onSubmit">確認送出</a>
                     <a href="javascript:;" class="btn btn__reset" @click="onReset">清除重填</a>

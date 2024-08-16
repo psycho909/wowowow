@@ -52,13 +52,17 @@ function setCookie(eventSeq) {
 }
 </script>
 <template>
-    <div class='cookie-bar' v-if="cookieOpen">
-        <div class='cookie-bar-child'>
-            <div class='cookie-bar-child-text'>本網站使用瀏覽器紀錄 (Cookie) 為您提供最好的使用體驗。繼續瀏覽本網站表示您閱讀並同意我們的隱私權保護政策。閱讀我們的<div
-                     class='cookie-bar-child-btn' @click="openPop">隱私權與Cookie政策</div>以了解更多詳情。</div>
-            <div class='cookie-bar-know' @click="closeCookie">我知道了</div>
+    <Teleport to="body">
+        <div id="cookieBarWrap" v-if="cookieOpen">
+            <div class='cookie-bar'>
+                <div class='cookie-bar-child'>
+                    <div class='cookie-bar-child-text'>本網站使用瀏覽器紀錄 (Cookie) 為您提供最好的使用體驗。繼續瀏覽本網站表示您閱讀並同意我們的隱私權保護政策。閱讀我們的<div
+                             class='cookie-bar-child-btn' @click="openPop">隱私權與Cookie政策</div>以了解更多詳情。</div>
+                    <div class='cookie-bar-know' @click="closeCookie">我知道了</div>
+                </div>
+            </div>
         </div>
-    </div>
+    </Teleport>
     <g-lightbox v-model:showLightbox="cookieLightbox" class="cookie-bar-wrap" :close="false">
         <template #lightbox-content>
             <div class='cookie-bar-X' @click="closePop"></div>
