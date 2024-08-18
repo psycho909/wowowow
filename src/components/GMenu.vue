@@ -70,7 +70,6 @@ const menuFilter = computed(() => {
                 ...v,
                 status: total.value[v.title] !== v.limit
             }))
-            .sort((a, b) => a.order - b.order);
 
         const validPreviousMenu = filteredMenu.filter(v => validPreviousComponents.includes(v.title));
 
@@ -81,13 +80,13 @@ const menuFilter = computed(() => {
         for (const element of remainingMenu) {
             if (element.title.startsWith("GSlide")) {
                 if (!currentGroup || currentGroup.title !== "輪播區塊") {
-                    currentGroup = { title: "輪播區塊", elements: [], order: 4 };
+                    currentGroup = { title: "輪播區塊", elements: [], order: [4, 4] };
                     groupedMenu.push(currentGroup);
                 }
                 currentGroup.elements.push(element);
             } else if (element.title.startsWith("GImg")) {
                 if (!currentGroup || currentGroup.title !== "圖片區塊") {
-                    currentGroup = { title: "圖片區塊", elements: [], order: 5 };
+                    currentGroup = { title: "圖片區塊", elements: [], order: [5, 5] };
                     groupedMenu.push(currentGroup);
                 }
                 currentGroup.elements.push(element);
@@ -98,8 +97,8 @@ const menuFilter = computed(() => {
         return [...validPreviousMenu, ...groupedMenu]
             .sort((a, b) => {
                 // 如果是分组，使用第一个元素的 order
-                const orderA = a.elements ? a.elements[0].order : a.order;
-                const orderB = b.elements ? b.elements[0].order : b.order;
+                const orderA = a.elements ? a.elements[0].order[0] : a.order[0];
+                const orderB = b.elements ? b.elements[0].order[0] : b.order[0];
                 return orderA - orderB;
             });
     }
@@ -108,15 +107,18 @@ const menuFilter = computed(() => {
         // First condition: Filter and sort specific menu items
         const specificItems = props.menu
             .filter(item => item.type.includes(2))
-            .filter(v => ["GArea", "GFixed", "GWatermark", "GMusic", "GLang", "GTop"].includes(v.title))
-            .sort((a, b) => a.order - b.order);
-
+            .filter(v => ["GArea", "GFixed", "GWatermark", "GMusic", "GLang", "GTop"].includes(v.title)).map(v => ({
+                ...v,
+                drag: false
+            }))
         // Second condition: Based on group value
         if (group.value.name == 1) {
             const homeComponent = ["GLogo", "GIcon", "GBg", "GDNNav", "GDNImg"];
-            return props.menu
+            let filteredMenu = props.menu
                 .filter(v => homeComponent.includes(v.title))
-                .sort((a, b) => a.order - b.order)
+
+            return [...specificItems, ...filteredMenu]
+                .sort((a, b) => a.order[1] - b.order[1])
                 .map(v => ({
                     ...v,
                     group: group.value.name,
@@ -131,7 +133,6 @@ const menuFilter = computed(() => {
 
             const filteredMenu = props.menu
                 .filter(v => homeComponent.includes(v.title))
-                .sort((a, b) => a.order - b.order)
                 .map(v => ({
                     ...v,
                     group: group.value.name
@@ -143,13 +144,13 @@ const menuFilter = computed(() => {
             for (const element of filteredMenu) {
                 if (element.title.startsWith("GSlide")) {
                     if (!currentGroup || currentGroup.title !== "輪播區塊") {
-                        currentGroup = { title: "輪播區塊", elements: [] };
+                        currentGroup = { title: "輪播區塊", elements: [], order: [4, 4] };
                         groupedMenu.push(currentGroup);
                     }
                     currentGroup.elements.push(element);
                 } else if (element.title.startsWith("GImg")) {
                     if (!currentGroup || currentGroup.title !== "圖片區塊") {
-                        currentGroup = { title: "圖片區塊", elements: [] };
+                        currentGroup = { title: "圖片區塊", elements: [], order: [5, 5] };
                         groupedMenu.push(currentGroup);
                     }
                     currentGroup.elements.push(element);
@@ -158,7 +159,10 @@ const menuFilter = computed(() => {
                 }
             }
 
-            return groupedMenu;
+            return [...specificItems, ...groupedMenu]
+                .sort((a, b) => {
+                    return a.order[1] - b.order[1]
+                });
         }
     }
 

@@ -2,8 +2,8 @@
 export default {
     name: "GTabs",
     label: "頁籤區塊",
-    order: 5,
-    type: [1,2]
+    order: [5, 5],
+    type: [1, 2]
 }
 </script>
 
@@ -21,7 +21,7 @@ import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide, extractVideoID } from "../Tool";
 import { cloneDeep } from 'lodash-es'
 import { GetPageType } from "../api";
-const props = defineProps(["data","sub"])
+const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 const store = mainStore()
 const { page, pageTypeSeq } = storeToRefs(store);
@@ -513,7 +513,7 @@ const targetTab = (index) => {
                     <template v-for="(tab, index) in tabsSetting.tabs" :key="index">
                         <li class="g-tabs__tab-li" @click="tabsSetting.activeTab = index"
                             :class="{ 'active': tabsSetting.activeTab === index }" ref="tabRef">{{
-        tab.name }}</li>
+                            tab.name }}</li>
                     </template>
                 </ul>
                 <a href="javascript:;" class="g-tabs__tab-pop" @click="openTabPop" v-if="tabPopHide"></a>
@@ -571,7 +571,7 @@ const targetTab = (index) => {
                                         <g-lightbox v-model:showLightbox="tab.img.pop.show"
                                                     :class="[tab.img.pop.align, tab.img.pop.type, tab.img.pop.type == 'slide' ? 'pop-slide' : '']">
                                             <template #lightbox-title v-if="tab.img.pop.type != 'slide'">{{
-        tab.img.pop.title }}</template>
+                                                tab.img.pop.title }}</template>
 
                                             <template #lightbox-content>
                                                 <template v-if="tab.img.pop.type != 'slide'">
@@ -639,8 +639,7 @@ const targetTab = (index) => {
             </div>
             <g-modify :uid="data.uid" :sub="sub" v-if="page == 'EditPage'" />
         </div>
-        <g-lightbox v-model:showLightbox="tabPopShow" :style="[colors[tabsSetting.style]]"
-                    :action="false"
+        <g-lightbox v-model:showLightbox="tabPopShow" :style="[colors[tabsSetting.style]]" :action="false"
                     class="lb-pop-tab">
 
             <template #lightbox-content>
@@ -675,7 +674,7 @@ const targetTab = (index) => {
                     <g-radio label="影片" name="type" value="video" v-model="tabsData.type" />
                     <g-radio label="文字" name="type" value="text" v-model="tabsData.type" />
                 </div>
-                <template v-for="( tab, index ) in  tabsData.tabs " :key="index">
+                <template v-for="( tab, index ) in tabsData.tabs " :key="index">
                     <div class="g-edit__row">
                         <div class="g-edit__col">
                             <div class="g-edit__group">
@@ -773,7 +772,7 @@ const targetTab = (index) => {
                                                 </div>
                                             </div>
                                             <div class="g-edit__row"
-                                                 v-for="( slide, slideIndex ) in  tab.img.pop.slides ">
+                                                 v-for="( slide, slideIndex ) in tab.img.pop.slides ">
                                                 <div class="g-edit__col">
                                                     <div class="g-edit__group">
                                                         <a href="javascript:;" class="icon icon-add"
@@ -869,11 +868,13 @@ const targetTab = (index) => {
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
                         <g-input label="PC間距上:" type="number" v-model="tabsData.mt" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="tabsData.validMt" />
+                                 warning="間距請勿設定為負值"
+                                 :valid="tabsData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="PC間距下:" type="number" v-model="tabsData.mb" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="tabsData.validMb" />
+                                 warning="間距請勿設定為負值"
+                                 :valid="tabsData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距上:" type="number" v-model="tabsData.mobile_mt" @change="handleNumber"

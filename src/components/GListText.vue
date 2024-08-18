@@ -2,7 +2,7 @@
 export default {
     name: "GListText",
     label: "區塊條列式文字",
-    order: 11, type: [1, 2]
+    order: [11, 11], type: [1, 2]
 }
 </script>
 <script setup>
@@ -382,8 +382,8 @@ function transformNavsToCSSProps(item) {
                             <a :href="[nest.url == '' ? 'javascript:;' : nest.url]" class="g-listText__text"
                                :target="[page == 'EditPage' ? '_blank' : nest.open == 'true' || nest.open == true ? '_blank' : '']"
                                v-else>{{
-        nest.text
-    }}</a>
+                                nest.text
+                                }}</a>
                         </div>
                     </div>
                 </template>

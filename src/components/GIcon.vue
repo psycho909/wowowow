@@ -3,7 +3,7 @@ export default {
     name: "GIcon",
     label: "ICON區塊",
     limit: 1,
-    order: 5,
+    order: [5, 5],
     type: [2]
 }
 </script>

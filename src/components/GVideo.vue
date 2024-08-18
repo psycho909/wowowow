@@ -2,7 +2,7 @@
 export default {
     name: "GVideo",
     label: "影片區塊",
-    order: 8,
+    order: [8, 8],
     type: [1, 2]
 }
 </script>

@@ -3,7 +3,7 @@ export default {
     name: "GWatermark",
     label: "浮水印",
     limit: 1,
-    order: 14, type: [1, 2]
+    order: [14, 14], type: [1, 2]
 }
 </script>
 
@@ -389,8 +389,8 @@ function transformToCSSProps(item) {
                                     :class="[watermarkSetting.pop.align, watermarkSetting.pop.type, watermarkSetting.pop.type == 'slide' ? 'pop-slide' : '']">
 
                             <template #lightbox-title v-if="watermarkSetting.pop.type != 'slide'">{{
-            watermarkSetting.pop.title
-        }}</template>
+                                watermarkSetting.pop.title
+                                }}</template>
 
                             <template #lightbox-content>
                                 <template v-if="watermarkSetting.pop.type != 'slide'">

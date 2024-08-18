@@ -3,7 +3,7 @@ export default {
     name: "Fixed",
     label: "浮動選單",
     limit: 1,
-    order: 3,
+    order: [3, 3],
     type: [1, 2]
 }
 </script>
@@ -323,14 +323,14 @@ const goTop = () => {
                 <template v-if="store.status == 'edit'">
                     <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
                        :target="[menu.target == 'true' ? '_blank' : '_blank']" v-for="menu in fixedSetting.menus">{{
-                           menu.text
-                       }}</a>
+                        menu.text
+                    }}</a>
                 </template>
                 <template v-if="store.status != 'edit'">
                     <a :href="[menu.link ? menu.link : 'javascript:;']" class="g-fixed__menu"
                        :target="[menu.target == 'true' ? '_blank' : '_self']" v-for="menu in fixedSetting.menus">{{
-                           menu.text
-                       }}</a>
+                        menu.text
+                    }}</a>
                 </template>
                 <a href="javascript:;" class="g-fixed__menu g-fixed__top" @click="goTop"
                    v-if="fixedSetting.top != 'false'">TOP</a>
@@ -384,7 +384,8 @@ const goTop = () => {
                 </div>
                 <div class="g-edit__row">
                     <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
-                              v-model="fixedData.style" :valid="styleValid" />
+                              v-model="fixedData.style"
+                              :valid="styleValid" />
                 </div>
                 <div class="g-edit__row">
                     <span class="input-group__label" :class="[fixedMenuValid ? '' : 'warning']">選單數目</span>

@@ -2,7 +2,7 @@
 export default {
     name: "GSlideText",
     label: "輪播-上圖下文",
-    order: 4, type: [1, 2]
+    order: [4, 4], type: [1, 2]
 }
 </script>
 <script setup>
@@ -794,11 +794,13 @@ const closeBtn = () => {
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
                         <g-input label="PC間距上:" type="number" v-model="slideData.mt" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="slideData.validMt" />
+                                 warning="間距請勿設定為負值"
+                                 :valid="slideData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="PC間距下:" type="number" v-model="slideData.mb" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="slideData.validMb" />
+                                 warning="間距請勿設定為負值"
+                                 :valid="slideData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距上:" type="number" v-model="slideData.mobile_mt" @change="handleNumber"

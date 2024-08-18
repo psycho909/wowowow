@@ -2,7 +2,7 @@
 export default {
     name: "GSlide",
     label: "輪播-純圖片",
-    order: 4,
+    order: [4, 4],
     type: [1, 2]
 }
 </script>
@@ -739,8 +739,10 @@ const closeBtn = () => {
                             </div>
                             <div class="g-edit__col">
                                 <div class="input-group__label">圖片特效:</div>
-                                <g-radio label="無" :name="'effect' + index" :value="false" v-model="slide.effectCheck" />
-                                <g-radio label="換圖" :name="'effect' + index" :value="true" v-model="slide.effectCheck" />
+                                <g-radio label="無" :name="'effect' + index" :value="false"
+                                         v-model="slide.effectCheck" />
+                                <g-radio label="換圖" :name="'effect' + index" :value="true"
+                                         v-model="slide.effectCheck" />
                             </div>
                             <div class="g-edit__col" v-if="slide.effectCheck == 'true'">
                                 <g-input label="更換圖片網址:" v-model.trim="slide.effectImg" :preview="slide.effectImg"
@@ -756,24 +758,29 @@ const closeBtn = () => {
                             <template v-if="slide.type == 'pop'">
                                 <div class="g-edit__col">
                                     <div class="input-group__label required">POP內容:</div>
-                                    <g-radio label="純文字" :name="'popType' + index" value="text" v-model="slide.pop.type" />
-                                    <g-radio label="圖片" :name="'popType' + index" value="img" v-model="slide.pop.type" />
+                                    <g-radio label="純文字" :name="'popType' + index" value="text"
+                                             v-model="slide.pop.type" />
+                                    <g-radio label="圖片" :name="'popType' + index" value="img"
+                                             v-model="slide.pop.type" />
                                     <g-radio label="POP SLIDE" :name="'popType' + index" value="slide"
                                              v-model="slide.pop.type" />
                                 </div>
 
                                 <template v-if="slide.pop.type == 'text'">
                                     <div class="g-edit__col">
-                                        <g-input label="POP標題:" v-model="slide.pop.title" :valid="slide.pop.validTitle" />
+                                        <g-input label="POP標題:" v-model="slide.pop.title"
+                                                 :valid="slide.pop.validTitle" />
                                     </div>
                                     <div class="g-edit__row">
                                         <div class="input-group__label required">對齊方向:</div>
-                                        <g-radio label="左" :name="'align' + index" value="left" v-model="slide.pop.align" />
+                                        <g-radio label="左" :name="'align' + index" value="left"
+                                                 v-model="slide.pop.align" />
                                         <g-radio label="中" :name="'align' + index" value="center"
                                                  v-model="slide.pop.align" />
                                     </div>
                                     <div class="g-edit__col">
-                                        <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
+                                        <g-select label="主題顏色" :group="true" :options="[style1, style2]"
+                                                  :required="true"
                                                   :valid="slide.pop.styleValid"
                                                   v-model="slide.pop.style" />
                                     </div>
@@ -783,12 +790,14 @@ const closeBtn = () => {
                                 </template>
                                 <template v-if="slide.pop.type == 'img'">
                                     <div class="g-edit__col">
-                                        <g-input label="POP圖片網址:" v-model.trim="slide.pop.img" :valid="slide.pop.validImg"
+                                        <g-input label="POP圖片網址:" v-model.trim="slide.pop.img"
+                                                 :valid="slide.pop.validImg"
                                                  :preview="slide.pop.img"
                                                  :required="true" />
                                     </div>
                                     <div class="g-edit__col">
-                                        <g-select label="主題顏色:" :group="true" :options="[style1, style2]" :required="true"
+                                        <g-select label="主題顏色:" :group="true" :options="[style1, style2]"
+                                                  :required="true"
                                                   :valid="slide.pop.styleValid"
                                                   v-model="slide.pop.style" />
                                     </div>
@@ -824,7 +833,8 @@ const closeBtn = () => {
                                             <g-radio label="都要顯示" :name="'popControl' + index" value="all"
                                                      v-model="slide.pop.control" />
                                         </div>
-                                        <template v-if="slide.pop.control == 'pagination' || slide.pop.control == 'all'">
+                                        <template
+                                                  v-if="slide.pop.control == 'pagination' || slide.pop.control == 'all'">
                                             <div class="g-edit__col">
                                                 <div class="input-group__label required">點點改為預覽圖:</div>
                                                 <g-radio label="是" :name="'thumb' + index" :value="true"
@@ -849,8 +859,7 @@ const closeBtn = () => {
                                             <div class="g-edit__group">
                                                 <div class="g-edit__col">
                                                     <g-input label="圖片網址:" v-model.trim="popSlide.pc"
-                                                             :valid="popSlide.validPC"
-                                                             :preview="popSlide.pc"
+                                                             :valid="popSlide.validPC" :preview="popSlide.pc"
                                                              :required="true" />
                                                 </div>
                                                 <div class="g-edit__col">
@@ -891,11 +900,13 @@ const closeBtn = () => {
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
                         <g-input label="PC間距上:" type="number" v-model="slideData.mt" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="slideData.validMt" />
+                                 warning="間距請勿設定為負值"
+                                 :valid="slideData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="PC間距下:" type="number" v-model="slideData.mb" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="slideData.validMb" />
+                                 warning="間距請勿設定為負值"
+                                 :valid="slideData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距上:" type="number" v-model="slideData.mobile_mt" @change="handleNumber"

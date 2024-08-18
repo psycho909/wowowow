@@ -3,7 +3,7 @@ export default {
     name: "Background",
     label: "背景圖",
     limit: 1,
-    order: 1,
+    order: [1, 1],
     type: [1, 2]
 }
 </script>
@@ -300,10 +300,8 @@ const closeBtn = () => {
                 <source :src="bgSetting.mobileVideo || bgSetting.pcVideo" type="video/mp4">
             </video>
         </template>
-        <g-modify :uid="data.uid" title="背景" :move="false" :remove="false" :sub="sub"
-                  v-if="page == 'EditPage'" />
-        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'"
-                :func="enterColor">
+        <g-modify :uid="data.uid" title="背景" :move="false" :remove="false" :sub="sub" v-if="page == 'EditPage'" />
+        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'" :func="enterColor">
             <template #edit-close>
                 <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
             </template>

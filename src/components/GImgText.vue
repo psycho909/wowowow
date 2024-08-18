@@ -2,7 +2,7 @@
 export default {
     name: "GImgText",
     label: "圖片-上圖下文",
-    order: 5, type: [1, 2]
+    order: [5, 5], type: [1, 2]
 }
 </script>
 <script setup>
@@ -514,7 +514,7 @@ const closePop = (data, url) => {
 
                                 </div>
                                 <a class="g-img__card-link" v-if="imgs.card.url !== '' && imgs.type == 'link'">{{
-        imgs.card.url }}</a>
+                                    imgs.card.url }}</a>
                             </div>
                         </template>
                     </div>
@@ -570,8 +570,8 @@ const closePop = (data, url) => {
                                         <div class="g-img__card-body"
                                              v-if="imgs.card.title !== '' || imgs.card.text !== ''">
                                             <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{
-        imgs.card.title
-    }}
+                                                imgs.card.title
+                                                }}
                                             </div>
                                             <div class="g-img__card-text" v-if="imgs.card.text !== ''"
                                                  v-html="imgs.card.text">
@@ -605,8 +605,8 @@ const closePop = (data, url) => {
                                         <div class="g-img__card-body"
                                              v-if="imgs.card.title !== '' || imgs.card.text !== ''">
                                             <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{
-        imgs.card.title
-    }}
+                                                imgs.card.title
+                                                }}
                                             </div>
                                             <div class="g-img__card-text" v-if="imgs.card.text !== ''"
                                                  v-html="imgs.card.text">
@@ -867,11 +867,13 @@ const closePop = (data, url) => {
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
                         <g-input label="PC間距上:" type="number" v-model="imgData.mt" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="imgData.validMt" />
+                                 warning="間距請勿設定為負值"
+                                 :valid="imgData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="PC間距下:" type="number" v-model="imgData.mb" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="imgData.validMb" />
+                                 warning="間距請勿設定為負值"
+                                 :valid="imgData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距上:" type="number" v-model="imgData.mobile_mt" @change="handleNumber"

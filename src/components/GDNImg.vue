@@ -2,7 +2,7 @@
 export default {
     name: "GDNImg",
     label: "圖片區塊",
-    order: 5,
+    order: [5, 5],
     type: [2]
 }
 </script>
@@ -385,8 +385,10 @@ const closeBtn = () => {
                                 </div>
                                 <div class="g-edit__col">
                                     <div class="input-group__label">圖片特效:</div>
-                                    <g-radio label="無" :name="'effect' + index" :value="false" v-model="item.effectCheck" />
-                                    <g-radio label="換圖" :name="'effect' + index" :value="true" v-model="item.effectCheck" />
+                                    <g-radio label="無" :name="'effect' + index" :value="false"
+                                             v-model="item.effectCheck" />
+                                    <g-radio label="換圖" :name="'effect' + index" :value="true"
+                                             v-model="item.effectCheck" />
                                 </div>
                                 <div class="g-edit__col" v-if="item.effectCheck == 'true'">
                                     <g-input label="更換圖片網址:" v-model.trim="item.effectImg" :preview="item.effectImg"
@@ -419,7 +421,8 @@ const closeBtn = () => {
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距上:" type="number" v-model="imgData.mobileMarginTop"
-                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="imgData.validMmt" />
+                                 @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="imgData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="PC按鈕間距下:" type="number" v-model="imgData.pcMarginBottom" @change="handleNumber"
@@ -427,7 +430,8 @@ const closeBtn = () => {
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile按鈕間距下:" type="number" v-model="imgData.mobileMarginBottom"
-                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="imgData.validMmb" />
+                                 @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="imgData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

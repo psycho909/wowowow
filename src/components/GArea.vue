@@ -18,7 +18,7 @@ import GTabs from "./GTabs.vue";
 export default {
     name: "GArea",
     label: "增加頁面",
-    order: 5,
+    order: [5, 5],
     components: {
         GVideo, GImg, GText, GBg, GSlogan, GIcon, GLogo, GDNImg, GDNNav, GSlide, GListText, GAccordion, GButtons, GImgText, GSlideText, GTabs
     },
@@ -369,8 +369,7 @@ const checkInit = computed(() => {
     </div>
     <label :id="uid" :class="['g-area', gr == 1 ? 'filtered' : '', store.targetArea == uid ? 'focus' : '']"
            :style="cssVar"
-           :data-page="[gr == 1 ? 'main' : '']"
-           v-else>
+           :data-page="[gr == 1 ? 'main' : '']" v-else>
         <div class="g-area-container--notice" v-if="gr == 1 && !checkInit" :data-init="checkInit"></div>
         <input type="radio" name="area" :id="uid" :value="uid" v-model="targetArea">
         <!-- <template v-if="contentBg.length">
@@ -382,19 +381,10 @@ const checkInit = computed(() => {
                     <component :is="block.component" :data="block" :sub="true"></component>
                 </template>
             </template>
-            <draggable
-                       class="dragArea list-group"
-                       :list="contentFilter"
-                       :force-fallback="true"
-                       :fallback-tolerance="1"
-                       :scroll-sensitivity="100"
-                       :animation="300"
-                       :group="gr"
-                       item-key="uid"
-                       @start="start"
+            <draggable class="dragArea list-group" :list="contentFilter" :force-fallback="true" :fallback-tolerance="1"
+                       :scroll-sensitivity="100" :animation="300" :group="gr" item-key="uid" @start="start"
                        @change="log"
-                       @move="move"
-                       v-if="store.page == 'EditPage' && props.data.uid != 1">
+                       @move="move" v-if="store.page == 'EditPage' && props.data.uid != 1">
 
                 <template #item="{ element }">
                     <component :is="element.component" :data="element" :sub="true"></component>

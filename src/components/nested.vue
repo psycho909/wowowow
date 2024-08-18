@@ -237,12 +237,12 @@ const toggleMenu = (e) => {
                  :class='[["GFixed", "GBg", "GSlogan", "GTop", "GWatermark", "GMusic", "GLang"].includes(element.title) ? "" : "", element.status ? "" : "disabled"]'
                  :data-title="[element?.elements ? 'true' : 'false']"
                  :data-drag='[[" GFixed", "GBg", "GSlogan", "GTop", "GWatermark", "GMusic", "GLang"
-            ].includes(element.title) ? "false" : "true"]'>
+                ].includes(element.title) || element.drag == false ? "false" : "true"]'>
                 <template v-if="element.label">{{ element.label }}</template>
                 <template v-if="element?.elements">
                     <span class="g-menu__title filtered" @click="toggleMenu" data-toggle="false"
                           data-draggable="false">{{
-                element.title }}</span>
+                            element.title }}</span>
                     <nested-draggable :tasks="element.elements" />
                 </template>
             </div>

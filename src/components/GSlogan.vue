@@ -3,7 +3,7 @@ export default {
     name: "Slogan",
     label: "主標圖",
     limit: 1,
-    order: 2,
+    order: [2, 2],
     type: [1, 2]
 }
 </script>
@@ -295,8 +295,7 @@ const checkInit = computed(() => {
                 <g-modify :uid="data.uid" title="主標圖" :move="false" :sub="sub" v-if="page == 'EditPage'" />
             </a>
         </template>
-        <img v-if="!checkInit" class="notice-img"
-             style="display:block;margin:16px auto 0;max-width: 100%;"
+        <img v-if="!checkInit" class="notice-img" style="display:block;margin:16px auto 0;max-width: 100%;"
              src="https://alpha-tw.beanfun.com/3KO/removable/pchome/images/component.png" alt="">
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
             <template #edit-close>

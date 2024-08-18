@@ -2,7 +2,7 @@
 export default {
     name: "GText",
     label: "文字區塊",
-    order: 7,
+    order: [7, 7],
     type: [1, 2]
 }
 </script>
@@ -172,8 +172,8 @@ const collapseToggle = () => {
                          :style="{ '--collapse': textSetting.collapse.num }" ref="boxRef"></div>
                     <a class="g-text__collapse-btn" href="javascript:;" @click="collapseToggle"
                        :style="[colors[textSetting.style]]">{{
-        collapseStatus === true || collapseStatus === 'true' ? textSetting.collapse.close :
-            textSetting.collapse.open }}</a>
+                        collapseStatus === true || collapseStatus === 'true' ? textSetting.collapse.close :
+                        textSetting.collapse.open }}</a>
                 </template>
                 <template v-if="textSetting.type == 'scrollbar'">
                     <div class="g-text__box scrollbar" v-html="textSetting.text"
@@ -242,11 +242,13 @@ const collapseToggle = () => {
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
                         <g-input label="PC間距上:" type="number" v-model="textData.mt" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="textData.validMt" />
+                                 warning="間距請勿設定為負值"
+                                 :valid="textData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="PC間距下:" type="number" v-model="textData.mb" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="textData.validMb" />
+                                 warning="間距請勿設定為負值"
+                                 :valid="textData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距上:" type="number" v-model="textData.mobile_mt" @change="handleNumber"

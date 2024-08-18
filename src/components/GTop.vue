@@ -3,7 +3,7 @@ export default {
     name: "GTop",
     label: "回到頂端按鈕",
     limit: 1,
-    order: 12, type: [1, 2]
+    order: [12, 12], type: [1, 2]
 }
 </script>
 <script setup>

@@ -2,7 +2,7 @@
 export default {
     name: "GButtons",
     label: "快速按鈕",
-    order: 5, type: [1,2]
+    order: [5, 5], type: [1, 2]
 }
 </script>
 <script setup>
@@ -16,7 +16,7 @@ import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
 import { cloneDeep } from 'lodash-es'
 import { GetPageType } from "../api";
-const props = defineProps(["data","sub"])
+const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 let _buttonsDataLength = ref(1);
 const store = mainStore()
