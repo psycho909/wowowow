@@ -1,7 +1,7 @@
 <script setup>
 import Page from "./pages/Page.vue";
 import { mainStore } from "./store/index";
-import { loadingShow, loadingHide, pageInfo } from "./Tool";
+import { loadingShow, loadingHide, pageInfo, getBrowserLocales } from "./Tool";
 import topBar from "./topBar";
 import GLightbox from "./components/GLightbox.vue";
 import GCookie from "./components/GCookie.vue";
@@ -13,6 +13,7 @@ let configData = ref("");
 
 onMounted(async () => {
 	loadingShow();
+	let currentHref = location.href;
 	let _data = json;
 	let { code, message, url, data } = _data;
 	if (code != 1) {
@@ -36,23 +37,24 @@ onMounted(async () => {
 			if (data.gameName == "新瑪奇B") {
 				data.gameName = "新瑪奇"
 			}
-			// setTimeout(function () {
-			// 	(function (gobal) {
-			// 		var s = document.createElement("script");
-			// 		s.async = 1;
-			// 		s.src = "https://alpha-tw.beanfun.com/3KO/removable/pchome/js/topbar.js";
-			// 		s.id = "top-bar";
-			// 		//產品
-			// 		s.setAttribute("prod", data.gameName);
-
-			// 		$("head")
-			// 			.append(s)
-			// 			.ready(function () {
-			// 				gobal.callTopBar;
-			// 			});
-			// 	})(window);
-			// }, 0);
 			topBar(data.gameName)
+		}
+		let filterData = JSON.parse(data.detail).filter((v, i) => {
+			return v.component == "GLang"
+		})
+		if (filterData.length > 0) {
+			let langList = filterData[0].content;
+			let currentBrowserLang = langList.langs.filter((v, i) => v.val == getBrowserLocales()[0])
+			let defaultLang = langList.langs.filter((v, i) => v.val == langList.default)[0]
+			if (currentBrowserLang.length > 0) {
+				if (currentBrowserLang[0].url != currentHref) {
+					window.location.href = currentBrowserLang[0].url
+				}
+			} else {
+				window.location.href = defaultLang.url
+			}
+
+
 		}
 		await store.setData(data);
 		store.setPage("Page");
@@ -65,7 +67,7 @@ onMounted(async () => {
 	}
 })
 </script>
-    
+
 <template>
 	<Page v-if="store.page == 'Page'"></Page>
 	<g-lightbox v-model:showLightbox="messageLightbox">
@@ -75,4 +77,3 @@ onMounted(async () => {
 	</g-lightbox>
 	<GCookie v-if="cookieLightbox" :data="configData"></GCookie>
 </template>
-    

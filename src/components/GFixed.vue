@@ -1,9 +1,9 @@
 <script>
 export default {
-    name: "Fixed",
+    name: "GFixed",
     label: "浮動選單",
     limit: 1,
-    order: [3, 3],
+    order: [3, 4],
     type: [1, 2]
 }
 </script>
@@ -41,7 +41,9 @@ const initData = () => {
         top: true,
         collapse: false,
         status: true,
-        collapseText: ""
+        collapseText: "",
+        direction: "center",
+        opacity: 1
     }
 };
 
@@ -65,6 +67,9 @@ watchEffect(async () => {
             if (props.data.content.collapse === undefined) {
                 props.data.content.collapse = false
             }
+            if (props.data.content.direction === undefined) {
+                props.data.content.direction = "center"
+            }
             Object.assign(fixedData, cloneDeep(props.data.content));
             Object.assign(fixedSetting, cloneDeep(props.data.content));
             if (fixedSetting.type == 'collapse') {
@@ -85,25 +90,45 @@ watchEffect(async () => {
                 if (area) {
                     if (document.querySelector(".g-fixed.top")) {
                         height = document.querySelector(".g-fixed.top").clientHeight;
-                        area.style.marginTop = height + 'px'
+                        // area.style.marginTop = height + 'px'
+                        area.style.setProperty('--fixed-top', height)
                     } else {
-                        area.style.marginTop = height + 'px'
+                        // area.style.marginTop = height + 'px'
+                        area.style.setProperty('--fixed-top', height)
                     }
                 }
             }
-            if (fixedRef.value.scrollHeight > $(window).height()) {
+            if (props.data.content.opacity === undefined) {
+                props.data.content.opacity = 1;
+            }
+            if (fixedRef.value.scrollHeight > window.innerHeight) {
                 scroll.value = true
             } else {
                 scroll.value = false
             }
+            if (fixedData.opacity == undefined) {
+                fixedData.opacity = 1;
+            }
+            if (fixedSetting.opacity == undefined) {
+                fixedSetting.opacity = 1;
+            }
         }
     }
     if (fixedData.position) {
+        console.log(fixedSetting.position)
         if (fixedData.position == 'top' || fixedData.position == 'bottom') {
             fixedData.collapse = false;
             fixedData.status = true;
             fixedData.type = "normal"
         }
+        // if (fixedData.position == 'top') {
+        //     await nextTick()
+        //     if (document.querySelector(".g-fixed.top")) {
+        //         document.querySelector(".wrap").style.setProperty('--padding-top', document.querySelector(".g-fixed.top").offsetHeight)
+        //     }
+        // } else {
+        //     document.querySelector(".wrap").style.setProperty('--padding-top', '')
+        // }
     }
     if (fixedData.type) {
         if (fixedData.type == 'normal') {
@@ -130,6 +155,9 @@ function handleScroll() {
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
+        if (props.data.content.opacity === undefined) {
+            props.data.content.opacity = 1;
+        }
         if (props.data.content.type === undefined) {
             props.data.content.type = "normal"
         }
@@ -138,6 +166,9 @@ onMounted(async () => {
         }
         if (props.data.content.collapse === undefined) {
             props.data.content.collapse = false
+        }
+        if (props.data.content.direction === undefined) {
+            props.data.content.direction = "center"
         }
         Object.assign(fixedData, cloneDeep(props.data.content));
         Object.assign(fixedSetting, cloneDeep(props.data.content));
@@ -151,20 +182,31 @@ onMounted(async () => {
                 if (document.querySelector(".g-fixed.top")) {
                     document.querySelector(".g-fixed.top").style.setProperty('--preview', document.querySelector(".g-fixed.top").offsetHeight)
                     document.querySelector(".g-fixed.top").classList.add("preview")
+                    // document.querySelector(".wrap").style.setProperty('--padding-top', document.querySelector(".g-fixed.top").offsetHeight)
+
                 } else {
                     document.querySelector(".g-fixed").style.setProperty('--preview', '')
+                    // document.querySelector(".wrap").style.setProperty('--padding-top', '')
                     document.querySelector(".g-fixed").classList.remove("preview")
                 }
             }
             window.addEventListener("scroll", handleScroll);
+            // document.querySelector(".wrap").style.setProperty('--padding-top', document.querySelector(".g-fixed.top").offsetHeight)
         } else {
             window.removeEventListener("scroll", handleScroll);
+            // document.querySelector(".wrap").style.setProperty('--padding-top', '')
         }
         if ($addComponent) {
             $addComponent();
         }
+        if (fixedData.opacity == undefined) {
+            fixedData.opacity = 1;
+        }
+        if (fixedSetting.opacity == undefined) {
+            fixedSetting.opacity = 1;
+        }
     }
-    if ($(".g-fixed").outerHeight(true) > $(window).height()) {
+    if (document.querySelector('.g-fixed').offsetHeight > window.innerHeight) {
         scroll.value = true
     } else {
         scroll.value = false
@@ -178,7 +220,8 @@ onUnmounted(() => {
             let height = 0;
             let area = document.querySelector(".g-area[data-page='main']");
             if (area) {
-                area.style.marginTop = height + 'px'
+                // area.style.marginTop = height + 'px'
+                area.style.setProperty('--fixed-top', height)
             }
         }
     }
@@ -255,7 +298,7 @@ const onSubmit = () => {
         return v.validText == true && v.validUrl == true
     })
     if (validCheck && fixedMenuValid.value && styleValid.value) {
-        $("#loadingProgress").show();
+        document.querySelector("#loadingProgress").style.display = "block";
         let data = cloneDeep(fixedData);
         store.updateCpt(props.data.uid, data);
         Object.assign(fixedSetting, data);
@@ -306,16 +349,20 @@ const goTop = () => {
         behavior: 'smooth' // 平滑滾動效果
     });
 }
-
+const cssVar = computed(() => {
+    return {
+        "--opacity": props.data.content.opacity === undefined ? 1 : props.data.content.opacity,
+    }
+})
 </script>
 <template>
     <div class="g-fixed__hamburger" :class="[fixedSetting.hamburger]" @click="openMenu"></div>
     <div class="g-fixed"
          :class="[fixedSetting.position, fixedSetting.hamburger, menuToggle ? 'on' : '', fixedSetting.type == 'collapse' ? 'collapse' : '', scroll ? 'scroll' : '']"
-         :style="colors[fixedSetting.style]"
+         :style="[colors[fixedSetting.style], cssVar]"
          :data-collapse="toggleStatus" ref="fixedRef">
         <a href="javascript:;" class="g-fixed__close" @click="closeMenu"></a>
-        <div class="g-fixed-container">
+        <div class="g-fixed-container" :data-direction="fixedSetting.direction">
             <a href="javascript:;" class="g-fixed__collapse" v-if="fixedSetting.type == 'collapse'" @click="toggleMenu">
                 {{ fixedSetting.collapseText }}
             </a>
@@ -352,8 +399,14 @@ const goTop = () => {
                     <div class="input-group__label required">出現位置:</div>
                     <g-radio label="左" name="position" value="left" v-model="fixedData.position" />
                     <g-radio label="右" name="position" value="right" v-model="fixedData.position" />
-                    <g-radio label=" 上" name="position" value="top" v-model="fixedData.position" />
+                    <g-radio label="上" name="position" value="top" v-model="fixedData.position" />
                     <g-radio label="下" name="position" value="bottom" v-model="fixedData.position" />
+                </div>
+                <div class="g-edit__row" v-if="(fixedData.position == 'top' || fixedData.position == 'bottom')">
+                    <div class="input-group__label required">方向:</div>
+                    <g-radio label="置中" name="direction" value="center" v-model="fixedData.direction" />
+                    <g-radio label="靠左" name="direction" value="left" v-model="fixedData.direction" />
+                    <g-radio label="靠右" name="direction" value="right" v-model="fixedData.direction" />
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">樣式:</div>
@@ -386,6 +439,12 @@ const goTop = () => {
                     <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
                               v-model="fixedData.style"
                               :valid="styleValid" />
+                </div>
+                <div class="g-edit__row">
+                    <div class="input-group__label required">透明度:</div>
+                    <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
+                           v-model="fixedData.opacity" />
+                    <span>{{ fixedData.opacity * 100 }}%</span>
                 </div>
                 <div class="g-edit__row">
                     <span class="input-group__label" :class="[fixedMenuValid ? '' : 'warning']">選單數目</span>

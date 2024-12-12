@@ -38,7 +38,7 @@
 		font-size: 0;
 		width: 100px;
 		height: 100px;
-		background-color: var(--bg);
+		background-color: rgba(var(--bg, 212, 212, 212), var(--opacity, 1));
 		border-radius: 100vmax;
 		box-shadow: 0 0 6px rgba(var(--shadow), 0.2);
 		&:before {
@@ -48,7 +48,8 @@
 			display: block;
 			-webkit-mask-image: url("./img/top.svg");
 			mask-image: url("./img/top.svg");
-			background-color: var(--accordion-header-bg-close);
+			background-color: rgba(var(--accordion-header-bg-close));
+			// background-color: rgba(var(--accordion-header-bg-close), var(--opacity, 1));
 			position: absolute;
 			top: 50%;
 			left: 50%;

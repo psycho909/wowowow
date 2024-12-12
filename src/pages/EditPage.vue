@@ -47,15 +47,56 @@ let gAreaComponents = computed(() => {
         return v.component === "GArea"
     })
 })
-function handleScroll() {
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function getVisibility(rect) {
+    const windowHeight = window.innerHeight;
+    const top = Math.max(0, rect.top);
+    const bottom = Math.min(windowHeight, rect.bottom);
+    return (bottom - top) / rect.height;
+}
+
+const handleScroll = debounce(() => {
     if (store.pageTypeSeq == 2) {
+        let maxVisibleArea = null;
+        let maxVisibility = 0;
+
         gAreas.value.forEach((gArea, index) => {
             const gAreaRect = gArea.getBoundingClientRect();
-            if (gAreaRect.top <= window.innerHeight && gAreaRect.bottom >= 0) {
-                store.setCurrentArea(gAreaComponents.value[index].group)
-                store.setTargetArea(gAreaComponents.value[index].uid)
+            const visibility = getVisibility(gAreaRect);
+
+            if (visibility > maxVisibility) {
+                maxVisibility = visibility;
+                maxVisibleArea = {
+                    group: gAreaComponents.value[index].group,
+                    uid: gAreaComponents.value[index].uid
+                };
             }
         });
+
+        // 只有当可见度超过 50% 时才更新
+        if (maxVisibleArea && maxVisibility > 0.3) {
+            store.setCurrentArea(maxVisibleArea.group);
+            store.setTargetArea(maxVisibleArea.uid);
+        }
+        // gAreas.value.forEach((gArea, index) => {
+        //     const gAreaRect = gArea.getBoundingClientRect();
+        //     if (gAreaRect.top <= window.innerHeight && gAreaRect.bottom >= 0) {
+        //         store.setCurrentArea(gAreaComponents.value[index].group)
+        //         store.setTargetArea(gAreaComponents.value[index].uid)
+        //     }
+        // });
         const footerElement = document.querySelector(".UNI-footer");
         if (!footerElement) return;
         const rect = footerElement.getBoundingClientRect();
@@ -84,7 +125,8 @@ function handleScroll() {
             isObserving.value = true;
         }
     }
-}
+}, 100); // 100ms 的防抖延迟
+
 watch(content.value, (newVal) => {
     gAreas.value = document.querySelectorAll(".g-area")
 })
@@ -611,20 +653,10 @@ const handleArea = (type) => {
         <template v-if="contentLang.length">
             <component is="GLang" :data="contentLang[0]"></component>
         </template>
-        <draggable
-                   class="dragArea list-group"
-                   :class="[checkInit ? '' : 'checkInit']"
-                   :list="contentFilter"
-                   :force-fallback="true"
-                   :fallback-tolerance="1"
-                   :scroll-sensitivity="100"
-                   :animation="300"
+        <draggable class="dragArea list-group" :class="[checkInit ? '' : 'checkInit']" :list="contentFilter"
+                   :force-fallback="true" :fallback-tolerance="1" :scroll-sensitivity="100" :animation="300"
                    filter=".filtered"
-                   @start="startLog"
-                   @change="log"
-                   @move="moveLog"
-                   group="main"
-                   item-key="uid">
+                   @start="startLog" @change="log" @move="moveLog" group="main" item-key="uid">
 
             <template #item="{ element }">
                 <component :is="element.component" :data="element"></component>

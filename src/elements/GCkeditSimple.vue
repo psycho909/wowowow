@@ -78,7 +78,6 @@ config.value = {
         Bold,
         CloudServices,
         Essentials,
-        FontSize,
         ImageInline,
         ImageInsert,
         ImageInsertViaUrl,
@@ -106,9 +105,6 @@ config.value = {
     },
     fontFamily: {
         supportAllValues: true
-    },
-    fontSize: {
-        options: ["small", 'default', "big"],
     },
     image: {
         resizeUnit: 'px',

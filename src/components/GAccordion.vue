@@ -2,13 +2,13 @@
 export default {
     name: "GAccordion",
     label: "手風琴文字",
-    order: [10, 10], type: [1, 2]
+    order: [10, 15], type: [1, 2]
 }
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
-import GCkedit from '../elements/GCkedit.vue';
+import GCkedit from '../elements/GCkeditSimple.vue';
 import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GSelect from '../elements/GSelect.vue';
@@ -33,6 +33,7 @@ const initData = () => {
         align: "left",
         style: "",
         validStyle: true,
+        opacity: 1,
         accordions: [{
             prefix: "",
             validPrefix: true,
@@ -56,16 +57,34 @@ watchEffect(async () => {
     }
     if (!props.data.update) {
         if (Object.keys(props.data.content).length > 0) {
+            if (props.data.content.opacity === undefined) {
+                props.data.content.opacity = 1;
+            }
             Object.assign(accordionData, cloneDeep(props.data.content));
             Object.assign(accordionSetting, cloneDeep(props.data.content));
+            if (accordionData.opacity == undefined) {
+                accordionData.opacity = 1;
+            }
+            if (accordionSetting.opacity == undefined) {
+                accordionSetting.opacity = 1;
+            }
         }
     }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
+        if (props.data.content.opacity === undefined) {
+            props.data.content.opacity = 1;
+        }
         Object.assign(accordionData, cloneDeep(props.data.content));
         Object.assign(accordionSetting, cloneDeep(props.data.content));
+        if (accordionData.opacity == undefined) {
+            accordionData.opacity = 1;
+        }
+        if (accordionSetting.opacity == undefined) {
+            accordionSetting.opacity = 1;
+        }
         if ($addComponent) {
             $addComponent();
         }
@@ -113,6 +132,7 @@ const cssVar = computed(() => {
         "--mb": props.data.content.mb,
         "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
         "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
+        "--opacity": props.data.content.opacity === undefined ? 1 : props.data.content.opacity,
     }
 })
 
@@ -231,7 +251,7 @@ const toggleAccordion = (index) => {
                 <div class="g-accordion__item" :data-accordion="accordion.collapse">
                     <div class="g-accordion__header" @click="toggleAccordion(index)"><span
                               class="g-accordion__header-prefix">{{
-                            accordion.prefix }}</span>{{ accordion.title }}</div>
+        accordion.prefix }}</span>{{ accordion.title }}</div>
                     <div class="g-accordion__body" :class="[accordion.collapse.toString() == 'true' ? '' : 'active']"
                          ref="bodyRefs">
                         <div class="g-accordion__content">
@@ -262,6 +282,12 @@ const toggleAccordion = (index) => {
                     <g-select label="主題顏色:" :group="true" :options="[style1, style2]" :required="true"
                               :valid="accordionData.validStyle"
                               v-model="accordionData.style" />
+                </div>
+                <div class="g-edit__row">
+                    <div class="input-group__label required">透明度:</div>
+                    <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
+                           v-model="accordionData.opacity" />
+                    <span>{{ accordionData.opacity * 100 }}%</span>
                 </div>
                 <template v-for="(accordion, index) in accordionData.accordions">
                     <div class="g-edit__row">
@@ -299,23 +325,19 @@ const toggleAccordion = (index) => {
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
                         <g-input label="PC間距上:" type="number" v-model="accordionData.mt" @change="handleNumber"
-                                 warning="間距請勿設定為負值"
-                                 :valid="accordionData.validMt" />
+                                 warning="間距請勿設定為負值" :valid="accordionData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="PC間距下:" type="number" v-model="accordionData.mb" @change="handleNumber"
-                                 warning="間距請勿設定為負值"
-                                 :valid="accordionData.validMb" />
+                                 warning="間距請勿設定為負值" :valid="accordionData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距上:" type="number" v-model="accordionData.mobile_mt"
-                                 @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="accordionData.validMmt" />
+                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="accordionData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距下:" type="number" v-model="accordionData.mobile_mb"
-                                 @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="accordionData.validMmb" />
+                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="accordionData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

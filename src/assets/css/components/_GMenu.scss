@@ -104,6 +104,9 @@
 					content: none;
 				}
 			}
+			&[data-limit="1"]{
+				cursor: pointer !important;
+			}
 			&:before {
 				content: none;
 			}

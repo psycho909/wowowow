@@ -1,8 +1,8 @@
 // Loading顯示
 export function loadingShow() {
-	$("#loadingProgress").show();
+	document.querySelector("#loadingProgress").style.display = "block";
 }
 // Loading隱藏
 export function loadingHide() {
-	$("#loadingProgress").hide();
+	document.querySelector("#loadingProgress").style.display = "none";
 }

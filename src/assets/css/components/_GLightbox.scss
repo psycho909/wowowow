@@ -115,8 +115,9 @@
 						margin-bottom: 0;
 					}
 					&.active {
-						background-color: var(--bg);
-						color: var(--text);
+						background-color: rgba(var(--bg, 212, 212, 212), var(--opacity, 1));
+						// color: rgba(var(--text, 0, 0, 0), 1);
+						color: rgba(var(--text, 0, 0, 0), 1);
 					}
 				}
 			}
@@ -135,7 +136,8 @@
 		position: absolute;
 		top: 0;
 		right: -40px;
-		background-color: var(--btnBg, #ff9c00);
+		// background-color: var(--btnBg, rgb(255, 156, 0));
+		background-color: rgba(var(--btnBg, 255, 156, 0), var(--opacity, 1));
 		border-radius: 4px;
 		@include media {
 			width: vw(60) !important;
@@ -151,7 +153,8 @@
 			position: absolute;
 			top: 50%;
 			left: 50%;
-			background-color: var(--btnText, #fff) !important;
+			// background-color: rgba(var(--btnText, 255, 255, 255), var(--opacity, 1))!important;
+			background-color: rgba(var(--btnText, 255, 255, 255), var(--opacity, 1)) !important;
 			transform: translate(-50%, -50%) rotate(45deg);
 		}
 		&:after {
@@ -161,7 +164,7 @@
 			position: absolute;
 			top: 50%;
 			left: 50%;
-			background-color: var(--btnText, #fff) !important;
+			background-color: rgba(var(--btnText, 255, 255, 255), var(--opacity, 1)) !important;
 			transform: translate(-50%, -50%) rotate(-45deg);
 		}
 	}
@@ -187,7 +190,7 @@
 	}
 	&__container {
 		width: 100%;
-		background-color: var(--bg, #fff);
+		background-color: rgba(var(--bg, 255, 255, 255), var(--opacity, 1));
 		color: rgb(74, 74, 74);
 		padding: 20px 20px 30px;
 		box-sizing: border-box;
@@ -248,7 +251,7 @@
 		align-items: center;
 		border-radius: 10px;
 		margin: 0 auto;
-		background-color: var(--btnBg, #ff9c00);
+		background-color: rgba(var(--btnBg, 255, 156, 0), var(--opacity, 1));
 		color: var(--btnText, #fff);
 		@include media {
 			width: vw(300);

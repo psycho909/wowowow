@@ -26,7 +26,6 @@ let toggle = ref(false);
 const bgStatus = computed(() => {
     if (content.value) {
         if (pageTypeSeq.value == 2) {
-
             let currentArea = content.value.filter((c, i) => {
                 return c.uid == targetArea.value
             })[0]
@@ -41,6 +40,14 @@ const bgStatus = computed(() => {
     }
     return {}
 })
+const componentStatus = (cpt) => {
+    if (content.value) {
+        return content.value.filter((c, i) => {
+            return c.component == cpt;
+        })[0]
+    }
+    return {}
+}
 const logoStatus = computed(() => {
     if (content.value) {
         if (pageTypeSeq.value == 2) {
@@ -177,15 +184,52 @@ const add = (cpt) => {
         return;
     }
     if (cpt.title == "GSlogan") {
-        if (sloganStatus.value?.content?.init) {
+        if (componentStatus("GSlogan")) {
+            componentStatus("GSlogan").update = true;
             return;
-        } else {
-            if (sloganStatus.value) {
-                sloganStatus.value.update = true;
-                return;
-            }
+        }
+
+    }
+    if (cpt.title == "GFixed") {
+        if (componentStatus("GFixed")) {
+            componentStatus("GFixed").update = true;
+            return;
         }
     }
+    if (cpt.title == "GWatermark") {
+        if (componentStatus("GWatermark")) {
+            componentStatus("GWatermark").update = true;
+            return;
+        }
+    }
+    if (cpt.title == "GTop") {
+        if (componentStatus("GTop")) {
+            componentStatus("GTop").update = true;
+            return;
+        }
+    }
+    if (cpt.title == "GMusic") {
+        if (componentStatus("GMusic")) {
+            componentStatus("GMusic").update = true;
+            return;
+        }
+    }
+    if (cpt.title == "GLang") {
+        if (componentStatus("GLang")) {
+            componentStatus("GLang").update = true;
+            return;
+        }
+    }
+    // if (cpt.title == "GSlogan") {
+    //     if (sloganStatus.value?.content?.init) {
+    //         return;
+    //     } else {
+    //         if (sloganStatus.value) {
+    //             sloganStatus.value.update = true;
+    //             return;
+    //         }
+    //     }
+    // }
     if (!cpt.status) {
         return;
     }
@@ -234,15 +278,17 @@ const toggleMenu = (e) => {
         <template #item="{ element }">
             <div @click="add(element)"
                  class="g-menu__add"
-                 :class='[["GFixed", "GBg", "GSlogan", "GTop", "GWatermark", "GMusic", "GLang"].includes(element.title) ? "" : "", element.status ? "" : "disabled"]'
+                 :class='[["GFixed", "GBg", "GSlogan", "GTop", "GWatermark", "GMusic", "GLang"].includes(element.title) ? "filtered" : "", element.status ? "" : "disabled"]'
                  :data-title="[element?.elements ? 'true' : 'false']"
-                 :data-drag='[[" GFixed", "GBg", "GSlogan", "GTop", "GWatermark", "GMusic", "GLang"
-                ].includes(element.title) || element.drag == false ? "false" : "true"]'>
+                 :data-limit="element.limit"
+                 :data-order="element.order"
+                 :data-drag='[["GFixed", "GBg", "GSlogan", "GTop", "GWatermark", "GMusic", "GLang"
+            ].includes(element.title) || element.drag == false ? "false" : "true"]'>
                 <template v-if="element.label">{{ element.label }}</template>
                 <template v-if="element?.elements">
                     <span class="g-menu__title filtered" @click="toggleMenu" data-toggle="false"
                           data-draggable="false">{{
-                            element.title }}</span>
+                element.title }}</span>
                     <nested-draggable :tasks="element.elements" />
                 </template>
             </div>

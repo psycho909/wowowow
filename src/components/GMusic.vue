@@ -3,7 +3,7 @@ export default {
     name: "GMusic",
     label: "音樂播放器",
     limit: 1,
-    order: [13, 13], type: [1, 2]
+    order: [13, 18], type: [1, 2]
 }
 </script>
 <script setup>

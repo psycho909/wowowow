@@ -37,7 +37,7 @@ if (pathName) {
 }
 
 </script>
-
+    
 <template>
 	<Home v-if="page == 'Home' && !pathName"></Home>
 	<PageType v-if="page == 'PageType' && !pathName"></PageType>
@@ -47,3 +47,4 @@ if (pathName) {
 	<EditPage v-if="page == 'EditPage' && !pathName"></EditPage>
 	<Preview v-if="pathName"></Preview>
 </template>
+    

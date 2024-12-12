@@ -2,7 +2,7 @@
 export default {
     name: "GButtons",
     label: "快速按鈕",
-    order: [5, 5], type: [1, 2]
+    order: [6, 11], type: [1, 2]
 }
 </script>
 <script setup>
@@ -33,6 +33,7 @@ const initData = () => {
         align: "left",
         style: "",
         validStyle: true,
+        opacity: 1,
         buttons: [{
             text: "",
             validText: true,
@@ -54,6 +55,9 @@ watchEffect(async () => {
     }
     if (!props.data.update) {
         if (Object.keys(props.data.content).length > 0) {
+            if (props.data.content.opacity === undefined) {
+                props.data.content.opacity = 1;
+            }
             Object.assign(buttonsData, cloneDeep(props.data.content));
             Object.assign(buttonsSetting, cloneDeep(props.data.content));
             _buttonsDataLength.value = buttonsData.num;
@@ -67,15 +71,31 @@ watchEffect(async () => {
                     v.target = true
                 }
             })
+
+            if (buttonsData.opacity == undefined) {
+                buttonsData.opacity = 1;
+            }
+            if (buttonsSetting.opacity == undefined) {
+                buttonsSetting.opacity = 1;
+            }
         }
     }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
+        if (props.data.content.opacity === undefined) {
+            props.data.content.opacity = 1;
+        }
         Object.assign(buttonsData, cloneDeep(props.data.content));
         Object.assign(buttonsSetting, cloneDeep(props.data.content));
         _buttonsDataLength.value = buttonsData.num;
+        if (buttonsData.opacity == undefined) {
+            buttonsData.opacity = 1;
+        }
+        if (buttonsSetting.opacity == undefined) {
+            buttonsSetting.opacity = 1;
+        }
         if ($addComponent) {
             $addComponent();
         }
@@ -88,6 +108,7 @@ const cssVar = computed(() => {
         "--mb": props.data.content.mb,
         "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
         "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
+        "--opacity": props.data.content.opacity === undefined ? 1 : props.data.content.opacity,
     }
 })
 
@@ -255,6 +276,12 @@ const closeBtn = () => {
                     <g-select label="主題顏色:" :group="true" :options="[style1, style2]" :required="true"
                               :valid="buttonsData.validStyle"
                               v-model="buttonsData.style" />
+                </div>
+                <div class="g-edit__row">
+                    <div class="input-group__label required">透明度:</div>
+                    <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
+                           v-model="buttonsData.opacity" />
+                    <span>{{ buttonsData.opacity * 100 }}%</span>
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">按鈕數量:</div>

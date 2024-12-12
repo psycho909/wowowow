@@ -2,7 +2,6 @@
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
 import nestedDraggable from "./nested.vue";
-import { GetPageType } from "../api";
 
 const props = defineProps(["menu"])
 const store = mainStore();
@@ -31,17 +30,23 @@ const componentStatus = (cpt) => {
 const total = computed(() => {
     if (content.value) {
         if (pageTypeSeq.value == 2) {
+            const topComponent = ["GLang", "GWatermark", "GMusic", "GTop", "GFixed"];
             const result = {};
             content.value.forEach(item => {
                 const uid = item.uid;
                 const subContent = item.content && item.content.subContent ? item.content.subContent : [];
 
                 const componentCount = {};
+                const onlyComponent={}
                 subContent.forEach(subItem => {
                     const component = subItem.component;
                     componentCount[component] = (componentCount[component] || 0) + 1;
                 });
-
+                if(topComponent.includes(item.component)){
+                    const component = item.component;
+                    onlyComponent[component] = (onlyComponent[component] || 0) + 1;
+                    result[uid] = onlyComponent;
+                }
                 if (Object.keys(componentCount).length > 0) {
                     result[uid] = componentCount;
                 }
@@ -80,13 +85,13 @@ const menuFilter = computed(() => {
         for (const element of remainingMenu) {
             if (element.title.startsWith("GSlide")) {
                 if (!currentGroup || currentGroup.title !== "輪播區塊") {
-                    currentGroup = { title: "輪播區塊", elements: [], order: [4, 4] };
+                    currentGroup = { title: "輪播區塊", elements: [], order: [4, 9] };
                     groupedMenu.push(currentGroup);
                 }
                 currentGroup.elements.push(element);
             } else if (element.title.startsWith("GImg")) {
                 if (!currentGroup || currentGroup.title !== "圖片區塊") {
-                    currentGroup = { title: "圖片區塊", elements: [], order: [5, 5] };
+                    currentGroup = { title: "圖片區塊", elements: [], order: [5, 10] };
                     groupedMenu.push(currentGroup);
                 }
                 currentGroup.elements.push(element);
@@ -96,10 +101,7 @@ const menuFilter = computed(() => {
         }
         return [...validPreviousMenu, ...groupedMenu]
             .sort((a, b) => {
-                // 如果是分组，使用第一个元素的 order
-                const orderA = a.elements ? a.elements[0].order[0] : a.order[0];
-                const orderB = b.elements ? b.elements[0].order[0] : b.order[0];
-                return orderA - orderB;
+                return a.order[0] - b.order[0]
             });
     }
 
@@ -107,17 +109,48 @@ const menuFilter = computed(() => {
         // First condition: Filter and sort specific menu items
         const specificItems = props.menu
             .filter(item => item.type.includes(2))
-            .filter(v => ["GArea", "GFixed", "GWatermark", "GMusic", "GLang", "GTop"].includes(v.title)).map(v => ({
-                ...v,
-                drag: false
-            }))
+            .filter(v => ["GArea", "GFixed", "GWatermark", "GMusic", "GLang", "GTop"].includes(v.title)).map(v => {
+                return {
+                    ...v,
+                    drag: false,
+                }
+            })
         // Second condition: Based on group value
         if (group.value.name == 1) {
             const homeComponent = ["GLogo", "GIcon", "GBg", "GDNNav", "GDNImg"];
             let filteredMenu = props.menu
                 .filter(v => homeComponent.includes(v.title))
 
-            return [...specificItems, ...filteredMenu]
+            let temp=[...specificItems, ...filteredMenu];
+            // temp.forEach(item => {
+            //     for (let key in total.value) {
+            //         console.log(total.value[key])
+            //         if (total.value[key][item.title] !== undefined) {
+            //             // console.log(item)
+            //             if (total.value[key][item.title] === item.limit) {
+            //                 item.status = false;
+            //             }
+            //         }else{
+            //             // console.log(item)
+            //             item.status = true;
+            //         }
+            //     }
+            // });
+            // 建立快速查詢結構
+            let titleLimitMap = {};
+            for (let key in total.value) {
+                Object.assign(titleLimitMap, total.value[key]);
+            }
+
+            // 更新 temp 的 status
+            temp.forEach(item => {
+                if (titleLimitMap[item.title] !== undefined && titleLimitMap[item.title] === item.limit) {
+                    item.status = false;
+                }else{
+                    item.status = true;
+                }
+            });
+            return temp
                 .sort((a, b) => a.order[1] - b.order[1])
                 .map(v => ({
                     ...v,
@@ -144,13 +177,13 @@ const menuFilter = computed(() => {
             for (const element of filteredMenu) {
                 if (element.title.startsWith("GSlide")) {
                     if (!currentGroup || currentGroup.title !== "輪播區塊") {
-                        currentGroup = { title: "輪播區塊", elements: [], order: [4, 4] };
+                        currentGroup = { title: "輪播區塊", elements: [], order: [4, 9] };
                         groupedMenu.push(currentGroup);
                     }
                     currentGroup.elements.push(element);
                 } else if (element.title.startsWith("GImg")) {
                     if (!currentGroup || currentGroup.title !== "圖片區塊") {
-                        currentGroup = { title: "圖片區塊", elements: [], order: [5, 5] };
+                        currentGroup = { title: "圖片區塊", elements: [], order: [5, 10] };
                         groupedMenu.push(currentGroup);
                     }
                     currentGroup.elements.push(element);
@@ -158,16 +191,35 @@ const menuFilter = computed(() => {
                     groupedMenu.push(element);
                 }
             }
+            let temp=[...specificItems, ...groupedMenu];
+            // temp.forEach(item => {
+            //     for (let key in total.value) {
+            //         if (total.value[key][item.title] !== undefined) {
+            //             if (total.value[key][item.title] === item.limit) {
+            //                 item.status = false;
+            //             }
+            //         }
+            //     }
+            // });
+            let titleLimitMap = {};
+            for (let key in total.value) {
+                Object.assign(titleLimitMap, total.value[key]);
+            }
 
-            return [...specificItems, ...groupedMenu]
+            // 更新 temp 的 status
+            temp.forEach(item => {
+                if (titleLimitMap[item.title] !== undefined && titleLimitMap[item.title] === item.limit) {
+                    item.status = false;
+                }else{
+                    item.status = true;
+                }
+            });
+            return temp
                 .sort((a, b) => {
                     return a.order[1] - b.order[1]
                 });
         }
     }
-
-    // If pageTypeSeq.value is not 2, no action is taken
-
     return [];
 });
 const add = (cpt) => {

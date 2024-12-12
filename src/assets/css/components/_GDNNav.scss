@@ -1,5 +1,6 @@
 .g-dn_nav {
-	margin-top: calc(var(--nav-margin-top, 104) * 1px);
+	// margin-top: calc(var(--nav-margin-top, 104) * 1px);
+	margin-top: calc(var(--fixed-top, 0) * 1px + var(--nav-margin-top, 104) * 1px);
 	margin-bottom: calc(var(--nav-margin-bottom, 0) * 1px) !important;
 	position: relative;
 	z-index: 2;

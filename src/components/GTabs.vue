@@ -2,7 +2,7 @@
 export default {
     name: "GTabs",
     label: "頁籤區塊",
-    order: [5, 5],
+    order: [9, 14],
     type: [1, 2]
 }
 </script>
@@ -14,7 +14,7 @@ import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GSelect from '../elements/GSelect.vue';
 import GSwiper from '../elements/GSwiper2.vue';
-import GCkedit from '../elements/GCkedit.vue';
+import GCkedit from '../elements/GCkeditSimple.vue';
 import GLightbox from './GLightbox.vue';
 import GYoutube from '../elements/GYoutube.vue';
 import colors, { style1, style2 } from "../colors";
@@ -36,19 +36,18 @@ let tabRef = ref("");
 let tabPop = ref(false);
 let tabPopShow = ref(false);
 let tabPopHide = ref(false);
-let totalImages = ref(0);
-let imagesLoaded = ref(0);
 const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         style: "",
         validStyle: true,
-        type: "img",
         activeTab: 0,
+        opacity: 1,
         tabs: [{
             name: "",
             validName: true,
             title: "",
+            type: "img",
             img: {
                 pc: "",
                 mobile: "",
@@ -110,16 +109,39 @@ watchEffect(async () => {
         showEdit.value = false;
     }
     if (!props.data.update) {
+        if (props.data.content.opacity === undefined) {
+            props.data.content.opacity = 1;
+        }
+        if (props.data.content.type) {
+            props.data.content.tabs.forEach((v, i) => {
+                v.type = props.data.content.type
+            })
+        }
         Object.assign(tabsData, cloneDeep(props.data.content));
         Object.assign(tabsSetting, cloneDeep(props.data.content))
+        if (tabsData.type) {
+            tabsData.tabs.forEach((v, i) => {
+                v.type = tabsData.type
+            })
+            tabsData.type = null;
+        }
+        if (tabsSetting.type) {
+            tabsSetting.tabs.forEach((v, i) => {
+                v.type = tabsSetting.type
+            })
+            tabsSetting.type = null;
+        }
+        if (tabsData.opacity == undefined) {
+            tabsData.opacity = 1;
+        }
+        if (tabsSetting.opacity == undefined) {
+            tabsSetting.opacity = 1;
+        }
         videoUpdate.value = true;
         slideUpdate.value = true;
         await nextTick();
         videoUpdate.value = false;
         slideUpdate.value = false;
-        if (tabsSetting.type == "img") {
-            totalImages.value = tabsSetting.tabs.length
-        }
         // getHeightOfTabBoxes()
         // getWidthOfTab()
     }
@@ -129,14 +151,33 @@ watchEffect(async () => {
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
+        if (props.data.content.opacity === undefined) {
+            props.data.content.opacity = 1;
+        }
+        if (props.data.content.type) {
+            props.data.content.tabs.forEach((v, i) => {
+                v.type = props.data.content.type
+            })
+        }
         Object.assign(tabsData, cloneDeep(props.data.content));
         Object.assign(tabsSetting, cloneDeep(props.data.content))
-        await nextTick();
-        if (tabsSetting.type == "img") {
-            totalImages.value = tabsSetting.tabs.length
+        if (tabsData.type) {
+            tabsData.tabs.forEach((v, i) => {
+                v.type = tabsData.type
+            })
         }
-        // getHeightOfTabBoxes()
-        // getWidthOfTab()
+        if (tabsSetting.type) {
+            tabsSetting.tabs.forEach((v, i) => {
+                v.type = tabsSetting.type
+            })
+        }
+        if (tabsData.opacity == undefined) {
+            tabsData.opacity = 1;
+        }
+        if (tabsSetting.opacity == undefined) {
+            tabsSetting.opacity = 1;
+        }
+        await nextTick();
         let tabListWidth = document.querySelector('.g-tabs__tab-list').clientWidth;
         let tabLiWidthTotal = 0;
         document.querySelectorAll('.g-tabs__tab-list li').forEach((item) => {
@@ -286,6 +327,7 @@ const cssVar = computed(() => {
         "--mb": props.data.content.mb,
         "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
         "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
+        "--opacity": props.data.content.opacity === undefined ? 1 : props.data.content.opacity,
     }
 })
 
@@ -488,12 +530,6 @@ const getWidthOfTab = () => {
     tabPop.value = tabWidth > tabBox
 }
 
-const imageLoaded = () => {
-    imagesLoaded.value++;
-    if (imagesLoaded.value === totalImages.value) {
-        // getHeightOfTabBoxes()
-    }
-}
 
 const openTabPop = () => {
     tabPopShow.value = true
@@ -522,13 +558,13 @@ const targetTab = (index) => {
 
                 <template v-for="(tab, index) in tabsSetting.tabs" :key="index">
                     <div class="g-tabs__box" :class="[tabsSetting.activeTab === index ? 'show' : '']"
-                         :data-type="tabsSetting.type" ref="tabBox">
+                         :data-type="tab.type" ref="tabBox">
                         <div class="g-tabs__title" v-if="tab.title">
                             <span>{{ tab.title }}</span>
                             <span v-if="tab.subtitle">{{ tab.subtitle }}</span>
                         </div>
                         <div class="g-tabs__pane">
-                            <template v-if="tabsSetting.type == 'img'">
+                            <template v-if="tab.type == 'img'">
                                 <template v-if="tab.img.type == ''">
                                     <div class="g-img__box none">
                                         <div class="g-img__img-box">
@@ -570,7 +606,8 @@ const targetTab = (index) => {
                                         </div>
                                         <g-lightbox v-model:showLightbox="tab.img.pop.show"
                                                     :class="[tab.img.pop.align, tab.img.pop.type, tab.img.pop.type == 'slide' ? 'pop-slide' : '']">
-                                            <template #lightbox-title v-if="tab.img.pop.type != 'slide'">{{
+                                            <template #lightbox-title
+                                                      v-if="tab.img.pop.type != 'slide' && tab.img.pop.title !== ''">{{
                                                 tab.img.pop.title }}</template>
 
                                             <template #lightbox-content>
@@ -604,7 +641,7 @@ const targetTab = (index) => {
                                 </template>
                             </template>
 
-                            <template v-if="tabsSetting.type == 'video'">
+                            <template v-if="tab.type == 'video'">
                                 <a v-if="tab.video.type == 'click'" href="javascript:;" class="g-video__box">
                                     <g-youtube :youtube="tab.video.url" v-if="!videoUpdate" :openapp="tab.video.app" />
                                 </a>
@@ -628,7 +665,7 @@ const targetTab = (index) => {
                                 </a>
                             </template>
 
-                            <template v-if="tabsSetting.type == 'text'">
+                            <template v-if="tab.type == 'text'">
                                 <template v-if="tab.text.type == 'all'">
                                     <div class="g-text__box" :data-align="tab.text.align" v-html="tab.text.text"></div>
                                 </template>
@@ -669,10 +706,10 @@ const targetTab = (index) => {
                               v-model="tabsData.style" />
                 </div>
                 <div class="g-edit__row">
-                    <div class="input-group__label required">內容樣式:</div>
-                    <g-radio label="圖片" name="type" value="img" v-model="tabsData.type" />
-                    <g-radio label="影片" name="type" value="video" v-model="tabsData.type" />
-                    <g-radio label="文字" name="type" value="text" v-model="tabsData.type" />
+                    <div class="input-group__label required">透明度:</div>
+                    <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
+                           v-model="tabsData.opacity" />
+                    <span>{{ tabsData.opacity * 100 }}%</span>
                 </div>
                 <template v-for="( tab, index ) in tabsData.tabs " :key="index">
                     <div class="g-edit__row">
@@ -691,7 +728,13 @@ const targetTab = (index) => {
                                 <div class="g-edit__col">
                                     <g-input label="主標:" v-model.trim="tab.title" max="20" />
                                 </div>
-                                <template v-if="tabsData.type == 'img'">
+                                <div class="g-edit__row">
+                                    <div class="input-group__label required">內容樣式:</div>
+                                    <g-radio label="圖片" :name="'tabtype' + index" value="img" v-model="tab.type" />
+                                    <g-radio label="影片" :name="'tabtype' + index" value="video" v-model="tab.type" />
+                                    <g-radio label="文字" :name="'tabtype' + index" value="text" v-model="tab.type" />
+                                </div>
+                                <template v-if="tab.type == 'img'">
                                     <div class="g-edit__col">
                                         <g-input label="圖片:" v-model.trim="tab.img.pc" :preview="tab.img.pc"
                                                  :required="true"
@@ -827,7 +870,7 @@ const targetTab = (index) => {
                                     </template>
                                 </template>
 
-                                <template v-if="tabsData.type == 'video'">
+                                <template v-if="tab.type == 'video'">
                                     <div class="g-edit__col">
                                         <g-input label="影片連結:" :required="true" v-model.trim="tab.video.url"
                                                  :valid="tab.video.validUrl" />
@@ -848,7 +891,7 @@ const targetTab = (index) => {
                                     </div>
                                 </template>
 
-                                <template v-if="tabsData.type == 'text'">
+                                <template v-if="tab.type == 'text'">
                                     <div class="g-edit__col">
                                         <div class="input-group__label required">對齊方向:</div>
                                         <g-radio label="左" :name="'textAlign' + index" value="left"

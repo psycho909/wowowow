@@ -28,7 +28,7 @@
 		position: absolute;
 		top: 0;
 		right: -40px;
-		background-color: var(--btnBg, #ff9c00);
+		background-color: rgba(var(--btnBg, 255, 156, 0), 1);
 		border-radius: 4px;
 		&:before {
 			content: "";

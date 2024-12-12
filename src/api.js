@@ -1,10 +1,8 @@
 import axios from "axios";
-let env = import.meta.env.MODE;
 
-let apiRequest;
-
-apiRequest = axios.create({
-	baseURL: "/json"
+const apiRequest = axios.create({
+	// baseURL: "/api/GamaEvent/"
+	baseURL: "api/GamaEvent/"
 });
 
 // 取得遊戲列表
@@ -22,7 +20,7 @@ export const GetGames = (otp = 1) => {
 // 取得活動列表
 export const GetEventList = (otp = 1, data) => {
 	return apiRequest({
-		method: "get",
+		method: "post",
 		url: "GetEventList",
 		headers: { "Content-Type": "application/json" },
 		data,
@@ -98,42 +96,15 @@ export const UpdateApprovedEvent = (otp = 1, data) => {
 
 // 更新活動內容
 export const UpdateEventContent = (otp = 1, data) => {
-	if (env == "test") {
-		return apiRequest({
-			method: "get",
-			url: "GetEventList"
-		})
-			.then((res) => {
-				let _data = res.data;
-				let index = _data.listData.findIndex((v, i) => {
-					return v.eventSeq == data.eventSeq;
-				});
-				_data.listData[index] = data;
-				return apiRequest({
-					method: "put",
-					url: "GetEventList",
-					headers: { "Content-Type": "application/json" },
-					data: _data
-				});
-			})
-			.then((res) => {
-				return {
-					data: {
-						code: 1
-					}
-				};
-			});
-	} else {
-		return apiRequest({
-			method: "post",
-			url: "UpdateEventContent",
-			headers: { "Content-Type": "application/json" },
-			data,
-			params: {
-				otp
-			}
-		});
-	}
+	return apiRequest({
+		method: "post",
+		url: "UpdateEventContent",
+		headers: { "Content-Type": "application/json" },
+		data,
+		params: {
+			otp
+		}
+	});
 };
 
 // 更新活動設定
@@ -160,14 +131,16 @@ export const CopyEvent = (otp = 1, data) => {
 		}
 	});
 };
-export const GetApprovedEventMain = (url, eventSeq) => {
+export const GetApprovedEventMain = ({ url = "", eventSeq = 0, gA4Name = "", flag = 0 } = {}) => {
 	return apiRequest({
 		method: "post",
 		url: "GetApprovedEvent",
 		headers: { "Content-Type": "application/json" },
 		data: {
 			url,
-			eventSeq
+			eventSeq,
+			gA4Name,
+			flag
 		}
 	});
 };

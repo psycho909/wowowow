@@ -1,6 +1,6 @@
 .g-icon {
 	position: absolute;
-	top: 24px;
+	top: calc(var(--fixed-top, 0) * 1px + 24px);
 	right: 26px;
 	z-index: 2;
 	@include media {

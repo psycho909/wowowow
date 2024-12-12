@@ -3,7 +3,7 @@ export default {
     name: "GLang",
     label: "設定多國語系",
     limit: 1,
-    order: [15, 15], type: [1, 2]
+    order: [15, 20], type: [1, 2]
 }
 </script>
 

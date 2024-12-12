@@ -133,7 +133,7 @@ watchEffect(async () => {
                                 </picture>
                             </div>
                             <template v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                <div class="g-swiper__card">
+                                <div class="g-swiper__card" :data-align="slide.card.align">
                                     <div class="g-swiper__card-body"
                                          v-if="slide.card.title !== '' || slide.card.text !== ''">
                                         <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{ slide.card.title
@@ -162,7 +162,7 @@ watchEffect(async () => {
                                     </template>
                                 </div>
                                 <template v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                    <div class="g-swiper__card">
+                                    <div class="g-swiper__card" :data-align="slide.card.align">
                                         <div class="g-swiper__card-body"
                                              v-if="slide.card.title !== '' || slide.card.text !== ''">
                                             <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
@@ -182,7 +182,7 @@ watchEffect(async () => {
                                         <a href="javascript:;" class="g-lightbox__close icon-close"
                                            @click="closePop(slide, slide.pop.closeRedirect)"></a>
                                     </template>
-                                    <template #lightbox-title v-if="slide.pop.type != 'slide'">{{
+                                    <template #lightbox-title v-if="slide.pop.type != 'slide' && slide.pop.title !== ''">{{
                                         slide.pop.title }}</template>
                                     <template #lightbox-content>
                                         <template v-if="slide.pop.type != 'slide'">
@@ -215,7 +215,7 @@ watchEffect(async () => {
                                     </div>
                                     <template
                                               v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                        <div class="g-swiper__card">
+                                        <div class="g-swiper__card" :data-align="slide.card.align">
                                             <div class="g-swiper__card-body"
                                                  v-if="slide.card.title !== '' || slide.card.text !== ''">
                                                 <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
@@ -244,7 +244,7 @@ watchEffect(async () => {
                                     </div>
                                     <template
                                               v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                        <div class="g-swiper__card">
+                                        <div class="g-swiper__card" :data-align="slide.card.align">
                                             <div class="g-swiper__card-body"
                                                  v-if="slide.card.title !== '' || slide.card.text !== ''">
                                                 <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
@@ -272,7 +272,7 @@ watchEffect(async () => {
                                     </template>
                                 </div>
                                 <template v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                    <div class="g-swiper__card">
+                                    <div class="g-swiper__card" :data-align="slide.card.align">
                                         <div class="g-swiper__card-body"
                                              v-if="slide.card.title !== '' || slide.card.text !== ''">
                                             <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
@@ -314,7 +314,7 @@ watchEffect(async () => {
                                 </picture>
                             </div>
                             <template v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                <div class="g-swiper__card">
+                                <div class="g-swiper__card" :data-align="slide.card.align">
                                     <div class="g-swiper__card-body"
                                          v-if="slide.card.title !== '' || slide.card.text !== ''">
                                         <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{ slide.card.title
@@ -343,7 +343,7 @@ watchEffect(async () => {
                                     </template>
                                 </div>
                                 <template v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                    <div class="g-swiper__card">
+                                    <div class="g-swiper__card" :data-align="slide.card.align">
                                         <div class="g-swiper__card-body"
                                              v-if="slide.card.title !== '' || slide.card.text !== ''">
                                             <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
@@ -356,7 +356,7 @@ watchEffect(async () => {
                                 </template>
                                 <g-lightbox v-model:showLightbox="slide.pop.show" :style="colors[slide.pop.style]"
                                             :class="[slide.pop.align, slide.pop.type == 'slide' ? 'pop-slide' : '']">
-                                    <template #lightbox-title v-if="slide.pop.type != 'slide'">{{
+                                    <template #lightbox-title v-if="slide.pop.type != 'slide' && slide.pop.title !== ''">{{
                                         slide.pop.title }}</template>
                                     <template #lightbox-content>
                                         <template v-if="slide.pop.type != 'slide'">
@@ -396,7 +396,7 @@ watchEffect(async () => {
                                     </div>
                                     <template
                                               v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                        <div class="g-swiper__card">
+                                        <div class="g-swiper__card" :data-align="slide.card.align">
                                             <div class="g-swiper__card-body"
                                                  v-if="slide.card.title !== '' || slide.card.text !== ''">
                                                 <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
@@ -426,7 +426,7 @@ watchEffect(async () => {
                                     </div>
                                     <template
                                               v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                        <div class="g-swiper__card">
+                                        <div class="g-swiper__card" :data-align="slide.card.align">
                                             <div class="g-swiper__card-body"
                                                  v-if="slide.card.title !== '' || slide.card.text !== ''">
                                                 <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{
@@ -452,7 +452,7 @@ watchEffect(async () => {
                                     </template>
                                 </div>
                                 <template v-if="slide.card.title !== '' || slide.card.text !== '' || slide.card.url !== ''">
-                                    <div class="g-swiper__card">
+                                    <div class="g-swiper__card" :data-align="slide.card.align">
                                         <div class="g-swiper__card-body"
                                              v-if="slide.card.title !== '' || slide.card.text !== ''">
                                             <div class="g-swiper__card-title" v-if="slide.card.title !== ''">{{

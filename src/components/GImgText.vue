@@ -2,12 +2,12 @@
 export default {
     name: "GImgText",
     label: "圖片-上圖下文",
-    order: [5, 5], type: [1, 2]
+    order: 5, type: [1, 2]
 }
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
-import GCkedit from '../elements/GCkedit.vue';
+import GCkedit from '../elements/GCkeditSimple.vue';
 import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GSelect from '../elements/GSelect.vue';
@@ -35,6 +35,8 @@ const initData = () => {
         num: 1,
         style: "",
         validStyle: true,
+        opacity: 1,
+        align: "center",
         imgs: [{
             pc: "",
             mobile: "",
@@ -48,7 +50,8 @@ const initData = () => {
                 title: "",
                 text: "",
                 url: "",
-                validCard: true
+                validCard: true,
+                align: "center"
             },
             pop: {
                 show: false, type: "text",
@@ -91,6 +94,14 @@ watchEffect(async () => {
     }
     if (!props.data.update) {
         if (Object.keys(props.data.content).length > 0) {
+            if (props.data.content.opacity === undefined) {
+                props.data.content.opacity = 1;
+            }
+            props.data.content.imgs.forEach((img, index) => {
+                if (img.card.align == undefined) {
+                    img.card.align = "center"
+                }
+            })
             Object.assign(imgData, cloneDeep(props.data.content));
             Object.assign(imgSetting, cloneDeep(props.data.content));
             imgData.imgs.forEach((img, index) => {
@@ -99,7 +110,12 @@ watchEffect(async () => {
                         title: "",
                         text: "",
                         url: "",
-                        validCard: true
+                        validCard: true,
+                        align: "center"
+                    }
+                } else {
+                    if (img.card.align == undefined) {
+                        img.card.align = "center"
                     }
                 }
                 if (!img.pop.autoplay) {
@@ -110,6 +126,40 @@ watchEffect(async () => {
                     }
                 }
             })
+            imgSetting.imgs.forEach((img, index) => {
+                if (!img.card) {
+                    img.card = {
+                        title: "",
+                        text: "",
+                        url: "",
+                        validCard: true,
+                        align: "center"
+                    }
+                } else {
+                    if (img.card.align == undefined) {
+                        img.card.align = "center"
+                    }
+                }
+                if (!img.pop.autoplay) {
+                    img.pop.autoplay = {
+                        open: false,
+                        delay: 3,
+                        validDelay: true
+                    }
+                }
+            })
+            if (imgData.opacity == undefined) {
+                imgData.opacity = 1;
+            }
+            if (imgSetting.opacity == undefined) {
+                imgSetting.opacity = 1;
+            }
+            if(imgData.align == undefined){
+                imgSetting.align="center"
+            }
+            if(imgSetting.align == undefined){
+                imgSetting.align="center"
+            }
             _imgDataLength.value = imgData.num;
             imgLoading(imgData.imgs).then((res) => {
                 loading.value = false;
@@ -123,6 +173,14 @@ watchEffect(async () => {
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
+        if (props.data.content.opacity === undefined) {
+            props.data.content.opacity = 1;
+        }
+        props.data.content.imgs.forEach((img, index) => {
+            if (img.card.align == undefined) {
+                img.card.align = "center"
+            }
+        })
         Object.assign(imgData, cloneDeep(props.data.content));
         Object.assign(imgSetting, cloneDeep(props.data.content));
         imgData.imgs.forEach((img, index) => {
@@ -131,7 +189,12 @@ onMounted(async () => {
                     title: "",
                     text: "",
                     url: "",
-                    validCard: true
+                    validCard: true,
+                    align: "center"
+                }
+            } else {
+                if (img.card.align == undefined) {
+                    img.card.align = "center"
                 }
             }
             if (!img.pop.autoplay) {
@@ -142,6 +205,40 @@ onMounted(async () => {
                 }
             }
         })
+        imgSetting.imgs.forEach((img, index) => {
+            if (!img.card) {
+                img.card = {
+                    title: "",
+                    text: "",
+                    url: "",
+                    validCard: true,
+                    align: "center"
+                }
+            } else {
+                if (img.card.align == undefined) {
+                    img.card.align = "center"
+                }
+            }
+            if (!img.pop.autoplay) {
+                img.pop.autoplay = {
+                    open: false,
+                    delay: 3,
+                    validDelay: true
+                }
+            }
+        })
+        if (imgData.opacity == undefined) {
+            imgData.opacity = 1;
+        }
+        if (imgSetting.opacity == undefined) {
+            imgSetting.opacity = 1;
+        }
+        if(imgData.align == undefined){
+            imgData.align="center"
+        }
+        if(imgSetting.align == undefined){
+            imgSetting.align="center"
+        }
         _imgDataLength.value = imgData.num;
         imgLoading(imgData.imgs).then((res) => {
             loading.value = false;
@@ -158,6 +255,7 @@ const cssVar = computed(() => {
         "--mb": props.data.content.mb,
         "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
         "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
+        "--opacity": props.data.content.opacity === undefined ? 1 : props.data.content.opacity,
     }
 })
 const status = computed(() => {
@@ -218,7 +316,8 @@ const onChange = (e) => {
                     title: "",
                     text: "",
                     url: "",
-                    validCard: true
+                    validCard: true,
+                    align: "center"
                 },
                 autoplay: {
                     open: false,
@@ -267,14 +366,22 @@ function validateCard(card) {
 
     // 檢查標題長度
     const validTitle = !card.title || card.title.length <= 50;
-
     // 檢查文本長度
     const validText = !card.text || removeHtmlTags(card.text).length <= 250;
 
     // 檢查URL格式
     const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-    const validUrl = !card.url || urlPattern.test(card.url);
-
+    // const validUrl = !card.url || urlPattern.test(card.url);
+    let validUrl = false;
+    if (card.type === "link") {
+        if (card.url === "") {
+            validUrl = false;
+        } else {
+            validUrl = urlPattern.test(card.link);
+        }
+    } else {
+        validUrl = true;
+    }
     // 設置validCard
     card.validCard = hasContent && validTitle && validText && validUrl;
 
@@ -417,7 +524,9 @@ const onSubmit = async () => {
         } else {
             imgData.imgs[i].validEffectImg = true;
         }
+        console.log(i, validateCard(imgData.imgs[i].card))
         if (validateCard(imgData.imgs[i].card)) {
+
             imgData.imgs[i].card.validCard = true;
         } else {
             imgData.imgs[i].card.validCard = false;
@@ -435,7 +544,7 @@ const onSubmit = async () => {
     })
     if (imgData.validMt && imgData.validMb && imgData.validMmt && imgData.validMmb) {
         if (validCheck && isDataValid && imgData.validStyle) {
-            $("#loadingProgress").show();
+            document.querySelector("#loadingProgress").style.display = "block";
             let data = cloneDeep(imgData);
             store.updateCpt(props.data.uid, data, props.sub);
             Object.assign(imgSetting, data);
@@ -505,7 +614,7 @@ const closePop = (data, url) => {
                             </picture>
                         </div>
                         <template v-if="imgs.card.title !== '' || imgs.card.text !== '' || imgs.card.url !== ''">
-                            <div class="g-img__card">
+                            <div class="g-img__card" :data-align="imgSetting.align">
                                 <div class="g-img__card-body" v-if="imgs.card.title !== '' || imgs.card.text !== ''">
                                     <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title }}
                                     </div>
@@ -534,7 +643,7 @@ const closePop = (data, url) => {
                                 </template>
                             </div>
                             <template v-if="imgs.card.title !== '' || imgs.card.text !== '' || imgs.card.url !== ''">
-                                <div class="g-img__card">
+                                <div class="g-img__card" :data-align="imgSetting.align">
                                     <div class="g-img__card-body"
                                          v-if="imgs.card.title !== '' || imgs.card.text !== ''">
                                         <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title
@@ -566,12 +675,12 @@ const closePop = (data, url) => {
                                 </div>
                                 <template
                                           v-if="imgs.card.title !== '' || imgs.card.text !== '' || imgs.card.url !== ''">
-                                    <div class="g-img__card">
+                                    <div class="g-img__card" :data-align="imgSetting.align">
                                         <div class="g-img__card-body"
                                              v-if="imgs.card.title !== '' || imgs.card.text !== ''">
                                             <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{
                                                 imgs.card.title
-                                                }}
+                                            }}
                                             </div>
                                             <div class="g-img__card-text" v-if="imgs.card.text !== ''"
                                                  v-html="imgs.card.text">
@@ -601,12 +710,12 @@ const closePop = (data, url) => {
                                 </div>
                                 <template
                                           v-if="imgs.card.title !== '' || imgs.card.text !== '' || imgs.card.url !== ''">
-                                    <div class="g-img__card">
+                                    <div class="g-img__card" :data-align="imgSetting.align">
                                         <div class="g-img__card-body"
                                              v-if="imgs.card.title !== '' || imgs.card.text !== ''">
                                             <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{
                                                 imgs.card.title
-                                                }}
+                                            }}
                                             </div>
                                             <div class="g-img__card-text" v-if="imgs.card.text !== ''"
                                                  v-html="imgs.card.text">
@@ -634,7 +743,7 @@ const closePop = (data, url) => {
                                 </template>
                             </div>
                             <template v-if="imgs.card.title !== '' || imgs.card.text !== '' || imgs.card.url !== ''">
-                                <div class="g-img__card">
+                                <div class="g-img__card" :data-align="imgSetting.align">
                                     <div class="g-img__card-body"
                                          v-if="imgs.card.title !== '' || imgs.card.text !== ''">
                                         <div class="g-img__card-title" v-if="imgs.card.title !== ''">{{ imgs.card.title
@@ -648,7 +757,8 @@ const closePop = (data, url) => {
                             </template>
                             <g-lightbox v-model:showLightbox="imgs.pop.show" :style="colors[imgs.pop.style]"
                                         :class="[imgs.pop.align, imgs.pop.type, imgs.pop.type == 'slide' ? 'pop-slide' : '']">
-                                <template #lightbox-title v-if="imgs.pop.type != 'slide'">{{ imgs.pop.title
+                                <template #lightbox-title v-if="imgs.pop.type != 'slide' && imgs.pop.title !== ''">{{
+                                    imgs.pop.title
                                     }}</template>
                                 <template #lightbox-content>
                                     <template v-if="imgs.pop.type != 'slide'">
@@ -705,6 +815,18 @@ const closePop = (data, url) => {
                                   :valid="imgData.validStyle"
                                   v-model="imgData.style" />
                     </div>
+                    <div class="g-edit__col">
+                        <div class="input-group__label">文字對齊方向:</div>
+                        <g-radio label="置左" name="textAlign" value="left" v-model="imgData.align" />
+                        <g-radio label="置中" name="textAlign" value="center" v-model="imgData.align" />
+                        <g-radio label="置右" name="textAlign" value="right" v-model="imgData.align" />
+                    </div>
+                </div>
+                <div class="g-edit__row">
+                    <div class="input-group__label required">透明度:</div>
+                    <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
+                           v-model="imgData.opacity" />
+                    <span>{{ imgData.opacity * 100 }}%</span>
                 </div>
                 <div class="g-edit__row g-edit__block" v-for="(img, index) in imgData.imgs">
                     <div class="g-edit__col">

@@ -3,7 +3,7 @@ export default {
     name: "Slogan",
     label: "主標圖",
     limit: 1,
-    order: [2, 2],
+    order: [2, 3],
     type: [1, 2]
 }
 </script>
@@ -208,7 +208,7 @@ const onSubmit = async () => {
     }
     if (sloganData.validMt && sloganData.validMb && sloganData.validMmt && sloganData.validMmb) {
         if (sloganData.validPC && sloganData.validMobile && sloganData.validUrl) {
-            $("#loadingProgress").show();
+            document.querySelector("#loadingProgress").style.display = "block";
             data = cloneDeep(sloganData);
             Object.assign(sloganSetting, data);
             GetPageType(store.otp)

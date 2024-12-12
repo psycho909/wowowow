@@ -1,6 +1,6 @@
 .g-logo {
 	position: absolute;
-	top: 24px;
+	top: calc(var(--fixed-top, 0) * 1px + 24px);
 	left: 26px;
 	z-index: 2;
 	@include media {

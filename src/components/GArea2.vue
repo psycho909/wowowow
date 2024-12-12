@@ -9,20 +9,13 @@ import GIcon from "./GIcon.vue";
 import GLogo from "./GLogo.vue";
 import GDNImg from "./GDNImg.vue";
 import GDNNav from "./GDNNav.vue";
-import GListText from "./GListText.vue";
-import GAccordion from "./GAccordion.vue";
-import GButtons from "./GButtons.vue";
-import GImgText from "./GImgText.vue";
-import GSlideText from "./GSlideText.vue";
-import GTabs from "./GTabs.vue";
 export default {
     name: "GArea",
     label: "增加頁面",
-    order: [5, 1],
+    order: 5,
     components: {
-        GVideo, GImg, GText, GBg, GSlogan, GIcon, GLogo, GDNImg, GDNNav, GSlide, GListText, GAccordion, GButtons, GImgText, GSlideText, GTabs
-    },
-    type: [2]
+        GVideo, GImg, GText, GBg, GSlogan, GIcon, GLogo, GDNImg, GDNNav, GSlide
+    }
 }
 </script>
 <script setup>
@@ -34,16 +27,13 @@ import { cloneDeep } from 'lodash-es'
 import { handleNumber } from "../Tool";
 import { GetPageType } from "../api";
 const store = mainStore()
-const { page, content, group, pageTypeSeq, tempGroup, position } = storeToRefs(store);
+const { page, content, group, pageTypeSeq, tempGroup } = storeToRefs(store);
 const props = defineProps(["data"])
 let showEdit = ref(false);
 let loading = ref(true);
 let areaSetting = reactive({})
 let areaData = reactive({});
 let uid = ref(props.data.uid);
-let gr = ref(props.data.group);
-let targetArea = ref(1);
-const $addComponent = inject('$addComponent');
 const validPreviousComponents = ["GLang", "GBg", "GFixed", "GIcon", "GLogo", "GDNNav", "GDNImg"];
 const initData = () => {
     return {
@@ -61,7 +51,6 @@ const initData = () => {
 Object.assign(areaData, initData());
 watchEffect(async () => {
     if (props.data.update) {
-        store.toggleLoading(false)
         showEdit.value = true;
     } else {
         showEdit.value = false;
@@ -74,15 +63,11 @@ watchEffect(async () => {
             if (!isMobile.any) {
                 let height = 0;
                 let area = document.querySelector(".g-area[data-page='main']");
-                if (area) {
-                    if (document.querySelector(".g-fixed.top")) {
-                        height = document.querySelector(".g-fixed.top").clientHeight;
-                        // area.style.marginTop = height + 'px'
-                        area.style.setProperty('--fixed-top', height)
-                    } else {
-                        // area.style.marginTop = height + 'px'
-                        area.style.setProperty('--fixed-top', height)
-                    }
+                if (document.querySelector(".g-fixed.top")) {
+                    height = document.querySelector(".g-fixed.top").clientHeight;
+                    area.style.marginTop = height + 'px'
+                } else {
+                    area.style.marginTop = height + 'px'
                 }
             }
             if (areaData.pc == undefined) {
@@ -102,25 +87,14 @@ onMounted(async () => {
         Object.assign(areaData, cloneDeep(props.data.content));
         Object.assign(areaSetting, cloneDeep(props.data.content));
         await nextTick()
-        if ($addComponent) {
-            $addComponent();
-        }
-        if (gr.value == 1 && store.page == 'EditPage') {
-            handleArea()
-            store.tempGroup = { ...store.group, targetArea: store.targetArea }
-        }
         if (!isMobile.any) {
             let height = 0;
             let area = document.querySelector(".g-area[data-page='main']");
-            if (area) {
-                if (document.querySelector(".g-fixed.top")) {
-                    height = document.querySelector(".g-fixed.top").clientHeight;
-                    // area.style.marginTop = height + 'px'
-                    area.style.setProperty('--fixed-top', height)
-                } else {
-                    // area.style.marginTop = height + 'px'
-                    area.style.setProperty('--fixed-top', height)
-                }
+            if (document.querySelector(".g-fixed.top")) {
+                height = document.querySelector(".g-fixed.top").clientHeight;
+                area.style.marginTop = height + 'px'
+            } else {
+                area.style.marginTop = height + 'px'
             }
         }
     }
@@ -213,30 +187,12 @@ const openPop = (data) => {
 }
 const onSubmit = async () => {
     let data = {}
-    areaData.validMt = true;
-    areaData.validMb = true;
-    areaData.validMmt = true;
-    areaData.validMmb = true;
-    if (areaData.pc.paddingTop < 0) {
-        areaData.validMt = false;
-    }
-    if (areaData.pc.paddingBottom < 0) {
-        areaData.validMb = false;
-    }
-    if (areaData.mobile.paddingTop < 0) {
-        areaData.validMmt = false;
-    }
-    if (areaData.mobile.paddingBottom < 0) {
-        areaData.validMmb = false;
-    }
 
-    if (areaData.validMt && areaData.validMb && areaData.validMmt && areaData.validMmb) {
-        data = cloneDeep(areaData);
-        store.updateCpt(props.data.uid, data, props.sub);
-        Object.assign(areaSetting, data);
-        GetPageType(store.otp)
-    }
-
+    document.querySelector("#loadingProgress").style.display = "block";
+    data = cloneDeep(areaData);
+    store.updateCpt(props.data.uid, data, props.sub);
+    Object.assign(areaSetting, data);
+    GetPageType(store.otp)
 }
 const onReset = () => {
     Object.assign(areaData, initData());
@@ -246,7 +202,6 @@ const closeBtn = () => {
         showEdit.value = false;
         store.removeCpt(props.data.uid, props.sub);
         store.setCurrentArea(tempGroup.value.name)
-        store.setTargetArea(tempGroup.value.targetArea);
         document.querySelector("body").classList.remove("ov-hidden");
         return;
     }
@@ -260,45 +215,26 @@ const closeBtn = () => {
 }
 
 const handleArea = () => {
-    store.setCurrentArea(gr.value)
-    store.setTargetArea(targetArea.value)
+    store.setCurrentArea(uid.value)
 }
 
-const log = async (e) => {
+const log = (e) => {
     let cpt;
     let cptIndex;
     let uid;
     let temp = 0;
-    if (contentBg.value.length) {
+    if (contentSlogan.value.length) {
         temp += 1;
     }
-    // if (contentSlogan.value.length) {
-    //     temp += 1;
-    // }
     if (e.added) {
-        GetPageType(store.otp)
         cpt = e.added.element;
-        let data = {
-            cpt: cpt.title
-        };
-        if (position.value.from != null) {
-            if (position.value.from == position.value.to) {
-                store.position.from = null;
-                store.position.to = null;
-            } else {
-                cptIndex = e.added.newIndex;
-                await store.drgAddSubCpt(props.data.uid, e.added.element, cptIndex);
-                store.removeCpt(e.added.element.uid, true, store.position.from);
-                store.position.from = null;
-                store.position.to = null;
-                // store.drgAddSubCpt(props.data.uid, data, cptIndex);
-            }
-        }
+        cptIndex = e.added.newIndex + temp;
         if (!cpt.status) {
             return;
         }
-        cptIndex = e.added.newIndex + temp;
-        console.log("cptIndex", cptIndex)
+        let data = {
+            cpt: cpt.title
+        };
         store.drgAddSubCpt(props.data.uid, data, cptIndex);
         store.setUpdateTime();
         if (store.first) {
@@ -311,56 +247,6 @@ const log = async (e) => {
         store.dragMoveCpt(uid, cptIndex, true);
     }
 }
-const start = (evt) => {
-    store.position.from = evt.to.parentElement.getAttribute("data-uid");
-}
-const move = (evt) => {
-    store.position.to = evt.to.parentElement.getAttribute("data-uid");
-}
-const checkInit = computed(() => {
-    if (page.value === "Preview") return true;
-    if (props.data.name != 'home') return true;
-    if (content.value.length > 1) {
-        return true
-    } else {
-        if (props.data.content.subContent.length > 0) {
-            var checkBg = props.data.content.subContent.find((v, i) => {
-                return v.component == "GBg"
-            })
-            var checkIcon = props.data.content.subContent.find((v, i) => {
-                return v.component == "GIcon"
-            })
-            var checkLogo = props.data.content.subContent.find((v, i) => {
-                return v.component == "GLogo"
-            })
-            var checkNav = props.data.content.subContent.find((v, i) => {
-                return v.component == "GDNNav"
-            })
-            var checkImg = props.data.content.subContent.find((v, i) => {
-                return v.component == "GDNImg"
-            })
-            if (props.data.content.subContent.length == 1) {
-                return true;
-            } else {
-                if (checkBg && checkIcon && checkNav && checkImg && checkLogo) {
-                    var b = props.data.content.subContent.filter((v, i) => {
-                        return (v.component == "GBg" && !v.init) || (v.component == "GIcon" && !v.init) || (v.component == "GLogo" && !v.init) || (v.component == "GDNNav" && !v.init) || (v.component == "GDNImg" && !v.init);
-                    });
-                    if (b.length > 0) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return true;
-                }
-            }
-        } else {
-            return true;
-        }
-    }
-
-})
 </script>
 <template>
     <div class="g-area" :id="uid" :style="cssVar" :data-page="[uid == 1 ? 'main' : '']"
@@ -371,24 +257,22 @@ const checkInit = computed(() => {
             </template>
         </div>
     </div>
-    <label :id="uid" :class="['g-area', gr == 1 ? 'filtered' : '', store.targetArea == uid ? 'focus' : '']"
+    <label :id="uid" :class="['g-area', uid == 1 ? 'filtered' : '', store.group.name == uid ? 'focus' : '']"
            :style="cssVar"
-           :data-page="[gr == 1 ? 'main' : '']" v-else>
-        <div class="g-area-container--notice" v-if="gr == 1 && !checkInit" :data-init="checkInit"></div>
-        <input type="radio" name="area" :id="uid" :value="uid" v-model="targetArea">
+           :data-page="[uid == 1 ? 'main' : '']" v-else>
+        <input type="radio" name="area" :id="uid" :value="uid" @change="handleArea">
         <!-- <template v-if="contentBg.length">
             <component is="GBg" :data="contentBg[0]" :sub="true"></component>
         </template> -->
-        <div class="g-area-container" :data-uid="uid">
+        <div class="g-area-container">
             <template v-if="fixedFilter.length">
                 <template v-for="block in fixedFilter">
                     <component :is="block.component" :data="block" :sub="true"></component>
                 </template>
             </template>
             <draggable class="dragArea list-group" :list="contentFilter" :force-fallback="true" :fallback-tolerance="1"
-                       :scroll-sensitivity="100" :animation="300" :group="gr" item-key="uid" @start="start"
-                       @change="log"
-                       @move="move" v-if="store.page == 'EditPage' && props.data.uid != 1">
+                       :scroll-sensitivity="100" :animation="300" :group="uid" item-key="uid" @change="log"
+                       v-if="store.page == 'EditPage' && props.data.uid != 1">
 
                 <template #item="{ element }">
                     <component :is="element.component" :data="element" :sub="true"></component>
@@ -411,27 +295,26 @@ const checkInit = computed(() => {
             <template #edit-content>
                 <div class="edit-title__box">
                     <div class="edit-title__text">區塊
-                        <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Area${pageTypeSeq}.html`"
+                        <a href="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/Image.html"
                            class="edit-title__q" target="_blank"></a>
                     </div>
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
-                        <g-input label="PC內間距上:" type="number" v-model="areaData.pc.paddingTop" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="areaData.validMt" />
+                        <g-input label="PC內間距上:" type="number" v-model="areaData.pc.paddingTop"
+                                 @change="handleNumber" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="PC內間距下:" type="number" v-model="areaData.pc.paddingBottom"
-                                 @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="areaData.validMb" />
+                                 @change="handleNumber" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile內間距上:" type="number" v-model="areaData.mobile.paddingTop"
-                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="areaData.validMmt" />
+                                 @change="handleNumber" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile內間距下:" type="number" v-model="areaData.mobile.paddingBottom"
-                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="areaData.validMmb" />
+                                 @change="handleNumber" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

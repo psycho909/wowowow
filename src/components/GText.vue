@@ -2,7 +2,7 @@
 export default {
     name: "GText",
     label: "文字區塊",
-    order: [7, 7],
+    order: [7, 12],
     type: [1, 2]
 }
 </script>
@@ -34,6 +34,7 @@ const initData = () => {
         style: "",
         text: "",
         type: "all",
+        opacity: 1,
         collapse: {
             num: 3,
             close: "收合-",
@@ -62,6 +63,15 @@ watchEffect(async () => {
         textUpdate.value = true;
         await nextTick();
         textUpdate.value = false;
+        if (props.data.content.opacity === undefined) {
+            props.data.content.opacity = 1;
+        }
+        if (textData.opacity == undefined) {
+            textData.opacity = 1;
+        }
+        if (textSetting.opacity == undefined) {
+            textSetting.opacity = 1;
+        }
     }
 })
 const cssVar = computed(() => {
@@ -70,11 +80,15 @@ const cssVar = computed(() => {
         "--mb": props.data.content.mb,
         "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
         "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
+        "--opacity": props.data.content.opacity === undefined ? 1 : props.data.content.opacity,
     }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(content).length > 0) {
+        if (props.data.content.opacity === undefined) {
+            props.data.content.opacity = 1;
+        }
         Object.assign(textData, cloneDeep(props.data.content));
         Object.assign(textSetting, cloneDeep(props.data.content));
         await nextTick();
@@ -85,11 +99,16 @@ onMounted(async () => {
         if (textBox) {
             const computedStyles = getComputedStyle(textBox);
             const collapseValue = computedStyles.getPropertyValue('--collapse');
-            console.log(boxRef.value.scrollHeight)
             textBox.style = `--collapse:${collapseValue};--max-height:${boxRef.value.scrollHeight}`
         }
         if ($addComponent) {
             $addComponent();
+        }
+        if (textData.opacity == undefined) {
+            textData.opacity = 1;
+        }
+        if (textSetting.opacity == undefined) {
+            textSetting.opacity = 1;
         }
     }
 })
@@ -120,7 +139,7 @@ const onSubmit = async () => {
     let data = cloneDeep(textData);
     if (textData.validMt && textData.validMb && textData.validMmt && textData.validMmb) {
         if (styleValid.value) {
-            $("#loadingProgress").show();
+            document.querySelector("#loadingProgress").style.display = "block";
             store.updateCpt(props.data.uid, data, props.sub);
 
             Object.assign(textSetting, data);
@@ -203,6 +222,12 @@ const collapseToggle = () => {
                     <g-select label="主題顏色:" :group="true" :options="[style1, style2]" :required="true"
                               :valid="styleValid"
                               v-model="textData.style" />
+                </div>
+                <div class="g-edit__row">
+                    <div class="input-group__label required">透明度:</div>
+                    <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
+                           v-model="textData.opacity" />
+                    <span>{{ textData.opacity * 100 }}%</span>
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">收合文字:</div>

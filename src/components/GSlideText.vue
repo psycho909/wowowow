@@ -2,12 +2,12 @@
 export default {
     name: "GSlideText",
     label: "輪播-上圖下文",
-    order: [4, 4], type: [1, 2]
+    order: 4, type: [1, 2]
 }
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
-import GCkedit from '../elements/GCkedit.vue';
+import GCkedit from '../elements/GCkeditSimple.vue';
 import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GSelect from '../elements/GSelect.vue';
@@ -41,13 +41,15 @@ const initData = () => {
         },
         style: "",
         validStyle: true,
+        opacity: 1,
         slides: [{
             pc: "", mobile: "", type: "", url: "", attribute: false, validPC: true, validMobile: true, validUrl: true,
             card: {
                 title: "",
                 text: "",
                 url: "",
-                validCard: true
+                validCard: true,
+                align: "center"
             },
             pop: {
                 show: false, type: "text",
@@ -94,6 +96,14 @@ watchEffect(async () => {
     }
     if (!props.data.update) {
         if (Object.keys(props.data.content).length > 0) {
+            if (props.data.content.opacity === undefined) {
+                props.data.content.opacity = 1;
+            }
+            props.data.content.slides.forEach((slide, index) => {
+                if (slide.card.align == undefined) {
+                    slide.card.align = "center"
+                }
+            })
             Object.assign(slideData, cloneDeep(props.data.content));
             Object.assign(slideSetting, cloneDeep(props.data.content));
             slideData.slides.forEach((slide, index) => {
@@ -104,10 +114,38 @@ watchEffect(async () => {
                         style: "",
                         validStyle: true,
                         url: "",
-                        validCard: true
+                        validCard: true,
+                        align: "center"
+                    }
+                } else {
+                    if (slide.card.align == undefined) {
+                        slide.card.align = "center"
                     }
                 }
             })
+            slideSetting.slides.forEach((slide, index) => {
+                if (!slide.card) {
+                    slide.card = {
+                        title: "",
+                        text: "",
+                        style: "",
+                        validStyle: true,
+                        url: "",
+                        validCard: true,
+                        align: "center"
+                    }
+                } else {
+                    if (slide.card.align == undefined) {
+                        slide.card.align = "center"
+                    }
+                }
+            })
+            if (slideData.opacity == undefined) {
+                slideData.opacity = 1;
+            }
+            if (slideSetting.opacity == undefined) {
+                slideSetting.opacity = 1;
+            }
             imgLoading(slideData.slides).then((res) => {
                 loading.value = false;
             })
@@ -120,6 +158,14 @@ watchEffect(async () => {
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
+        if (props.data.content.opacity === undefined) {
+            props.data.content.opacity = 1;
+        }
+        props.data.content.slides.forEach((slide, index) => {
+            if (slide.card.align == undefined) {
+                slide.card.align = "center"
+            }
+        })
         Object.assign(slideData, cloneDeep(props.data.content));
         Object.assign(slideSetting, cloneDeep(props.data.content));
         slideData.slides.forEach((slide, index) => {
@@ -130,10 +176,38 @@ onMounted(async () => {
                     style: "",
                     validStyle: true,
                     url: "",
-                    validCard: true
+                    validCard: true,
+                    align: "center"
+                }
+            } else {
+                if (slide.card.align == undefined) {
+                    slide.card.align = "center"
                 }
             }
         })
+        slideSetting.slides.forEach((slide, index) => {
+            if (!slide.card) {
+                slide.card = {
+                    title: "",
+                    text: "",
+                    style: "",
+                    validStyle: true,
+                    url: "",
+                    validCard: true,
+                    align: "center"
+                }
+            } else {
+                if (slide.card.align == undefined) {
+                    slide.card.align = "center"
+                }
+            }
+        })
+        if (slideData.opacity == undefined) {
+            slideData.opacity = 1;
+        }
+        if (slideSetting.opacity == undefined) {
+            slideSetting.opacity = 1;
+        }
         imgLoading(slideData.slides).then((res) => {
             loading.value = false;
             if ($addComponent) {
@@ -154,14 +228,22 @@ function validateCard(card) {
 
     // 檢查標題長度
     const validTitle = !card.title || card.title.length <= 50;
-
     // 檢查文本長度
     const validText = !card.text || removeHtmlTags(card.text).length <= 250;
 
     // 檢查URL格式
     const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-    const validUrl = !card.url || urlPattern.test(card.url);
-
+    // const validUrl = !card.url || urlPattern.test(card.url);
+    let validUrl = false;
+    if (card.type === "link") {
+        if (card.url === "") {
+            validUrl = false;
+        } else {
+            validUrl = urlPattern.test(card.link);
+        }
+    } else {
+        validUrl = true;
+    }
     // 設置validCard
     card.validCard = hasContent && validTitle && validText && validUrl;
 
@@ -174,6 +256,7 @@ const cssVar = computed(() => {
         "--mb": props.data.content.mb,
         "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
         "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
+        "--opacity": props.data.content.opacity === undefined ? 1 : props.data.content.opacity,
     }
 })
 
@@ -189,7 +272,8 @@ const addInsertMenu = (index) => {
                 title: "",
                 text: "",
                 url: "",
-                validCard: true
+                validCard: true,
+                align: "center"
             },
             pop: {
                 show: false, type: "text",
@@ -235,7 +319,8 @@ const addInsertMenu = (index) => {
             title: "",
             text: "",
             url: "",
-            validCard: true
+            validCard: true,
+            align: "center"
         },
         pop: {
             show: false, type: "text",
@@ -506,7 +591,7 @@ const onSubmit = async () => {
     }
     if (slideData.validMt && slideData.validMb && slideData.validMmt && slideData.validMmb) {
         if (validCheck && validDelay && slideNumValid.value && isDataValid && slideData.validStyle) {
-            $("#loadingProgress").show();
+            document.querySelector("#loadingProgress").style.display = "block";
             let data = cloneDeep(slideData);
             store.updateCpt(props.data.uid, data, props.sub);
             Object.assign(slideSetting, data);
@@ -589,6 +674,12 @@ const closeBtn = () => {
                     </div>
                 </div>
                 <div class="g-edit__row">
+                    <div class="input-group__label required">透明度:</div>
+                    <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
+                           v-model="slideData.opacity" />
+                    <span>{{ slideData.opacity * 100 }}%</span>
+                </div>
+                <div class="g-edit__row">
                     <div class="input-group__label required">切換方式:</div>
                     <g-radio label="一次換一組" name="group" :value="true" v-model="slideData.group" />
                     <g-radio label="一次換一張" name="group" :value="false" v-model="slideData.group" />
@@ -627,6 +718,15 @@ const closeBtn = () => {
                             </div>
                             <div class="g-edit__col">
                                 <g-input label="手機版圖片網址:" v-model.trim="slide.mobile" :preview="slide.mobile" />
+                            </div>
+                            <div class="g-edit__col">
+                                <div class="input-group__label">文字對齊方向:</div>
+                                <g-radio label="置左" :name="'textAlign' + index" value="left"
+                                         v-model="slide.card.align" />
+                                <g-radio label="置中" :name="'textAlign' + index" value="center"
+                                         v-model="slide.card.align" />
+                                <g-radio label="置右" :name="'textAlign' + index" value="right"
+                                         v-model="slide.card.align" />
                             </div>
                             <div class="g-edit__col">
                                 <g-input label="標題文字:" v-model.trim="slide.card.title" :valid="slide.card.validCard"

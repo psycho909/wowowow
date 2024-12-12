@@ -22,9 +22,15 @@
 		box-shadow: none;
 		pointer-events: none;
 		cursor: default;
+		@include media {
+			border-width: vw(1);
+		}
 	}
 	& + .btn {
 		margin-left: 12px;
+		@include media {
+			margin-left: vw(12);
+		}
 	}
 	&__reset {
 		background-color: #a3a3a3;

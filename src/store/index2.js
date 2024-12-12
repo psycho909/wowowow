@@ -207,7 +207,7 @@ export const mainStore = defineStore("main", {
 					this.content[_index].init = false;
 				}
 			}
-			$("#loadingProgress").hide();
+			document.querySelector("#loadingProgress").style.display = "none";
 		},
 		editCptOpen(data, sub = false) {
 			if (sub) {

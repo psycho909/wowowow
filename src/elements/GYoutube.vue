@@ -28,6 +28,14 @@ const props = defineProps({
     openapp: {
         type: [Boolean, String],
         default: false
+    },
+    auto: {
+        type: Boolean,
+        default: false
+    },
+    loop: {
+        type: Boolean,
+        default: false
     }
 })
 let videoRef = ref(null)
@@ -55,6 +63,16 @@ onMounted(async () => {
                 player = YouTubePlayer(videoRef.value, {
                     videoId: extractVideoID(props.youtube)
                 })
+                if (props.auto) {
+                    player.playVideo();
+                }
+                if (props.loop) {
+                    player.on('stateChange', (e) => {
+                        if (e.data === 0) {
+                            player.playVideo();
+                        }
+                    });
+                }
             }
         }
         if (props.popopen) {
@@ -88,7 +106,8 @@ defineExpose({ player, videoRef });
             </template>
             <template v-else>
                 <div class="g-yt__box" @click="onVideo" :data-type="[preview || popstatus ? 'pop' : 'video']">
-                    <img class="g-yt__img" :class="[playStatus ? 'on' : 'off']" :src="videoImg?.hq" alt="" v-if="preview" />
+                    <img class="g-yt__img" :class="[playStatus ? 'on' : 'off']" :src="videoImg?.hq" alt=""
+                         v-if="preview" />
                     <div class="g-yt__video" ref="videoRef" v-if="!pop"></div>
                 </div>
             </template>

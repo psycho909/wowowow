@@ -3,7 +3,7 @@ export default {
     name: "GTop",
     label: "回到頂端按鈕",
     limit: 1,
-    order: [12, 12], type: [1, 2]
+    order: [12, 17], type: [1, 2]
 }
 </script>
 <script setup>
@@ -33,7 +33,7 @@ const initData = () => {
         type: "style",
         style: "",
         pc: "",
-        mobile: "", validPC: true, validMobile: true
+        mobile: "", validPC: true, validMobile: true,opacity: 1
     }
 }
 Object.assign(topData, initData());
@@ -50,15 +50,33 @@ watchEffect(async () => {
             Object.assign(topData, cloneDeep(props.data.content));
             Object.assign(topSetting, cloneDeep(props.data.content));
         }
+        if (props.data.content.opacity === undefined) {
+            props.data.content.opacity = 1;
+        }
+        if (topData.opacity == undefined) {
+            topData.opacity = 1;
+        }
+        if (topSetting.opacity == undefined) {
+            topSetting.opacity = 1;
+        }
     }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
+        if (props.data.content.opacity === undefined) {
+            props.data.content.opacity = 1;
+        }
         Object.assign(topData, cloneDeep(props.data.content));
         Object.assign(topSetting, cloneDeep(props.data.content));
         if ($addComponent) {
             $addComponent();
+        }
+        if (topData.opacity == undefined) {
+            topData.opacity = 1;
+        }
+        if (topSetting.opacity == undefined) {
+            topSetting.opacity = 1;
         }
     }
 })
@@ -122,7 +140,7 @@ const onSubmit = async () => {
     loadingShow()
     let isValidData = await validateTopData(topData);
     if (isValidData) {
-        $("#loadingProgress").show();
+        document.querySelector("#loadingProgress").style.display = "block";
         if (topData.mobile.length) {
             await imageInfo("mobile", topData.mobile);
         }
@@ -173,11 +191,16 @@ function transformToCSSProps(item) {
         ...cssProps,
     };
 }
+const cssVar = computed(() => {
+    return {
+        "--opacity": props.data.content.opacity === undefined ? 1 : props.data.content.opacity,
+    }
+})
 </script>
 <template>
     <Teleport to="body">
         <div class="g-top" :data-align="topSetting.align" :data-type="topSetting.type"
-             :style="[transformToCSSProps(topSetting)]"
+             :style="[transformToCSSProps(topSetting), cssVar]"
              @click="goTop">
             <div class="g-top__text" :style="[colors[topSetting.style]]" v-if="topSetting.type == 'style'">TOP</div>
             <picture v-if="topSetting.type == 'img'">
@@ -213,6 +236,12 @@ function transformToCSSProps(item) {
                                           :valid="topData.validStyle"
                                           v-model="topData.style" />
                             </div>
+                        </div>
+                        <div class="g-edit__row">
+                            <div class="input-group__label required">透明度:</div>
+                            <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
+                                v-model="topData.opacity" />
+                            <span>{{ topData.opacity * 100 }}%</span>
                         </div>
                     </template>
                     <template v-if="topData.type == 'img'">

@@ -3,14 +3,14 @@ export default {
     name: "GWatermark",
     label: "浮水印",
     limit: 1,
-    order: [14, 14], type: [1, 2]
+    order: [14, 19], type: [1, 2]
 }
 </script>
 
 <script setup>
 import { storeToRefs } from "pinia";
 import { mainStore } from "../store/index";
-import GCkedit from '../elements/GCkedit.vue';
+import GCkedit from '../elements/GCkeditSimple.vue';
 import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GSelect from '../elements/GSelect.vue';
@@ -255,7 +255,7 @@ const onSubmit = async () => {
     loadingShow()
     let isValidData = await validateWatermarkData(watermarkData);
     if (isValidData) {
-        $("#loadingProgress").show();
+        document.querySelector("#loadingProgress").style.display = "block";
         if (watermarkData.mobile.length) {
             await imageInfo("mobile", watermarkData.mobile);
         }
@@ -388,9 +388,10 @@ function transformToCSSProps(item) {
                                     :style="colors[watermarkSetting.pop.style]"
                                     :class="[watermarkSetting.pop.align, watermarkSetting.pop.type, watermarkSetting.pop.type == 'slide' ? 'pop-slide' : '']">
 
-                            <template #lightbox-title v-if="watermarkSetting.pop.type != 'slide'">{{
-                                watermarkSetting.pop.title
-                                }}</template>
+                            <template #lightbox-title
+                                      v-if="watermarkSetting.pop.type != 'slide' && watermarkSetting.pop.title !== ''">{{
+                                        watermarkSetting.pop.title
+                                    }}</template>
 
                             <template #lightbox-content>
                                 <template v-if="watermarkSetting.pop.type != 'slide'">

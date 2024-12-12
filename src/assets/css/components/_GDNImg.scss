@@ -1,5 +1,5 @@
 .g-dn_img {
-	margin-top: calc(var(--dn-margin-top, 60) * 1px);
+	margin-top: calc(var(--fixed-top, 0) * 1px + var(--dn-margin-top, 60) * 1px);
 	margin-bottom: calc(var(--dn-margin-bottom, 0) * 1px) !important;
 	position: relative;
 	z-index: 2;
@@ -43,6 +43,7 @@
 		align-items: center;
 		&[href="javascript:;"] {
 			cursor: default;
+			pointer-events: none;
 		}
 		@include media {
 			width: 50%;

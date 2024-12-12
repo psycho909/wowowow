@@ -36,7 +36,7 @@
 		font-weight: bold;
 		border-radius: 20px;
 		padding: 24px;
-		background-color: rgb(var(--simple-btn-bg));
+		background-color: rgba(var(--simple-btn-bg), var(--opacity, 1));
 		color: rgb(var(--simple-btn-text));
 		width: 313px;
 		box-sizing: border-box;
@@ -48,7 +48,7 @@
 		justify-content: center;
 		align-items: center;
 		@include hover {
-			background-color: var(--menu-border-color);
+			background-color: rgba(var(--menu-border-color), var(--opacity, 1));
 			color: rgb(var(--simple-btn-bg));
 		}
 		@include media {

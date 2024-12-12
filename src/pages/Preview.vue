@@ -150,23 +150,8 @@ onMounted(async () => {
         // topBar(previewConfig.value.gameName)
         if (previewConfig.value.gameName == "新瑪奇B") {
             previewConfig.value.gameName = "新瑪奇"
-        }
-        setTimeout(function () {
-            (function (gobal) {
-                var s = document.createElement("script");
-                s.async = 1;
-                s.src = "https://alpha-tw.beanfun.com/3KO/removable/pchome/js/topbar.js";
-                s.id = "top-bar";
-                //產品
-                s.setAttribute("prod", previewConfig.value.gameName);
-
-                $("head")
-                    .append(s)
-                    .ready(function () {
-                        gobal.callTopBar;
-                    });
-            })(window);
-        }, 0);
+        };
+        topBar(previewConfig.value.gameName)
     }
     watch(componentCount, (newVal) => {
         if (newVal >= totalComponentCount.value) {

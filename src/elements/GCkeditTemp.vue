@@ -20,7 +20,6 @@ import {
     ImageInline,
     ImageInsert,
     ImageInsertViaUrl,
-    ImageResize,
     ImageToolbar,
     ImageUpload,
     Italic,
@@ -82,7 +81,6 @@ config.value = {
         ImageInline,
         ImageInsert,
         ImageInsertViaUrl,
-        ImageResize,
         ImageToolbar,
         ImageUpload,
         Italic,
@@ -111,36 +109,96 @@ config.value = {
         options: ["small", 'default', "big"],
     },
     image: {
-        resizeUnit: 'px',
         toolbar: ['imageTextAlternative']
     },
     language: 'zh',
     translations: [translations]
 };
 
+
+let initialJPGQuality = 0.8; // JPG 壓縮率
+let initialPNGQuality = 0.8; // PNG 壓縮率
+
+// PNG 壓縮
+async function compressPNGImage(file, ops = {}) {
+    const { quality = initialPNGQuality, noCompressIfLarger = true } = ops;
+    let { width, height } = ops;
+    const arrayBuffer = await file.arrayBuffer();
+    const decoded = UPNG.decode(arrayBuffer);
+    const rgba8 = UPNG.toRGBA8(decoded);
+
+    // If only width or height is specified, scale proportionally
+    if (width && !height) {
+        height = Math.round(decoded.height * (width / decoded.width));
+    } else if (!width && height) {
+        width = Math.round(decoded.width * (height / decoded.height));
+    }
+    width = width || decoded.width;
+    height = height || decoded.height;
+
+    const compressed = UPNG.encode(rgba8, width, height, 256 * quality);
+
+    const newFile = new File([compressed], file.name || `${Date.now()}.png`, { type: "image/png" });
+    return file.size > newFile.size ? newFile : file;
+}
+// 處理上傳圖片
+async function handleImageUploadFile(file) {
+    let output;
+    let fileSize = 0;
+    let finishSize = 0;
+    if (file.size / 1024 > 1024) {
+        fileSize = (file.size / 1024 / 1024).toFixed(2) + "mb";
+    } else {
+        fileSize = (file.size / 1024).toFixed(2) + "kb";
+    }
+    const options = {
+        useWebWorker: true,
+        initialQuality: initialJPGQuality
+    };
+
+    try {
+        if (file.type === "image/png") {
+            output = await compressPNGImage(file, options);
+        } else {
+            const compressedBlob = await imageCompression(file, options);
+            output = new File([compressedBlob], file.name, { type: compressedBlob.type });
+        }
+
+        let compressedSize = 0;
+        if (output.size / 1024 > 1024) {
+            compressedSize = (output.size / 1024 / 1024).toFixed(2) + "mb";
+        } else {
+            compressedSize = (output.size / 1024).toFixed(2) + "kb";
+        }
+        return output; // 直接返回壓縮後的 File 物件
+    } catch (error) {
+        alert(error.message);
+    }
+}
 // Custom upload adapter
 class MyUploadAdapter {
     constructor(loader) {
         this.loader = loader;
     }
 
-    upload() {
+    async upload() {
         return this.loader.file
-            .then(file => new Promise((resolve, reject) => {
-                const formData = new FormData();
-                formData.append('file', file);
+            .then(file => new Promise(async (resolve, reject) => {
                 document.querySelector("#loadingProgress").style.display = "block";
+                let compressedFile = await handleImageUploadFile(file);
+                const formData = new FormData();
+                formData.append('file', compressedFile);
                 axios.post(`api/ImageUpload/UploadImgCkeditor?OTP=${store.OTP ? store.OTP : 1}&CKEditorFuncNum=CommonPlatform-NoticeList`, formData)
                     .then(response => {
-                        document.querySelector("#loadingProgress").style.display = "none";
                         resolve({
                             default: response.data.url
                         });
                     })
                     .catch((err) => {
                         console.error(err);
-                        document.querySelector("#loadingProgress").style.display = "none";
                         reject(err);
+                    }).finally(() => {
+                        document.querySelector("#loadingProgress").style.display = "none";
                     });
             }));
     }

@@ -2,7 +2,7 @@
 export default {
     name: "GListText",
     label: "區塊條列式文字",
-    order: [11, 11], type: [1, 2]
+    order: [11, 16], type: [1, 2]
 }
 </script>
 <script setup>
@@ -32,6 +32,7 @@ const initData = () => {
         num: 1,
         align: "left",
         style: "",
+        opacity: 1,
         validStyle: true,
         collapseNum: 5,
         listTexts: [
@@ -64,18 +65,36 @@ watchEffect(async () => {
     }
     if (!props.data.update) {
         if (Object.keys(props.data.content).length > 0) {
+            if (props.data.content.opacity === undefined) {
+                props.data.content.opacity = 1;
+            }
             Object.assign(listTextData, cloneDeep(props.data.content));
             Object.assign(listTextSetting, cloneDeep(props.data.content));
             _listTextDataLength.value = listTextData.num;
+            if (listTextData.opacity == undefined) {
+                listTextData.opacity = 1;
+            }
+            if (listTextSetting.opacity == undefined) {
+                listTextSetting.opacity = 1;
+            }
         }
     }
 })
 onMounted(async () => {
     await nextTick()
     if (Object.keys(props.data.content).length > 0) {
+        if (props.data.content.opacity === undefined) {
+            props.data.content.opacity = 1;
+        }
         Object.assign(listTextData, cloneDeep(props.data.content));
         Object.assign(listTextSetting, cloneDeep(props.data.content));
         _listTextDataLength.value = listTextData.num;
+        if (listTextData.opacity == undefined) {
+            listTextData.opacity = 1;
+        }
+        if (listTextSetting.opacity == undefined) {
+            listTextSetting.opacity = 1;
+        }
         if ($addComponent) {
             $addComponent();
         }
@@ -147,6 +166,7 @@ const cssVar = computed(() => {
         "--mb": props.data.content.mb,
         "--mobile_mt": props.data.content.mobile_mt ? props.data.content.mobile_mt : props.data.content.mt,
         "--mobile_mb": props.data.content.mobile_mb ? props.data.content.mobile_mb : props.data.content.mb,
+        "--opacity": props.data.content.opacity === undefined ? 1 : props.data.content.opacity,
     }
 })
 
@@ -315,7 +335,7 @@ const onSubmit = async () => {
     }
     if (listTextData.validMt && listTextData.validMb && listTextData.validMmt && listTextData.validMmb) {
         if (styleValid.value && isValidData) {
-            $("#loadingProgress").show();
+            document.querySelector("#loadingProgress").style.display = "block";
             let data = cloneDeep(listTextData);
             store.updateCpt(props.data.uid, data, props.sub);
             Object.assign(listTextSetting, data);
@@ -417,6 +437,12 @@ function transformNavsToCSSProps(item) {
                     <g-select label="主題顏色:" :group="true" :options="[style1, style2]" :required="true"
                               :valid="styleValid"
                               v-model="listTextData.style" />
+                </div>
+                <div class="g-edit__row">
+                    <div class="input-group__label required">透明度:</div>
+                    <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
+                           v-model="listTextData.opacity" />
+                    <span>{{ listTextData.opacity * 100 }}%</span>
                 </div>
                 <div class="g-edit__row g-edit__block" v-for="(list, index) in listTextData.listTexts">
                     <div class="g-edit__col">

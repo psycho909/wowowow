@@ -67,8 +67,24 @@
 		object-fit: cover;
 	}
 	&__card {
-		background-color: var(--bg, #fff);
+		// background-color: rgba(var(--bg, 255, 255, 255), var(--opacity, 1));
+		background-color: rgba(var(--bg, 255, 255, 255), var(--opacity, 1));
 		border-radius: 0 0 10px 10px;
+		&[data-align="center"] {
+			.g-swiper__card-body {
+				text-align: center;
+			}
+		}
+		&[data-align="left"] {
+			.g-swiper__card-body {
+				text-align: left;
+			}
+		}
+		&[data-align="right"] {
+			.g-swiper__card-body {
+				text-align: right;
+			}
+		}
 		@include media {
 			border-radius: 0 0 vw(20) vw(20);
 		}
@@ -93,7 +109,8 @@
 			font-weight: bold;
 			font-size: 20px;
 			text-decoration: none;
-			color: var(--text, #3a3a3a);
+			// color: var(--text, rgb(58, 58, 58));
+			color: rgba(var(--text, 58, 58, 58), 1);
 			font-weight: bold;
 			// padding-top: 18px;
 			// padding-left: 18px;
@@ -114,7 +131,7 @@
 		}
 		&-text {
 			font-size: 16px;
-			color: var(--text, #3a3a3a);
+			color: rgba(var(--text, 58, 58, 58), 1);
 			text-decoration: none;
 			word-break: break-all;
 			// padding-top: 18px;
@@ -133,7 +150,8 @@
 			}
 			&[href="javascript:;"] {
 				cursor: default;
-				color: var(--text, #3a3a3a);
+				color: rgba(var(--text, 58, 58, 58), 1);
+				pointer-events: none;
 			}
 			ol,
 			ul {
@@ -149,7 +167,10 @@
 			}
 			table,
 			td {
-				border: 1px solid var(--text, #000);
+				border: 1px solid rgba(var(--text, 0, 0, 0), 1);
+				@include media {
+					border-width: vw(1);
+				}
 			}
 			td {
 				padding: 4px;
@@ -160,7 +181,8 @@
 		}
 		&-link {
 			text-align: center;
-			color: var(--link, #8c4142);
+			// color: var(--link, rgb(140, 65, 66));
+			color: rgba(var(--link, 140, 65, 66), 1);
 			font-size: 16px;
 			font-weight: bold;
 			text-decoration: none;

@@ -99,11 +99,11 @@ export const InsertScript = (code) => {
 };
 
 export const loadingShow = () => {
-	$("#loadingProgress").show();
+	document.querySelector("#loadingProgress").style.display = "block";
 };
 
 export const loadingHide = () => {
-	$("#loadingProgress").hide();
+	document.querySelector("#loadingProgress").style.display = "none";
 };
 
 export const pageInfo = (data) => {
@@ -210,3 +210,9 @@ export function getVideoInfo(videoUrl) {
 		document.body.appendChild(videoElement); // Append the hidden video element
 	});
 }
+
+// 判斷url連結是不是mp4
+export const isMp4 = (url) => {
+	const ext = url.split(".").pop().toLowerCase();
+	return ext === "mp4";
+};
