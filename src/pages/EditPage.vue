@@ -42,12 +42,47 @@ if (store.config.flag == 2 && store.content.length == 0) {
     store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
 }
 // store.toggleLoading(true)
+
 let gAreaComponents = computed(() => {
     return content.value.filter((v, i) => {
         return v.component === "GArea"
     })
 })
 
+// 當pageTypeSeq == 1，content.value.length > 0時，檢查裡面的update為true時，改為false,，如果conrent為empty時則移除
+if (store.pageTypeSeq == 1 && content.value.length > 0) {
+    content.value = content.value.map(item => {
+        if (item.update === true) {
+            return { ...item, update: false };
+        }
+        return item;
+    }).filter(item => Object.keys(item).length > 0); // Remove empty content
+}
+// 當pageTypeSeq == 2，content.value.length > 0時，檢查裡面的update為true時，改為false,，如果conrent為empty時則移除，當component == GArea時，裡面的content.subContent.length > 0時，檢查裡面的update為true時，改為false,，如果conrent為empty時則移除+
+if (store.pageTypeSeq == 2 && content.value.length > 0) {
+    content.value = content.value.map(item => {
+        // Handle GArea components
+        if (item.component === "GArea" && item.content && item.content.subContent) {
+            // Process subContent within GArea
+            item.content.subContent = item.content.subContent
+                .map(subItem => {
+                    if (subItem.update === true) {
+                        return { ...subItem, update: false };
+                    }
+                    return subItem;
+                })
+                .filter(subItem => Object.keys(subItem).length > 0); // Remove empty subContent
+        }
+
+        // Handle update flag for main item
+        if (item.update === true) {
+            return { ...item, update: false };
+        }
+        return item;
+    }).filter(item => Object.keys(item).length > 0); // Remove empty content
+}
+
+console.log(content.value)
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {

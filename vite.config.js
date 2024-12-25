@@ -29,6 +29,11 @@ export default defineConfig(({ mode }) => {
 					changeOrigin: true,
 					secure: false,
 					ws: true
+				},
+				"/json": {
+					target: "http://localhost:3000",
+					changeOrigin: true,
+					rewrite: (path) => path.replace(/^\/json/, "")
 				}
 			}
 		},
