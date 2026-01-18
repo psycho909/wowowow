@@ -99,11 +99,15 @@ export const InsertScript = (code) => {
 };
 
 export const loadingShow = () => {
-	document.querySelector("#loadingProgress").style.display = "block";
+	if (document.querySelector("#loadingProgress")) {
+		document.querySelector("#loadingProgress").style.display = "block";
+	}
 };
 
 export const loadingHide = () => {
-	document.querySelector("#loadingProgress").style.display = "none";
+	if (document.querySelector("#loadingProgress")) {
+		document.querySelector("#loadingProgress").style.display = "none";
+	}
 };
 
 export const pageInfo = (data) => {

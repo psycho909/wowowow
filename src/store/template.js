@@ -31,7 +31,7 @@ export const templateStore = defineStore("template", {
 								link: "",
 								mt: "250",
 								mb: "24",
-								pc: "https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slogan.png",
+								pc: "https://tw.hicdn.beanfun.com/beanfun/GamaWWW/GamaEvent/assets/css/images/slogan.png",
 								mobile: "",
 								validPC: true,
 								validMobile: true,
@@ -239,7 +239,48 @@ export const templateStore = defineStore("template", {
 							name: "home"
 						}
 					]
-				}
+				},
+				3: {
+					name: "模板類型3",
+					description: "模板類型1的模板描述內容",
+					content: [
+						{
+							component: "GBg",
+							uid: 1,
+							content: {
+								color: "#fff",
+								pc: "",
+								mobile: "",
+								w: 1920,
+								h: 958,
+								mw: "",
+								mh: "",
+								validPC: true,
+								validMobile: true
+							},
+							update: false,
+							init: true
+						},
+						{
+							component: "GSlogan",
+							uid: 2,
+							content: {
+								link: "",
+								mt: "250",
+								mb: "24",
+								pc: "https://tw.hicdn.beanfun.com/beanfun/GamaWWW/GamaEvent/assets/css/images/slogan.png",
+								mobile: "",
+								validPC: true,
+								validMobile: true,
+								validUrl: true,
+								target: true
+							},
+							update: false,
+							init: true,
+							first: true
+						}
+					]
+				},
 			}
 		};
 	}

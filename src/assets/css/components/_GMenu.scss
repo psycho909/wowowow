@@ -68,14 +68,7 @@
 				color: #fff;
 			}
 		}
-		&[data-title="true"] {
-			.list-group {
-				padding-left: 15px;
-			}
-			.g-menu__add {
-				padding: 0;
-			}
-		}
+		
 		&[data-draggable="true"] {
 			cursor: pointer;
 			&.disabled {
@@ -98,7 +91,7 @@
 			}
 		}
 		&[data-drag="false"] {
-			cursor: default !important;
+			// cursor: default !important;
 			&.disabled {
 				&:before {
 					content: none;
@@ -106,6 +99,17 @@
 			}
 			&[data-limit="1"]{
 				cursor: pointer !important;
+			}
+			&:before {
+				content: none;
+			}
+		}
+		&[data-title="true"] {
+			.list-group {
+				padding-left: 15px;
+			}
+			.g-menu__add {
+				padding: 0;
 			}
 			&:before {
 				content: none;

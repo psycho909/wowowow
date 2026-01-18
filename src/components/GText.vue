@@ -3,13 +3,14 @@ export default {
     name: "GText",
     label: "文字區塊",
     order: [7, 12],
-    type: [1, 2]
+    type: [1,2,3]
 }
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
 import GRadio from '../elements/GRadioo.vue';
 import GCkedit from '../elements/GCkedit.vue';
+// import GCkedit from '../elements/GCkeditTemp.vue';
 import GSelect from '../elements/GSelect.vue';
 import GInput from "../elements/GInput.vue";
 import { mainStore } from "../store/index";
@@ -27,7 +28,6 @@ let textUpdate = ref(false);
 let textData = reactive({})
 let collapseStatus = ref(false);
 let boxRef = ref("");
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         align: "left",
@@ -101,9 +101,6 @@ onMounted(async () => {
             const collapseValue = computedStyles.getPropertyValue('--collapse');
             textBox.style = `--collapse:${collapseValue};--max-height:${boxRef.value.scrollHeight}`
         }
-        if ($addComponent) {
-            $addComponent();
-        }
         if (textData.opacity == undefined) {
             textData.opacity = 1;
         }
@@ -174,9 +171,14 @@ const closeBtn = () => {
 const collapseToggle = () => {
     collapseStatus.value = !collapseStatus.value
 }
+function splitUid(uid) {
+    let _uid = uid.toString()
+    return _uid.split("-")[0];
+}
 </script>
 <template>
-    <div class="g-text" :class="[textSetting.align]" :style="[colors[textSetting.style], cssVar]">
+    <div class="g-text" :class="[textSetting.align]" :style="[colors[textSetting.style], cssVar]"
+         :id="splitUid(props.data.uid)">
         <div class="g-text-container" v-if="!textUpdate">
             <div class="g-text__content"
                  :class="[textSetting.type == 'collapse' ? collapseStatus === true || collapseStatus === 'true' ? '' : 'collapse' : '']"
@@ -192,7 +194,7 @@ const collapseToggle = () => {
                     <a class="g-text__collapse-btn" href="javascript:;" @click="collapseToggle"
                        :style="[colors[textSetting.style]]">{{
                         collapseStatus === true || collapseStatus === 'true' ? textSetting.collapse.close :
-                        textSetting.collapse.open }}</a>
+                            textSetting.collapse.open }}</a>
                 </template>
                 <template v-if="textSetting.type == 'scrollbar'">
                     <div class="g-text__box scrollbar" v-html="textSetting.text"
@@ -227,7 +229,7 @@ const collapseToggle = () => {
                     <div class="input-group__label required">透明度:</div>
                     <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
                            v-model="textData.opacity" />
-                    <span>{{ textData.opacity * 100 }}%</span>
+                    <span>{{ parseInt(textData.opacity * 100) }}%</span>
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">收合文字:</div>

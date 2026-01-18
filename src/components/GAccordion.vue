@@ -2,7 +2,7 @@
 export default {
     name: "GAccordion",
     label: "手風琴文字",
-    order: [10, 15], type: [1, 2]
+    order: [10, 15], type: [1, 2,3]
 }
 </script>
 <script setup>
@@ -27,7 +27,6 @@ let accordionData = reactive({});
 let styleValid = ref(true);
 let loading = ref(true);
 let bodyRefs = ref([]);
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         align: "left",
@@ -84,9 +83,6 @@ onMounted(async () => {
         }
         if (accordionSetting.opacity == undefined) {
             accordionSetting.opacity = 1;
-        }
-        if ($addComponent) {
-            $addComponent();
         }
     }
 })
@@ -251,7 +247,7 @@ const toggleAccordion = (index) => {
                 <div class="g-accordion__item" :data-accordion="accordion.collapse">
                     <div class="g-accordion__header" @click="toggleAccordion(index)"><span
                               class="g-accordion__header-prefix">{{
-        accordion.prefix }}</span>{{ accordion.title }}</div>
+                            accordion.prefix }}</span>{{ accordion.title }}</div>
                     <div class="g-accordion__body" :class="[accordion.collapse.toString() == 'true' ? '' : 'active']"
                          ref="bodyRefs">
                         <div class="g-accordion__content">
@@ -287,7 +283,7 @@ const toggleAccordion = (index) => {
                     <div class="input-group__label required">透明度:</div>
                     <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
                            v-model="accordionData.opacity" />
-                    <span>{{ accordionData.opacity * 100 }}%</span>
+                    <span>{{ parseInt(accordionData.opacity * 100) }}%</span>
                 </div>
                 <template v-for="(accordion, index) in accordionData.accordions">
                     <div class="g-edit__row">
@@ -325,19 +321,23 @@ const toggleAccordion = (index) => {
                 <div class="g-edit__row">
                     <div class="g-edit__col w50">
                         <g-input label="PC間距上:" type="number" v-model="accordionData.mt" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="accordionData.validMt" />
+                                 warning="間距請勿設定為負值"
+                                 :valid="accordionData.validMt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="PC間距下:" type="number" v-model="accordionData.mb" @change="handleNumber"
-                                 warning="間距請勿設定為負值" :valid="accordionData.validMb" />
+                                 warning="間距請勿設定為負值"
+                                 :valid="accordionData.validMb" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距上:" type="number" v-model="accordionData.mobile_mt"
-                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="accordionData.validMmt" />
+                                 @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="accordionData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距下:" type="number" v-model="accordionData.mobile_mb"
-                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="accordionData.validMmb" />
+                                 @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="accordionData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

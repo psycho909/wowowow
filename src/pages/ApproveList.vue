@@ -52,6 +52,7 @@ const eventDataSlice = computed(() => {
     return eventData.value.slice(currentPage.value * total.value - total.value, currentPage.value * total.value)
 })
 
+
 const onSearch = () => {
     loadingShow()
     if (eventFilter.beginDate == null) {
@@ -150,13 +151,14 @@ const onSubmit = () => {
                 v.show = 0;
             }
         })
-
-        openEventOff.value = false;
         return res;
     }).then((res) => {
         messageText.value = "已下架成功";
         messageLightbox.value = true;
+        onSaveTemp()
+        onSearch();
     }).finally(() => {
+        openEventOff.value = false;
         loadingHide()
     })
 }

@@ -20,6 +20,7 @@
 	}
 	&__a {
 		width: 100%;
+		// width: auto;
 		position: relative;
 		text-align: center;
 		font-size: 0;
@@ -178,6 +179,11 @@
 					padding: vw(4);
 				}
 			}
+			img {
+				max-width: 100%;
+				height: auto;
+				display: inline-block;
+			}
 		}
 		&-link {
 			text-align: center;
@@ -263,4 +269,7 @@
 	.swiper-wrapper {
 		align-items: center;
 	}
+}
+.swiper-slide {
+	text-align: center;
 }

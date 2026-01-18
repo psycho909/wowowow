@@ -3,7 +3,7 @@ export default {
     name: "GLang",
     label: "設定多國語系",
     limit: 1,
-    order: [15, 20], type: [1, 2]
+    order: [15, 20], type: [1,2,3]
 }
 </script>
 
@@ -33,7 +33,6 @@ let langOptions = ref([{
     value: "ja",
 }])
 let loading = ref(true);
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         default: "",
@@ -69,9 +68,6 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(langData, cloneDeep(props.data.content));
         Object.assign(langSetting, cloneDeep(props.data.content));
-        if ($addComponent) {
-            $addComponent();
-        }
     }
 })
 

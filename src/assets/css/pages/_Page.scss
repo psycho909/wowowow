@@ -27,6 +27,28 @@ body {
 		.notice-img {
 			display: none !important;
 		}
+		&.mb {
+			--base-unit: 1cqi;
+			#app {
+				container-type: inline-size;
+				container-name: preview;
+				contain: content;
+				/* transform: translate(0); */
+				position: relative;
+				overflow: hidden;
+				width: 375px;
+				border: 10px solid #000;
+				border-radius: 30px;
+				box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+				height: 675px;
+				margin: 0 auto;
+				.device-shell {
+					height: 100%;
+					position: relative;
+					overflow: auto;
+				}
+			}
+		}
 	}
 }
 .error {
@@ -68,27 +90,23 @@ body {
 	&.bg-h {
 		min-height: calc(var(--h) * 1px);
 		@include media {
-			min-height: calc(var(--h) / 768 * 100vw);
+			min-height: vw(var(--h));
 		}
 	}
 	&.video-bg-h {
 		min-height: calc(var(--video-h) * 1px) !important;
 		@include media {
-			min-height: calc(var(--video-h) / 768 * 100vw) !important;
+			min-height: vw(var(--video-h)) !important;
 		}
 	}
 	min-height: 100dvh;
 	position: relative;
 	background-repeat: no-repeat;
-	// padding-bottom: 100px;
-	// padding-top: 180px;
 	overflow: hidden;
-	padding-top: calc(var(--padding-top) * 1px) !important;
 	@include media {
 		background-image: var(--mobile);
-		background-size: calc(var(--mw) / 768 * 100vw) calc(var(--mh) / 768 * 100vw);
+		background-size: vw(var(--mw)) vw(var(--mh));
 		padding-top: vw(100);
-		// padding-bottom: vw(180);
 		padding-bottom: 0;
 		min-height: auto;
 	}
@@ -102,9 +120,6 @@ body {
 	}
 	&.development {
 		display: block;
-		// display: flex;
-		// flex-direction: column;
-
 		&.focus {
 			box-shadow: inset 1px 0 0 3px red;
 		}
@@ -175,8 +190,7 @@ body {
 			color: #000;
 			border-radius: 12px;
 			background-color: #ff8800;
-			width: 66px;
-			height: 45px;
+			padding: 12px;
 			display: flex;
 			justify-content: center;
 			align-items: center;

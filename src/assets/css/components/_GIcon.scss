@@ -40,9 +40,9 @@
 			z-index: 1;
 			@include media {
 				background-image: var(--icon-mobile);
-				background-size: calc(var(--icon-mw) / 768 * 100vw) calc(var(--icon-mh) / 768 * 100vw);
-				width: calc(var(--icon-mw) / 768 * 100vw);
-				height: calc(var(--icon-mh) / 768 * 100vw);
+				background-size: vw(var(--icon-mw)) vw(var(--icon-mh));
+				width: vw(var(--icon-mw));
+				height: vw(var(--icon-mh));
 			}
 		}
 	}

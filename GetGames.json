@@ -1,0 +1,122 @@
+﻿{
+    "listData": [
+        {
+            "guid": 1,
+            "gameName": "\u6AFB\u6843\u5C0F\u4E38\u5B50",
+            "serviceCode": "611648",
+            "serviceRegion": "I0"
+        },
+        {
+            "guid": 2,
+            "gameName": "\u53EC\u559A\u5716\u677F",
+            "serviceCode": "611640",
+            "serviceRegion": "G0"
+        },
+        {
+            "guid": 3,
+            "gameName": "\u5929\u5802M",
+            "serviceCode": "611644",
+            "serviceRegion": "T0"
+        },
+        {
+            "guid": 4,
+            "gameName": "\u4FBF\u5229\u5546\u5E97\u53E3\u888B\u7248",
+            "serviceCode": "611647",
+            "serviceRegion": "T0"
+        },
+        {
+            "guid": 5,
+            "gameName": "\u65B0\u6953\u4E4B\u8C37",
+            "serviceCode": "610074",
+            "serviceRegion": "T9"
+        },
+        {
+            "guid": 6,
+            "gameName": "\u9F8D\u4E4B\u8C37\u65B0\u4E16\u754C",
+            "serviceCode": "611652",
+            "serviceRegion": "T0"
+        },
+        {
+            "guid": 8,
+            "gameName": "\u5929\u5802",
+            "serviceCode": "600035",
+            "serviceRegion": "T7"
+        },
+        {
+            "guid": 9,
+            "gameName": "\u5929\u5802\u514D\u670D",
+            "serviceCode": "600041",
+            "serviceRegion": "BE"
+        },
+        {
+            "guid": 10,
+            "gameName": "\u5929\u5802\u570B\u969B\u670D",
+            "serviceCode": "611639",
+            "serviceRegion": "T0"
+        },
+        {
+            "guid": 12,
+            "gameName": "\u7D55\u5C0D\u6B66\u529B",
+            "serviceCode": "610153",
+            "serviceRegion": "TN"
+        },
+        {
+            "guid": 13,
+            "gameName": "\u65B0\u746A\u5947",
+            "serviceCode": "600309",
+            "serviceRegion": "A2"
+        },
+        {
+            "guid": 14,
+            "gameName": "\u827E\u723E\u4E4B\u5149",
+            "serviceCode": "300148",
+            "serviceRegion": "AF"
+        },
+        {
+            "guid": 15,
+            "gameName": "bf!\u904A\u6232",
+            "serviceCode": "99999",
+            "serviceRegion": "T0"
+        },
+        {
+            "guid": 16,
+            "gameName": "\u65B0\u9F8D\u4E4B\u8C37",
+            "serviceCode": "611653",
+            "serviceRegion": "VA"
+        },
+        {
+            "guid": 18,
+            "gameName": "\u5168\u7522\u54C1",
+            "serviceCode": "99999",
+            "serviceRegion": "T0"
+        },
+        {
+            "guid": 19,
+            "gameName": "\u6CE2\u62C9\u897F\u4E9E",
+            "serviceCode": "610688",
+            "serviceRegion": "S8"
+        },
+        {
+            "guid": 20,
+            "gameName": "\u6551\u4E16\u8005\u4E4B\u6A39M",
+            "serviceCode": "611520",
+            "serviceRegion": "T0"
+        },
+        {
+            "guid": 21,
+            "gameName": "\u6C38\u6046\u5192\u96AA",
+            "serviceCode": "300037",
+            "serviceRegion": "TB"
+        },
+        {
+            "guid": 22,
+            "gameName": "\u7206\u7206\u738B",
+            "serviceCode": "610085",
+            "serviceRegion": "TC"
+        }
+    ],
+    "data": null,
+    "code": 1,
+    "message": null,
+    "url": null
+}

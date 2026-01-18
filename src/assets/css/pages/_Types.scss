@@ -20,33 +20,13 @@ html {
 				}
 				@include media {
 					padding-bottom: vw(100);
-					// padding-top: vw(180);
 					padding-top: 0;
 				}
 			}
 		}
 		.g-bg {
 			position: absolute;
-			// width: 100%;
-			// height: 100%;
 			z-index: 1;
-			// padding-top: 180px;
-		}
-		.wrap {
-		}
-		.g-fixed {
-		}
-		.g-slogan {
-			&-contianer {
-			}
-		}
-		.g-slide {
-			&-contianer {
-			}
-		}
-		.g-text {
-			&-contianer {
-			}
 		}
 		.UNI-footer {
 			order: 2;
@@ -56,10 +36,6 @@ html {
 		}
 	}
 	&[data-type="2"] {
-		// font-size: 768px;
-		// @include media {
-		// 	body: 100vw;
-		// }
 		body {
 			display: flex;
 			flex-direction: column;
@@ -69,10 +45,7 @@ html {
 		}
 		.g-bg {
 			position: absolute;
-			// width: 100%;
-			// height: 100%;
 			z-index: 1;
-			// padding-top: 180px;
 			&-video {
 				width: 100%;
 				height: 100%;
@@ -83,12 +56,6 @@ html {
 				&.contain {
 					width: auto;
 					height: auto;
-				}
-			}
-		}
-		#app {
-			&.edit {
-				.wrap {
 				}
 			}
 		}
@@ -105,20 +72,6 @@ html {
 			&-container {
 				& > .g-modify {
 					transform: translateX(-25%);
-				}
-			}
-		}
-		.g-fixed {
-			&.top {
-				.g-fixed-container {
-					max-width: 1200px;
-					// justify-content: flex-start;
-				}
-			}
-			&.bottom {
-				.g-fixed-container {
-					max-width: 1200px;
-					// justify-content: flex-start;
 				}
 			}
 		}
@@ -165,21 +118,8 @@ html {
 		.g-img {
 			&-container {
 				max-width: 1200px;
-				grid-gap: 0;
 				@include media {
 					width: vw(690);
-					&[data-num="1"] {
-						grid-template-columns: repeat(1, 1fr) !important;
-					}
-					&[data-num="2"] {
-						grid-template-columns: repeat(2, 1fr) !important;
-					}
-					&[data-num="3"] {
-						grid-template-columns: repeat(3, 1fr) !important;
-					}
-					&[data-num="4"] {
-						grid-template-columns: repeat(4, 1fr) !important;
-					}
 				}
 			}
 			&__box {
@@ -199,6 +139,33 @@ html {
 				max-width: 1200px;
 				.g-yt__box {
 					width: 100%;
+				}
+			}
+		}
+	}
+	&[data-type="3"]{
+		--base-unit: 1rem;
+		.g-accordion-container,.g-buttons-container,.g-slogan,.g-divider-container,.g-img-container,.g-lang-container,.g-listText-container,.g-tabs-container,.g-text-container,.g-video-container{
+			max-width: 768px;
+			@include media {
+				max-width:vw(768);
+			}
+		}
+		.g-buttons{
+			&-container{
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				.g-buttons__btn{
+					width: 100%;
+				}
+				&[data-num="1"]{
+					grid-template-columns: 1fr;
+				}
+				&[data-num="2"]{
+					grid-template-columns: 1fr 1fr;
+				}
+				&[data-gap="false"]{
+					column-gap:0;
 				}
 			}
 		}

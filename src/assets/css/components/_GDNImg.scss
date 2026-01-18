@@ -4,8 +4,8 @@
 	position: relative;
 	z-index: 2;
 	@include media {
-		margin-top: calc(var(--dn-m-margin-top, 750) / 768 * 100vw);
-		margin-bottom: calc(var(--dn-m-margin-bottom, 0) / 768 * 100vw) !important;
+		margin-top: vw(var(--dn-m-margin-top, 750));
+		margin-bottom: vw(var(--dn-m-margin-bottom, 0)) !important;
 	}
 	&-container {
 		max-width: 1200px;
@@ -84,9 +84,9 @@
 			z-index: 1;
 			@include media {
 				background-image: var(--dn-img-mobile);
-				background-size: calc(var(--dn-img-mw) / 768 * 100vw) calc(var(--dn-img-mh) / 768 * 100vw);
-				width: calc(var(--dn-img-mw) / 768 * 100vw);
-				height: calc(var(--dn-img-mh) / 768 * 100vw);
+				background-size: vw(var(--dn-img-mw)) vw(var(--dn-img-mh));
+				width: vw(var(--dn-img-mw));
+				height: vw(var(--dn-img-mh));
 			}
 		}
 		&2 {

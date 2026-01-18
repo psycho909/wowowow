@@ -1,0 +1,199 @@
+複製活動按紐 (等後端開發)
+
+手機預覽 (V)
+
+功能列收納
+開發
+
+蓋版效果
+創建v
+蓋板類型 radio:彈窗圖片(預設)、彈窗影片
+if 蓋板類型 彈窗圖片
+    關閉按鈕 radio:有(預設)、無
+    if 關閉按鈕 有
+        點擊蓋台動作 radio:導轉、關閉、無動作(預設)
+    if 關閉按鈕 無
+        點擊蓋台動作 radio:導轉、關閉(預設)
+    if 點擊蓋台動作 導轉
+        導轉連結(必填) input
+        連結開啟方式 radio:本頁跳轉(預設)、另開視窗
+if 蓋板類型 彈窗影片
+    關閉按鈕 radio:有(預設)、無
+    自動撥放 radio:是、否(預設)
+主題顏色(必填)select:
+素材網址(必填) input:
+出現頻率 radio:每次進入(預設)、一天一次、僅首次顯示
+
+分隔線
+創建v
+長度 radio:短(預設)、中、長
+主題顏色(必填)select:
+透明度 range:0-100(預設100)
+
+圖片 - 左右圖文
+創建v
+樣式 radio:左圖右文(預設)、右圖左文
+主題顏色(必填)select:
+水平文字對齊 radio:置左(預設)、置中、置右
+垂直文字對齊 radio:置上(預設)、置中、置底
+透明度 range:0-100(預設100)
+標題文字 input:
+內文:<g-ckedit v-model:modelValue="textData.text" />
+圖片網址 (必填) input:
+手機板圖片網址 input:
+圖片特效 radio:無(預設)、換圖
+if 圖片特效 換圖
+    更換圖片網址 (必填) input:
+開啟方式 radio:無(預設)、POP視窗、連結跳轉
+if 開啟方式 POP視窗
+    POP內容 radio:純文字(預設)、圖片、POP SLIDE
+    if POP內容 純文字
+        POP標題 input:
+        對齊方向 radio:左(預設)、右
+        透明度 range:0-100(預設100)
+        主題顏色(必填)select:
+        POP內文:<g-ckedit v-model:modelValue="textData.popText" />
+        POP視窗關閉是否跳轉 radio:是、否(預設)
+        if POP視窗關閉是否跳轉 是
+            跳轉連結 (必填) input:
+    if POP內容 圖片
+        POP圖片網址 (必填) input:
+        透明度 range:0-100(預設100)
+        主題顏色(必填)select:
+        POP視窗關閉是否跳轉 radio:是、否(預設)
+        if POP視窗關閉是否跳轉 是
+            跳轉連結 (必填) input:
+    if POP內容 POP SLIDE
+        透明度 range:0-100(預設100)
+        主題顏色(必填)select:
+        自動輪播 radio:是、否(預設)
+        if 自動輪播 是
+            秒數 input:(預設3秒)
+        輪播切換方式 radio:左右箭頭、下方點點、都不顯示、都要顯示(預設)
+        圖片網址1 (必填) input:
+        手機板圖片網址1 input:
+        if POP視窗關閉是否跳轉 是
+            跳轉連結 (必填) input:
+if 開啟方式 連結跳轉
+    超連結文字 input:
+    連結網址 (必填) input:
+    連結開啟方式 radio:本頁跳轉(預設)、另開視窗
+
+輪播 - 左右圖文
+創建v
+樣式 radio:左圖右文(預設)、右圖左文
+主題顏色(必填)select:
+水平文字對齊 radio:置左(預設)、置中、置右
+垂直文字對齊 radio:置上(預設)、置中、置底
+透明度 range:0-100(預設100)
+標題文字 input:
+內文:<g-ckedit v-model:modelValue="textData.text" />
+自動輪播 radio:是、否(預設)
+if 自動輪播 是
+    秒數 input:(預設3秒)
+輪播切換方式 radio:左右箭頭、下方點點、都不顯示、都要顯示(預設)
+圖片網址1 (必填) input:
+手機板圖片網址1 input:
+圖片特效 radio:無(預設)、換圖
+if 圖片特效 換圖
+    更換圖片網址 (必填) input:
+開啟方式 radio:無(預設)、POP視窗、連結跳轉
+if 開啟方式 POP視窗
+    POP內容 radio:純文字(預設)、圖片、POP SLIDE
+    if POP內容 純文字
+        POP標題 input:
+        對齊方向 radio:左(預設)、右
+        透明度 range:0-100(預設100)
+        主題顏色(必填)select:
+        POP內文:<g-ckedit v-model:modelValue="textData.popText" />
+        POP視窗關閉是否跳轉 radio:是、否(預設)
+        if POP視窗關閉是否跳轉 是
+            跳轉連結 (必填) input:
+    if POP內容 圖片
+        POP圖片網址 (必填) input:
+        透明度 range:0-100(預設100)
+        主題顏色(必填)select:
+        POP視窗關閉是否跳轉 radio:是、否(預設)
+        if POP視窗關閉是否跳轉 是
+            跳轉連結 (必填) input:
+    if POP內容 POP SLIDE
+        透明度 range:0-100(預設100)
+        主題顏色(必填)select:
+        自動輪播 radio:是、否(預設)
+        if 自動輪播 是
+            秒數 input:(預設3秒)
+        輪播切換方式 radio:左右箭頭、下方點點、都不顯示、都要顯示(預設)
+        圖片網址1 (必填) input:
+        手機板圖片網址1 input:
+        if POP視窗關閉是否跳轉 是
+            跳轉連結 (必填) input:
+if 開啟方式 連結跳轉
+    超連結文字 input:
+    連結網址 (必填) input:
+    連結開啟方式 radio:本頁跳轉(預設)、另開視窗
+
+影片 - 左右圖文
+創建v
+樣式 radio:左圖右文(預設)、右圖左文
+主題顏色(必填)select:
+水平文字對齊 radio:置左(預設)、置中、置右
+垂直文字對齊 radio:置上(預設)、置中、置底
+透明度 range:0-100(預設100)
+標題文字 input:
+內文:<g-ckedit v-model:modelValue="textData.text" />
+顯示文字說明 radio:關閉(預設)、開啟
+影片來源 radio:YouTube(預設)、MP4
+手機使用YoutubeAPP開啟:是(預設)、否
+播放方式 radio:點擊播放(預設)、彈出播放、自動播放(APP無效)
+循環播放 radio:是、否(預設)
+影片網址 (必填) input:
+
+快速按鈕
+按鈕位置 radio:左(預設)、中、右
+主題顏色(必填)select:
+透明度 range:0-100(預設100)
+按鈕間距 radio:有(預設)、無
+按鈕數量 :1 (按鈕去加減)
+按鈕文字1 (必填) input:
+按鈕連結1 (必填) input:
+另開視窗1 radio:是(預設)、否
+滑鼠移過效果1 select:無(預設)、滑動切換、漸變切換
+特效1 radio:無(預設)、換圖、換字
+if 特效1 換圖
+    更換圖片網址1 (必填) input:
+if 特效1 換字
+    更換按鈕文字1 (必填) input:
+
+浮動選單
+出現位置 radio:左(預設)、右、上、下
+樣式 radio:一般文字(預設)、可收合、自訂圖片
+if 樣式 自訂圖片
+    回到最上面按鈕 radio:顯示(預設)、無
+    手機板選單位置 radio:左(預設)、無
+    主題顏色(必填)select:
+    透明度 range:0-100(預設100)
+    選單數量 :1 (選單去加減)
+    圖片網址1 (必填)(無label) input:
+    輔導連結1 (必填)(無label) input:
+    另開視窗1 radio:是(預設)、否
+
+一版到底
+創建
+html {
+    font-size: 768px;
+    @include media {
+        font-size: 100vw;
+    }
+}
+全部使用rem
+@use "sass:math";
+@function strip-unit($number) {
+	@if type-of($number) == "number" and not unitless($number) {
+		@return math.div($number, $number * 0 + 1);
+	}
+
+	@return $number;
+}
+@function rem($size, $breakpoint: 768, $zoom: 1) {
+	@return math.div(strip-unit($size), $breakpoint) * $zoom * 1rem;
+}

@@ -29,8 +29,8 @@
 		@include media {
 			background-image: var(--logo-mobile);
 			background-size: calc(var(--logo-mw) / 768 * 100vw) calc(var(--logo-mh) / 768 * 100vw);
-			width: calc(var(--logo-mw) / 768 * 100vw);
-			height: calc(var(--logo-mh) / 768 * 100vw);
+			width: vw(var(--logo-mw));
+			height: vw(var(--logo-mh));
 		}
 	}
 }

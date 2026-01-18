@@ -1,5 +1,8 @@
 $fontFamily: "PingFangTC-Regular", "Heiti TC", "Noto Sans TC", "Microsoft JhengHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
-
+:root {
+  /* 預設使用 viewport width，跟原本一模一樣 */
+  --base-unit: 1vw; 
+}
 * {
 	padding: 0;
 	margin: 0;

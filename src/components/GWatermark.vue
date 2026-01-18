@@ -3,7 +3,7 @@ export default {
     name: "GWatermark",
     label: "浮水印",
     limit: 1,
-    order: [14, 19], type: [1, 2]
+    order: [14, 19], type: [1,2,3]
 }
 </script>
 
@@ -14,7 +14,7 @@ import GCkedit from '../elements/GCkeditSimple.vue';
 import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GSelect from '../elements/GSelect.vue';
-import GSwiper from '../elements/GSwiper2.vue';
+import GSwiper from '../elements/GSwiperBasic.vue';
 import GLightbox from './GLightbox.vue';
 import colors, { style1, style2 } from "../colors";
 import { CheckImage, CheckUrl, imgLoading, handleNumber, loadingShow, loadingHide } from "../Tool";
@@ -30,7 +30,6 @@ let watermarkSetting = reactive({})
 let styleValid = ref(true);
 let loading = ref(true);
 let slideUpdate = ref(false);
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         validPC: true,
@@ -97,9 +96,6 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(watermarkData, cloneDeep(props.data.content));
         Object.assign(watermarkSetting, cloneDeep(props.data.content));
-        if ($addComponent) {
-            $addComponent();
-        }
     }
 })
 
@@ -367,7 +363,7 @@ function transformToCSSProps(item) {
                 </template>
 
                 <template v-if="watermarkSetting.type == 'pop'">
-                    <div class="g-watermark__box"
+                    <div class="g-watermark__box pop"
                          :class="[store.status == 'edit' ? 'edit' : '', watermarkSetting.mobileShow === true || watermarkSetting.mobileShow === 'true' ? 'mobileShow' : '']"
                          @click="openPop(watermarkSetting)">
                         <div class="g-watermark__img-box"

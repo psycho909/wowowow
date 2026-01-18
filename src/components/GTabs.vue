@@ -3,7 +3,7 @@ export default {
     name: "GTabs",
     label: "頁籤區塊",
     order: [9, 14],
-    type: [1, 2]
+    type: [1,2,3]
 }
 </script>
 
@@ -13,7 +13,7 @@ import { mainStore } from "../store/index";
 import GInput from "../elements/GInput.vue";
 import GRadio from '../elements/GRadioo.vue';
 import GSelect from '../elements/GSelect.vue';
-import GSwiper from '../elements/GSwiper2.vue';
+import GSwiper from '../elements/GSwiperBasic.vue';
 import GCkedit from '../elements/GCkeditSimple.vue';
 import GLightbox from './GLightbox.vue';
 import GYoutube from '../elements/GYoutube.vue';
@@ -36,13 +36,14 @@ let tabRef = ref("");
 let tabPop = ref(false);
 let tabPopShow = ref(false);
 let tabPopHide = ref(false);
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         style: "",
         validStyle: true,
         activeTab: 0,
         opacity: 1,
+        // 產出隨機英文數字亂碼4位
+        randomCode: Math.random().toString(36).substring(2, 6),
         tabs: [{
             name: "",
             validName: true,
@@ -137,6 +138,12 @@ watchEffect(async () => {
         if (tabsSetting.opacity == undefined) {
             tabsSetting.opacity = 1;
         }
+        if (tabsData.randomCode == undefined) {
+            tabsData.randomCode = Math.random().toString(36).substring(2, 6);
+        }
+        if (tabsSetting.randomCode == undefined) {
+            tabsSetting.randomCode = Math.random().toString(36).substring(2, 6);
+        }
         videoUpdate.value = true;
         slideUpdate.value = true;
         await nextTick();
@@ -177,6 +184,12 @@ onMounted(async () => {
         if (tabsSetting.opacity == undefined) {
             tabsSetting.opacity = 1;
         }
+        if (tabsData.randomCode == undefined) {
+            tabsData.randomCode = Math.random().toString(36).substring(2, 6);
+        }
+        if (tabsSetting.randomCode == undefined) {
+            tabsSetting.randomCode = Math.random().toString(36).substring(2, 6);
+        }
         await nextTick();
         let tabListWidth = document.querySelector('.g-tabs__tab-list').clientWidth;
         let tabLiWidthTotal = 0;
@@ -187,9 +200,6 @@ onMounted(async () => {
             tabPopHide.value = true;
         } else {
             tabPopHide.value = false;
-        }
-        if ($addComponent) {
-            $addComponent();
         }
     }
 })
@@ -539,17 +549,22 @@ const targetTab = (index) => {
     tabPopShow.value = false
     tabsSetting.activeTab = index
 }
+function splitUid(uid) {
+    let _uid = uid.toString()
+    return _uid.split("-")[0];
+}
 </script>
 
 <template>
-    <div class="g-tabs" :style="[colors[tabsSetting.style], cssVar]">
+    <div class="g-tabs" :style="[colors[tabsSetting.style], cssVar]" :id="splitUid(props.data.uid)">
         <div class="g-tabs-container">
             <div class="g-tabs__tab-box" :data-pop="tabPop">
                 <ul class="g-tabs__tab-list" :data-num="tabsSetting.tabs?.length">
                     <template v-for="(tab, index) in tabsSetting.tabs" :key="index">
                         <li class="g-tabs__tab-li" @click="tabsSetting.activeTab = index"
+                            :id="`g-tabs-${tabsSetting.randomCode}-${index}`"
                             :class="{ 'active': tabsSetting.activeTab === index }" ref="tabRef">{{
-                            tab.name }}</li>
+                                tab.name }}</li>
                     </template>
                 </ul>
                 <a href="javascript:;" class="g-tabs__tab-pop" @click="openTabPop" v-if="tabPopHide"></a>
@@ -605,10 +620,11 @@ const targetTab = (index) => {
                                             </picture>
                                         </div>
                                         <g-lightbox v-model:showLightbox="tab.img.pop.show"
+                                                    :style="[colors[tabsSetting.style], { '--opacity-pop': tabsSetting.opacity }]"
                                                     :class="[tab.img.pop.align, tab.img.pop.type, tab.img.pop.type == 'slide' ? 'pop-slide' : '']">
                                             <template #lightbox-title
                                                       v-if="tab.img.pop.type != 'slide' && tab.img.pop.title !== ''">{{
-                                                tab.img.pop.title }}</template>
+                                                        tab.img.pop.title }}</template>
 
                                             <template #lightbox-content>
                                                 <template v-if="tab.img.pop.type != 'slide'">
@@ -652,6 +668,7 @@ const targetTab = (index) => {
                                                :openapp="tab.video.app"
                                                v-if="!videoUpdate" />
                                     <g-lightbox v-model:showLightbox="tab.video.show"
+                                                :style="[colors[tabsSetting.style], { '--opacity-pop': tabsSetting.opacity }]"
                                                 :action="false"
                                                 class="lb-video">
                                         <template #lightbox-content>
@@ -709,9 +726,9 @@ const targetTab = (index) => {
                     <div class="input-group__label required">透明度:</div>
                     <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
                            v-model="tabsData.opacity" />
-                    <span>{{ tabsData.opacity * 100 }}%</span>
+                    <span>{{ parseInt(tabsData.opacity * 100) }}%</span>
                 </div>
-                <template v-for="( tab, index ) in tabsData.tabs " :key="index">
+                <template v-for="(tab, index) in tabsData.tabs" :key="index">
                     <div class="g-edit__row">
                         <div class="g-edit__col">
                             <div class="g-edit__group">
@@ -815,7 +832,7 @@ const targetTab = (index) => {
                                                 </div>
                                             </div>
                                             <div class="g-edit__row"
-                                                 v-for="( slide, slideIndex ) in tab.img.pop.slides ">
+                                                 v-for="(slide, slideIndex) in tab.img.pop.slides">
                                                 <div class="g-edit__col">
                                                     <div class="g-edit__group">
                                                         <a href="javascript:;" class="icon icon-add"

@@ -194,7 +194,7 @@ const onEditDetail = (event) => {
         onSaveTemp();
     });
 }
-const onPreview = async (event) => {
+const onPreview = async (event,device="pc") => {
     if (event.detail == null) {
         messageText.value = "請先編輯內容";
         messageLightbox.value = true;
@@ -202,10 +202,11 @@ const onPreview = async (event) => {
     }
     await store.setData(event)
     GetPageType(store.otp)
-    store.setStorageState(store.$state, "EventList").then((res) => {
+    store.setStorageState(store.$state, "EventList",device).then((res) => {
         store.setPage("Preview", {
             eventSeq: event.eventSeq,
             gameseq: event.gameseq,
+            device:device
         })
     }).catch((err) => {
         messageText.value = `文字區塊內使用的圖片容量過大</br>
@@ -408,7 +409,7 @@ onMounted(async () => {
 
         <div class="event-list__filter">
             <div class="event-list__col">
-                <g-input label="活動名稱:" placeholder="輸入內容" v-model="eventFilter.eventName" />
+                <g-input label="活動名稱 / 編號:" placeholder="輸入內容" v-model="eventFilter.eventName" />
             </div>
             <div class="event-list__col">
                 <div class="event-list__label">日期區間:</div>
@@ -425,7 +426,7 @@ onMounted(async () => {
                         <option :value="option.option.guid">{{ option.option.gameName }}</option>
                     </template>
                 </g-select>
-                <g-select label="狀態" v-model="eventFilter.flag" :options="flagOptions" />
+                <g-select label="狀態:" v-model="eventFilter.flag" :options="flagOptions" />
             </div>
             <div class="event-list__col">
                 <a href="javascript:;" class="btn btn__search" @click="onSearch">搜尋</a>
@@ -486,7 +487,9 @@ onMounted(async () => {
                                    v-if="(event.flag != 1)"
                                    @click="onEditDetail(event)">編輯內容</a>
                                 <a href="javascript:;" class="event-list__btn event-list__btn-preview"
-                                   @click="onPreview(event)">預覽</a>
+                                   @click="onPreview(event,'pc')">電腦預覽</a>
+                                <a href="javascript:;" class="event-list__btn event-list__btn-preview"
+                                   @click="onPreview(event,'mb')">手機預覽</a>
                                 <a href="javascript:;" class="event-list__btn event-list__btn-approve"
                                    v-if="event.flag == 0"
                                    @click="onApprove(event, '送審')">送審</a>

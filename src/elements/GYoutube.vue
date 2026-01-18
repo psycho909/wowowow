@@ -63,6 +63,7 @@ onMounted(async () => {
                 player = YouTubePlayer(videoRef.value, {
                     videoId: extractVideoID(props.youtube)
                 })
+                player.mute();
                 if (props.auto) {
                     player.playVideo();
                 }

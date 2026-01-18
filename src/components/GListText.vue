@@ -1,8 +1,8 @@
 <script>
 export default {
     name: "GListText",
-    label: "區塊條列式文字",
-    order: [11, 16], type: [1, 2]
+    label: "條列式區塊",
+    order: [11, 16], type: [1,2,3]
 }
 </script>
 <script setup>
@@ -26,7 +26,6 @@ let listTextSetting = reactive({})
 let styleValid = ref(true);
 let loading = ref(true);
 let _listTextDataLength = ref(1);
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         num: 1,
@@ -94,9 +93,6 @@ onMounted(async () => {
         }
         if (listTextSetting.opacity == undefined) {
             listTextSetting.opacity = 1;
-        }
-        if ($addComponent) {
-            $addComponent();
         }
     }
 })
@@ -403,7 +399,7 @@ function transformNavsToCSSProps(item) {
                                :target="[page == 'EditPage' ? '_blank' : nest.open == 'true' || nest.open == true ? '_blank' : '']"
                                v-else>{{
                                 nest.text
-                                }}</a>
+                            }}</a>
                         </div>
                     </div>
                 </template>
@@ -442,7 +438,7 @@ function transformNavsToCSSProps(item) {
                     <div class="input-group__label required">透明度:</div>
                     <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
                            v-model="listTextData.opacity" />
-                    <span>{{ listTextData.opacity * 100 }}%</span>
+                    <span>{{ parseInt(listTextData.opacity * 100) }}%</span>
                 </div>
                 <div class="g-edit__row g-edit__block" v-for="(list, index) in listTextData.listTexts">
                     <div class="g-edit__col">
@@ -473,11 +469,11 @@ function transformNavsToCSSProps(item) {
                                     </div>
                                     <div class="g-edit__group">
                                         <div class="g-edit__col">
-                                            <g-input label="條列文字:" type="text" v-model.trim="nest.text"
+                                            <g-input label="文字:" type="text" v-model.trim="nest.text"
                                                      :valid="nest.validText" :required="true" />
                                         </div>
                                         <div class="g-edit__col">
-                                            <g-input label="URL:" type="text" v-model.trim="nest.url" />
+                                            <g-input label="連結:" type="text" v-model.trim="nest.url" />
                                         </div>
                                         <div class="g-edit__col">
                                             <div class="input-group__label">另開視窗:</div>

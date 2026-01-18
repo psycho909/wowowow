@@ -22,6 +22,7 @@ import { GetPageType } from "../api";
 const store = mainStore();
 const { content, pageTypeSeq, group, targetArea } = storeToRefs(store);
 let toggle = ref(false);
+const FILTERED_TITLES = ["GFixed", "GBg", "GSlogan", "GTop", "GWatermark", "GMusic", "GLang"];
 
 const bgStatus = computed(() => {
     if (content.value) {
@@ -136,7 +137,9 @@ const sloganStatus = computed(() => {
     return {}
 })
 const add = (cpt) => {
-    console.log(cpt)
+    if (cpt.title == "圖片區塊" || cpt.title == "輪播區塊") {
+        return;
+    }
     GetPageType(store.otp)
     let data = {
         cpt: cpt.title
@@ -220,16 +223,6 @@ const add = (cpt) => {
             return;
         }
     }
-    // if (cpt.title == "GSlogan") {
-    //     if (sloganStatus.value?.content?.init) {
-    //         return;
-    //     } else {
-    //         if (sloganStatus.value) {
-    //             sloganStatus.value.update = true;
-    //             return;
-    //         }
-    //     }
-    // }
     if (!cpt.status) {
         return;
     }
@@ -276,19 +269,18 @@ const toggleMenu = (e) => {
                @move="moveLog"
                item-key="label">
         <template #item="{ element }">
-            <div @click="add(element)"
-                 class="g-menu__add"
-                 :class='[["GFixed", "GBg", "GSlogan", "GTop", "GWatermark", "GMusic", "GLang"].includes(element.title) ? "filtered" : "", element.status ? "" : "disabled"]'
+            <div class="g-menu__add"
+                 :class='[FILTERED_TITLES.includes(element.title) ? "filtered" : "", element.status ? "" : "disabled"]'
                  :data-title="[element?.elements ? 'true' : 'false']"
                  :data-limit="element.limit"
                  :data-order="element.order"
-                 :data-drag='[["GFixed", "GBg", "GSlogan", "GTop", "GWatermark", "GMusic", "GLang"
-            ].includes(element.title) || element.drag == false ? "false" : "true"]'>
-                <template v-if="element.label">{{ element.label }}</template>
+                 :data-drag='[FILTERED_TITLES.includes(element.title) || element.drag == false ? "false" : "true"]'>
+                <template v-if="element.label">
+                    <div @click="add(element)">{{ element.label }}</div>
+                </template>
                 <template v-if="element?.elements">
                     <span class="g-menu__title filtered" @click="toggleMenu" data-toggle="false"
-                          data-draggable="false">{{
-                element.title }}</span>
+                          data-draggable="false">{{ element.title }}</span>
                     <nested-draggable :tasks="element.elements" />
                 </template>
             </div>

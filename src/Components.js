@@ -20,6 +20,11 @@ import GIcon from "./components/GIcon.vue";
 import GDNNav from "./components/GDNNav.vue";
 import GDNImg from "./components/GDNImg.vue";
 import GArea from "./components/GArea.vue";
+import GOverlay from "./components/GOverlay.vue";
+import GDivider from "./components/GDivider.vue";
+import GImgTextSide from "./components/GImgTextSide.vue";
+import GSlideTextSide from "./components/GSlideTextSide.vue";
+import GVideoTextSide from "./components/GVideoTextSide.vue";
 
 export default {
 	GFixed,
@@ -43,5 +48,10 @@ export default {
 	GIcon,
 	GDNNav,
 	GDNImg,
-	GArea
+	GArea,
+	GOverlay,
+	GDivider,
+	GImgTextSide,
+	GSlideTextSide,
+	GVideoTextSide
 };

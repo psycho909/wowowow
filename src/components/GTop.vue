@@ -3,7 +3,7 @@ export default {
     name: "GTop",
     label: "回到頂端按鈕",
     limit: 1,
-    order: [12, 17], type: [1, 2]
+    order: [12, 17], type: [1,2,3]
 }
 </script>
 <script setup>
@@ -26,14 +26,13 @@ let topData = reactive({});
 let topSetting = reactive({})
 let styleValid = ref(true);
 let loading = ref(true);
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         align: "left",
         type: "style",
         style: "",
         pc: "",
-        mobile: "", validPC: true, validMobile: true,opacity: 1
+        mobile: "", validPC: true, validMobile: true, opacity: 1
     }
 }
 Object.assign(topData, initData());
@@ -69,9 +68,6 @@ onMounted(async () => {
         }
         Object.assign(topData, cloneDeep(props.data.content));
         Object.assign(topSetting, cloneDeep(props.data.content));
-        if ($addComponent) {
-            $addComponent();
-        }
         if (topData.opacity == undefined) {
             topData.opacity = 1;
         }
@@ -240,8 +236,8 @@ const cssVar = computed(() => {
                         <div class="g-edit__row">
                             <div class="input-group__label required">透明度:</div>
                             <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
-                                v-model="topData.opacity" />
-                            <span>{{ topData.opacity * 100 }}%</span>
+                                   v-model="topData.opacity" />
+                            <span>{{ parseInt(topData.opacity * 100) }}%</span>
                         </div>
                     </template>
                     <template v-if="topData.type == 'img'">

@@ -7,6 +7,13 @@
 		ul {
 			padding-left: 40px;
 		}
+		.image-inline img {
+			display: block;
+			height: auto;
+			margin: 0 auto;
+			max-width: 100%;
+			min-width: 100%;
+		}
 	}
 	&.warning {
 		.ck-rounded-corners .ck.ck-editor__top .ck-sticky-panel .ck-toolbar,

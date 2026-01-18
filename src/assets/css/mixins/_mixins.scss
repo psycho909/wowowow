@@ -1,21 +1,40 @@
 @function strip-unit($number) {
-	@if type-of($number) == "number" and not unitless($number) {
-		@return $number / ($number * 0 + 1);
-	}
-
-	@return $number;
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+  @return $number;
 }
 @function rem($size, $fontSize: 16, $zoom: 1) {
 	@return (strip-unit($size) / $fontSize) * $zoom * 1rem;
 }
 @function vw($size, $breakpoint: 768) {
-	@return (strip-unit($size) / $breakpoint) * 100vw;
+  $num: strip-unit($size);
+  @return calc( (#{$num} / #{$breakpoint}) * 100 * var(--base-unit, 1vw) );
 }
-@mixin media($breakpoint: 768px) {
+@mixin responsive-or-forced($breakpoint: 768px) {
 	@media screen and (max-width: $breakpoint) {
 		@content;
 	}
 }
+@mixin media($breakpoint: 768px, $container-name: preview) {
+	@media screen and (max-width: $breakpoint) {
+		@content;
+	}
+	@container #{$container-name} (max-width: #{$breakpoint}) {
+		@content;
+	}
+}
+// @mixin media($class-name: "mobile", $breakpoint: 768px) {
+// 	// 正常的 media query
+// 	@include responsive-or-forced($breakpoint) {
+// 		@content;
+// 	}
+
+// 	// 強制套用的 class
+// 	&.#{$class-name} {
+// 		@content;
+// 	}
+// }
 @mixin hover($breakpoint: 768px) {
 	@media screen and (min-width: $breakpoint) {
 		&:hover {

@@ -3,7 +3,7 @@ export default {
     name: "GMusic",
     label: "音樂播放器",
     limit: 1,
-    order: [13, 18], type: [1, 2]
+    order: [13, 18], type: [1,2,3]
 }
 </script>
 <script setup>
@@ -28,7 +28,6 @@ const audioPlayer = ref(null);
 const musicIndex = ref(0);
 const soundOn = ref(false);
 const toggleBox = ref(false);
-const $addComponent = inject('$addComponent');
 let marquee = ref(null)
 let marqueeInterval = null;
 let marqueePosition = 0;
@@ -71,9 +70,6 @@ onMounted(async () => {
     if (Object.keys(props.data.content).length > 0) {
         Object.assign(musicData, cloneDeep(props.data.content));
         Object.assign(musicSetting, cloneDeep(props.data.content))
-        if ($addComponent) {
-            $addComponent();
-        }
         if (musicSetting.musicToggle == 'true' || musicSetting.musicToggle === true) {
             toggleBox.value = false
         } else {

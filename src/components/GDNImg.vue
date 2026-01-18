@@ -26,7 +26,6 @@ let content = cloneDeep(props.data.content);
 let imgData = reactive({});
 let imgSetting = reactive({})
 let loading = ref(true);
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         pcMarginTop: 60,
@@ -83,9 +82,6 @@ onMounted(async () => {
                     v.target = true
                 }
             })
-        }
-        if ($addComponent) {
-            $addComponent();
         }
     }
 })
@@ -359,7 +355,7 @@ const closeBtn = () => {
             </template>
             <template #edit-content>
                 <div class="edit-title__box">
-                    <div class="edit-title__text">圖片區塊
+                    <div class="edit-title__text">橫幅區塊
                         <a :href="`https://tw.hicdn.beanfun.com/beanfun/GamaWWW/allProducts/GamaEvent/DNImg${pageTypeSeq}.html`"
                            class="edit-title__q" target="_blank"></a>
                     </div>
@@ -422,7 +418,8 @@ const closeBtn = () => {
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile間距上:" type="number" v-model="imgData.mobileMarginTop"
-                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="imgData.validMmt" />
+                                 @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="imgData.validMmt" />
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="PC按鈕間距下:" type="number" v-model="imgData.pcMarginBottom" @change="handleNumber"
@@ -430,7 +427,8 @@ const closeBtn = () => {
                     </div>
                     <div class="g-edit__col w50">
                         <g-input label="Mobile按鈕間距下:" type="number" v-model="imgData.mobileMarginBottom"
-                                 @change="handleNumber" warning="間距請勿設定為負值" :valid="imgData.validMmb" />
+                                 @change="handleNumber"
+                                 warning="間距請勿設定為負值" :valid="imgData.validMmb" />
                     </div>
                 </div>
                 <div class="edit-btn__box">

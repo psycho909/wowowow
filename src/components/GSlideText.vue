@@ -2,7 +2,7 @@
 export default {
     name: "GSlideText",
     label: "輪播-上圖下文",
-    order: 4, type: [1, 2]
+    order: 4, type: [1,2,3]
 }
 </script>
 <script setup>
@@ -29,7 +29,6 @@ let loading = ref(true);
 let slideData = reactive({})
 let slideNumValid = ref(true);
 let styleValid = ref(true);
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         group: true,
@@ -42,6 +41,7 @@ const initData = () => {
         style: "",
         validStyle: true,
         opacity: 1,
+        align: "center",
         slides: [{
             pc: "", mobile: "", type: "", url: "", attribute: false, validPC: true, validMobile: true, validUrl: true,
             card: {
@@ -49,12 +49,12 @@ const initData = () => {
                 text: "",
                 url: "",
                 validCard: true,
-                align: "center"
             },
             pop: {
                 show: false, type: "text",
                 align: "left",
                 style: "",
+                opacityPOP: 1,
                 styleValid: true,
                 text: "",
                 validText: true,
@@ -122,6 +122,9 @@ watchEffect(async () => {
                         slide.card.align = "center"
                     }
                 }
+                if (slide.pop.opacityPOP == undefined) {
+                    slide.pop.opacityPOP = 1;
+                }
             })
             slideSetting.slides.forEach((slide, index) => {
                 if (!slide.card) {
@@ -139,6 +142,9 @@ watchEffect(async () => {
                         slide.card.align = "center"
                     }
                 }
+                if (slide.pop.opacityPOP == undefined) {
+                    slide.pop.opacityPOP = 1;
+                }
             })
             if (slideData.opacity == undefined) {
                 slideData.opacity = 1;
@@ -149,6 +155,12 @@ watchEffect(async () => {
             imgLoading(slideData.slides).then((res) => {
                 loading.value = false;
             })
+        }
+        if (slideData.align == undefined) {
+            slideData.align = "center"
+        }
+        if (slideSetting.align == undefined) {
+            slideSetting.align = "center"
         }
         slideUpdate.value = true;
         await nextTick();
@@ -184,6 +196,9 @@ onMounted(async () => {
                     slide.card.align = "center"
                 }
             }
+            if (slide.pop.opacityPOP == undefined) {
+                slide.pop.opacityPOP = 1;
+            }
         })
         slideSetting.slides.forEach((slide, index) => {
             if (!slide.card) {
@@ -201,6 +216,9 @@ onMounted(async () => {
                     slide.card.align = "center"
                 }
             }
+            if (slide.pop.opacityPOP == undefined) {
+                slide.pop.opacityPOP = 1;
+            }
         })
         if (slideData.opacity == undefined) {
             slideData.opacity = 1;
@@ -208,11 +226,14 @@ onMounted(async () => {
         if (slideSetting.opacity == undefined) {
             slideSetting.opacity = 1;
         }
+        if (slideData.align == undefined) {
+            slideData.align = "center"
+        }
+        if (slideSetting.align == undefined) {
+            slideSetting.align = "center"
+        }
         imgLoading(slideData.slides).then((res) => {
             loading.value = false;
-            if ($addComponent) {
-                $addComponent();
-            }
         })
 
     }
@@ -279,6 +300,7 @@ const addInsertMenu = (index) => {
                 show: false, type: "text",
                 align: "left",
                 style: "",
+                opacityPOP: 1,
                 styleValid: true,
                 text: "",
                 validText: true,
@@ -326,6 +348,7 @@ const addInsertMenu = (index) => {
             show: false, type: "text",
             align: "left",
             style: "",
+            opacityPOP: 1,
             styleValid: true,
             text: "",
             validText: true,
@@ -672,12 +695,18 @@ const closeBtn = () => {
                         <g-select label="主題顏色" :group="true" :options="[style1, style2]" :required="true"
                                   v-model="slideData.style" :valid="slideData.validStyle" />
                     </div>
+                    <div class="g-edit__col">
+                        <div class="input-group__label">文字對齊方向:</div>
+                        <g-radio label="置左" name="textAlign" value="left" v-model="slideData.align" />
+                        <g-radio label="置中" name="textAlign" value="center" v-model="slideData.align" />
+                        <g-radio label="置右" name="textAlign" value="right" v-model="slideData.align" />
+                    </div>
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">透明度:</div>
                     <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
                            v-model="slideData.opacity" />
-                    <span>{{ slideData.opacity * 100 }}%</span>
+                    <span>{{ parseInt(slideData.opacity * 100) }}%</span>
                 </div>
                 <div class="g-edit__row">
                     <div class="input-group__label required">切換方式:</div>
@@ -720,15 +749,6 @@ const closeBtn = () => {
                                 <g-input label="手機版圖片網址:" v-model.trim="slide.mobile" :preview="slide.mobile" />
                             </div>
                             <div class="g-edit__col">
-                                <div class="input-group__label">文字對齊方向:</div>
-                                <g-radio label="置左" :name="'textAlign' + index" value="left"
-                                         v-model="slide.card.align" />
-                                <g-radio label="置中" :name="'textAlign' + index" value="center"
-                                         v-model="slide.card.align" />
-                                <g-radio label="置右" :name="'textAlign' + index" value="right"
-                                         v-model="slide.card.align" />
-                            </div>
-                            <div class="g-edit__col">
                                 <g-input label="標題文字:" v-model.trim="slide.card.title" :valid="slide.card.validCard"
                                          warning="標題、內文以及連結文字至少填寫一個，限制字數50字"
                                          max="50" />
@@ -739,7 +759,7 @@ const closeBtn = () => {
                                           warning="標題、內文以及連結文字至少填寫一個，限制字數250字" />
                             </div>
                             <div class="g-edit__col">
-                                <div class="input-group__label">圖片特效:</div>
+                                <div class="input-group__label">特效:</div>
                                 <g-radio label="無" :name="'effect' + index" :value="false"
                                          v-model="slide.effectCheck" />
                                 <g-radio label="換圖" :name="'effect' + index" :value="true"
@@ -785,6 +805,16 @@ const closeBtn = () => {
                                                   :valid="slide.pop.styleValid"
                                                   v-model="slide.pop.style" />
                                     </div>
+                                    <div class="g-edit__row">
+                                        <div class="input-group__label required">透明度:</div>
+                                        <input type="range" :id="'opacityPOP' + index" :name="'opacityPOP' + index"
+                                               min="0"
+                                               max="1"
+                                               step="0.01"
+                                               value="1"
+                                               v-model="slide.pop.opacityPOP" />
+                                        <span>{{ parseInt(slide.pop.opacityPOP * 100) }}%</span>
+                                    </div>
                                     <div class="g-edit__col">
                                         <g-ckedit v-model="slide.pop.text" />
                                     </div>
@@ -800,6 +830,16 @@ const closeBtn = () => {
                                                   :required="true"
                                                   :valid="slide.pop.styleValid"
                                                   v-model="slide.pop.style" />
+                                    </div>
+                                    <div class="g-edit__row">
+                                        <div class="input-group__label required">透明度:</div>
+                                        <input type="range" :id="'opacityPOP' + index" :name="'opacityPOP' + index"
+                                               min="0"
+                                               max="1"
+                                               step="0.01"
+                                               value="1"
+                                               v-model="slide.pop.opacityPOP" />
+                                        <span>{{ parseInt(slide.pop.opacityPOP * 100) }}%</span>
                                     </div>
                                 </template>
                                 <template v-if="slide.pop.type == 'slide'">
@@ -836,6 +876,16 @@ const closeBtn = () => {
                                                   :required="true"
                                                   :valid="slide.pop.styleValid"
                                                   v-model="slide.pop.style" />
+                                    </div>
+                                    <div class="g-edit__row">
+                                        <div class="input-group__label required">透明度:</div>
+                                        <input type="range" :id="'opacityPOP' + index" :name="'opacityPOP' + index"
+                                               min="0"
+                                               max="1"
+                                               step="0.01"
+                                               value="1"
+                                               v-model="slide.pop.opacityPOP" />
+                                        <span>{{ parseInt(slide.pop.opacityPOP * 100) }}%</span>
                                     </div>
                                     <div class="g-edit__col">
                                         <div class="input-group__label required">自動輪播:</div>

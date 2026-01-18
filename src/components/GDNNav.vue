@@ -26,7 +26,6 @@ let content = cloneDeep(props.data.content);
 let navData = reactive({});
 let navSetting = reactive({})
 let loading = ref(true);
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         pcMarginTop: 104,
@@ -81,9 +80,6 @@ onMounted(async () => {
                     v.target = true
                 }
             })
-        }
-        if ($addComponent) {
-            $addComponent();
         }
     }
 })

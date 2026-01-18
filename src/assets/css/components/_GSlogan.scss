@@ -10,8 +10,8 @@
 	@include media {
 		max-width: vw(690);
 		margin: 0 auto;
-		margin-top: calc(var(--mobile_mt, 250) / 768 * 100vw);
-		margin-bottom: calc(var(--mobile_mb, 24) / 768 * 100vw);
+		margin-top: vw(var(--mobile_mt, 250));
+		margin-bottom: vw(var(--mobile_mb, 24));
 	}
 	&-container {
 		background-position: center 0;
@@ -38,5 +38,6 @@
 		display: block;
 		margin: 0 auto;
 		max-width: 100%;
+		height: auto;
 	}
 }

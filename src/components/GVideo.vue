@@ -1,9 +1,9 @@
 <script>
 export default {
     name: "GVideo",
-    label: "影片區塊",
+    label: "影片-純影片",
     order: [8, 13],
-    type: [1, 2]
+    type: [1,2,3]
 }
 </script>
 <script setup>
@@ -18,6 +18,7 @@ import { extractVideoID, handleNumber, loadingShow, loadingHide, isMp4 } from ".
 import colors, { style1, style2 } from "../colors";
 import { cloneDeep } from 'lodash-es'
 import { GetPageType } from "../api";
+import { nextTick } from "vue";
 const props = defineProps(["data", "sub"])
 let showEdit = ref(false);
 let _videoDataLength = ref(1);
@@ -27,7 +28,6 @@ const { page, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let videoSetting = reactive({});
 let videoData = reactive({});
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         num: 1,
@@ -37,9 +37,9 @@ const initData = () => {
         app: true,
         source: "youtube",
         opacity: 1,
-        align:"center",
+        align: "center",
         videos: [{
-            url: "", show: false, validUrl: true,
+            url: "", mp4: "", show: false, validUrl: true,
             card: {
                 title: "",
                 text: "",
@@ -51,7 +51,9 @@ const initData = () => {
         }],
         card: false,
         style: "",
-        validStyle: false,
+        validStyle: true,
+        muted: true,
+        control: false,
         mt: 0, mb: 54, mobile_mt: 0, mobile_mb: 0,
     }
 };
@@ -126,11 +128,42 @@ watchEffect(async () => {
                 }
             }
         })
-        if(videoData.align == undefined){
-            videoData.align="center"
+        if (videoData.align == undefined) {
+            videoData.align = "center"
         }
-        if(videoSetting.align == undefined){
-            videoSetting.align="center"
+        if (videoSetting.align == undefined) {
+            videoSetting.align = "center"
+        }
+        if (videoSetting.type == "click" && videoSetting.source == "mp4") {
+            handleVideo("click");
+        }
+        if (videoSetting.type == "pop" && videoSetting.source == "mp4") {
+            handleVideo("pop");
+        }
+        if (videoSetting.type == "auto" && videoSetting.source == "mp4") {
+            nextTick(() => {
+                console.log(videoSetting.control)
+                document.querySelectorAll("[data-type='auto'] video").forEach((function (video, i) {
+                    video.play()
+                    if (videoSetting.muted === true || videoSetting.muted === 'true') {
+                        video.muted = true;
+                    } else {
+                        video.muted = false;
+                    }
+                }))
+            })
+        }
+        if (videoData.muted == undefined) {
+            videoData.muted = false;
+        }
+        if (videoData.control == undefined) {
+            videoData.control = false;
+        }
+        if (videoSetting.muted == undefined) {
+            videoSetting.muted = false;
+        }
+        if (videoSetting.control == undefined) {
+            videoSetting.control = false;
         }
     }
 })
@@ -191,14 +224,42 @@ onMounted(async () => {
                 }
             }
         })
-        if(videoData.align == undefined){
-            videoData.align="center"
+        if (videoSetting.type == "click" && videoSetting.source == "mp4") {
+            handleVideo("click");
         }
-        if(videoSetting.align == undefined){
-            videoSetting.align="center"
+        if (videoSetting.type == "pop" && videoSetting.source == "mp4") {
+            handleVideo("pop");
         }
-        if ($addComponent) {
-            $addComponent();
+        if (videoSetting.type == "auto" && videoSetting.source == "mp4") {
+            nextTick(() => {
+                console.log(videoSetting.control)
+                document.querySelectorAll("[data-type='auto'] video").forEach((function (video, i) {
+                    video.play()
+                    if (videoSetting.muted === true || videoSetting.muted === 'true') {
+                        video.muted = true;
+                    } else {
+                        video.muted = false;
+                    }
+                }))
+            })
+        }
+        if (videoData.align == undefined) {
+            videoData.align = "center"
+        }
+        if (videoSetting.align == undefined) {
+            videoSetting.align = "center"
+        }
+        if (videoData.muted == undefined) {
+            videoData.muted = false;
+        }
+        if (videoData.control == undefined) {
+            videoData.control = false;
+        }
+        if (videoSetting.muted == undefined) {
+            videoSetting.muted = false;
+        }
+        if (videoSetting.control == undefined) {
+            videoSetting.control = false;
         }
     }
 })
@@ -213,6 +274,56 @@ const cssVar = computed(() => {
     }
 })
 
+const handleVideo = (type) => {
+    nextTick(() => {
+        let videos, outputs;
+        if (type == "click") {
+            videos = document.querySelectorAll('.g-video__box-video.click video');
+            outputs = document.querySelectorAll('.g-video__box-video.click img');
+        }
+        if (type == "pop") {
+            videos = document.querySelectorAll('.g-video__box-video.pop.mp4 video');
+            outputs = document.querySelectorAll('.g-video__box-video.pop.mp4 img');
+        }
+        videos.forEach((video, index) => {
+            // Safari 跨域支援
+            video.setAttribute('crossorigin', 'anonymous');
+            video.setAttribute('preload', 'auto');
+
+            const handleVideoLoad = () => {
+                try {
+                    // 創建離屏 canvas
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // 設置 canvas 尺寸
+                    canvas.width = 400;  // 設置較小的尺寸以提高性能
+                    canvas.height = (video.videoHeight / video.videoWidth) * canvas.width;
+
+                    // 繪製並壓縮
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const quality = 0.7; // 壓縮比例
+                    outputs[index].src = canvas.toDataURL('image/jpeg', quality);
+
+                    // 移除監聽器
+                    video.removeEventListener('loadeddata', handleVideoLoad);
+                } catch (e) {
+                    console.error('Safari 預覽圖生成失敗:', e);
+                }
+            };
+
+            // 添加事件監聽
+            video.addEventListener('loadeddata', handleVideoLoad);
+            // 觸發載入
+            if (video.readyState >= 2) {
+                handleVideoLoad();
+            } else {
+                video.load();
+            }
+        });
+    });
+};
+
 const openPop = (data) => {
     data.show = true
 }
@@ -222,7 +333,7 @@ const onChange = (e) => {
     if (_videoDataLength.value <= num) {
         for (let i = 0; i < (num - _videoDataLength.value); i++) {
             videoData.videos.push({
-                url: "", show: false, validUrl: true, card: {
+                url: "", mp4: "", show: false, validUrl: true, card: {
                     title: "",
                     text: "",
                     url: "",
@@ -385,20 +496,60 @@ const closeBtn = () => {
 }
 
 const playVideo = (e) => {
-    let video = e.target.closest("video");
-    if (video) {
-        if (video.paused) {
-            video.play();
+    const target = e.target;
+    let video;
+    let parent;
+    let poster;
+    try {
+        // 檢查點擊目標類型並尋找對應元素
+        if (target.tagName === 'VIDEO') {
+            video = target;
+            parent = target.parentElement;
+        } else if (target.classList.contains('g-video__box-video')) {
+            video = target.querySelector('video');
+            parent = target;
         } else {
+            // 處理其他可能的點擊情況
+            video = target.closest('.g-video__box-video')?.querySelector('video');
+            parent = target.closest('.g-video__box-video');
+        }
+
+        // 確保找到影片元素
+        if (!video || !parent) {
+            console.warn('找不到影片元素');
+            return;
+        }
+
+        // 尋找海報圖片
+        poster = parent.querySelector('img');
+
+        // 控制播放狀態
+        if (video.paused) {
+            parent.dataset.status = 'play';
+            if (videoSetting.muted === true || videoSetting.muted === 'true') {
+                video.muted = true;
+            } else {
+                video.muted = false;
+            }
+            video.play();
+            if (poster) poster.style.display = 'none';
+        } else {
+            parent.dataset.status = 'pause';
             video.pause();
         }
-    } else {
-        return;
+    } catch (error) {
+        console.error('影片控制錯誤:', error);
     }
+}
+
+function splitUid(uid) {
+    let _uid = uid.toString()
+    return _uid.split("-")[0];
 }
 </script>
 <template>
-    <div class="g-video" :style="[cssVar, colors[videoSetting.style]]">
+    <div class="g-video" :style="[cssVar, colors[videoSetting.style]]" :id="splitUid(props.data.uid)"
+         :data-type="videoSetting.type">
         <div class="g-video-container" :data-num="videoSetting.num">
             <template v-for="(v, index) in videoSetting.videos" :key="index">
                 <div class="g-video__box">
@@ -417,27 +568,42 @@ const playVideo = (e) => {
                         </a>
                     </template>
                     <template v-if="videoSetting.source == 'mp4'">
-                        <a v-if="videoSetting.type == 'click'" href="javascript:;" class="g-video__box-video"
-                           @click="playVideo">
-                            <video :src="v.mp4" muted playsinline
-                                   :loop="videoSetting.loop === true || videoSetting.loop === 'true'"
-                                   v-if="!videoUpdate"></video>
-                        </a>
-                        <a v-if="videoSetting.type == 'auto'" href="javascript:;" class="g-video__box-video"
-                           @click="playVideo">
-                            <video :src="v.mp4" autoplay muted playsinline
-                                   :loop="videoSetting.loop === true || videoSetting.loop === 'true'"
-                                   v-if="!videoUpdate"></video>
-                        </a>
+                        <template v-if="videoSetting.type == 'click' || videoSetting.type == 'auto'">
+                            <template v-if="videoSetting.control === true || videoSetting.control === 'true'">
+                                <video :src="v.mp4"
+                                       :muted="videoSetting.muted === true || videoSetting.muted === 'true'"
+                                       playsinline
+                                       :controls="videoSetting.control === true || videoSetting.control === 'true'"
+                                       :loop="videoSetting.loop === true || videoSetting.loop === 'true'"
+                                       v-bind:autoplay="videoSetting.type == 'auto' ? '' : null"
+                                       class="g-video__box-video"
+                                       v-if="!videoUpdate"></video>
+                            </template>
+                            <template v-else>
+                                <a href="javascript:;" class="g-video__box-video"
+                                   :class="[videoSetting.type]"
+                                   v-bind:autoplay="auto ? '' : null"
+                                   @click="playVideo" :data-status="videoSetting.type == 'click' ? 'pause' : ''">
+                                    <img>
+                                    <video :src="v.mp4" muted playsinline
+                                           :loop="videoSetting.loop === true || videoSetting.loop === 'true'"
+                                           v-bind:autoplay="videoSetting.type == 'auto' ? '' : null"
+                                           v-if="!videoUpdate"></video>
+
+                                </a>
+                            </template>
+                        </template>
                     </template>
                     <a v-if="videoSetting.type == 'pop'" href="javascript:;" class="g-video__box-video"
-                       @click="openPop(v)">
+                       :class="[videoSetting.type, videoSetting.source]" @click="openPop(v)">
                         <template v-if="videoSetting.source == 'youtube'">
                             <g-youtube :youtube="v.url" :pop="true" :preview="true" :openapp="videoSetting.app"
                                        v-if="!videoUpdate" />
                         </template>
-                        <template v-if="videoSetting.source == 'mp4'"><video :src="v.mp4" muted playsinline
-                                   v-if="!videoUpdate"></video></template>
+                        <template v-if="videoSetting.source == 'mp4'">
+                            <img>
+                            <video :src="v.mp4" muted playsinline v-if="!videoUpdate"></video>
+                        </template>
                         <g-lightbox v-model:showLightbox="v.show" :action="false" class="lb-video">
                             <template #lightbox-content>
                                 <div class="g-lightbox__video">
@@ -447,11 +613,22 @@ const playVideo = (e) => {
                                                    :loop="videoSetting.loop === true || videoSetting.loop === 'true'" />
                                     </template>
                                     <template v-if="videoSetting.source == 'mp4'">
-                                        <a href="javascript:;" class="g-video__box-video">
-                                            <video :src="v.mp4" autoplay muted
+                                        <template
+                                                  v-if="videoSetting.control === true || videoSetting.control === 'true'">
+                                            <video class="g-video__box-video" :src="v.mp4" autoplay
+                                                   :muted="videoSetting.muted === true || videoSetting.muted === 'true'"
+                                                   :controls="videoSetting.control === true || videoSetting.control === 'true'"
                                                    playsinline
                                                    :loop="videoSetting.loop === true || videoSetting.loop === 'true'"></video>
-                                        </a>
+                                        </template>
+                                        <template v-else>
+                                            <a href="javascript:;" class="g-video__box-video">
+                                                <video :src="v.mp4" autoplay
+                                                       :muted="videoSetting.muted === true || videoSetting.muted === 'true'"
+                                                       playsinline
+                                                       :loop="videoSetting.loop === true || videoSetting.loop === 'true'"></video>
+                                            </a>
+                                        </template>
                                     </template>
                                 </div>
                             </template>
@@ -490,24 +667,6 @@ const playVideo = (e) => {
                     <g-radio label="三格影片" name="video" value="3" v-model="videoData.num" @change="onChange" />
                     <g-radio label="四格影片" name="video" value="4" v-model="videoData.num" @change="onChange" />
                 </div>
-                <template v-if="videoData.card === false || videoData.card === 'false'">
-                    <div class="g-edit__row" v-for="(video, index) in videoData.videos">
-                        <template v-if="videoData.source == 'youtube'">
-                            <div class="g-edit__col" data-type="yt">
-                                <g-input label="影片網址" v-model.trim="video.url"
-                                         :valid="video.validUrl"
-                                         :required="true" />
-                            </div>
-                        </template>
-                        <template v-if="videoData.source == 'mp4'">
-                            <div class="g-edit__col" data-type="mp4">
-                                <g-input label="影片網址" v-model.trim="video.mp4"
-                                         :valid="video.validUrl"
-                                         :required="true" />
-                            </div>
-                        </template>
-                    </div>
-                </template>
                 <div class="g-edit__row">
                     <div class="input-group__label required">顯示文字說明:</div>
                     <g-radio label="關閉" name="card" :value="false" v-model="videoData.card" />
@@ -525,7 +684,7 @@ const playVideo = (e) => {
                         <div class="input-group__label required">透明度:</div>
                         <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="1"
                                v-model="videoData.opacity" />
-                        <span>{{ videoData.opacity * 100 }}%</span>
+                        <span>{{ parseInt((videoData.opacity * 100)) }}%</span>
                     </div>
                     <div class="g-edit__row">
                         <div class="g-edit__col">
@@ -550,13 +709,43 @@ const playVideo = (e) => {
                     <div class="input-group__label required">播放方式:</div>
                     <g-radio label="點擊後播放" name="type" value="click" v-model="videoData.type" />
                     <g-radio label="彈出燈箱播放" name="type" value="pop" v-model="videoData.type" />
-                    <g-radio label="進頁面後自動播放" name="type" value="auto" v-model="videoData.type" />
+                    <g-radio label="進頁面後自動播放(手機APP無效)" name="type" value="auto" v-model="videoData.type" />
                 </div>
+                <template v-if="videoData.source == 'mp4'">
+                    <div class="g-edit__row">
+                        <div class="input-group__label required">開啟聲音:</div>
+                        <g-radio label="是" name="muted" :value="false" v-model="videoData.muted" />
+                        <g-radio label="否" name="muted" :value="true" v-model="videoData.muted" />
+                    </div>
+                    <div class="g-edit__row">
+                        <div class="input-group__label required">顯示控制按鈕:</div>
+                        <g-radio label="是" name="control" :value="true" v-model="videoData.control" />
+                        <g-radio label="否" name="control" :value="false" v-model="videoData.control" />
+                    </div>
+                </template>
                 <div class="g-edit__row">
                     <div class="input-group__label required">循環播放:</div>
                     <g-radio label="是" name="loop" :value="true" v-model="videoData.loop" />
                     <g-radio label="否" name="loop" :value="false" v-model="videoData.loop" />
                 </div>
+                <template v-if="videoData.card === false || videoData.card === 'false'">
+                    <div class="g-edit__row" v-for="(video, index) in videoData.videos">
+                        <template v-if="videoData.source == 'youtube'">
+                            <div class="g-edit__col" data-type="yt">
+                                <g-input label="影片網址" v-model.trim="video.url"
+                                         :valid="video.validUrl"
+                                         :required="true" />
+                            </div>
+                        </template>
+                        <template v-if="videoData.source == 'mp4'">
+                            <div class="g-edit__col" data-type="mp4">
+                                <g-input label="影片網址" v-model.trim="video.mp4"
+                                         :valid="video.validUrl"
+                                         :required="true" />
+                            </div>
+                        </template>
+                    </div>
+                </template>
                 <div class="g-edit__row" v-for="(video, index) in videoData.videos">
                     <template v-if="videoData.card === true || videoData.card === 'true'">
                         <template v-if="videoData.source == 'youtube'">

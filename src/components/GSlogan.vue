@@ -4,7 +4,7 @@ export default {
     label: "主標圖",
     limit: 1,
     order: [2, 3],
-    type: [1, 2]
+    type: [1,2,3]
 }
 </script>
 <script setup>
@@ -23,7 +23,6 @@ const { page, content: allContent, pageTypeSeq } = storeToRefs(store);
 let content = cloneDeep(props.data.content);
 let sloganSetting = reactive({})
 let sloganData = reactive({})
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         link: "",
@@ -129,9 +128,6 @@ onMounted(async () => {
                 sloganSetting.mw = 1000;
                 sloganSetting.mh = 187;
             }
-        }
-        if ($addComponent) {
-            $addComponent();
         }
     }
 })
@@ -272,14 +268,18 @@ const checkInit = computed(() => {
     }
 
 })
+function splitUid(uid) {
+    let _uid = uid.toString()
+    return _uid.split("-")[0];
+}
 </script>
 <template>
-    <div class="g-slogan" :class="[checkInit ? '' : 'checkInit']" :style="cssVar">
+    <div class="g-slogan" :class="[checkInit ? '' : 'checkInit']" :style="cssVar" :id="splitUid(props.data.uid)">
         <template v-if="store.status != 'edit'">
             <a :href="[sloganSetting.link ? sloganSetting.link : 'javascript:;']" class="g-slogan-container"
                :target="[sloganSetting.target == 'true' || sloganSetting.target == true ? '_blank' : '']"
                :style="transformNavsToCSSProps(sloganSetting)"
-               v-if="!(data.content.pc == 'https://alpha-tw.beanfun.com/3KO/removable/pchome/images/slogan.png')">
+               v-if="!(data.content.pc == 'https://tw.hicdn.beanfun.com/beanfun/GamaWWW/GamaEvent/assets/css/images/slogan.png')">
                 <picture>
                     <source media="(max-width:768px)" :srcset="sloganSetting.mobile || sloganSetting.pc" />
                     <img :srcset="sloganSetting.pc" :src="sloganSetting.pc" alt="" />
@@ -296,7 +296,7 @@ const checkInit = computed(() => {
             </a>
         </template>
         <img v-if="!checkInit" class="notice-img" style="display:block;margin:16px auto 0;max-width: 100%;"
-             src="https://alpha-tw.beanfun.com/3KO/removable/pchome/images/component.png" alt="">
+             src="https://tw.hicdn.beanfun.com/beanfun/GamaWWW/GamaEvent/assets/css/images/component.png" alt="">
         <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'">
             <template #edit-close>
                 <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>

@@ -5,8 +5,8 @@
 	position: relative;
 	z-index: 2;
 	@include media {
-		margin-top: calc(var(--nav-m-margin-top, 80) / 768 * 100vw);
-		margin-bottom: calc(var(--nav-m-margin-bottom, 0) / 768 * 100vw) !important;
+		margin-top: vw(var(--nav-m-margin-top, 80));
+		margin-bottom: vw(var(--nav-m-margin-bottom, 0)) !important;
 	}
 	&-container {
 		min-width: 1200px;
@@ -32,7 +32,7 @@
 		margin-bottom: calc(var(--nav-item-margin-bottom, 0) * 1px);
 		position: relative;
 		@include media {
-			margin-bottom: calc(var(--nav-m-item-margin-bottom, 0) / 768 * 100vw);
+			margin-bottom: vw(var(--nav-m-item-margin-bottom, 0));
 		}
 		&:last-child {
 			margin-bottom: 0;
@@ -67,9 +67,9 @@
 			z-index: 1;
 			@include media {
 				background-image: var(--nav-mobile);
-				background-size: calc(var(--nav-mw) / 768 * 100vw) calc(var(--nav-mh) / 768 * 100vw);
-				width: calc(var(--nav-mw) / 768 * 100vw);
-				height: calc(var(--nav-mh) / 768 * 100vw);
+				background-size: vw(var(--nav-mw)) vw(var(--nav-mh));
+				width: vw(var(--nav-mw));
+				height: vw(var(--nav-mh));
 			}
 		}
 		&2 {

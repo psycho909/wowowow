@@ -21,8 +21,8 @@
 	margin-top: calc(var(--mt, 0) * 1px);
 	margin-bottom: calc(var(--mb, 0) * 1px);
 	@include media {
-		margin-top: calc(var(--mobile_mt, 0) / 768 * 100vw);
-		margin-bottom: calc(var(--mobile_mb, 54) / 768 * 100vw);
+		margin-top: vw(var(--mobile_mt, 0));
+		margin-bottom: vw(var(--mobile_mb, 54));
 	}
 	&.left {
 		text-align: left;
@@ -123,13 +123,13 @@
 		.text-small {
 			font-size: 16px;
 			@include media {
-				font-size: 30px;
+				font-size: vw(30);
 			}
 		}
 		img {
 			max-width: 100%;
 			height: auto;
-			display: block;
+			display: inline-block;
 		}
 		a {
 			color: rgba(var(--link, 0, 0, 0), 1);
@@ -176,7 +176,7 @@
 			max-height: calc(var(--collapse) * 1.5 * 20px); /* 控制三行高度 */
 			overflow: hidden;
 			@include media {
-				max-height: calc(var(--collapse) * 1.5 * vw(30));
+				max-height: calc(var(--collapse) * 1.5 * #{vw(30)});
 			}
 		}
 		&.scrollbar {
@@ -185,7 +185,7 @@
 			overflow: auto;
 			padding-bottom: 60px;
 			@include media {
-				max-height: calc(var(--scrollbar) * 1.5 * vw(30));
+				max-height: calc(var(--scrollbar) * 1.5 * #{vw(30)});
 				padding-bottom: vw(60);
 			}
 			@media screen and (min-width: 768px) {
@@ -222,6 +222,7 @@
 	}
 	img {
 		max-width: 100%;
+		height: auto;
 	}
 	.image {
 		clear: both;

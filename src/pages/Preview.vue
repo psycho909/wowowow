@@ -10,25 +10,19 @@ import GCookie from "../components/GCookie.vue";
 import GLoading from "../components/GLoading.vue";
 import { mainStore } from "../store/index";
 import { loadingShow, loadingHide, pageInfo, getBrowserLocales, getUrlSearchParams } from "../Tool";
-// import gameFooter from "../gameFooter";
 import topBar from "../topBar";
 const store = mainStore()
 let state = null;
 let lanBrowser = getBrowserLocales()[0];
 let lanParams = getUrlSearchParams("lan");
 const loading = ref(false);
-const componentCount = ref(0);
-const totalComponentCount = ref(0);
 let isObserving = ref(true);
 let footerTop = ref(null);
-provide('$addComponent', () => {
-    componentCount.value += 1;
-});
-provide('$componentCount', componentCount);
 
 if (window.localStorage.getItem("state")) {
     // state = JSON.parse(window.sessionStorage.getItem("state"));
     state = JSON.parse(window.localStorage.getItem("state"));
+    console.log(state)
     store.setState(state);
 }
 let { previewConfig, previewContent } = storeToRefs(store);
@@ -96,26 +90,48 @@ function triggerExitEvent() {
         menuElement.setAttribute('data-observer', false);
     }
 }
+function loadCSS(url) {
+    const timestamp = new Date().getTime(); // 生成唯一時間戳
+    const fullUrl = `${url}?_=${timestamp}`; // 加上時間戳參數
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = fullUrl; // 動態設置 href
+
+    document.head.appendChild(link); // 加入到 <head> 中
+}
+function fetchNonCachedJS(url) {
+    // 使用時間戳動態產生唯一查詢參數
+    const nonCachedUrl = `${url}?_=${new Date().getTime()}`;
+
+    const script = document.createElement("script");
+    script.src = nonCachedUrl;
+
+    return new Promise((resolve, reject) => {
+        script.onload = () => {
+            console.log("成功載入最新JS資料");
+            // 設置全局標記
+            window.isExternalJSLoaded = true;
+            // 觸發自定義事件
+            window.dispatchEvent(new Event("externalJSLoaded"));
+            resolve();
+        };
+        script.onerror = (error) => {
+            console.error("獲取JS時發生錯誤:", error);
+            reject(error);
+        };
+        document.head.appendChild(script);
+    });
+}
 onMounted(async () => {
-    loading.value = true;
+    // loading.value = true;
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", previewConfig.value.pageTypeSeq);
-    document.querySelector("body").className = "preview";
+    document.querySelector("body").className = `preview ${previewConfig.value.device}`;
     footer.prod = previewConfig.value.gameName;
     footer.theme = previewConfig.value.footer == 1 ? 'light' : 'dark';
-    // totalComponentCount.value = previewContent.value.length;
     let gAreaCount = 0;
-    let totalSubContentLength = 0;
-    const componentLength = previewContent.value.length;
-    for (let i = 0; i < componentLength; i++) {
-        if (previewContent.value[i].component === "GArea") {
-            gAreaCount++;
-            if (previewContent.value[i].content && previewContent.value[i].content.subContent) {
-                totalSubContentLength += previewContent.value[i].content.subContent.length;
-            }
-        }
-    }
-    totalComponentCount.value = componentLength + totalSubContentLength;
+    document.querySelector("body").setAttribute("id", `e${previewConfig.value.eventSeq}`);
     pageInfo(previewConfig);
+    loadCSS("https://tw.hicdn.beanfun.com/beanfun/GamaWWW/WGD/Web/assets/css/fix.css")
     if (footer.prod == "櫻桃小丸子") {
         if (lanParams) {
             if (lanParams == "zh") {
@@ -132,12 +148,32 @@ onMounted(async () => {
         }
         // 偵測Footer的加入
         setTimeout(() => {
-            gf_updateFooter(footer)
+            try {
+                gf_updateFooter(footer)
+            } catch (e) {
+                console.log(e)
+            }
         }, 0);
     } else {
+        if (footer.prod == "全產品") {
+            footer.prod = "bf!遊戲"
+        }
+        if (footer.prod == "便利商店") {
+            footer.prod = "便利商店口袋版"
+        }
+        if (footer.prod == "波拉西亞戰記") {
+            footer.prod = "波拉西亞"
+        }
+        if (footer.prod == "救世者之樹") {
+            footer.prod = "救世者之樹M"
+        }
         // 偵測Footer的加入
         setTimeout(() => {
-            gf_updateFooter(footer)
+            try {
+                gf_updateFooter(footer)
+            } catch (e) {
+                console.log(e)
+            }
         }, 0);
     }
     document.title = previewConfig.value.webtitle;
@@ -147,18 +183,13 @@ onMounted(async () => {
         }
     }
     if (previewConfig.value.header == 1) {
-        // topBar(previewConfig.value.gameName)
         if (previewConfig.value.gameName == "新瑪奇B") {
             previewConfig.value.gameName = "新瑪奇"
         };
         topBar(previewConfig.value.gameName)
     }
-    watch(componentCount, (newVal) => {
-        if (newVal >= totalComponentCount.value) {
-            loading.value = false;
-        }
-    });
     window.addEventListener('scroll', handleScroll);
+    await fetchNonCachedJS("https://tw.hicdn.beanfun.com/beanfun/GamaWWW/WGD/Web/js/fix.js")
 })
 onUnmounted(() => {
     console.log("onUnmounted")
@@ -187,10 +218,12 @@ const cssVar = computed(() => {
 <template>
     <!-- <section class="page-preview">(預覽模式)</section> -->
     <GLoading :loading="loading"></GLoading>
-    <section class="wrap" :data-type="previewConfig.pageTypeSeq" :style="cssVar">
-        <template v-for="block in previewContent">
-            <component :is="block.component" :data="block"></component>
-        </template>
-    </section>
+    <div class="device-shell">
+        <section class="wrap" :data-type="previewConfig.pageTypeSeq" :style="cssVar">
+            <template v-for="block in previewContent">
+                <component :is="block.component" :data="block"></component>
+            </template>
+        </section>
+    </div>
     <GCookie v-if="(previewConfig.cookie == 1)" :data="previewConfig"></GCookie>
 </template>

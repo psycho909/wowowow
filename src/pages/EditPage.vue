@@ -29,12 +29,6 @@ let messageLightbox = ref(false);
 let gAreas = ref([]);
 let isObserving = ref(true);
 let footerTop = ref(null);
-const componentCount = ref(0);
-const totalComponentCount = ref(0);
-provide('$addComponent', () => {
-    componentCount.value += 1;
-});
-provide('$componentCount', componentCount);
 if (store.content.length == 0 && (store.config.flag == 0 || store.config.flag == 4)) {
     store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
 }
@@ -42,47 +36,12 @@ if (store.config.flag == 2 && store.content.length == 0) {
     store.setContent(JSON.parse(JSON.stringify(t.template[store.config.pageTypeSeq].content)));
 }
 // store.toggleLoading(true)
-
 let gAreaComponents = computed(() => {
     return content.value.filter((v, i) => {
         return v.component === "GArea"
     })
 })
 
-// 當pageTypeSeq == 1，content.value.length > 0時，檢查裡面的update為true時，改為false,，如果conrent為empty時則移除
-if (store.pageTypeSeq == 1 && content.value.length > 0) {
-    content.value = content.value.map(item => {
-        if (item.update === true) {
-            return { ...item, update: false };
-        }
-        return item;
-    }).filter(item => Object.keys(item).length > 0); // Remove empty content
-}
-// 當pageTypeSeq == 2，content.value.length > 0時，檢查裡面的update為true時，改為false,，如果conrent為empty時則移除，當component == GArea時，裡面的content.subContent.length > 0時，檢查裡面的update為true時，改為false,，如果conrent為empty時則移除+
-if (store.pageTypeSeq == 2 && content.value.length > 0) {
-    content.value = content.value.map(item => {
-        // Handle GArea components
-        if (item.component === "GArea" && item.content && item.content.subContent) {
-            // Process subContent within GArea
-            item.content.subContent = item.content.subContent
-                .map(subItem => {
-                    if (subItem.update === true) {
-                        return { ...subItem, update: false };
-                    }
-                    return subItem;
-                })
-                .filter(subItem => Object.keys(subItem).length > 0); // Remove empty subContent
-        }
-
-        // Handle update flag for main item
-        if (item.update === true) {
-            return { ...item, update: false };
-        }
-        return item;
-    }).filter(item => Object.keys(item).length > 0); // Remove empty content
-}
-
-console.log(content.value)
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -106,11 +65,9 @@ const handleScroll = debounce(() => {
     if (store.pageTypeSeq == 2) {
         let maxVisibleArea = null;
         let maxVisibility = 0;
-
         gAreas.value.forEach((gArea, index) => {
             const gAreaRect = gArea.getBoundingClientRect();
             const visibility = getVisibility(gAreaRect);
-
             if (visibility > maxVisibility) {
                 maxVisibility = visibility;
                 maxVisibleArea = {
@@ -120,18 +77,12 @@ const handleScroll = debounce(() => {
             }
         });
 
-        // 只有当可见度超过 50% 时才更新
-        if (maxVisibleArea && maxVisibility > 0.3) {
+        if (maxVisibleArea && maxVisibility > 0.1) {
+            console.log(maxVisibleArea.uid)
             store.setCurrentArea(maxVisibleArea.group);
             store.setTargetArea(maxVisibleArea.uid);
         }
-        // gAreas.value.forEach((gArea, index) => {
-        //     const gAreaRect = gArea.getBoundingClientRect();
-        //     if (gAreaRect.top <= window.innerHeight && gAreaRect.bottom >= 0) {
-        //         store.setCurrentArea(gAreaComponents.value[index].group)
-        //         store.setTargetArea(gAreaComponents.value[index].uid)
-        //     }
-        // });
+
         const footerElement = document.querySelector(".UNI-footer");
         if (!footerElement) return;
         const rect = footerElement.getBoundingClientRect();
@@ -237,15 +188,6 @@ onMounted(async () => {
         handleArea("main")
     }
     window.addEventListener('scroll', handleScroll);
-    totalComponentCount.value = componentLength + totalSubContentLength;
-    watch(componentCount, (newVal) => {
-        if (newVal >= totalComponentCount.value) {
-            // if (store.pageTypeSeq == 2) {
-            //     handleScroll()
-            // }
-            // store.toggleLoading(false)
-        }
-    });
 
     document.addEventListener("keydown", function (e) {
         if (e.key === 's' && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
@@ -314,7 +256,7 @@ const cssVar = computed(() => {
 })
 
 const checkInit = computed(() => {
-    if (pageTypeSeq.value == 1) {
+    if (pageTypeSeq.value !== 2) {
         if (content.value.length > 0) {
             var a = content.value.map((v, i) => {
                 return v.component;
@@ -450,7 +392,7 @@ const contentLang = computed(() => {
     })
 })
 
-const onEvent = (type) => {
+const onEvent = (type="",device="pc") => {
     var data = store.config;
     data.detail = JSON.stringify(store.content);
     Object.keys(data).forEach((v, i) => {
@@ -473,10 +415,11 @@ const onEvent = (type) => {
                 return;
             }
             GetPageType(store.otp)
-            store.setStorageState(store.$state, "EditPage").then((res) => {
+            store.setStorageState(store.$state, "EditPage",device).then((res) => {
                 store.setPage("Preview", {
                     eventSeq: store.$state.config.eventSeq,
                     gameseq: store.$state.config.gameseq,
+                    device:device
                 });
             }).catch((err) => {
                 messageText.value = `文字區塊內使用的圖片容量過大</br>
@@ -658,7 +601,7 @@ const handleArea = (type) => {
     <GLoading :loading="loading"></GLoading>
     <label for="component" class="wrap development"
            :data-type="store.config.pageTypeSeq" :style="cssVar"
-           :class="[store.group.name == 'main' && store.config.pageTypeSeq != 1 ? 'focus' : '']">
+           :class="[store.group.name == 'main' && store.config.pageTypeSeq == 2 ? 'focus' : '']">
         <input id="component" type="radio" name="area" value="main" checked @change="handleArea">
         <template v-if="contentBg.length">
             <component is="GBg" :data="contentBg[0]"></component>
@@ -702,7 +645,8 @@ const handleArea = (type) => {
     <g-menu :menu="menu" />
     <div class="page-control__group">
         <a href="javascript:;" class="page-control__btn" @click="onEvent('save')">存檔</a>
-        <a href="javascript:;" class="page-control__btn" @click="onEvent('preview')">預覽</a>
+        <a href="javascript:;" class="page-control__btn" @click="onEvent('preview','mb')">手機預覽</a>
+        <a href="javascript:;" class="page-control__btn" @click="onEvent('preview','pc')">電腦預覽</a>
         <a href="javascript:;" class="page-control__btn" @click="onEvent('approve')">送審</a>
         <a href="javascript:;" class="page-control__btn" @click="onEvent('eventList')">回列表</a>
         <a href="javascript:;" class="page-control__btn" @click="onEvent('home')">回首頁</a>

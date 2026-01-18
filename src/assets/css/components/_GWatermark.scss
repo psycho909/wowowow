@@ -44,7 +44,7 @@
 		bottom: calc(var(--bottom, 40) * 1px);
 		&[data-observer="true"] {
 			@include media {
-				bottom: calc(var(--bottom, 40) * 1px);
+				bottom: vw(var(--bottom, 40));
 			}
 		}
 		@include media {
@@ -57,7 +57,7 @@
 		bottom: calc(var(--bottom, 40) * 1px);
 		&[data-observer="true"] {
 			@include media {
-				bottom: calc(var(--bottom, 40) * 1px);
+				bottom: vw(var(--bottom, 40));
 			}
 		}
 		@include media {
@@ -98,10 +98,11 @@
 		img {
 			display: block;
 			max-width: 100%;
+			height: auto;
 			position: relative;
 			margin: 0 auto;
 			@include media {
-				width: calc(var(--watermark-mw) / 768 * 100vw);
+				width: vw(var(--watermark-mw));
 			}
 		}
 	}

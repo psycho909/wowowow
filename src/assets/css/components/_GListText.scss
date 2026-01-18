@@ -4,8 +4,8 @@
 	margin-top: calc(var(--mt, 0) * 1px);
 	margin-bottom: calc(var(--mb, 0) * 1px);
 	@include media {
-		margin-top: calc(var(--mobile_mt, 0) / 768 * 100vw);
-		margin-bottom: calc(var(--mobile_mb, 54) / 768 * 100vw);
+		margin-top: vw(var(--mobile_mt, 0));
+		margin-bottom: vw(var(--mobile_mb, 54));
 	}
 	width: 100%;
 	position: relative;
@@ -29,7 +29,7 @@
 			transform: translateY(-50%);
 			opacity: 0.4;
 			@include media {
-				height: calc(100% + (40 / 768 * 100vw));
+				height: vw(40);
 			}
 		}
 		@include media {

@@ -4,7 +4,7 @@ export default {
     label: "背景圖",
     limit: 1,
     order: [1, 2],
-    type: [1, 2]
+    type: [1, 2,3]
 }
 </script>
 <script setup>
@@ -28,7 +28,6 @@ let bgSetting = reactive({});
 let videoRef = ref(null);
 let mobile = ref(false);
 let videoUpdate = ref(false);
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         color: "#fff",
@@ -123,12 +122,12 @@ watch(videoRef, (newVal, oldVal) => {
         videoRef.value.addEventListener('loadeddata', () => {
             setTimeout(() => {
                 document.querySelector(".wrap").style.setProperty("--video-h", document.querySelector(".g-bg-video").clientHeight);
-                document.querySelector(".wrap").classList.add("video-bg-h");
+                // document.querySelector(".wrap").classList.add("video-bg-h");
                 console.log(document.querySelector(".g-bg-video").clientHeight)
             }, 0);
         });
     } else {
-        document.querySelector(".wrap").classList.remove("video-bg-h");
+        // document.querySelector(".wrap").classList.remove("video-bg-h");
     }
 }, { flush: 'post' })
 onMounted(async () => {
@@ -137,23 +136,17 @@ onMounted(async () => {
         Object.assign(bgData, cloneDeep(props.data.content));
         Object.assign(bgSetting, cloneDeep(props.data.content));
         await nextTick()
-        if (bgSetting.pc !== "") {
-            document.querySelector(".wrap").classList.add("bg-h");
-        }
+        // if (bgSetting.pc !== "") {
+        //     document.querySelector(".wrap").classList.add("bg-h");
+        // }
         if (videoRef.value) {
             videoRef.value.addEventListener('loadeddata', () => {
                 setTimeout(() => {
                     document.querySelector(".wrap").style.setProperty("--video-h", document.querySelector(".g-bg-video").clientHeight);
-                    document.querySelector(".wrap").classList.add("video-bg-h");
+                    // document.querySelector(".wrap").classList.add("video-bg-h");
                 }, 0);
-                if ($addComponent) {
-                    $addComponent();
-                }
             });
         } else {
-            if ($addComponent) {
-                $addComponent();
-            }
         }
 
     }
@@ -281,7 +274,7 @@ const closeBtn = () => {
 }
 </script>
 <template>
-    <div class="g-bg" :data-init="data.init">
+    <div class="g-bg" :data-init="data.init" data-version="1.0">
         <template v-if="bgSetting?.pcVideo && !mobile">
             <video class="g-bg-video g-bg-video--pc"
                    :class="[bgSetting?.fit === true || bgSetting?.fit === 'true' ? 'fit' : 'contain']" autoplay=""
@@ -300,10 +293,8 @@ const closeBtn = () => {
                 <source :src="bgSetting.mobileVideo || bgSetting.pcVideo" type="video/mp4">
             </video>
         </template>
-        <g-modify :uid="data.uid" title="背景" :move="false" :remove="false" :sub="sub"
-                  v-if="page == 'EditPage'" />
-        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'"
-                :func="enterColor">
+        <g-modify :uid="data.uid" title="背景" :move="false" :remove="false" :sub="sub" v-if="page == 'EditPage'" />
+        <g-edit v-model:showEdit="showEdit" :uid="data.uid" v-if="page == 'EditPage'" :func="enterColor">
             <template #edit-close>
                 <a href="javascript:;" class="g-edit__close icon icon-close" @click="closeBtn">close</a>
             </template>
@@ -332,10 +323,10 @@ const closeBtn = () => {
                 </div>
                 <div class="g-edit__row">
                     <div class="g-edit__col">
-                        <div class="input-group__label required">影片寬度:</div>
-                        <g-radio label="影片滿版" name="video-fit" :value="true"
+                        <div class="input-group__label required">影片尺寸:</div>
+                        <g-radio label="滿版" name="video-fit" :value="true"
                                  v-model="bgData.fit" />
-                        <g-radio label="影片自己寬度" :name="'control' + index" :value="false"
+                        <g-radio label="原尺寸" :name="'control' + index" :value="false"
                                  v-model="bgData.fit" />
                     </div>
                 </div>

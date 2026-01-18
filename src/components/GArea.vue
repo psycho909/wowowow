@@ -43,7 +43,6 @@ let areaData = reactive({});
 let uid = ref(props.data.uid);
 let gr = ref(props.data.group);
 let targetArea = ref(1);
-const $addComponent = inject('$addComponent');
 const validPreviousComponents = ["GLang", "GBg", "GFixed", "GIcon", "GLogo", "GDNNav", "GDNImg"];
 const initData = () => {
     return {
@@ -77,11 +76,11 @@ watchEffect(async () => {
                 if (area) {
                     if (document.querySelector(".g-fixed.top")) {
                         height = document.querySelector(".g-fixed.top").clientHeight;
-                        // area.style.marginTop = height + 'px'
-                        area.style.setProperty('--fixed-top', height)
+                        area.style.marginTop = height + 'px'
+                        // area.style.setProperty('--fixed-top', height)
                     } else {
-                        // area.style.marginTop = height + 'px'
-                        area.style.setProperty('--fixed-top', height)
+                        area.style.marginTop = height + 'px'
+                        // area.style.setProperty('--fixed-top', height)
                     }
                 }
             }
@@ -102,9 +101,6 @@ onMounted(async () => {
         Object.assign(areaData, cloneDeep(props.data.content));
         Object.assign(areaSetting, cloneDeep(props.data.content));
         await nextTick()
-        if ($addComponent) {
-            $addComponent();
-        }
         if (gr.value == 1 && store.page == 'EditPage') {
             handleArea()
             store.tempGroup = { ...store.group, targetArea: store.targetArea }
@@ -115,11 +111,20 @@ onMounted(async () => {
             if (area) {
                 if (document.querySelector(".g-fixed.top")) {
                     height = document.querySelector(".g-fixed.top").clientHeight;
-                    // area.style.marginTop = height + 'px'
-                    area.style.setProperty('--fixed-top', height)
+                    area.style.marginTop = height + 'px';
                 } else {
-                    // area.style.marginTop = height + 'px'
-                    area.style.setProperty('--fixed-top', height)
+                    area.style.marginTop = height + 'px';
+                }
+            }
+        }
+        if (props.data.uid == 1) {
+            if (Object.keys(props.data.content).length > 0) {
+                if (props.data.content.subContent && props.data.content.subContent.length > 0) {
+                    const bgComponent = props.data.content.subContent.find(item => item.component === 'GBg');
+                    if (bgComponent) {
+                        // 處理 GBg component
+                        document.querySelector('.wrap').style.setProperty('--color', bgComponent.content.color);
+                    }
                 }
             }
         }

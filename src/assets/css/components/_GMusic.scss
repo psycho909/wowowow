@@ -11,7 +11,7 @@
 		display: none;
 		&[data-observer="true"] {
 			@include media {
-				bottom: calc(var(--bottom, 40) * 1px);
+				bottom: vw(var(--bottom, 40));
 			}
 		}
 		bottom: vw(20);

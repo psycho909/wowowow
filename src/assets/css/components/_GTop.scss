@@ -9,7 +9,7 @@
 	@include media {
 		&[data-observer="true"] {
 			@include media {
-				bottom: calc(var(--bottom, 40) * 1px);
+				bottom: vw(var(--bottom, 40));
 			}
 		}
 		bottom: vw(20);
@@ -72,8 +72,9 @@
 		}
 		img {
 			max-width: 100%;
+			height: auto;
 			@include media {
-				width: calc(var(--top-mw) / 768 * 100vw);
+				width: vw(var(--top-mw));
 			}
 		}
 	}

@@ -5,7 +5,6 @@ export default {
 </script>
 <script setup>
 import { storeToRefs } from "pinia";
-// import components from "../Components1.js";
 import components from "../Components.js";
 import GLoading from "../components/GLoading.vue";
 import { mainStore } from "../store/index";
@@ -15,14 +14,8 @@ const { content } = storeToRefs(store);
 let lanBrowser = getBrowserLocales()[0];
 let lanParams = getUrlSearchParams("lan");
 const loading = ref(false);
-const componentCount = ref(0);
-const totalComponentCount = ref(0);
 let isObserving = ref(true);
 let footerTop = ref(null);
-provide('$addComponent', () => {
-    componentCount.value += 1;
-});
-provide('$componentCount', componentCount);
 
 const cssVar = computed(() => {
     if (content.value.length > 0) {
@@ -106,12 +99,45 @@ function triggerExitEvent() {
         menuElement.setAttribute('data-observer', false);
     }
 }
-onMounted(() => {
-    loading.value = true;
+function loadCSS(url) {
+    const timestamp = new Date().getTime(); // 生成唯一時間戳
+    const fullUrl = `${url}?_=${timestamp}`; // 加上時間戳參數
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = fullUrl; // 動態設置 href
+
+    document.head.appendChild(link); // 加入到 <head> 中
+}
+function fetchNonCachedJS(url) {
+    // 使用時間戳動態產生唯一查詢參數
+    const nonCachedUrl = `${url}?_=${new Date().getTime()}`;
+
+    const script = document.createElement("script");
+    script.src = nonCachedUrl;
+
+    return new Promise((resolve, reject) => {
+        script.onload = () => {
+            console.log("成功載入最新JS資料");
+            // 設置全局標記
+            window.isExternalJSLoaded = true;
+            // 觸發自定義事件
+            window.dispatchEvent(new Event("externalJSLoaded"));
+            resolve();
+        };
+        script.onerror = (error) => {
+            console.error("獲取JS時發生錯誤:", error);
+            reject(error);
+        };
+        document.head.appendChild(script);
+    });
+}
+onMounted(async () => {
+    // loading.value = true;
     document.getElementsByTagName("HTML")[0].setAttribute("data-type", store.config.pageTypeSeq)
     footer.prod = store.config.gameName || 'bf!遊戲';
     footer.theme = store.config.footer == 1 ? 'light' : 'dark';
-    totalComponentCount.value = content.value.length;
+    document.querySelector("body").setAttribute("id", `e${store.config.eventSeq}`);
+    loadCSS("https://tw.hicdn.beanfun.com/beanfun/GamaWWW/WGD/Web/assets/css/fix.css")
     if (footer.prod == "櫻桃小丸子") {
         if (lanParams) {
             if (lanParams == "zh") {
@@ -129,21 +155,36 @@ onMounted(() => {
         // gameFooter(footer);
         // 偵測Footer的加入
         setTimeout(() => {
-            gf_updateFooter(footer)
+            try {
+                gf_updateFooter(footer)
+            } catch (e) {
+                console.log(e)
+            }
         }, 0);
     } else {
+        if (footer.prod == "全產品") {
+            footer.prod = "bf!遊戲"
+        }
+        if (footer.prod == "便利商店") {
+            footer.prod = "便利商店口袋版"
+        }
+        if (footer.prod == "波拉西亞戰記") {
+            footer.prod = "波拉西亞"
+        }
+        if (footer.prod == "救世者之樹") {
+            footer.prod = "救世者之樹M"
+        }
         // 偵測Footer的加入
         setTimeout(() => {
-            gf_updateFooter(footer)
+            try {
+                gf_updateFooter(footer)
+            } catch (e) {
+                console.log(e)
+            }
         }, 0);
     }
     window.addEventListener('scroll', handleScroll);
-    watch(componentCount, (newVal) => {
-        if (newVal >= totalComponentCount.value) {
-            loading.value = false;
-        }
-    });
-
+    await fetchNonCachedJS("https://tw.hicdn.beanfun.com/beanfun/GamaWWW/WGD/Web/js/fix.js")
 })
 onUnmounted(() => {
     console.log("onUnmounted")

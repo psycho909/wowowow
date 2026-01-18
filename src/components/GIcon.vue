@@ -27,7 +27,6 @@ let iconData = reactive({});
 let iconSetting = reactive({})
 let styleValid = ref(true);
 let loading = ref(true);
-const $addComponent = inject('$addComponent');
 const initData = () => {
     return {
         icons: [{
@@ -74,9 +73,6 @@ onMounted(async () => {
                     v.target = true
                 }
             })
-        }
-        if ($addComponent) {
-            $addComponent();
         }
     }
 })

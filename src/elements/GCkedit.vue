@@ -67,7 +67,6 @@ config.value = {
             'italic',
             'link',
             'fontSize',
-            'imageUpload'
         ],
         shouldNotGroupWhenFull: false
     },
